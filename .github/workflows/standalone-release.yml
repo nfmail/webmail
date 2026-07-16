@@ -1,15 +1,88 @@
-name: Publish Standalone Tarball on Release
+name: Release standalone artifacts
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
+    inputs:
+      ref:
+        description: Public tag, branch, or commit to build without publishing
+        required: true
+        default: main
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  HUSKY: "0"
+  NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
+  verify:
+    name: Verify release source
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+      source_date_epoch: ${{ steps.source.outputs.source_date_epoch }}
+      tag: ${{ steps.source.outputs.tag }}
+      version: ${{ steps.source.outputs.version }}
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Verify version and signed tag
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(tr -d '\r\n' < VERSION)
+          package_version=$(node -p 'require("./package.json").version')
+          test "$package_version" = "$version"
+
+          commit=$(git rev-parse HEAD)
+          tag="v${version}"
+
+          if test "$GITHUB_EVENT_NAME" = push; then
+            test "$GITHUB_REF_TYPE" = tag
+            test "$GITHUB_REF_NAME" = "$tag"
+
+            tag_object=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}" --jq '.object')
+            test "$(jq -r '.type' <<<"$tag_object")" = tag
+            tag_object_sha=$(jq -r '.sha' <<<"$tag_object")
+            tag_data=$(gh api "repos/${GITHUB_REPOSITORY}/git/tags/${tag_object_sha}")
+            test "$(jq -r '.verification.verified' <<<"$tag_data")" = true
+            test "$(jq -r '.object.type' <<<"$tag_data")" = commit
+            test "$(jq -r '.object.sha' <<<"$tag_data")" = "$commit"
+          fi
+
+          source_date_epoch=$(git show -s --format=%ct "$commit")
+          {
+            echo "commit=$commit"
+            echo "source_date_epoch=$source_date_epoch"
+            echo "tag=$tag"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+
   build:
+    name: Build standalone (${{ matrix.arch }})
+    needs: verify
     strategy:
       fail-fast: false
       matrix:
@@ -19,10 +92,17 @@ jobs:
           - os: ubuntu-24.04-arm
             arch: arm64
     runs-on: ${{ matrix.os }}
-
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     steps:
-      - name: Checkout
+      - name: Checkout verified commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          ref: ${{ needs.verify.outputs.commit }}
 
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
@@ -30,39 +110,114 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      - name: Verify toolchain
+        run: npm run check:toolchain
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Build standalone
+      - name: Build standalone application
+        env:
+          SOURCE_DATE_EPOCH: ${{ needs.verify.outputs.source_date_epoch }}
         run: npm run build
 
-      - name: Package tarball
+      - name: Package reproducible artifact
         env:
-          REF_NAME: ${{ github.ref_name }}
           ARCH: ${{ matrix.arch }}
-        run: |
-          VERSION="${REF_NAME#v}"
-          TARBALL="bulwark-standalone-${VERSION}-linux-${ARCH}.tar.gz"
+          RELEASE_TAG: ${{ needs.verify.outputs.tag }}
+          SOURCE_DATE_EPOCH: ${{ needs.verify.outputs.source_date_epoch }}
+        run: node scripts/package-release.mjs
 
-          mkdir -p bulwark-standalone
-          cp -r .next/standalone/. bulwark-standalone/
-          cp -r .next/static bulwark-standalone/.next/static
-          cp -r public bulwark-standalone/public
-
-          tar -czf "$TARBALL" bulwark-standalone/
-          echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
-
-      - name: Upload release asset
-        if: github.event_name == 'release'
+      - name: Generate deterministic SPDX SBOM
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME: ${{ github.event.release.tag_name }}
-        run: gh release upload "$TAG_NAME" "$TARBALL" --clobber
+          ARCH: ${{ matrix.arch }}
+          RELEASE_TAG: ${{ needs.verify.outputs.tag }}
+          SOURCE_DATE_EPOCH: ${{ needs.verify.outputs.source_date_epoch }}
+        run: node scripts/generate-sbom.mjs "$SBOM"
 
-      - name: Upload artifact (workflow_dispatch)
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
+      - name: Generate checksums
+        run: node scripts/generate-checksums.mjs "$CHECKSUMS" "$TARBALL" "$SOURCE_MANIFEST" "$SBOM"
+
+      - name: Sign build provenance
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4.1.1
         with:
-          name: standalone-${{ matrix.arch }}
-          path: ${{ env.TARBALL }}
+          subject-path: ${{ env.TARBALL }}
+
+      - name: Sign SBOM attestation
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4.1.1
+        with:
+          subject-path: ${{ env.TARBALL }}
+          sbom-path: ${{ env.SBOM }}
+
+      - name: Upload verified release files
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-${{ matrix.arch }}
+          path: |
+            ${{ env.TARBALL }}
+            ${{ env.SOURCE_MANIFEST }}
+            ${{ env.SBOM }}
+            ${{ env.CHECKSUMS }}
+          if-no-files-found: error
           retention-days: 7
+
+  publish:
+    name: Publish immutable GitHub release
+    if: github.event_name == 'push'
+    needs: [verify, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download release files
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: release-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Generate aggregate checksum manifest
+        working-directory: artifacts
+        run: sha256sum ./*.tar.gz ./*.source.json ./*.spdx.json > SHA256SUMS
+
+      - name: Sign aggregate checksums
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4.1.1
+        with:
+          subject-path: artifacts/SHA256SUMS
+
+      - name: Publish release once
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.verify.outputs.tag }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          COMMIT: ${{ needs.verify.outputs.commit }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; refusing to replace immutable assets." >&2
+            exit 1
+          fi
+
+          source_url="https://github.com/${GITHUB_REPOSITORY}/tree/${TAG}"
+          printf '%s\n\n%s\n%s\n%s\n' \
+            "NF Mail ${VERSION}" \
+            "Source: ${source_url}" \
+            "Commit: ${COMMIT}" \
+            "Verify: gh attestation verify <artifact> --repo ${GITHUB_REPOSITORY}" \
+            > release-notes.md
+
+          gh release create "$TAG" artifacts/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --draft \
+            --title "NF Mail ${VERSION}" \
+            --notes-file release-notes.md
+
+          gh release edit "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft=false \
+            --latest

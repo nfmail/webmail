@@ -52,6 +52,12 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     "*": ["./repos/**/*"],
   },
+  // Next's standalone trace can retain only the helper entry points seen
+  // during the build. Server chunks also resolve the ESM exports at runtime,
+  // so keep that part of @swc/helpers intact in the container output.
+  outputFileTracingIncludes: {
+    "*": ["./node_modules/@swc/helpers/esm/**/*"],
+  },
   turbopack: {
     root: import.meta.dirname,
   },

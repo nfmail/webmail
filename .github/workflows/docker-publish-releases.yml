@@ -56,6 +56,9 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
 
+      - name: Smoke test image runtime
+        run: scripts/smoke-container.sh "${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}"
+
       - name: Export digest
         run: |
           mkdir -p /tmp/digests

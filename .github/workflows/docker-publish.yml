@@ -18,6 +18,8 @@ on:
       - "public/**"
       - "package.json"
       - "package-lock.json"
+      - "next.config.ts"
+      - "scripts/smoke-container.sh"
       - ".github/workflows/docker-publish.yml"
   workflow_dispatch:
 
@@ -83,6 +85,9 @@ jobs:
           outputs: type=image,name=${{ needs.prepare.outputs.image_name }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,scope=${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+
+      - name: Smoke test image runtime
+        run: scripts/smoke-container.sh "${{ needs.prepare.outputs.image_name }}@${{ steps.build.outputs.digest }}"
 
       - name: Export digest
         run: |

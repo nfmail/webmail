@@ -24,9 +24,11 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
+    "check:nf": "node scripts/check-nf.mjs",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test:nf": "node --test scripts/check-nf.test.mjs",
     "test:translations": "vitest run --no-isolate lib/__tests__/translations.test.ts",
     "prepare": "husky",
     "typecheck": "tsc --noEmit"

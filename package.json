@@ -30,6 +30,7 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "check:nf": "node scripts/check-nf.mjs",
+    "check:ruleset": "node scripts/check-ruleset.mjs",
     "check:toolchain": "node scripts/check-toolchain.mjs",
     "start": "next start",
     "lint": "eslint .",

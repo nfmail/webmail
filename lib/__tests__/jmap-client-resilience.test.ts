@@ -238,7 +238,9 @@ describe('JMAPClient resilience', () => {
       client.onConnectionChange(callback);
 
       const echoResponse = { methodResponses: [['Core/echo', { ping: 'pong' }, '0']] };
-      fetchSpy.mockResolvedValue(mockFetchResponse(200, echoResponse));
+      // A Response body is single-use. Return a fresh response for every
+      // keep-alive tick so timer scheduling cannot make this mock flaky.
+      fetchSpy.mockImplementation(() => Promise.resolve(mockFetchResponse(200, echoResponse)));
 
       // Advance past keep-alive interval (30s)
       await vi.advanceTimersByTimeAsync(30_000);

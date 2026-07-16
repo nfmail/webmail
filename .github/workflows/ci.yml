@@ -39,6 +39,9 @@ jobs:
       - name: Validate tracked files
         run: npm run check:nf
 
+      - name: Validate repository settings
+        run: npm run check:ruleset
+
   quality:
     name: Typecheck, lint, and unit tests
     runs-on: ubuntu-latest

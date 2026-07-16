@@ -61,12 +61,12 @@
     "asn1js": "^3.0.10",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "dompurify": "^3.4.1",
+    "dompurify": "^3.4.12",
     "jalaali-js": "^2.0.0",
     "jszip": "^3.10.1",
     "lucide-react": "^1.8.0",
     "next": "^16.2.6",
-    "next-intl": "^4.9.1",
+    "next-intl": "^4.13.2",
     "otpauth": "^9.5.0",
     "pdfjs-dist": "^6.0.227",
     "pkijs": "^3.4.0",
@@ -77,7 +77,6 @@
     "react-dom": "^19.2.5",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "webcrypto-liner": "^1.4.3",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
@@ -95,7 +94,7 @@
     "@typescript-eslint/parser": "^8.59.0",
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/ui": "^4.1.5",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "eslint": "^9.39.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -108,12 +107,10 @@
     "vitest": "^4.1.5"
   },
   "overrides": {
-    "elliptic": {
-      ".": "^6.6.1",
-      "webcrypto-liner": "$elliptic"
-    },
+    "@swc/helpers": "^0.5.23",
     "flatted": "^3.4.2",
     "picomatch": "^4.0.4",
-    "undici": "^7.24.0"
+    "postcss": "^8.5.19",
+    "undici": "^7.28.0"
   }
 }

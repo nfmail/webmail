@@ -37,7 +37,9 @@ describe('JMAPClient resilience', () => {
 
   beforeEach(() => {
     fetchSpy = vi.spyOn(globalThis, 'fetch');
-    vi.useFakeTimers({ shouldAdvanceTime: true });
+    // Keep virtual time fully test-controlled. Auto-advancing with wall time
+    // lets keep-alive intervals fire early on a contended CI runner.
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
@@ -78,7 +80,9 @@ describe('JMAPClient resilience', () => {
         .mockResolvedValueOnce(mockFetchResponse(200, echoResponse));
 
       // ping() calls request() which calls authenticatedFetch
-      await expect(client.ping()).resolves.toBeUndefined();
+      const pingResult = expect(client.ping()).resolves.toBeUndefined();
+      await vi.advanceTimersByTimeAsync(1_000);
+      await pingResult;
       // First call fails, delay, second call succeeds
       expect(fetchSpy).toHaveBeenCalledTimes(2);
     });
@@ -90,7 +94,9 @@ describe('JMAPClient resilience', () => {
         .mockRejectedValueOnce(new TypeError('Failed to fetch'))
         .mockRejectedValueOnce(new TypeError('Failed to fetch'));
 
-      await expect(client.ping()).rejects.toThrow('Failed to fetch');
+      const pingResult = expect(client.ping()).rejects.toThrow('Failed to fetch');
+      await vi.advanceTimersByTimeAsync(1_000);
+      await pingResult;
       expect(fetchSpy).toHaveBeenCalledTimes(2);
     });
   });

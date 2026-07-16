@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin/domain-branding";
 import { withBasePath } from "@/lib/browser-navigation";
 import { locales } from "@/i18n/routing";
+import { PRODUCT } from "@/lib/product-metadata";
 import "../globals.css";
 
 // This layout renders <html> and sits ABOVE the [locale] segment, so
@@ -56,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const faviconUrl =
     domainOverride && domainOverride.length > 0
       ? domainOverride
-      : configManager.get<string>("faviconUrl", "/branding/Bulwark_Favicon.svg");
+      : configManager.get<string>("faviconUrl", PRODUCT.branding.faviconUrl);
   // Localize the <head> description to match the UI language; a hardcoded
   // English description is another signal that makes Chrome offer to
   // "translate this page". Resolve the locale from the request path, since this
@@ -65,7 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations({ locale });
 
   return {
-    title: process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME || "Webmail",
+    title: process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME || PRODUCT.name,
     description: t("meta_description"),
     // A private webmail should not be indexed by search engines. This is opt-in
     // via Settings -> General; the default (false) emits noindex/nofollow.
@@ -75,7 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
     appleWebApp: {
       capable: true,
       statusBarStyle: "black-translucent",
-      title: process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME || "Webmail",
+      title: process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME || PRODUCT.name,
     },
     formatDetection: {
       telephone: false,
@@ -101,7 +102,7 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-title"
-          content={process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME || "Webmail"}
+          content={process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME || PRODUCT.name}
         />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         {parentOrigin && (

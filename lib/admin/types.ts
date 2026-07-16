@@ -1,3 +1,5 @@
+import { PRODUCT } from '@/lib/product-metadata';
+
 // Admin dashboard types
 
 /**
@@ -144,15 +146,15 @@ export interface AuditEntry {
 
 /** Config keys that map to environment variables */
 export const CONFIG_ENV_MAP: Record<string, { envVar: string; fileEnvVar?: string; type: 'string' | 'boolean' | 'url' | 'enum' | 'json'; defaultValue: unknown; enumValues?: string[] }> = {
-  appName: { envVar: 'APP_NAME', type: 'string', defaultValue: 'Webmail' },
-  appShortName: { envVar: 'APP_SHORT_NAME', type: 'string', defaultValue: '' },
-  appDescription: { envVar: 'APP_DESCRIPTION', type: 'string', defaultValue: '' },
+  appName: { envVar: 'APP_NAME', type: 'string', defaultValue: PRODUCT.name },
+  appShortName: { envVar: 'APP_SHORT_NAME', type: 'string', defaultValue: PRODUCT.shortName },
+  appDescription: { envVar: 'APP_DESCRIPTION', type: 'string', defaultValue: PRODUCT.description },
   searchEngineIndexing: { envVar: 'SEARCH_ENGINE_INDEXING', type: 'boolean', defaultValue: false },
   jmapServerUrl: { envVar: 'JMAP_SERVER_URL', type: 'url', defaultValue: '' },
   stalwartFeaturesEnabled: { envVar: 'STALWART_FEATURES', type: 'boolean', defaultValue: true },
   demoMode: { envVar: 'DEMO_MODE', type: 'boolean', defaultValue: false },
   devMode: { envVar: 'DEV_MOCK_JMAP', type: 'boolean', defaultValue: false },
-  faviconUrl: { envVar: 'FAVICON_URL', type: 'url', defaultValue: '/branding/Bulwark_Favicon.svg' },
+  faviconUrl: { envVar: 'FAVICON_URL', type: 'url', defaultValue: PRODUCT.branding.faviconUrl },
   pwaIconUrl: { envVar: 'PWA_ICON_URL', type: 'url', defaultValue: '' },
   pwaScreenshotMobileUrl: { envVar: 'PWA_SCREENSHOT_MOBILE_URL', type: 'url', defaultValue: '' },
   pwaScreenshotDesktopUrl: { envVar: 'PWA_SCREENSHOT_DESKTOP_URL', type: 'url', defaultValue: '' },
@@ -160,8 +162,8 @@ export const CONFIG_ENV_MAP: Record<string, { envVar: string; fileEnvVar?: strin
   pwaBackgroundColor: { envVar: 'PWA_BACKGROUND_COLOR', type: 'string', defaultValue: '#ffffff' },
   appLogoLightUrl: { envVar: 'APP_LOGO_LIGHT_URL', type: 'url', defaultValue: '' },
   appLogoDarkUrl: { envVar: 'APP_LOGO_DARK_URL', type: 'url', defaultValue: '' },
-  loginLogoLightUrl: { envVar: 'LOGIN_LOGO_LIGHT_URL', type: 'url', defaultValue: '/branding/Bulwark_Logo_Color.svg' },
-  loginLogoDarkUrl: { envVar: 'LOGIN_LOGO_DARK_URL', type: 'url', defaultValue: '/branding/Bulwark_Logo_White.svg' },
+  loginLogoLightUrl: { envVar: 'LOGIN_LOGO_LIGHT_URL', type: 'url', defaultValue: PRODUCT.branding.logoLightUrl },
+  loginLogoDarkUrl: { envVar: 'LOGIN_LOGO_DARK_URL', type: 'url', defaultValue: PRODUCT.branding.logoDarkUrl },
   loginCompanyName: { envVar: 'LOGIN_COMPANY_NAME', type: 'string', defaultValue: '' },
   loginImprintUrl: { envVar: 'LOGIN_IMPRINT_URL', type: 'url', defaultValue: '' },
   loginPrivacyPolicyUrl: { envVar: 'LOGIN_PRIVACY_POLICY_URL', type: 'url', defaultValue: '' },

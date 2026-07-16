@@ -336,7 +336,7 @@ export default function MarketplacePreviewPage() {
               onClick={handleInstall}
               disabled={installing || !!bundle.error || versionMismatch}
               title={versionMismatch
-                ? `Requires app v${ext.minAppVersion}+. You are running v${CURRENT_APP_VERSION}. Update Bulwark to install.`
+                ? `Requires app v${ext.minAppVersion}+. You are running v${CURRENT_APP_VERSION}. Update NF Mail to install.`
                 : undefined}
               className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -357,7 +357,7 @@ export default function MarketplacePreviewPage() {
         <div className="flex items-start gap-2 text-sm rounded-md px-3 py-2 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <div>
-            <p className="font-medium">Update Bulwark to install this extension</p>
+            <p className="font-medium">Update NF Mail to install this extension</p>
             <p className="text-xs mt-0.5 opacity-90">
               Requires app v{ext.minAppVersion}+. You are running v{CURRENT_APP_VERSION}.
             </p>

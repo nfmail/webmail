@@ -18,6 +18,11 @@ import { type OAuthMetadata } from "@/lib/oauth/discovery";
 import { generateCodeVerifier, generateCodeChallenge, generateState } from "@/lib/oauth/pkce";
 import { useUpdateStore, selectBanner } from "@/stores/update-store";
 import type { PublicJmapServerEntry } from "@/lib/admin/jmap-servers";
+import {
+  APP_VERSION,
+  BUILD_COMMIT,
+  CORRESPONDING_SOURCE_URL,
+} from "@/lib/product-metadata";
 
 function findServerByDomain(servers: PublicJmapServerEntry[], email: string | undefined): PublicJmapServerEntry | undefined {
   if (!email || !email.includes("@")) return undefined;
@@ -25,9 +30,6 @@ function findServerByDomain(servers: PublicJmapServerEntry[], email: string | un
   if (!domain) return undefined;
   return servers.find((s) => (s.domains ?? []).some((d) => d.toLowerCase() === domain));
 }
-
-const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || "0.0.0";
-const GIT_COMMIT = process.env.NEXT_PUBLIC_GIT_COMMIT || "unknown";
 
 const THEME_OPTIONS = [
   { value: "light" as const, icon: Sun, label: "Light" },
@@ -42,7 +44,7 @@ function VersionBadge() {
 
   useEffect(() => { startPolling(); }, [startPolling]);
 
-  const versionInfo = `Version: ${APP_VERSION}\nBuild: ${GIT_COMMIT}${banner?.latest ? `\nLatest: ${banner.latest}` : ""}`;
+  const versionInfo = `Version: ${APP_VERSION}\nBuild: ${BUILD_COMMIT}\nSource: ${CORRESPONDING_SOURCE_URL}${banner?.latest ? `\nLatest: ${banner.latest}` : ""}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(versionInfo).then(() => {
@@ -81,29 +83,40 @@ function VersionBadge() {
   );
 
   return (
-    <div className="relative inline-flex justify-center">
-      {trigger}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-3 py-2 rounded-md bg-popover text-popover-foreground text-xs shadow-md border border-border opacity-0 peer-hover:opacity-100 hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-        <div className="flex items-center gap-2">
-          <div className="space-y-0.5">
-            <p>Version: <span className="font-medium">{APP_VERSION}</span></p>
-            <p>Build: <span className="font-medium">{GIT_COMMIT}</span></p>
-            {banner?.latest && (
-              <p>Latest: <span className="font-medium">{banner.latest}</span></p>
-            )}
-            {banner?.advisory && (
-              <p className="text-red-500 dark:text-red-400">{banner.advisory}</p>
-            )}
+    <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/50">
+      <div className="relative inline-flex justify-center">
+        {trigger}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-3 py-2 rounded-md bg-popover text-popover-foreground text-xs shadow-md border border-border opacity-0 peer-hover:opacity-100 hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+          <div className="flex items-center gap-2">
+            <div className="space-y-0.5">
+              <p>Version: <span className="font-medium">{APP_VERSION}</span></p>
+              <p>Build: <span className="font-medium">{BUILD_COMMIT}</span></p>
+              {banner?.latest && (
+                <p>Latest: <span className="font-medium">{banner.latest}</span></p>
+              )}
+              {banner?.advisory && (
+                <p className="text-red-500 dark:text-red-400">{banner.advisory}</p>
+              )}
+            </div>
+            <button
+              onClick={handleCopy}
+              className="p-1 rounded hover:bg-muted transition-colors"
+              aria-label="Copy version info"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+            </button>
           </div>
-          <button
-            onClick={handleCopy}
-            className="p-1 rounded hover:bg-muted transition-colors"
-            aria-label="Copy version info"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-          </button>
         </div>
       </div>
+      <span aria-hidden="true">·</span>
+      <a
+        href={CORRESPONDING_SOURCE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition-colors hover:text-muted-foreground hover:underline"
+      >
+        Source
+      </a>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePolicyStore } from '@/stores/policy-store';
 import { apiFetch } from '@/lib/browser-navigation';
 import type { PublicJmapServerEntry } from '@/lib/admin/jmap-servers';
+import { PRODUCT } from '@/lib/product-metadata';
 
 interface ConfigData {
   appName: string;
@@ -89,7 +90,7 @@ export async function fetchConfig(): Promise<ConfigData> {
  */
 export function useConfig(): AppConfig {
   const [config, setConfig] = useState<AppConfig>({
-    appName: configCache?.appName || 'Webmail',
+    appName: configCache?.appName || PRODUCT.name,
     jmapServerUrl: configCache?.jmapServerUrl || '',
     oauthEnabled: configCache?.oauthEnabled || false,
     oauthOnly: configCache?.oauthOnly || false,
@@ -100,11 +101,11 @@ export function useConfig(): AppConfig {
     settingsSyncEnabled: configCache?.settingsSyncEnabled || false,
     stalwartFeaturesEnabled: configCache?.stalwartFeaturesEnabled ?? true,
     devMode: configCache?.devMode || false,
-    faviconUrl: configCache?.faviconUrl || '/branding/Bulwark_Favicon.svg',
+    faviconUrl: configCache?.faviconUrl || PRODUCT.branding.faviconUrl,
     appLogoLightUrl: configCache?.appLogoLightUrl || '',
     appLogoDarkUrl: configCache?.appLogoDarkUrl || '',
-    loginLogoLightUrl: configCache?.loginLogoLightUrl || '/branding/Bulwark_Logo_Color.svg',
-    loginLogoDarkUrl: configCache?.loginLogoDarkUrl || '/branding/Bulwark_Logo_White.svg',
+    loginLogoLightUrl: configCache?.loginLogoLightUrl || PRODUCT.branding.logoLightUrl,
+    loginLogoDarkUrl: configCache?.loginLogoDarkUrl || PRODUCT.branding.logoDarkUrl,
     loginCompanyName: configCache?.loginCompanyName || '',
     loginImprintUrl: configCache?.loginImprintUrl || '',
     loginPrivacyPolicyUrl: configCache?.loginPrivacyPolicyUrl || '',

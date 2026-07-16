@@ -17,6 +17,7 @@ import process from "node:process";
 
 const version = readFileSync("VERSION", "utf8").trim();
 const packageVersion = JSON.parse(readFileSync("package.json", "utf8")).version;
+const product = JSON.parse(readFileSync("product.json", "utf8"));
 const arch = process.env.ARCH;
 const releaseTag = process.env.RELEASE_TAG ?? `v${version}`;
 const epoch = process.env.SOURCE_DATE_EPOCH ?? execFileSync(
@@ -44,14 +45,16 @@ if (!existsSync(".next/standalone")) {
   throw new Error("Missing .next/standalone; run npm run build first");
 }
 
-const repository = process.env.GITHUB_REPOSITORY ?? "nfmail/webmail";
 const commit = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-const upstreamVersion = version.replace(/-nf\.\d+$/, "");
+const upstreamVersion = product.upstream.version;
 const upstreamCommit = execFileSync(
   "git",
   ["rev-parse", `${upstreamVersion}^{commit}`],
   { encoding: "utf8" },
 ).trim();
+if (upstreamCommit !== product.upstream.commit) {
+  throw new Error(`product.json upstream commit ${product.upstream.commit} does not match ${upstreamVersion} (${upstreamCommit})`);
+}
 const releaseDir = path.resolve(process.env.RELEASE_DIR ?? ".release");
 const bundle = `nf-mail-${version}-linux-${arch}`;
 const bundleRoot = path.join(releaseDir, bundle);
@@ -59,14 +62,14 @@ const tarball = path.join(releaseDir, `${bundle}.tar.gz`);
 const sourceManifest = path.join(releaseDir, `${bundle}.source.json`);
 const sbom = path.join(releaseDir, `${bundle}.spdx.json`);
 const checksums = path.join(releaseDir, `${bundle}.SHA256SUMS`);
-const sourceUrl = `https://github.com/${repository}/tree/${releaseTag}`;
+const sourceUrl = `${product.repositoryUrl}/tree/${releaseTag}`;
 
 rmSync(releaseDir, { recursive: true, force: true });
 mkdirSync(bundleRoot, { recursive: true });
 cpSync(".next/standalone", bundleRoot, { recursive: true });
 cpSync(".next/static", path.join(bundleRoot, ".next/static"), { recursive: true });
 cpSync("public", path.join(bundleRoot, "public"), { recursive: true });
-for (const filename of ["LICENSE", "NOTICE", "VERSION"]) {
+for (const filename of ["LICENSE", "NOTICE", "VERSION", "product.json"]) {
   copyFileSync(filename, path.join(bundleRoot, filename));
 }
 
@@ -78,13 +81,13 @@ const metadata = {
     sourceDateEpoch: Number(epoch),
   },
   source: {
-    repository: `https://github.com/${repository}`,
+    repository: product.repositoryUrl,
     tag: releaseTag,
     url: sourceUrl,
   },
   upstream: {
     commit: upstreamCommit,
-    repository: "https://github.com/bulwarkmail/webmail",
+    repository: product.upstream.repositoryUrl,
     version: upstreamVersion,
   },
   version,

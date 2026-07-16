@@ -6,9 +6,10 @@ import { configManager } from '@/lib/admin/config-manager';
 import { auditLog } from '@/lib/admin/audit';
 import { logger } from '@/lib/logger';
 import { locales as ALL_LOCALES } from '@/i18n/routing';
+import { PRODUCT } from '@/lib/product-metadata';
 
-const CLIENT_ID = 'bulwark-webmail';
-const CLIENT_DESCRIPTION = 'Bulwark Webmail (auto-configured)';
+const CLIENT_ID = 'nf-mail';
+const CLIENT_DESCRIPTION = `${PRODUCT.name} (auto-configured)`;
 const JMAP_TIMEOUT_MS = 10_000;
 
 interface JmapMethodCall {

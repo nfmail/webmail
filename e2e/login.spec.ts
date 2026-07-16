@@ -5,6 +5,10 @@ test.describe('Login', () => {
     await page.goto('/en/login');
     await expect(page.locator('#username')).toBeVisible({ timeout: 30_000 });
     await expect(page.locator('#password')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'NF Mail' })).toBeVisible();
+    const sourceLink = page.getByRole('link', { name: 'Source' });
+    await expect(sourceLink).toBeVisible();
+    await expect(sourceLink).toHaveAttribute('href', /github\.com\/nfmail\/webmail(?:\/tree\/[0-9a-f]{7,40})?$/);
   });
 
   test('shows error on invalid credentials', async ({ page }) => {

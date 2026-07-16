@@ -1,5 +1,6 @@
 import { unlink, writeFileSync } from "fs";
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { PRODUCT } from '@/lib/product-metadata';
 
 // Mock NextResponse before importing the route
 vi.mock('next/server', () => ({
@@ -65,7 +66,7 @@ describe('config API route', () => {
   it('should return defaults when no env vars are set', async () => {
     const config = await getConfig();
 
-    expect(config.appName).toBe('Webmail');
+    expect(config.appName).toBe(PRODUCT.name);
     expect(config.jmapServerUrl).toBe('');
     expect(config.oauthEnabled).toBe(false);
     expect(config.oauthClientId).toBe('');
@@ -78,7 +79,7 @@ describe('config API route', () => {
     expect(config.loginImprintUrl).toBe('');
     expect(config.loginPrivacyPolicyUrl).toBe('');
     expect(config.loginWebsiteUrl).toBe('');
-    expect(config.faviconUrl).toBe('/branding/Bulwark_Favicon.svg');
+    expect(config.faviconUrl).toBe(PRODUCT.branding.faviconUrl);
     expect(config.appLogoLightUrl).toBe('');
     expect(config.appLogoDarkUrl).toBe('');
   });

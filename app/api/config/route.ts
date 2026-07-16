@@ -10,6 +10,7 @@ import {
   pickRequestHost,
   type BrandingOverrideKey,
 } from '@/lib/admin/domain-branding';
+import { PRODUCT } from '@/lib/product-metadata';
 
 /**
  * Runtime configuration endpoint
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
   };
 
   const appName =
-    branded<string>('appName', '') || process.env.NEXT_PUBLIC_APP_NAME || 'Webmail';
+    branded<string>('appName', '') || process.env.NEXT_PUBLIC_APP_NAME || PRODUCT.name;
   const jmapServerUrl = configManager.get<string>('jmapServerUrl') || process.env.NEXT_PUBLIC_JMAP_SERVER_URL || '';
   const oauthEnabled = configManager.get<boolean>('oauthEnabled', false);
   const oauthOnly = oauthEnabled && configManager.get<boolean>('oauthOnly', false);
@@ -65,11 +66,11 @@ export async function GET(request: NextRequest) {
       settingsSyncEnabled: configManager.get<boolean>('settingsSyncEnabled', false) && hasSessionSecret(),
       stalwartFeaturesEnabled,
       devMode: configManager.get<boolean>('devMode', false),
-      faviconUrl: branded<string>('faviconUrl', '/branding/Bulwark_Favicon.svg'),
+      faviconUrl: branded<string>('faviconUrl', PRODUCT.branding.faviconUrl),
       appLogoLightUrl: branded<string>('appLogoLightUrl', ''),
       appLogoDarkUrl: branded<string>('appLogoDarkUrl', ''),
-      loginLogoLightUrl: branded<string>('loginLogoLightUrl', '/branding/Bulwark_Logo_Color.svg'),
-      loginLogoDarkUrl: branded<string>('loginLogoDarkUrl', '/branding/Bulwark_Logo_White.svg'),
+      loginLogoLightUrl: branded<string>('loginLogoLightUrl', PRODUCT.branding.logoLightUrl),
+      loginLogoDarkUrl: branded<string>('loginLogoDarkUrl', PRODUCT.branding.logoDarkUrl),
       loginCompanyName: branded<string>('loginCompanyName', ''),
       loginImprintUrl: branded<string>('loginImprintUrl', ''),
       loginPrivacyPolicyUrl: branded<string>('loginPrivacyPolicyUrl', ''),

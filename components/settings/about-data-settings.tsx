@@ -12,9 +12,12 @@ import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getPathPrefix } from '@/lib/browser-navigation';
 import { SpamSiegeGame } from './spam-siege-game';
-
-const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || "0.0.0";
-const GIT_COMMIT = process.env.NEXT_PUBLIC_GIT_COMMIT || "unknown";
+import {
+  APP_VERSION,
+  BUILD_COMMIT,
+  CORRESPONDING_SOURCE_URL,
+  PRODUCT,
+} from '@/lib/product-metadata';
 
 function VersionUpdateTag() {
   const status = useUpdateStore((s) => s.status);
@@ -124,33 +127,36 @@ export function AboutDataSettings() {
           <button onClick={handleLogoClick} className="flex items-center gap-4 flex-1 text-start focus:outline-none group/about cursor-pointer" aria-label="About">
             <div className="shrink-0">
               <img
-                src={`${getPathPrefix()}/branding/Bulwark_Logo_Color.svg`}
-                alt="Bulwark"
+                src={`${getPathPrefix()}${PRODUCT.branding.logoLightUrl}`}
+                alt={PRODUCT.name}
                 className="w-12 h-12 object-contain dark:hidden group-hover/about:scale-105 group-active/about:scale-95 transition-transform"
               />
               <img
-                src={`${getPathPrefix()}/branding/Bulwark_Logo_White.svg`}
-                alt="Bulwark"
+                src={`${getPathPrefix()}${PRODUCT.branding.logoDarkUrl}`}
+                alt={PRODUCT.name}
                 className="w-12 h-12 object-contain hidden dark:block group-hover/about:scale-105 group-active/about:scale-95 transition-transform"
               />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground">
-                {t('about.title')}
+                {PRODUCT.name}
               </p>
               <p className="text-xs text-muted-foreground group-hover/about:translate-x-0.5 group-active/about:translate-y-px transition-transform">
-                v{APP_VERSION} <span className="text-muted-foreground/60">({GIT_COMMIT})</span>
+                v{APP_VERSION} <span className="text-muted-foreground/60">({BUILD_COMMIT})</span>
                 <VersionUpdateTag />
+              </p>
+              <p className="text-[11px] text-muted-foreground/60">
+                {PRODUCT.license} · based on {PRODUCT.upstream.name} {PRODUCT.upstream.version}
               </p>
             </div>
           </button>
           <a
-            href="https://github.com/bulwarkmail/webmail"
+            href={CORRESPONDING_SOURCE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            GitHub <ExternalLink className="w-3 h-3" />
+            Source <ExternalLink className="w-3 h-3" />
           </a>
         </div>
       </div>

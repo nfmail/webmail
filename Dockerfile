@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:24.14.1-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -19,7 +19,7 @@ ARG GIT_COMMIT=unknown
 ENV GIT_COMMIT=$GIT_COMMIT
 RUN npx next build --webpack
 
-FROM node:24-alpine AS runner
+FROM node:24.14.1-alpine AS runner
 
 LABEL org.opencontainers.image.title="Bulwark Webmail"
 LABEL org.opencontainers.image.description="Modern webmail client built with Next.js and the JMAP protocol"

@@ -5,6 +5,7 @@
   "repositoryUrl": "https://github.com/nfmail/webmail",
   "issuesUrl": "https://github.com/nfmail/webmail/issues",
   "license": "AGPL-3.0-only",
+  "mobileRedirectScheme": "nfmail",
   "branding": {
     "faviconUrl": "/branding/NF_Mail_Favicon.svg",
     "logoLightUrl": "/branding/NF_Mail_Logo.svg",

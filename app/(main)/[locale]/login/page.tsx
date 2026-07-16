@@ -23,6 +23,7 @@ import {
   BUILD_COMMIT,
   CORRESPONDING_SOURCE_URL,
 } from "@/lib/product-metadata";
+import { isMobileRedirectUri } from "@/lib/auth/mobile-redirect";
 
 function findServerByDomain(servers: PublicJmapServerEntry[], email: string | undefined): PublicJmapServerEntry | undefined {
   if (!email || !email.includes("@")) return undefined;
@@ -121,11 +122,6 @@ function VersionBadge() {
   );
 }
 
-// Only redirect targets matching this scheme are honored by the mobile
-// handoff path. Without the check the login page becomes an open redirector
-// that funnels password and token material to any caller-supplied URL.
-const MOBILE_REDIRECT_SCHEME = "bulwarkmobile://";
-
 export default function LoginPage() {
   const router = useRouter();
   const t = useTranslations("login");
@@ -139,7 +135,7 @@ export default function LoginPage() {
   // the app instead of routing into /mail.
   const rawMobileRedirectUri = searchParams.get("mobile_redirect_uri") ?? "";
   const rawMobileState = searchParams.get("mobile_state") ?? "";
-  const mobileRedirectUri = rawMobileRedirectUri.startsWith(MOBILE_REDIRECT_SCHEME)
+  const mobileRedirectUri = isMobileRedirectUri(rawMobileRedirectUri)
     ? rawMobileRedirectUri
     : "";
   const mobileState = mobileRedirectUri ? rawMobileState : "";

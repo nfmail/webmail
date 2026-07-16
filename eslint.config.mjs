@@ -70,7 +70,10 @@ export default [
   {
     ignores: [
       ".next/**",
+      ".release/**",
       "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
       "repos/**",
       "data/admin/plugins/**",
       "public/**/*.js",

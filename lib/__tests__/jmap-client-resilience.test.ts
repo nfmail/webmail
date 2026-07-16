@@ -264,7 +264,13 @@ describe('JMAPClient resilience', () => {
         .mockRejectedValueOnce(new TypeError('Failed to fetch'))
         .mockRejectedValueOnce(new TypeError('Failed to fetch'))
         // reconnect → connect() → session URL succeeds
-        .mockResolvedValueOnce(mockFetchResponse(200, session));
+        .mockImplementation(async (input: RequestInfo | URL) => {
+          if (String(input).includes('/.well-known/jmap')) {
+            return mockFetchResponse(200, session);
+          }
+          const echoResponse = { methodResponses: [['Core/echo', { ping: 'pong' }, '0']] };
+          return mockFetchResponse(200, echoResponse);
+        });
 
       // Trigger the keep-alive interval
       await vi.advanceTimersByTimeAsync(30_000);

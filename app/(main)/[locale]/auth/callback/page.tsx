@@ -8,6 +8,7 @@ import { apiFetch, getPathPrefix, toRouterPath } from "@/lib/browser-navigation"
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
+import { isMobileRedirectUri } from "@/lib/auth/mobile-redirect";
 
 function OAuthCallbackInner() {
   const router = useRouter();
@@ -124,7 +125,7 @@ function OAuthCallbackInner() {
         mobileState = sessionStorage.getItem("mobile_state");
       } catch { /* sessionStorage may be unavailable */ }
 
-      if (mobileRedirectUri && mobileRedirectUri.startsWith("bulwarkmobile://")) {
+      if (isMobileRedirectUri(mobileRedirectUri)) {
         // Drive /api/auth/sso/complete directly so we can read the tokens
         // out of the response - loginWithServerSso would consume them and
         // wire up the webmail auth store, which isn't useful here. The

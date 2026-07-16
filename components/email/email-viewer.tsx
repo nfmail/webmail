@@ -8,6 +8,7 @@ import { EML_IMPORT_ACCEPT, expandImportableEmails } from "@/lib/eml-import";
 import { EMAIL_IFRAME_SANITIZE_CONFIG, blockExternalResourcesOnNode, collapseBlockedImageContainers, escapeHtml, plainTextToSafeHtml, sanitizeEmailHtml, sanitizePlainTextRenderedHtml } from "@/lib/email-sanitization";
 import { hasMeaningfulHtmlBody } from "@/lib/signature-utils";
 import { withBasePath } from "@/lib/browser-navigation";
+import { PRODUCT } from "@/lib/product-metadata";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { formatFileSize, cn, buildMailboxTree, MailboxNode, formatDateTime, generateUUID } from "@/lib/utils";
@@ -2655,17 +2656,17 @@ export function EmailViewer({
   if (!email) {
     if (isDemoMode) {
       const logoSrc = withBasePath(resolvedTheme === 'dark'
-        ? '/branding/Bulwark_Logo_with_Lettering_White_and_Color.svg'
-        : '/branding/Bulwark_Logo_with_Lettering_Dark_Color.svg');
+        ? PRODUCT.branding.logoDarkUrl
+        : PRODUCT.branding.logoLightUrl);
       return (
         <div className={cn("flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-muted/30 to-muted/50", className)}>
           <div className="text-center p-8 max-w-md">
             <img
               src={logoSrc}
-              alt="Bulwark Mail"
+              alt={PRODUCT.name}
               className="h-12 mx-auto mb-6"
             />
-            <h3 className="text-xl font-semibold text-foreground mb-3">{tDemoWelcome('title')}</h3>
+            <h3 className="text-xl font-semibold text-foreground mb-3">{PRODUCT.name}</h3>
             <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{tDemoWelcome('description')}</p>
             <div className="flex flex-col gap-3 items-center">
               <div className="grid grid-cols-2 gap-3 text-start text-sm text-muted-foreground w-full">

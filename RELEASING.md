@@ -15,7 +15,7 @@ git push origin "v$(cat VERSION)"
 The tag workflow verifies the GitHub signature, builds the exact commit for
 amd64 and arm64 with the pinned Node/npm toolchain, and publishes the release
 only after both builds succeed. Each standalone tarball contains `LICENSE`,
-`NOTICE`, `VERSION`, and `SOURCE.json`. The release also includes deterministic
+`NOTICE`, `VERSION`, `product.json`, and `SOURCE.json`. The release also includes deterministic
 SPDX SBOMs, source manifests, and SHA-256 checksums. GitHub artifact
 attestations provide cryptographically signed build provenance and SBOM
 claims.

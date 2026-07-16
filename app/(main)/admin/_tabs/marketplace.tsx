@@ -153,7 +153,7 @@ export function MarketplaceTab() {
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Marketplace</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Browse and install plugins and themes from the BulwarkMail extension directory
+          Browse and install plugins and themes from the configured extension directory
         </p>
       </div>
 

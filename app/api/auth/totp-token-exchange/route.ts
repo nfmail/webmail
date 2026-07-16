@@ -35,7 +35,7 @@ import { generateCodeVerifier, generateCodeChallenge } from '@/lib/oauth/pkce';
 // any client id unless `require_client_registration` is enabled (default off);
 // when it is enabled the admin must configure `oauthClientId` with this
 // redirect URI registered.
-const DEFAULT_CLIENT_ID = 'bulwark-webmail';
+const DEFAULT_CLIENT_ID = 'nf-mail';
 
 interface LoginResult {
   type?: string;

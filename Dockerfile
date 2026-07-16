@@ -21,12 +21,14 @@ RUN npx next build --webpack
 
 FROM node:24.14.1-alpine AS runner
 
-LABEL org.opencontainers.image.title="Bulwark Webmail"
-LABEL org.opencontainers.image.description="Modern webmail client built with Next.js and the JMAP protocol"
-LABEL org.opencontainers.image.source="https://github.com/bulwarkmail/webmail"
-LABEL org.opencontainers.image.url="https://github.com/bulwarkmail/webmail"
+ARG GIT_COMMIT=unknown
+LABEL org.opencontainers.image.title="NF Mail"
+LABEL org.opencontainers.image.description="Modern, self-hosted webmail client built with Next.js and JMAP"
+LABEL org.opencontainers.image.source="https://github.com/nfmail/webmail"
+LABEL org.opencontainers.image.url="https://github.com/nfmail/webmail"
+LABEL org.opencontainers.image.revision="$GIT_COMMIT"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
-LABEL org.opencontainers.image.vendor="rbm.systems"
+LABEL org.opencontainers.image.vendor="NF Mail contributors"
 
 WORKDIR /app
 ENV NODE_ENV=production

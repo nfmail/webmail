@@ -7,6 +7,7 @@ import {
   pickRequestHost,
   type BrandingOverrideKey,
 } from "@/lib/admin/domain-branding";
+import { PRODUCT } from "@/lib/product-metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -46,20 +47,18 @@ export default async function manifest(): Promise<ExtendedManifest> {
   const appName =
     branded<string>("appName", "") ||
     process.env.NEXT_PUBLIC_APP_NAME ||
-    "Bulwark Webmail";
+    PRODUCT.name;
 
   const shortName = branded<string>("appShortName", "") || appName;
   const description =
     branded<string>("appDescription", "") ||
-    "A modern webmail client built for Stalwart Mail Server";
+    PRODUCT.description;
   const themeColor = branded<string>("pwaThemeColor", "") || "#ffffff";
   const backgroundColor = branded<string>("pwaBackgroundColor", "") || "#ffffff";
 
   // If pwaIconUrl or faviconUrl was explicitly configured (admin override,
   // env var, or per-domain override), serve dynamically resized PNGs via
-  // /api/pwa-icon/[size]. Otherwise fall back to the static Bulwark PNGs -
-  // sources marked "default" are the built-in placeholder paths and not
-  // real custom icons.
+  // /api/pwa-icon/[size]. Otherwise use the canonical NF Mail vector mark.
   const sources = configManager.getAllWithSources();
   const hasCustomIcon =
     !!domainOverrides.pwaIconUrl ||
@@ -75,12 +74,8 @@ export default async function manifest(): Promise<ExtendedManifest> {
         { src: withBase("/api/pwa-icon/512"), sizes: "512x512", type: "image/png", purpose: "maskable" },
       ]
     : [
-        { src: withBase("/icon-192x192.png"), sizes: "192x192", type: "image/png", purpose: "any" },
-        { src: withBase("/icon-512x512.png"), sizes: "512x512", type: "image/png", purpose: "any" },
-        { src: withBase("/icon-maskable-light-192x192.png"), sizes: "192x192", type: "image/png", purpose: "maskable" },
-        { src: withBase("/icon-maskable-light-512x512.png"), sizes: "512x512", type: "image/png", purpose: "maskable" },
-        { src: withBase("/icon-maskable-dark-192x192.png"), sizes: "192x192", type: "image/png", purpose: "maskable" },
-        { src: withBase("/icon-maskable-dark-512x512.png"), sizes: "512x512", type: "image/png", purpose: "maskable" },
+        { src: withBase(PRODUCT.branding.faviconUrl), sizes: "any", type: "image/svg+xml", purpose: "any" },
+        { src: withBase(PRODUCT.branding.faviconUrl), sizes: "any", type: "image/svg+xml", purpose: "maskable" },
       ];
 
   return {
@@ -95,9 +90,8 @@ export default async function manifest(): Promise<ExtendedManifest> {
     background_color: backgroundColor,
     icons,
     categories: ["productivity"],
-    // Use admin-uploaded screenshots when configured (per-domain override,
-    // admin/env global; resized on the fly via /api/pwa-screenshot/[variant]);
-    // otherwise fall back to the built-in Bulwark screenshots from public/.
+    // Only advertise operator-provided screenshots. The inherited upstream
+    // screenshots are not NF Mail product assets.
     screenshots: (() => {
       const hasMobile =
         !!domainOverrides.pwaScreenshotMobileUrl ||
@@ -106,12 +100,12 @@ export default async function manifest(): Promise<ExtendedManifest> {
         !!domainOverrides.pwaScreenshotDesktopUrl ||
         sources.pwaScreenshotDesktopUrl?.source !== "default";
       return [
-        hasMobile
-          ? { src: withBase("/api/pwa-screenshot/mobile"), sizes: "540x720", type: "image/png" }
-          : { src: withBase("/screenshot-540x720.png"), sizes: "540x720", type: "image/png" },
-        hasDesktop
-          ? { src: withBase("/api/pwa-screenshot/desktop"), sizes: "1280x720", type: "image/png" }
-          : { src: withBase("/screenshot-1280x720.png"), sizes: "1280x720", type: "image/png" },
+        ...(hasMobile
+          ? [{ src: withBase("/api/pwa-screenshot/mobile"), sizes: "540x720", type: "image/png" }]
+          : []),
+        ...(hasDesktop
+          ? [{ src: withBase("/api/pwa-screenshot/desktop"), sizes: "1280x720", type: "image/png" }]
+          : []),
       ];
     })(),
     protocol_handlers: [

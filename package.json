@@ -1,8 +1,8 @@
 {
-  "name": "bulwark-webmail",
-  "version": "1.7.7",
-  "description": "Bulwark Webmail - a modern webmail client built for Stalwart Mail Server",
-  "author": "Bulwark Webmail <bulwark@rbm.systems>",
+  "name": "nf-mail",
+  "version": "1.7.7-nf.1",
+  "description": "NF Mail - a modern, self-hosted webmail client built for Stalwart Mail Server",
+  "author": "NF Mail contributors",
   "license": "AGPL-3.0-only",
   "packageManager": "npm@11.11.0",
   "engines": {
@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bulwarkmail/webmail.git"
+    "url": "git+https://github.com/nfmail/webmail.git"
   },
-  "homepage": "https://github.com/bulwarkmail/webmail",
+  "homepage": "https://github.com/nfmail/webmail",
   "bugs": {
-    "url": "https://github.com/bulwarkmail/webmail/issues"
+    "url": "https://github.com/nfmail/webmail/issues"
   },
   "keywords": [
     "jmap",

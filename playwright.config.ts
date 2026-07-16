@@ -1,5 +1,8 @@
 import { defineConfig } from '@playwright/test';
 
+const webServerCommand =
+  process.env.PLAYWRIGHT_WEB_SERVER_COMMAND || 'npm run dev -- --port 3100';
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 60_000,
@@ -13,7 +16,7 @@ export default defineConfig({
     { name: 'chromium', use: { browserName: 'chromium' } },
   ],
   webServer: {
-    command: 'npm run dev -- --port 3100',
+    command: webServerCommand,
     env: {
       ADMIN_CONFIG_DIR: 'e2e/fixtures/admin',
       ADMIN_CONFIG_READONLY: 'true',

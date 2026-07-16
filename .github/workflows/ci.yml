@@ -119,7 +119,14 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Build production application
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
       - name: Run browser smoke tests
+        env:
+          PLAYWRIGHT_WEB_SERVER_COMMAND: npm start -- --port 3100
         run: npm run test:e2e
 
       - name: Upload Playwright report

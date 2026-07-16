@@ -1,0 +1,19 @@
+{
+  "name": "NF Mail",
+  "shortName": "NF Mail",
+  "description": "A modern, self-hosted webmail client built for Stalwart Mail Server",
+  "repositoryUrl": "https://github.com/nfmail/webmail",
+  "issuesUrl": "https://github.com/nfmail/webmail/issues",
+  "license": "AGPL-3.0-only",
+  "branding": {
+    "faviconUrl": "/branding/NF_Mail_Favicon.svg",
+    "logoLightUrl": "/branding/NF_Mail_Logo.svg",
+    "logoDarkUrl": "/branding/NF_Mail_Logo_White.svg"
+  },
+  "upstream": {
+    "name": "Bulwark Webmail",
+    "repositoryUrl": "https://github.com/bulwarkmail/webmail",
+    "version": "1.7.7",
+    "commit": "fa31933922d86078c2bbb6fe7a6873d8854f5ec0"
+  }
+}

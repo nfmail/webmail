@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, Send, Save, CheckCircle2, XCircle, ExternalLink } from 'lucide-react';
+import { Loader2, Send, Save, CheckCircle2, XCircle } from 'lucide-react';
 import { apiFetch } from '@/lib/browser-navigation';
+import { PRODUCT } from '@/lib/product-metadata';
 
 interface TelemetryStatus {
   consent: 'pending' | 'on' | 'off';
@@ -118,18 +119,11 @@ export function TelemetryTab() {
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold">Anonymous Usage Stats</h1>
         <p className="text-sm text-muted-foreground">
-          Bulwark can send one anonymous heartbeat per day so we can see how many instances are
+          {PRODUCT.name} can send one anonymous heartbeat per day to a collector you configure, so operators can see how many instances are
           running, on what platforms, and which features they use. It&apos;s <strong>off by
           default</strong>; one click below enables it and helps us make the product better. No
           email addresses, no hostnames, no IPs are sent.{' '}
-          <a
-            href="https://bulwarkmail.org/docs/legal/privacy/telemetry"
-            target="_blank"
-            rel="noreferrer"
-            className="underline inline-flex items-center gap-1"
-          >
-            Full schema and policy <ExternalLink className="h-3 w-3" />
-          </a>
+          Review the payload preview below before enabling it.
         </p>
       </header>
 
@@ -193,8 +187,8 @@ export function TelemetryTab() {
       <section className="rounded-lg border p-4 space-y-3">
         <div className="font-medium">Endpoint</div>
         <p className="text-sm text-muted-foreground">
-          Where heartbeats are sent. Defaults to the project&apos;s collector. Point at your own collector
-          (open source at <code>bulwarkmail/dashboard</code>) or clear this field to disable sending.
+          Where heartbeats are sent. NF Mail does not configure a collector by default. Point at
+          an operator-controlled collector or clear this field to disable sending.
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <input

@@ -1,18 +1,22 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="public/branding/Bulwark_Logo_with_Lettering_White_and_Color.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="public/branding/Bulwark_Logo_with_Lettering_Dark_Color.svg" />
-  <img src="public/branding/Bulwark_Logo_with_Lettering_Dark_Color.svg" alt="Bulwark Webmail" width="280" />
+  <source media="(prefers-color-scheme: dark)" srcset="public/branding/NF_Mail_Logo_White.svg" />
+  <img src="public/branding/NF_Mail_Logo.svg" alt="NF Mail" width="96" />
 </picture>
 
 </div>
 
-# Contributing to Bulwark Webmail
+# Contributing to NF Mail
 
 We're writing the webmail we wanted in 2026 and didn't find. Modern protocol, modern tooling, modern UI. Not a SaaS. Not a startup. Not for sale.
 
 If that resonates with you, we'd love your help. This guide covers how to get the project running, the conventions we follow, and how to land your first change.
+
+NF Mail is an independent downstream of
+[Bulwark Webmail](https://github.com/bulwarkmail/webmail). Please keep upstream
+attribution intact. General fixes may also be good candidates for an upstream
+contribution, while NF-specific behavior belongs here.
 
 ## Join the Community
 
@@ -22,7 +26,8 @@ You don't need to be an expert to contribute. Whether you're setting up your dev
 - **Share ideas** - feature suggestions, design feedback, doc improvements
 - **Collaborate** - meet the team and other contributors
 
-[**Join the Bulwark Discord Server**](https://discord.gg/tYCujymGrT)
+[Open an NF Mail issue](https://github.com/nfmail/webmail/issues) to discuss bugs,
+features, design feedback, or documentation improvements.
 
 ---
 
@@ -33,7 +38,7 @@ You don't need to be an expert to contribute. Whether you're setting up your dev
 1. **Fork and clone** the repository:
 
    ```bash
-   git clone https://github.com/bulwarkmail/webmail.git
+   git clone https://github.com/nfmail/webmail.git
    cd webmail
    ```
 
@@ -203,8 +208,8 @@ webmail/
 - **Never commit secrets** - API keys, passwords, tokens, `.env*` files
 - **Sanitize user input** and email content
 - **Block external content** by default - privacy is the point
-- **Report vulnerabilities privately** to bulwark@rbm.systems, not via public issues
+- **Report vulnerabilities privately** through [GitHub Security Advisories](https://github.com/nfmail/webmail/security/advisories/new), not via public issues
 
 ## Questions?
 
-Open an issue, search existing ones, or ask in Discord. Thanks for helping build the webmail we all wished existed.
+Open an issue or search existing ones. Thanks for helping build NF Mail.

@@ -1,20 +1,23 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="public/branding/Bulwark_Logo_with_Lettering_White_and_Color.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="public/branding/Bulwark_Logo_with_Lettering_Dark_Color.svg" />
-  <img src="public/branding/Bulwark_Logo_with_Lettering_Dark_Color.svg" alt="Bulwark Webmail" width="280" />
+  <source media="(prefers-color-scheme: dark)" srcset="public/branding/NF_Mail_Logo_White.svg" />
+  <img src="public/branding/NF_Mail_Logo.svg" alt="NF Mail" width="96" />
 </picture>
 
-# Bulwark Webmail
+# NF Mail
 
 A modern, self-hosted webmail client for [Stalwart Mail Server](https://stalw.art/), built with Next.js and the JMAP protocol.
 
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL%20v3-blue.svg?logo=gnu&logoColor=white)](LICENSE)
-[![Discord](https://img.shields.io/discord/1482128142939455674?color=7289da&label=discord&logo=discord&logoColor=white)](https://discord.gg/tYCujymGrT)
-[![Version](https://img.shields.io/badge/version-1.7.7-green.svg?logo=git&logoColor=white)](CHANGELOG.md)
-[![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbulwarkmail%2Fwebmail-blue?logo=docker&logoColor=white)](https://ghcr.io/bulwarkmail/webmail)
+[![Version](https://img.shields.io/badge/version-1.7.7--nf.1-green.svg?logo=git&logoColor=white)](VERSION)
+[![Source](https://img.shields.io/badge/source-nfmail%2Fwebmail-181717?logo=github)](https://github.com/nfmail/webmail)
 </div>
+
+NF Mail is an independent downstream of
+[Bulwark Webmail](https://github.com/bulwarkmail/webmail). Upstream authorship,
+the full fork lineage, and AGPL terms are preserved in [NOTICE](NOTICE) and
+[LICENSE](LICENSE).
 
 ---
 
@@ -77,7 +80,7 @@ The wizard writes to `ADMIN_CONFIG_DIR` (`./data/admin` by default). Setting `JM
 
 ## Overview
 
-Bulwark is a full webmail suite, not just an inbox. It bundles the four apps most self-hosters end up wanting on the same login:
+NF Mail is a full webmail suite, not just an inbox. It bundles the four apps most self-hosters end up wanting on the same login:
 
 - **Mail** – threading, unified inbox, cross-account "All accounts" views, full-text search, Sieve filters, S/MIME, templates
 - **Calendar** – month/week/day/agenda, recurring events, iMIP invitations, CalDAV subscriptions
@@ -95,7 +98,8 @@ Full feature list: **[FEATURES.md](FEATURES.md)**.
 ### Docker
 
 ```bash
-docker run -d -p 3000:3000 ghcr.io/bulwarkmail/webmail:latest
+docker build --build-arg GIT_COMMIT="$(git rev-parse HEAD)" -t nf-mail .
+docker run -d -p 3000:3000 nf-mail
 ```
 
 Or with Docker Compose:
@@ -109,7 +113,7 @@ On first launch, open `http://localhost:3000` – the **web setup wizard** walks
 ### From Source
 
 ```bash
-git clone https://github.com/bulwarkmail/webmail.git
+git clone https://github.com/nfmail/webmail.git
 cd webmail
 npm install
 npm run build && npm start

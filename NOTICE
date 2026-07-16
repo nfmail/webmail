@@ -1,3 +1,17 @@
+# NF Mail downstream notice
+
+NF Mail is an independent modified version of Bulwark Webmail. It is not an
+official Bulwark product and is not endorsed by the Bulwark Project Authors.
+
+NF Mail modifications are Copyright (C) 2026 NF Mail contributors and are
+distributed under the GNU Affero General Public License, version 3 only.
+Complete source for NF Mail is available without charge at:
+
+- https://github.com/nfmail/webmail
+
+The running application identifies its exact NF version and public source
+commit. Upstream authorship and the earlier fork lineage are preserved below.
+
 # Bulwark Webmail fork notice
 
 This repository is distributed under the GNU Affero General Public License,

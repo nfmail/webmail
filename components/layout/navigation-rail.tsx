@@ -23,6 +23,12 @@ import { PluginSlot } from "@/components/plugins/plugin-slot";
 import { KeyboardShortcutsModal } from "@/components/keyboard-shortcuts-modal";
 import { apiFetch, getPathPrefix, withBasePath } from "@/lib/browser-navigation";
 import { Avatar } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface NavItem {
   id: string;
@@ -58,6 +64,28 @@ interface NavigationRailProps {
    * active app).
    */
   activeItemId?: 'mail' | 'calendar' | 'contacts' | 'files' | 'settings' | null;
+}
+
+// Wraps an icon-only rail control in a right-side tooltip. `show` lets callers
+// gate the tooltip to the collapsed rail (where the text label is hidden);
+// footer controls are always icon-only so they pass `show` truthy.
+// Callers keep their own `aria-label` for the accessible name.
+function RailTooltip({
+  label,
+  show = true,
+  children,
+}: {
+  label: string;
+  show?: boolean;
+  children: React.ReactNode;
+}) {
+  if (!show || !label) return <>{children}</>;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent side="right">{label}</TooltipContent>
+    </Tooltip>
+  );
 }
 
 function StorageQuotaCircle({ quota, usagePercent }: { quota: { used: number; total: number }; usagePercent: number }) {
@@ -437,6 +465,7 @@ export function NavigationRail({
   const quotaUsagePercent = quota && quota.total > 0 ? Math.min((quota.used / quota.total) * 100, 100) : 0;
 
   return (
+    <TooltipProvider delayDuration={300}>
     <div
       className={cn(
         "flex flex-col h-full",
@@ -469,8 +498,8 @@ export function NavigationRail({
           const isActive = getIsActive(item.href, item.id);
           const Icon = item.icon;
           return (
+            <RailTooltip key={item.id} label={t(item.labelKey)} show={collapsed}>
             <Link
-              key={item.id}
               href={item.href}
               onClick={handleNavClick(item.id as 'mail' | 'calendar' | 'contacts' | 'files' | 'settings')}
               data-tour={`nav-${item.id}`}
@@ -485,7 +514,7 @@ export function NavigationRail({
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
               aria-current={isActive ? "page" : undefined}
-              title={collapsed ? t(item.labelKey) : undefined}
+              aria-label={collapsed ? t(item.labelKey) : undefined}
               style={collapsed ? undefined : { paddingBlock: 'var(--density-sidebar-py)' }}
             >
               <Icon className={cn("w-[18px] h-[18px] flex-shrink-0", isActive && "text-primary")} />
@@ -499,6 +528,7 @@ export function NavigationRail({
                 </span>
               )}
             </Link>
+            </RailTooltip>
           );
         })}
 
@@ -516,8 +546,8 @@ export function NavigationRail({
           const AppIcon = lucideIcons[app.icon as keyof typeof lucideIcons] as LucideIcon | undefined;
           const isActive = activeAppId === app.id;
           return (
+            <RailTooltip key={app.id} label={app.name} show={collapsed}>
             <button
-              key={app.id}
               onClick={() => {
                 if (isActive) {
                   onCloseInlineApp?.();
@@ -537,17 +567,19 @@ export function NavigationRail({
                   ? "bg-primary/10 text-primary font-medium"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
-              title={collapsed ? app.name : undefined}
+              aria-label={collapsed ? app.name : undefined}
               style={collapsed ? undefined : { paddingBlock: 'var(--density-sidebar-py)' }}
             >
               {AppIcon ? <AppIcon className={cn("w-[18px] h-[18px] flex-shrink-0", isActive && "text-primary")} /> : null}
               {!collapsed && <span className="truncate">{app.name}</span>}
             </button>
+            </RailTooltip>
           );
         })}
 
         {/* Manage apps button */}
         {sidebarAppsEnabled && onManageApps && (
+          <RailTooltip label={t("add_app")} show={collapsed}>
           <button
             onClick={onManageApps}
             className={cn(
@@ -558,12 +590,13 @@ export function NavigationRail({
               "max-lg:min-h-[44px]",
               "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
-            title={collapsed ? t("add_app") : undefined}
+            aria-label={collapsed ? t("add_app") : undefined}
             style={collapsed ? undefined : { paddingBlock: 'var(--density-sidebar-py)' }}
           >
             <Plus className="w-[18px] h-[18px] flex-shrink-0" />
             {!collapsed && <span className="truncate">{t("add_app")}</span>}
           </button>
+          </RailTooltip>
         )}
       </nav>
 
@@ -572,10 +605,11 @@ export function NavigationRail({
       {/* Footer: Admin + Settings + Help + Storage Quota + Sign Out + Push Status */}
       <div className="mt-auto flex flex-col items-center gap-2 pb-3 px-1">
         {isStalwartAdmin && (
+          <RailTooltip label={t("admin") || "Admin"}>
           <a
             href={`${getPathPrefix()}/admin`}
             className="flex items-center justify-center w-10 h-10 rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted relative"
-            title={t("admin") || "Admin"}
+            aria-label={t("admin") || "Admin"}
           >
             <Shield className="w-[18px] h-[18px]" />
             {hasUpdate && (
@@ -588,8 +622,10 @@ export function NavigationRail({
               />
             )}
           </a>
+          </RailTooltip>
         )}
 
+        <RailTooltip label={t("settings")}>
         <Link
           href="/settings"
           onClick={handleNavClick('settings')}
@@ -600,34 +636,39 @@ export function NavigationRail({
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:text-foreground hover:bg-muted"
           )}
-          title={t("settings")}
+          aria-label={t("settings")}
           aria-current={isSettingsActive ? "page" : undefined}
         >
           <Settings className="w-[18px] h-[18px]" />
         </Link>
+        </RailTooltip>
 
         <div className="w-8 border-t" style={{ borderColor: 'rgba(128, 128, 128, 0.3)' }} />
 
         {onShowShortcuts && (
+          <RailTooltip label={t("keyboard_shortcuts")}>
           <button
             onClick={onShowShortcuts}
             data-tour="nav-shortcuts"
             className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            title={t("keyboard_shortcuts")}
+            aria-label={t("keyboard_shortcuts")}
           >
             <Keyboard className="w-[18px] h-[18px]" />
           </button>
+          </RailTooltip>
         )}
         {!onShowShortcuts && (
           <>
+            <RailTooltip label={t("keyboard_shortcuts")}>
             <button
               onClick={() => setShowShortcutsModal(true)}
               data-tour="nav-shortcuts"
               className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title={t("keyboard_shortcuts")}
+              aria-label={t("keyboard_shortcuts")}
             >
               <Keyboard className="w-[18px] h-[18px]" />
             </button>
+            </RailTooltip>
             <KeyboardShortcutsModal
               isOpen={showShortcutsModal}
               onClose={() => setShowShortcutsModal(false)}
@@ -679,28 +720,31 @@ export function NavigationRail({
               );
             })}
             {accounts.length < getMaxAccounts() && (
+              <RailTooltip label={t("add_account")}>
               <button
                 onClick={() => router.push(`/login?mode=add-account` as never)}
                 className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-muted-foreground/50 text-muted-foreground hover:border-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
-                title={t("add_account")}
                 aria-label={t("add_account")}
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
+              </RailTooltip>
             )}
             </div>
 
             {/* Logout button with popover */}
+            <RailTooltip label={t("sign_out")}>
             <button
               ref={logoutBtnRef}
               onClick={() => setLogoutMenuOpen(!logoutMenuOpen)}
               className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title={t("sign_out")}
+              aria-label={t("sign_out")}
               aria-expanded={logoutMenuOpen}
               aria-haspopup="true"
             >
               <LogOut className="w-4 h-4" />
             </button>
+            </RailTooltip>
 
             {logoutMenuOpen && createPortal(
               <div
@@ -738,5 +782,6 @@ export function NavigationRail({
         )}
       </div>
     </div>
+    </TooltipProvider>
   );
 }

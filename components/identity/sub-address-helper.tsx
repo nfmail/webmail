@@ -6,6 +6,7 @@ import { Plus, Tag, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Field, FieldError } from '@/components/ui/field';
 import { useIdentityStore } from '@/stores/identity-store';
 import { useSettingsStore } from '@/stores/settings-store';
 import {
@@ -156,14 +157,16 @@ export function SubAddressHelper({
           </div>
 
           {/* Tag Input */}
-          <div className="mb-3">
+          <Field className="mb-3" data-invalid={error ? true : undefined}>
             <Input
               type="text"
               value={tag}
               onChange={(e) => handleTagChange(e.target.value)}
               placeholder={t('tag_input_placeholder')}
-              className={cn(error && 'border-destructive')}
               autoFocus
+              aria-label={t('tag_input_placeholder')}
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? 'sub-address-tag-error' : undefined}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && tag && !error) {
                   e.preventDefault();
@@ -172,9 +175,11 @@ export function SubAddressHelper({
               }}
             />
             {error && (
-              <p className="text-xs text-destructive mt-1">{error}</p>
+              <FieldError id="sub-address-tag-error" className="text-xs">
+                {error}
+              </FieldError>
             )}
-          </div>
+          </Field>
 
           {/* Preview */}
           <div className="mb-3 p-2 bg-muted rounded text-sm">

@@ -6,6 +6,12 @@ import { useRouter } from "@/i18n/navigation";
 import { PluginSlot } from "@/components/plugins/plugin-slot";
 import { Button } from "@/components/ui/button";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Inbox,
   Send,
   File,
@@ -296,21 +302,28 @@ function SidebarRow({
           style={{ paddingLeft: leftPad }}
         >
           {hasChildren && onExpandToggle ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onExpandToggle();
-              }}
-              className="flex items-center justify-center rounded hover:bg-muted active:bg-accent transition-colors"
-              style={{ width: CHEVRON_SLOT, height: CHEVRON_SLOT }}
-              title={isExpanded ? t('collapse_tooltip') : t('expand_tooltip')}
-            >
-              {isExpanded ? (
-                <ChevronDown className="w-3 h-3 text-muted-foreground" />
-              ) : (
-                <ChevronRight className="w-3 h-3 text-muted-foreground" />
-              )}
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onExpandToggle();
+                  }}
+                  className="flex items-center justify-center rounded hover:bg-muted active:bg-accent transition-colors"
+                  style={{ width: CHEVRON_SLOT, height: CHEVRON_SLOT }}
+                  aria-label={isExpanded ? t('collapse_tooltip') : t('expand_tooltip')}
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {isExpanded ? t('collapse_tooltip') : t('expand_tooltip')}
+              </TooltipContent>
+            </Tooltip>
           ) : (
             <div style={{ width: CHEVRON_SLOT }} aria-hidden />
           )}
@@ -396,25 +409,30 @@ function SidebarSectionHeader({
         {label}
       </span>
       {onSettings && (
-        <span
-          role="button"
-          tabIndex={0}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSettings();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              e.stopPropagation();
-              onSettings();
-            }
-          }}
-          className="ms-auto p-1 rounded text-muted-foreground/70 hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-          title={settingsTitle}
-        >
-          <Settings className="w-3.5 h-3.5" />
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSettings();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onSettings();
+                }
+              }}
+              className="ms-auto p-1 rounded text-muted-foreground/70 hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+              aria-label={settingsTitle}
+            >
+              <Settings className="w-3.5 h-3.5" />
+            </span>
+          </TooltipTrigger>
+          {settingsTitle && <TooltipContent>{settingsTitle}</TooltipContent>}
+        </Tooltip>
       )}
     </button>
   );
@@ -625,7 +643,6 @@ function DemoBanner() {
         <button
           onClick={handleStartTour}
           className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/10 hover:bg-primary/20 transition-colors"
-          title={t("demo_tour")}
         >
           <PlayCircle className="w-3 h-3" />
           {t("demo_tour")}
@@ -634,7 +651,6 @@ function DemoBanner() {
           onClick={handleReset}
           disabled={isResetting}
           className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50"
-          title={t("demo_reset")}
         >
           {isResetting ? (
             <Loader2 className="w-3 h-3 animate-spin" />
@@ -969,6 +985,7 @@ export function Sidebar({
   };
 
   return (
+    <TooltipProvider delayDuration={300}>
     <div
       className={cn(
         "relative flex flex-col h-full border-e transition-all duration-300 overflow-hidden",
@@ -995,15 +1012,22 @@ export function Sidebar({
               <X className="w-5 h-5" />
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleSidebarCollapsed}
-              className="hidden lg:flex h-8 w-8 flex-shrink-0"
-              title={isCollapsed ? t("expand_tooltip") : t("collapse_tooltip")}
-            >
-              {isCollapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleSidebarCollapsed}
+                  className="hidden lg:flex h-8 w-8 flex-shrink-0"
+                  aria-label={isCollapsed ? t("expand_tooltip") : t("collapse_tooltip")}
+                >
+                  {isCollapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {isCollapsed ? t("expand_tooltip") : t("collapse_tooltip")}
+              </TooltipContent>
+            </Tooltip>
 
             {!isCollapsed && !hideAccountSwitcher && (
               <AccountSwitcher variant="expanded" className="flex-1" />
@@ -1285,5 +1309,6 @@ export function Sidebar({
         onRefresh={onRefreshMailboxes}
       />
     </div>
+    </TooltipProvider>
   );
 }

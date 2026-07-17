@@ -4,6 +4,14 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import type { Identity, EmailAddress } from '@/lib/jmap/types';
 import { sanitizeSignatureHtml } from '@/lib/email-sanitization';
 import { getEmailValidationError, validateEmailList } from '@/lib/validation';
@@ -140,177 +148,144 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Name */}
-      <div>
-        <label htmlFor="identity-name" className="block text-sm font-medium mb-1">
-          {t('name_label')} <span className="text-destructive">*</span>
-        </label>
-        <Input
-          id="identity-name"
-          type="text"
-          maxLength={256}
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder={t('name_placeholder')}
-          disabled={isSubmitting}
-          className={errors.name ? 'border-destructive' : ''}
-          aria-describedby={errors.name ? 'name-error' : undefined}
-          aria-invalid={!!errors.name}
-        />
-        {errors.name && (
-          <p
-            id="name-error"
-            className="text-sm text-destructive mt-1"
-            role="alert"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {errors.name}
-          </p>
-        )}
-      </div>
+    <form onSubmit={handleSubmit}>
+      <FieldGroup>
+        {/* Name */}
+        <Field data-invalid={errors.name ? true : undefined}>
+          <FieldLabel htmlFor="identity-name">
+            {t('name_label')} <span className="text-destructive">*</span>
+          </FieldLabel>
+          <Input
+            id="identity-name"
+            type="text"
+            maxLength={256}
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder={t('name_placeholder')}
+            disabled={isSubmitting}
+            aria-describedby={errors.name ? 'name-error' : undefined}
+            aria-invalid={errors.name ? true : undefined}
+          />
+          {errors.name && (
+            <FieldError id="name-error" aria-live="polite" aria-atomic="true">
+              {errors.name}
+            </FieldError>
+          )}
+        </Field>
 
-      {/* Email */}
-      <div>
-        <label htmlFor="identity-email" className="block text-sm font-medium mb-1">
-          {t('email_label')} <span className="text-destructive">*</span>
-        </label>
-        <Input
-          id="identity-email"
-          type="email"
-          maxLength={254}
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          placeholder={t('email_placeholder')}
-          disabled={isSubmitting || isEditing}
-          className={errors.email ? 'border-destructive' : ''}
-          aria-describedby={errors.email ? 'email-error' : undefined}
-          aria-invalid={!!errors.email}
-        />
-        {isEditing && (
-          <p className="text-sm text-muted-foreground mt-1">
-            {t('email_immutable')}
-          </p>
-        )}
-        {errors.email && (
-          <p
-            id="email-error"
-            className="text-sm text-destructive mt-1"
-            role="alert"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {errors.email}
-          </p>
-        )}
-      </div>
+        {/* Email */}
+        <Field data-invalid={errors.email ? true : undefined}>
+          <FieldLabel htmlFor="identity-email">
+            {t('email_label')} <span className="text-destructive">*</span>
+          </FieldLabel>
+          <Input
+            id="identity-email"
+            type="email"
+            maxLength={254}
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            placeholder={t('email_placeholder')}
+            disabled={isSubmitting || isEditing}
+            aria-describedby={errors.email ? 'email-error' : undefined}
+            aria-invalid={errors.email ? true : undefined}
+          />
+          {isEditing && (
+            <FieldDescription>{t('email_immutable')}</FieldDescription>
+          )}
+          {errors.email && (
+            <FieldError id="email-error" aria-live="polite" aria-atomic="true">
+              {errors.email}
+            </FieldError>
+          )}
+        </Field>
 
-      {/* Reply-To */}
-      <div>
-        <label htmlFor="identity-reply-to" className="block text-sm font-medium mb-1">
-          {t('reply_to_label')}
-        </label>
-        <Input
-          id="identity-reply-to"
-          type="text"
-          maxLength={512}
-          value={replyToInput}
-          onChange={(e) => setReplyToInput(e.target.value)}
-          placeholder={t('reply_to_placeholder')}
-          disabled={isSubmitting}
-          className={errors.replyTo ? 'border-destructive' : ''}
-          aria-describedby={errors.replyTo ? 'reply-to-error' : undefined}
-          aria-invalid={!!errors.replyTo}
-        />
-        {errors.replyTo && (
-          <p
-            id="reply-to-error"
-            className="text-sm text-destructive mt-1"
-            role="alert"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {errors.replyTo}
-          </p>
-        )}
-      </div>
+        {/* Reply-To */}
+        <Field data-invalid={errors.replyTo ? true : undefined}>
+          <FieldLabel htmlFor="identity-reply-to">
+            {t('reply_to_label')}
+          </FieldLabel>
+          <Input
+            id="identity-reply-to"
+            type="text"
+            maxLength={512}
+            value={replyToInput}
+            onChange={(e) => setReplyToInput(e.target.value)}
+            placeholder={t('reply_to_placeholder')}
+            disabled={isSubmitting}
+            aria-describedby={errors.replyTo ? 'reply-to-error' : undefined}
+            aria-invalid={errors.replyTo ? true : undefined}
+          />
+          {errors.replyTo && (
+            <FieldError id="reply-to-error" aria-live="polite" aria-atomic="true">
+              {errors.replyTo}
+            </FieldError>
+          )}
+        </Field>
 
-      {/* BCC */}
-      <div>
-        <label htmlFor="identity-bcc" className="block text-sm font-medium mb-1">
-          {t('bcc_label')}
-        </label>
-        <Input
-          id="identity-bcc"
-          type="text"
-          maxLength={512}
-          value={bccInput}
-          onChange={(e) => setBccInput(e.target.value)}
-          placeholder={t('bcc_placeholder')}
-          disabled={isSubmitting}
-          className={errors.bcc ? 'border-destructive' : ''}
-          aria-describedby={errors.bcc ? 'bcc-error' : undefined}
-          aria-invalid={!!errors.bcc}
-        />
-        {errors.bcc && (
-          <p
-            id="bcc-error"
-            className="text-sm text-destructive mt-1"
-            role="alert"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {errors.bcc}
-          </p>
-        )}
-      </div>
+        {/* BCC */}
+        <Field data-invalid={errors.bcc ? true : undefined}>
+          <FieldLabel htmlFor="identity-bcc">{t('bcc_label')}</FieldLabel>
+          <Input
+            id="identity-bcc"
+            type="text"
+            maxLength={512}
+            value={bccInput}
+            onChange={(e) => setBccInput(e.target.value)}
+            placeholder={t('bcc_placeholder')}
+            disabled={isSubmitting}
+            aria-describedby={errors.bcc ? 'bcc-error' : undefined}
+            aria-invalid={errors.bcc ? true : undefined}
+          />
+          {errors.bcc && (
+            <FieldError id="bcc-error" aria-live="polite" aria-atomic="true">
+              {errors.bcc}
+            </FieldError>
+          )}
+        </Field>
 
-      {/* Text Signature */}
-      <div>
-        <label htmlFor="identity-text-sig" className="block text-sm font-medium mb-1">
-          {t('text_signature_label')}
-        </label>
-        <textarea
-          id="identity-text-sig"
-          value={formData.textSignature ?? ''}
-          onChange={(e) => setFormData({ ...formData, textSignature: truncateToUtf8Bytes(e.target.value, SIGNATURE_MAX_BYTES) })}
-          rows={3}
-          disabled={isSubmitting}
-          aria-label={t('text_signature_label')}
-          aria-describedby="identity-text-sig-counter"
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground transition-all duration-200 placeholder:text-muted-foreground hover:border-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50"
-        />
-        <SignatureByteCounter id="identity-text-sig-counter" value={formData.textSignature || ''} />
-      </div>
+        {/* Text Signature */}
+        <Field>
+          <FieldLabel htmlFor="identity-text-sig">
+            {t('text_signature_label')}
+          </FieldLabel>
+          <Textarea
+            id="identity-text-sig"
+            value={formData.textSignature ?? ''}
+            onChange={(e) => setFormData({ ...formData, textSignature: truncateToUtf8Bytes(e.target.value, SIGNATURE_MAX_BYTES) })}
+            rows={3}
+            disabled={isSubmitting}
+            aria-describedby="identity-text-sig-counter"
+          />
+          <SignatureByteCounter id="identity-text-sig-counter" value={formData.textSignature || ''} />
+        </Field>
 
-      {/* HTML Signature */}
-      <div>
-        <label htmlFor="identity-html-sig" className="block text-sm font-medium mb-1">
-          {t('html_signature_label')}
-        </label>
-        <textarea
-          id="identity-html-sig"
-          value={formData.htmlSignature ?? ''}
-          onChange={(e) => setFormData({ ...formData, htmlSignature: truncateToUtf8Bytes(e.target.value, SIGNATURE_MAX_BYTES) })}
-          rows={5}
-          disabled={isSubmitting}
-          aria-label={t('html_signature_label')}
-          aria-describedby="identity-html-sig-counter"
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground font-mono transition-all duration-200 placeholder:text-muted-foreground hover:border-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50"
-        />
-        <SignatureByteCounter id="identity-html-sig-counter" value={formData.htmlSignature || ''} />
-        {formData.htmlSignature && (
-          <div className="mt-2 p-2 border rounded bg-muted">
-            <div className="text-xs text-muted-foreground mb-1">{tDisplay('preview')}</div>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: sanitizeSignatureHtml(formData.htmlSignature)
-              }}
-            />
-          </div>
-        )}
-      </div>
+        {/* HTML Signature */}
+        <Field>
+          <FieldLabel htmlFor="identity-html-sig">
+            {t('html_signature_label')}
+          </FieldLabel>
+          <Textarea
+            id="identity-html-sig"
+            className="font-mono"
+            value={formData.htmlSignature ?? ''}
+            onChange={(e) => setFormData({ ...formData, htmlSignature: truncateToUtf8Bytes(e.target.value, SIGNATURE_MAX_BYTES) })}
+            rows={5}
+            disabled={isSubmitting}
+            aria-describedby="identity-html-sig-counter"
+          />
+          <SignatureByteCounter id="identity-html-sig-counter" value={formData.htmlSignature || ''} />
+          {formData.htmlSignature && (
+            <div className="mt-2 p-2 border rounded bg-muted">
+              <div className="text-xs text-muted-foreground mb-1">{tDisplay('preview')}</div>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeSignatureHtml(formData.htmlSignature)
+                }}
+              />
+            </div>
+          )}
+        </Field>
+      </FieldGroup>
 
       {/* Actions */}
       <div className="flex justify-end gap-2 pt-4">
@@ -342,7 +317,7 @@ function SignatureByteCounter({ id, value }: { id: string; value: string }) {
   const tone = atLimit
     ? 'text-destructive'
     : nearLimit
-      ? 'text-amber-600 dark:text-amber-400'
+      ? 'text-warning'
       : 'text-muted-foreground';
   return (
     <p

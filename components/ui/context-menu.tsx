@@ -1,9 +1,10 @@
 "use client";
 
-import { forwardRef, useState, useRef, useEffect, useLayoutEffect } from "react";
-import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
+import * as React from "react";
 import { ChevronRight } from "lucide-react";
+import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
+
+import { cn } from "@/lib/utils";
 
 interface Position {
   x: number;
@@ -17,84 +18,69 @@ interface ContextMenuProps {
   children: React.ReactNode;
 }
 
-const VIEWPORT_MARGIN = 10;
-
-export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>(
-  ({ isOpen, position, onClose: _onClose, children }, ref) => {
-    const [mounted, setMounted] = useState(false);
-    const [adjustedPosition, setAdjustedPosition] = useState<Position | null>(null);
-    const localRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-      setMounted(true);
-    }, []);
-
-    // Measure the rendered menu and clamp it inside the viewport before the
-    // browser paints. We hide the element until this runs so the user never
-    // sees the menu jump from an unclamped position to a clamped one.
-    // `mounted` must be a dependency: on the very first open the menu isn't
-    // in the DOM yet (mounted is still false), so this effect has to re-run
-    // after the mount flip or the menu stays visibility:hidden.
-    useLayoutEffect(() => {
-      if (!isOpen) {
-        setAdjustedPosition(null);
-        return;
-      }
-      const node = localRef.current;
-      if (!node) return;
-
-      const rect = node.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
-      let x = position.x;
-      let y = position.y;
-
-      if (x + rect.width > vw - VIEWPORT_MARGIN) {
-        x = vw - rect.width - VIEWPORT_MARGIN;
-      }
-      if (y + rect.height > vh - VIEWPORT_MARGIN) {
-        y = vh - rect.height - VIEWPORT_MARGIN;
-      }
-      x = Math.max(VIEWPORT_MARGIN, x);
-      y = Math.max(VIEWPORT_MARGIN, y);
-
-      setAdjustedPosition({ x, y });
-    }, [isOpen, mounted, position.x, position.y]);
-
-    const setRefs = (node: HTMLDivElement | null) => {
-      localRef.current = node;
-      if (typeof ref === "function") {
-        ref(node);
-      } else if (ref) {
-        ref.current = node;
-      }
+/**
+ * Data-driven, fully controlled context menu.
+ *
+ * The public API (props on ContextMenu / ContextMenuItem / ... ) is preserved
+ * from the original hand-rolled popup so the ~9 call sites compile unchanged.
+ * Under the hood it is now implemented over Radix DropdownMenu:
+ *
+ * - visibility is driven by `isOpen` (Radix `open`);
+ * - the menu is anchored to an invisible, zero-size, fixed-position trigger
+ *   placed at `position`, so callers keep passing the raw pointer coordinates
+ *   they already compute;
+ * - `onClose` is now genuinely wired: Escape, outside interaction, and item
+ *   selection all flow through Radix `onOpenChange(false)`. Call sites already
+ *   pass a working `onClose` and set their own state in item handlers, so the
+ *   extra close is an idempotent state-set.
+ *
+ * The forwarded `ref` is attached to the menu content node; `useContextMenu`
+ * relies on it for its own outside-click / scroll dismissal.
+ */
+export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
+  ({ isOpen, position, onClose, children }, ref) => {
+    const handleOpenChange = (open: boolean) => {
+      if (!open) onClose();
     };
 
-    if (!mounted || !isOpen) return null;
-
-    const renderPosition = adjustedPosition ?? position;
-    const isPositioned = adjustedPosition !== null;
-
-    return createPortal(
-      <div
-        ref={setRefs}
-        className={cn(
-          "fixed z-50 min-w-[200px] bg-background rounded-md shadow-lg border border-border"
-        )}
-        style={{
-          left: renderPosition.x,
-          top: renderPosition.y,
-          visibility: isPositioned ? "visible" : "hidden",
-        }}
-        role="menu"
-        aria-orientation="vertical"
+    return (
+      <DropdownMenuPrimitive.Root
+        open={isOpen}
+        onOpenChange={handleOpenChange}
+        modal={false}
       >
-        <div className="py-1">
-          {children}
-        </div>
-      </div>,
-      document.body
+        <DropdownMenuPrimitive.Trigger
+          aria-hidden
+          tabIndex={-1}
+          style={{
+            position: "fixed",
+            left: position.x,
+            top: position.y,
+            width: 0,
+            height: 0,
+            padding: 0,
+            margin: 0,
+            border: 0,
+            opacity: 0,
+            pointerEvents: "none",
+          }}
+        />
+        <DropdownMenuPrimitive.Portal>
+          <DropdownMenuPrimitive.Content
+            ref={ref}
+            side="bottom"
+            align="start"
+            sideOffset={0}
+            onCloseAutoFocus={(e) => e.preventDefault()}
+            className={cn(
+              "z-50 min-w-[200px] overflow-y-auto rounded-md border border-border bg-background py-1 shadow-lg",
+              "max-h-[min(calc(100vh-20px),320px)] focus:outline-none"
+            )}
+          >
+            {children}
+          </DropdownMenuPrimitive.Content>
+        </DropdownMenuPrimitive.Portal>
+      </DropdownMenuPrimitive.Root>
     );
   }
 );
@@ -119,34 +105,41 @@ export function ContextMenuItem({
   shortcut,
 }: ContextMenuItemProps) {
   return (
-    <button
-      role="menuitem"
+    <DropdownMenuPrimitive.Item
       disabled={disabled}
-      className={cn(
-        "w-full px-3 py-1.5 text-sm text-start flex items-center gap-2",
-        "transition-colors duration-150",
-        "focus:outline-none focus:bg-muted",
-        disabled && "opacity-50 cursor-not-allowed",
-        !disabled && "hover:bg-muted cursor-pointer",
-        destructive && !disabled && "text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
-      )}
-      onClick={(e) => {
-        if (disabled) return;
-        e.stopPropagation();
+      data-variant={destructive ? "destructive" : "default"}
+      // Preserve the original popup's behavior of not letting item clicks bubble
+      // to ancestor React handlers. React portals bubble synthetic events through
+      // the React tree, so without this an item click would reach the wrapping
+      // row/onContextMenu handlers the way the old `e.stopPropagation()` prevented.
+      onClick={(e) => e.stopPropagation()}
+      onSelect={() => {
+        // Radix already closes the menu on select (→ onClose); we only need to
+        // run the caller's handler.
         onClick();
       }}
+      className={cn(
+        "w-full px-3 py-1.5 text-sm flex items-center gap-2 select-none outline-none",
+        "transition-colors duration-150 cursor-pointer",
+        "focus:bg-muted data-[highlighted]:bg-muted",
+        "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
+        destructive &&
+          "text-destructive focus:bg-destructive/10 data-[highlighted]:bg-destructive/10"
+      )}
     >
       {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
       <span className="flex-1">{label}</span>
       {shortcut && (
         <span className="text-xs text-muted-foreground ms-auto">{shortcut}</span>
       )}
-    </button>
+    </DropdownMenuPrimitive.Item>
   );
 }
 
 export function ContextMenuSeparator() {
-  return <div className="h-px bg-border my-1" role="separator" />;
+  return (
+    <DropdownMenuPrimitive.Separator className="h-px bg-border my-1" />
+  );
 }
 
 interface ContextMenuSubMenuProps {
@@ -160,101 +153,31 @@ export function ContextMenuSubMenu({
   label,
   children,
 }: ContextMenuSubMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [subMenuPos, setSubMenuPos] = useState<Position | null>(null);
-  const itemRef = useRef<HTMLDivElement>(null);
-  const subMenuRef = useRef<HTMLDivElement>(null);
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useLayoutEffect(() => {
-    if (!isOpen) {
-      setSubMenuPos(null);
-      return;
-    }
-    const itemEl = itemRef.current;
-    const subEl = subMenuRef.current;
-    if (!itemEl || !subEl) return;
-
-    const itemRect = itemEl.getBoundingClientRect();
-    const subRect = subEl.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-
-    let left: number;
-    if (itemRect.right + subRect.width <= vw - VIEWPORT_MARGIN) {
-      left = itemRect.right;
-    } else if (itemRect.left - subRect.width >= VIEWPORT_MARGIN) {
-      left = itemRect.left - subRect.width;
-    } else {
-      left = Math.max(VIEWPORT_MARGIN, vw - subRect.width - VIEWPORT_MARGIN);
-    }
-
-    let top = itemRect.top;
-    if (top + subRect.height > vh - VIEWPORT_MARGIN) {
-      top = vh - subRect.height - VIEWPORT_MARGIN;
-    }
-    top = Math.max(VIEWPORT_MARGIN, top);
-
-    setSubMenuPos({ x: left, y: top });
-  }, [isOpen]);
-
-  useEffect(() => {
-    return () => clearTimeout(closeTimerRef.current ?? undefined);
-  }, []);
-
-  const handleMouseEnter = () => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-    setIsOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    closeTimerRef.current = setTimeout(() => {
-      setIsOpen(false);
-    }, 150);
-  };
-
   return (
-    <div
-      ref={itemRef}
-      className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div
+    <DropdownMenuPrimitive.Sub>
+      <DropdownMenuPrimitive.SubTrigger
         className={cn(
-          "w-full px-3 py-1.5 text-sm flex items-center gap-2",
+          "w-full px-3 py-1.5 text-sm flex items-center gap-2 select-none outline-none",
           "transition-colors duration-150 cursor-pointer",
-          "hover:bg-muted"
+          "focus:bg-muted data-[highlighted]:bg-muted data-[state=open]:bg-muted"
         )}
-        role="menuitem"
-        aria-haspopup="true"
-        aria-expanded={isOpen}
       >
         {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
         <span className="flex-1">{label}</span>
         <ChevronRight className="w-4 h-4 text-muted-foreground" />
-      </div>
-
-      {isOpen && (
-        <div
-          ref={subMenuRef}
-          className="fixed z-50 min-w-[180px] bg-background rounded-md shadow-lg border border-border"
-          style={{
-            left: subMenuPos?.x ?? 0,
-            top: subMenuPos?.y ?? 0,
-            visibility: subMenuPos ? "visible" : "hidden",
-          }}
-          role="menu"
+      </DropdownMenuPrimitive.SubTrigger>
+      <DropdownMenuPrimitive.Portal>
+        <DropdownMenuPrimitive.SubContent
+          sideOffset={2}
+          className={cn(
+            "z-50 min-w-[180px] overflow-y-auto rounded-md border border-border bg-background py-1 shadow-lg",
+            "max-h-[min(300px,calc(100vh-40px))]"
+          )}
         >
-          <div className="py-1 max-h-[min(300px,calc(100vh-40px))] overflow-y-auto">
-            {children}
-          </div>
-        </div>
-      )}
-    </div>
+          {children}
+        </DropdownMenuPrimitive.SubContent>
+      </DropdownMenuPrimitive.Portal>
+    </DropdownMenuPrimitive.Sub>
   );
 }
 
@@ -264,8 +187,8 @@ interface ContextMenuHeaderProps {
 
 export function ContextMenuHeader({ children }: ContextMenuHeaderProps) {
   return (
-    <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border">
+    <DropdownMenuPrimitive.Label className="px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border">
       {children}
-    </div>
+    </DropdownMenuPrimitive.Label>
   );
 }

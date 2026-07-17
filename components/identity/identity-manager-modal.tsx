@@ -281,7 +281,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
           )}
 
           {/* Identities List */}
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             {identities.map((identity) => (
               <div
                 key={identity.id}
@@ -317,7 +317,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                         </p>
 
                         {/* Additional Info */}
-                        <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                        <div className="mt-2 flex flex-col gap-1 text-xs text-muted-foreground">
                           {identity.replyTo && identity.replyTo.length > 0 && (
                             <p>
                               {t('display.reply_to')} {identity.replyTo.map((a) => a.email).join(', ')}
@@ -370,7 +370,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                           className={!identity.mayDelete ? 'opacity-30' : ''}
                         >
                           {!identity.mayDelete ? (
-                            <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                            <AlertTriangle className="w-4 h-4 text-warning" />
                           ) : (
                             <Trash2 className="w-4 h-4 text-destructive" />
                           )}
@@ -379,7 +379,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                     </div>
 
                     {!identity.mayDelete && (
-                      <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-2 flex items-center gap-1">
+                      <p className="text-xs text-warning mt-2 flex items-center gap-1">
                         <AlertTriangle className="w-3 h-3" />
                         {t('cannot_delete')}
                       </p>

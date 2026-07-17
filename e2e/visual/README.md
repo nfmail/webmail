@@ -84,6 +84,28 @@ PLAYWRIGHT_VISUAL_BASE_URL=http://localhost:3100 npm run test:visual
 # (reuseExistingServer is on when CI is unset)
 ```
 
+## Continuous integration
+
+A **Visual regression** job in `.github/workflows/ci.yml` runs this suite on
+every pull request and on pushes to `main`. It mirrors the Browser smoke job's
+setup (Node from `.nvmrc`, `npm ci`, `npx playwright install --with-deps
+chromium`) and then runs `npm run test:visual`. The config boots its own dev
+server against the mock JMAP backend, so the job needs no separate build or
+mail server.
+
+- **Runner platform:** `ubuntu-latest`. Snapshots are OS-dependent and the
+  committed baselines are Linux-rendered, so the runner matches — do not
+  regenerate baselines on macOS or Windows and expect them to pass here.
+- **On failure:** the job uploads `test-results/` (actual / expected / diff
+  PNGs plus Playwright traces) as the `visual-regression-results` artifact, so
+  a red run can be triaged from the Actions run without reproducing locally.
+- **Required vs. optional:** the job is named "Visual regression" so it can be
+  marked non-required in branch-protection while the shadcn migration churns
+  baselines. Whether it actually blocks merges is governed by the repository
+  ruleset / branch-protection config, which is outside this file's control. If
+  the repo treats every job as required, either mark this one optional in the
+  ruleset or keep baselines green per the update procedure below.
+
 ## Update procedure (review rule)
 
 Baselines are a **source of truth**, not disposable output.
@@ -98,11 +120,46 @@ Baselines are a **source of truth**, not disposable output.
 
 ## Known gaps / blocked surfaces
 
-- **Files** — the mock JMAP backend advertises no WebDAV capability, so the
-  Files nav entry is hidden (`supportsFiles` is false) and the surface is not
-  reachable. The `files` test `skip()`s automatically. To baseline it, run the
-  suite against a backend where WebDAV/files is enabled, then
-  `npm run test:visual:update`.
+- **Files** — the mock JMAP backend advertises no FileNode/WebDAV capability,
+  so the Files nav entry is hidden (`supportsFiles` is false) and the surface is
+  not reachable. The `files` test `skip()`s automatically.
+
+  **What makes it reachable (investigated).** `JMAPClient.supportsFiles()`
+  (`lib/jmap/client.ts`) gates on the **per-account** capability: for a personal
+  account it returns true only when that account's `accountCapabilities`
+  advertises `urn:ietf:params:jmap:filenode`. So the minimal flag is to add
+  `urn:ietf:params:jmap:filenode` to the mock session in
+  `app/api/dev-jmap/[...path]/route.ts` — to the top-level `capabilities`, the
+  account's `accountCapabilities`, and `primaryAccounts` — and to add a
+  `FileNode/get` handler (the browse path calls `FileNode/get` with `ids: null`
+  and builds the tree from `parentId`; folders are nodes with `blobId: null`).
+  A small deterministic fixture (fixed timestamps so nothing drifts) renders a
+  real listing. That change is self-contained to the mock and produces a clean
+  files surface across all six viewport/theme projects.
+
+  **Why it is NOT enabled here (important).** `supportsFiles()` is
+  session-global, so advertising the capability makes the **Files nav entry
+  appear on every authenticated surface**, not just `/files`. That shifts the
+  nav rail (desktop) and the bottom tab bar from four to five entries (mobile /
+  tablet), which changes the layout of the already-committed `mail-list`,
+  `thread-view`, `composer`, `settings-*`, `calendar`, and `contacts`
+  baselines. Enabling files therefore requires regenerating **all** authenticated
+  baselines in the same change — it cannot be done in isolation. Because the
+  baselines are frozen during the shadcn migration (refreshed at branch end,
+  not piecemeal), the capability is intentionally left disabled for now.
+
+  **To baseline Files** (do this together with a full baseline refresh, e.g. at
+  branch end): add the mock capability + `FileNode/get` handler described above
+  (or point the suite at a real backend where files is enabled), then run
+  `npm run test:visual:update` and review the diffs for **every** authenticated
+  surface, since the nav gains a Files entry everywhere.
+
+  When baselining the mobile/tablet Files shot specifically, note that the page
+  renders two `a[href="/files"]` anchors (desktop rail + mobile bottom bar); the
+  shared `navigate()` helper clicks `.first()`, which is the inactive rail
+  anchor on small viewports. Click the `:visible` anchor and wait for a stable
+  row (e.g. the first folder) before shooting, or the shot captures the mail
+  list instead.
 - **Calendar / contacts data** — dates and mock records are time-relative;
   the calendar body is masked. If mock data changes materially, regenerate.
 

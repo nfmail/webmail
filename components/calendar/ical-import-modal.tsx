@@ -1,9 +1,16 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { X, Upload, Check, Loader2, RefreshCw, Globe } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Upload, Check, Loader2, RefreshCw, Globe } from "lucide-react";
 import { format } from "date-fns";
 import type { CalendarEvent, Calendar } from "@/lib/jmap/types";
 import type { IJMAPClient } from '@/lib/jmap/client-interface';
@@ -29,7 +36,6 @@ type ImportMode = "file" | "url";
 export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICalImportModalProps) {
   const t = useTranslations("calendar.import");
   const tCal = useTranslations("calendar");
-  const tCommon = useTranslations("common");
   const tForm = useTranslations("calendar.form");
   const importEvents = useCalendarStore((s) => s.importEvents);
   const timeFormat = useSettingsStore((s) => s.timeFormat);
@@ -48,7 +54,6 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
   const [urlInput, setUrlInput] = useState(initialUrl || "");
   const [isFetchingUrl, setIsFetchingUrl] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const validateFile = useCallback((file: File): string | null => {
     if (file.size > MAX_FILE_SIZE) return t("file_too_large");
@@ -208,60 +213,17 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
     }
   };
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [onClose]);
-
-  useEffect(() => {
-    const modal = modalRef.current;
-    if (!modal) return;
-    const focusableEls = modal.querySelectorAll<HTMLElement>(
-      'input, select, textarea, button, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstEl = focusableEls[0];
-    const lastEl = focusableEls[focusableEls.length - 1];
-
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return;
-      if (e.shiftKey && document.activeElement === firstEl) {
-        e.preventDefault();
-        lastEl?.focus();
-      } else if (!e.shiftKey && document.activeElement === lastEl) {
-        e.preventDefault();
-        firstEl?.focus();
-      }
-    };
-    modal.addEventListener("keydown", handler);
-    firstEl?.focus();
-    return () => modal.removeEventListener("keydown", handler);
-  }, [step]);
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" onClick={onClose} aria-hidden="true" />
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
+    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent
+        className="flex max-h-[90vh] max-w-lg flex-col gap-0 overflow-hidden p-0"
         aria-label={t("title")}
-        className="relative bg-background border border-border rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold">{t("title")}</h2>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
-            aria-label={tCommon("close")}
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        <DialogHeader className="px-6 py-4 border-b border-border">
+          <DialogTitle className="text-lg font-semibold">{t("title")}</DialogTitle>
+        </DialogHeader>
 
-        <div className="px-6 py-4 space-y-4">
+        <div className="flex flex-col gap-4 overflow-y-auto px-6 py-4">
           {step === "select" && !isParsing && (
             <>
               <div className="flex border-b border-border mb-4">
@@ -316,7 +278,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
               )}
 
               {importMode === "url" && (
-                <div className="space-y-3">
+                <div className="flex flex-col gap-3">
                   <p className="text-sm text-muted-foreground">{t("url_description")}</p>
                   <div className="flex gap-2">
                     <input
@@ -435,7 +397,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
         </div>
 
         {step !== "importing" && (
-          <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
+          <DialogFooter className="px-6 py-4 border-t border-border">
             <Button variant="outline" onClick={onClose}>
               {tForm("cancel")}
             </Button>
@@ -448,9 +410,9 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                 {t("import_button")} ({selectedIndices.size})
               </Button>
             )}
-          </div>
+          </DialogFooter>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

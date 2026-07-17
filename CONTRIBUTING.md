@@ -100,6 +100,10 @@ These checks run automatically on commit via Husky pre-commit hooks.
 - Support both dark and light themes
 - Use CSS variables for theme colors
 
+See [docs/ui-conventions.md](docs/ui-conventions.md) for the shadcn/ui migration
+conventions (semantic tokens, `gap-*` over `space-*`, vendored `components/ui`)
+enforced by `npm run check:ui`.
+
 ## Internationalization (i18n)
 
 This project uses **next-intl**. English (`/locales/en/common.json`) is the source of truth; we ship 15 additional locales (cs, de, es, fr, it, ja, ko, lv, nl, pl, pt, ru, tr, uk, zh).

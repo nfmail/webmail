@@ -10,6 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Upload, Check, Loader2, RefreshCw, Globe } from "lucide-react";
 import { format } from "date-fns";
 import type { CalendarEvent, Calendar } from "@/lib/jmap/types";
@@ -372,17 +379,18 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                   <label className="text-sm font-medium mb-1 block">
                     {t("target_calendar")}
                   </label>
-                  <select
-                    value={calendarId}
-                    onChange={(e) => setCalendarId(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  >
-                    {calendars.map((cal) => (
-                      <option key={cal.id} value={cal.id}>
-                        {cal.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Select value={calendarId} onValueChange={setCalendarId}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {calendars.map((cal) => (
+                        <SelectItem key={cal.id} value={cal.id}>
+                          {cal.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </>

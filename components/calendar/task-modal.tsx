@@ -4,6 +4,13 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { X, Trash2, CalendarDays, Bell, Flag } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
@@ -163,7 +170,7 @@ export function TaskModal({
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
         {/* Title */}
         <Input
           ref={titleRef}
@@ -183,7 +190,7 @@ export function TaskModal({
         />
 
         {/* Due Date */}
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
             <CalendarDays className="h-3.5 w-3.5" />
             {t("tasks.due_date")}
@@ -218,77 +225,81 @@ export function TaskModal({
         </div>
 
         {/* Priority */}
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
             <Flag className="h-3.5 w-3.5" />
             {t("tasks.priority")}
           </label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as PriorityLevel)}
-            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-full"
-          >
-            <option value="none">{t("tasks.priority_none")}</option>
-            <option value="high">{t("tasks.priority_high")}</option>
-            <option value="medium">{t("tasks.priority_medium")}</option>
-            <option value="low">{t("tasks.priority_low")}</option>
-          </select>
+          <Select value={priority} onValueChange={(v) => setPriority(v as PriorityLevel)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{t("tasks.priority_none")}</SelectItem>
+              <SelectItem value="high">{t("tasks.priority_high")}</SelectItem>
+              <SelectItem value="medium">{t("tasks.priority_medium")}</SelectItem>
+              <SelectItem value="low">{t("tasks.priority_low")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Progress */}
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground">
             {t("tasks.progress")}
           </label>
-          <select
-            value={progress}
-            onChange={(e) => setProgress(e.target.value as CalendarTask["progress"])}
-            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-full"
-          >
-            <option value="needs-action">{t("tasks.progress_needs_action")}</option>
-            <option value="in-process">{t("tasks.progress_in_process")}</option>
-            <option value="completed">{t("tasks.progress_completed")}</option>
-            <option value="cancelled">{t("tasks.progress_cancelled")}</option>
-          </select>
+          <Select value={progress} onValueChange={(v) => setProgress(v as CalendarTask["progress"])}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="needs-action">{t("tasks.progress_needs_action")}</SelectItem>
+              <SelectItem value="in-process">{t("tasks.progress_in_process")}</SelectItem>
+              <SelectItem value="completed">{t("tasks.progress_completed")}</SelectItem>
+              <SelectItem value="cancelled">{t("tasks.progress_cancelled")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Calendar */}
         {writableCalendars.length > 1 && (
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <label className="text-xs font-medium text-muted-foreground">
               {t("tasks.calendar")}
             </label>
-            <select
-              value={calendarId}
-              onChange={(e) => setCalendarId(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-full"
-            >
-              {writableCalendars.map((cal) => (
-                <option key={cal.id} value={cal.id}>{cal.name}</option>
-              ))}
-            </select>
+            <Select value={calendarId} onValueChange={setCalendarId}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {writableCalendars.map((cal) => (
+                  <SelectItem key={cal.id} value={cal.id}>{cal.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 
         {/* Alert */}
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
             <Bell className="h-3.5 w-3.5" />
             {t("tasks.alert")}
           </label>
-          <select
-            value={alertOption}
-            onChange={(e) => setAlertOption(e.target.value as AlertOption)}
-            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-full"
-          >
-            <option value="none">{t("tasks.alert_none")}</option>
-            <option value="at_time">{t("tasks.alert_at_time")}</option>
-            <option value="5">{t("tasks.alert_5min")}</option>
-            <option value="15">{t("tasks.alert_15min")}</option>
-            <option value="30">{t("tasks.alert_30min")}</option>
-            <option value="60">{t("tasks.alert_1hr")}</option>
-            <option value="1440">{t("tasks.alert_1day")}</option>
-          </select>
+          <Select value={alertOption} onValueChange={(v) => setAlertOption(v as AlertOption)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{t("tasks.alert_none")}</SelectItem>
+              <SelectItem value="at_time">{t("tasks.alert_at_time")}</SelectItem>
+              <SelectItem value="5">{t("tasks.alert_5min")}</SelectItem>
+              <SelectItem value="15">{t("tasks.alert_15min")}</SelectItem>
+              <SelectItem value="30">{t("tasks.alert_30min")}</SelectItem>
+              <SelectItem value="60">{t("tasks.alert_1hr")}</SelectItem>
+              <SelectItem value="1440">{t("tasks.alert_1day")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

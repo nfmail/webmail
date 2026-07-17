@@ -4,6 +4,13 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { X, Trash2, Check, Users, CalendarDays, Copy, Pencil, Clock, MapPin, Video, Repeat, Bell, AlignLeft, Plus } from "lucide-react";
 import { format, parseISO, addHours, addDays, isSameDay } from "date-fns";
 import type { CalendarEvent, Calendar, CalendarParticipant, CalendarEventAlert, CalendarRecurrenceRule } from "@/lib/jmap/types";
@@ -1144,27 +1151,28 @@ export function EventModal({
           {calendars.length > 1 && (
             <div>
               <label className="text-sm font-medium mb-1 block">{t("form.calendar_select")}</label>
-              <select
-                value={calendarId}
-                onChange={(e) => setCalendarId(e.target.value)}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                {calendars.map((cal) => (
-                  <option key={cal.id} value={cal.id}>
-                    {cal.name}
-                  </option>
-                ))}
-              </select>
+              <Select value={calendarId} onValueChange={setCalendarId}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {calendars.map((cal) => (
+                    <SelectItem key={cal.id} value={cal.id}>
+                      {cal.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
 
           <div>
             <label className="text-sm font-medium mb-1 block">{t("recurrence.title")}</label>
             <div className="flex items-center gap-2">
-              <select
+              <Select
                 value={recurrence}
-                onChange={(e) => {
-                  const value = e.target.value as RecurrenceOption;
+                onValueChange={(raw) => {
+                  const value = raw as RecurrenceOption;
                   if (value === "custom") {
                     recurrenceBeforeCustomRef.current = recurrence;
                     setRecurrence("custom");
@@ -1174,15 +1182,19 @@ export function EventModal({
                     setShowRecurrenceEditor(false);
                   }
                 }}
-                className="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="none">{t("recurrence.none")}</option>
-                <option value="daily">{t("recurrence.daily")}</option>
-                <option value="weekly">{t("recurrence.weekly")}</option>
-                <option value="monthly">{t("recurrence.monthly")}</option>
-                <option value="yearly">{t("recurrence.yearly")}</option>
-                <option value="custom">{customRuleSummary || t("recurrence.custom")}</option>
-              </select>
+                <SelectTrigger className="flex-1 min-w-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{t("recurrence.none")}</SelectItem>
+                  <SelectItem value="daily">{t("recurrence.daily")}</SelectItem>
+                  <SelectItem value="weekly">{t("recurrence.weekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("recurrence.monthly")}</SelectItem>
+                  <SelectItem value="yearly">{t("recurrence.yearly")}</SelectItem>
+                  <SelectItem value="custom">{customRuleSummary || t("recurrence.custom")}</SelectItem>
+                </SelectContent>
+              </Select>
               {recurrence === "custom" && !showRecurrenceEditor && (
                 <button
                   type="button"
@@ -1229,24 +1241,27 @@ export function EventModal({
                         aria-label={t("alerts.amount")}
                       />
                     )}
-                    <select
+                    <Select
                       value={row.unit}
-                      onChange={(e) => {
-                        const unit = e.target.value as AlertUnit;
+                      onValueChange={(raw) => {
+                        const unit = raw as AlertUnit;
                         updateAlertRow(row.id, {
                           unit,
                           value: unit === "at_time" ? 0 : (row.value || 1),
                         });
                       }}
-                      className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                      aria-label={t("alerts.unit")}
                     >
-                      <option value="at_time">{t("alerts.at_time")}</option>
-                      <option value="minutes">{t("alerts.unit_minutes_before")}</option>
-                      <option value="hours">{t("alerts.unit_hours_before")}</option>
-                      <option value="days">{t("alerts.unit_days_before")}</option>
-                      <option value="weeks">{t("alerts.unit_weeks_before")}</option>
-                    </select>
+                      <SelectTrigger className="flex-1" aria-label={t("alerts.unit")}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="at_time">{t("alerts.at_time")}</SelectItem>
+                        <SelectItem value="minutes">{t("alerts.unit_minutes_before")}</SelectItem>
+                        <SelectItem value="hours">{t("alerts.unit_hours_before")}</SelectItem>
+                        <SelectItem value="days">{t("alerts.unit_days_before")}</SelectItem>
+                        <SelectItem value="weeks">{t("alerts.unit_weeks_before")}</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <button
                       type="button"
                       onClick={() => removeAlertRow(row.id)}

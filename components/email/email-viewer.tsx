@@ -11,6 +11,12 @@ import { withBasePath } from "@/lib/browser-navigation";
 import { PRODUCT } from "@/lib/product-metadata";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatFileSize, cn, buildMailboxTree, MailboxNode, formatDateTime, generateUUID } from "@/lib/utils";
 import { getSecurityStatus, extractListHeaders } from "@/lib/email-headers";
 import { emailToReadView } from "@/lib/plugin-projection";
@@ -4880,20 +4886,16 @@ export function EmailViewer({
       </div>
 
       {/* Email Source Modal */}
-      {showSourceModal && email && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setShowSourceModal(false)}
-        >
-          <div
-            className="bg-background rounded-lg shadow-2xl border border-border w-full max-w-4xl max-h-[90vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+      {email && (
+        <Dialog open={showSourceModal} onOpenChange={(open) => { if (!open) setShowSourceModal(false); }}>
+          <DialogContent
+            showCloseButton={false}
+            className="flex max-h-[90vh] w-full max-w-4xl flex-col gap-0 p-0"
           >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
+            <DialogHeader className="flex-row items-center justify-between gap-2 border-b border-border p-4 text-start">
               <div className="flex items-center gap-2">
                 <Code className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">{t('email_source')}</h2>
+                <DialogTitle>{t('email_source')}</DialogTitle>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -4914,7 +4916,7 @@ export function EmailViewer({
                   <X className="w-4 h-4" />
                 </Button>
               </div>
-            </div>
+            </DialogHeader>
 
             {/* Modal Content */}
             <div className="flex-1 overflow-auto p-4 bg-muted/30">
@@ -4922,8 +4924,8 @@ export function EmailViewer({
                 {generateEmailSource(email)}
               </pre>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
 

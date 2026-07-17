@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   ChevronLeft,
@@ -9,7 +9,14 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatFileSize } from "@/lib/utils";
 import type {
   EmailAttachmentSource,
@@ -57,7 +64,6 @@ export function JmapFilePickerDialog({
 }: JmapFilePickerDialogProps) {
   const t = useTranslations("email_composer.jmap_files");
   const tCommon = useTranslations("common");
-  const titleId = useId();
   const [path, setPath] = useState<PathEntry[]>([
     { id: null, name: "JMAP Files" },
   ]);
@@ -68,12 +74,6 @@ export function JmapFilePickerDialog({
   const [error, setError] = useState<string | null>(null);
   const currentParentId = path[path.length - 1]?.id ?? null;
   const loadErrorMessage = t("load_error");
-
-  const dialogRef = useFocusTrap({
-    isActive: isOpen,
-    onEscape: onClose,
-    restoreFocus: true,
-  });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -103,17 +103,6 @@ export function JmapFilePickerDialog({
     return () => controller.abort();
   }, [currentParentId, isOpen, loadErrorMessage, source]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleBackdropClick = (event: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-    document.addEventListener("mousedown", handleBackdropClick);
-    return () => document.removeEventListener("mousedown", handleBackdropClick);
-  }, [dialogRef, isOpen, onClose]);
-
   const sortedItems = useMemo(
     () => [...items].sort((left, right) => {
       if (left.kind !== right.kind) return left.kind === "directory" ? -1 : 1;
@@ -121,8 +110,6 @@ export function JmapFilePickerDialog({
     }),
     [items],
   );
-
-  if (!isOpen) return null;
 
   const toggleFile = (itemId: string) => {
     setSelectedIds((current) => {
@@ -151,27 +138,12 @@ export function JmapFilePickerDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4 backdrop-blur-[1px]">
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className="flex max-h-[80vh] w-full max-w-2xl flex-col rounded-lg border border-border bg-background shadow-xl"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-border p-5">
-          <div className="min-w-0">
-            <h2 id={titleId} className="text-lg font-semibold text-foreground">
-              {t("title")}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t("description")}
-            </p>
-          </div>
-          <Button type="button" variant="ghost" size="sm" onClick={onClose}>
-            {tCommon("close")}
-          </Button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent className="flex max-h-[80vh] w-full max-w-2xl flex-col gap-0 p-0">
+        <DialogHeader className="border-b border-border p-5 text-start">
+          <DialogTitle className="text-lg">{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
+        </DialogHeader>
 
         <div className="flex items-center gap-2 border-b border-border px-5 py-3">
           <Button
@@ -249,7 +221,7 @@ export function JmapFilePickerDialog({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-4 border-t border-border px-5 py-4">
+        <DialogFooter className="flex-row items-center justify-between gap-4 border-t border-border px-5 py-4 sm:justify-between">
           <span className="text-sm text-muted-foreground">
             {t("selected", { count: selectedIds.size })}
           </span>
@@ -266,8 +238,8 @@ export function JmapFilePickerDialog({
               {t("attach", { count: selectedIds.size })}
             </Button>
           </div>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

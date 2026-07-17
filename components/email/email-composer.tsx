@@ -1,10 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { X, Paperclip, Send, Save, Check, Loader2, AlertCircle, FileText, BookmarkPlus, CalendarClock, ChevronDown, MailCheck, Search, Database } from "lucide-react";
 import { cn, formatFileSize, formatDateTime, generateUUID } from "@/lib/utils";
 import { debug } from "@/lib/debug";
@@ -552,24 +560,6 @@ export function EmailComposer({
   const [scheduleError, setScheduleError] = useState('');
   const [showSendMenu, setShowSendMenu] = useState(false);
   const sendMenuRef = useRef<HTMLDivElement>(null);
-
-  const saveTemplateModalRef = useFocusTrap({
-    isActive: showSaveAsTemplate,
-    onEscape: () => setShowSaveAsTemplate(false),
-    restoreFocus: true,
-  });
-
-  const closeDialogRef = useFocusTrap({
-    isActive: showCloseDialog,
-    onEscape: () => setShowCloseDialog(false),
-    restoreFocus: true,
-  });
-
-  const attachmentWarningRef = useFocusTrap({
-    isActive: showAttachmentWarning,
-    onEscape: () => setShowAttachmentWarning(false),
-    restoreFocus: true,
-  });
 
   const { client } = useAuthStore();
   const currentIdentity = selectedIdentityId
@@ -2670,117 +2660,85 @@ export function EmailComposer({
         onAttach={addStoredAttachments}
       />
 
-      {showSaveAsTemplate && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div
-            ref={saveTemplateModalRef}
-            role="dialog"
-            aria-modal="true"
-            className="bg-background border border-border rounded-lg shadow-xl w-full max-w-lg p-6 animate-in zoom-in-95 duration-200"
-          >
-            <h3 className="text-lg font-semibold text-foreground mb-4">{t('save_as_template')}</h3>
-            <TemplateForm
-              initialData={{
-                subject,
-                body,
-                to: withInput(to, toInput).map(r => formatRecipient(r.name, r.email)),
-                cc: withInput(cc, ccInput).map(r => formatRecipient(r.name, r.email)),
-                bcc: withInput(bcc, bccInput).map(r => formatRecipient(r.name, r.email)),
-              }}
-              onSave={(data) => {
-                addTemplate(data);
-                setShowSaveAsTemplate(false);
-              }}
-              onCancel={() => setShowSaveAsTemplate(false)}
-            />
-          </div>
-        </div>
-      )}
+      <Dialog open={showSaveAsTemplate} onOpenChange={(open) => { if (!open) setShowSaveAsTemplate(false); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{t('save_as_template')}</DialogTitle>
+          </DialogHeader>
+          <TemplateForm
+            initialData={{
+              subject,
+              body,
+              to: withInput(to, toInput).map(r => formatRecipient(r.name, r.email)),
+              cc: withInput(cc, ccInput).map(r => formatRecipient(r.name, r.email)),
+              bcc: withInput(bcc, bccInput).map(r => formatRecipient(r.name, r.email)),
+            }}
+            onSave={(data) => {
+              addTemplate(data);
+              setShowSaveAsTemplate(false);
+            }}
+            onCancel={() => setShowSaveAsTemplate(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
-      {showScheduleDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-background border border-border rounded-lg shadow-xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-semibold text-foreground mb-2">{t('schedule_send')}</h3>
-            <p className="text-sm text-muted-foreground mb-4">{t('schedule_send_description')}</p>
-            <Input
-              type="datetime-local"
-              value={scheduleValue}
-              onChange={(e) => {
-                setScheduleValue(e.target.value);
-                setScheduleError('');
-              }}
-              className={cn(scheduleError && "border-destructive focus-visible:ring-destructive")}
-            />
-            {scheduleError && <p className="mt-2 text-sm text-destructive">{scheduleError}</p>}
-            <div className="mt-5 flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setShowScheduleDialog(false)}>{tCommon('cancel')}</Button>
-              <Button onClick={handleScheduleSend} disabled={!canSend || isSending}>{t('schedule_send')}</Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={showScheduleDialog} onOpenChange={(open) => { if (!open) setShowScheduleDialog(false); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('schedule_send')}</DialogTitle>
+            <DialogDescription>{t('schedule_send_description')}</DialogDescription>
+          </DialogHeader>
+          <Input
+            type="datetime-local"
+            value={scheduleValue}
+            onChange={(e) => {
+              setScheduleValue(e.target.value);
+              setScheduleError('');
+            }}
+            className={cn(scheduleError && "border-destructive focus-visible:ring-destructive")}
+          />
+          {scheduleError && <p className="text-sm text-destructive">{scheduleError}</p>}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowScheduleDialog(false)}>{tCommon('cancel')}</Button>
+            <Button onClick={handleScheduleSend} disabled={!canSend || isSending}>{t('schedule_send')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {showAttachmentWarning && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150"
-          onClick={() => setShowAttachmentWarning(false)}
-        >
-          <div
-            ref={attachmentWarningRef}
-            role="alertdialog"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-            className="bg-background border border-border rounded-lg shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200"
-          >
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-foreground">{t('forgot_attachment.title')}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t('forgot_attachment.message', { keyword: attachmentWarningKeyword })}
-              </p>
-            </div>
-            <div className="flex items-center justify-end gap-3 px-6 pb-6">
-              <Button variant="outline" onClick={() => setShowAttachmentWarning(false)}>
-                {t('forgot_attachment.back')}
-              </Button>
-              <Button onClick={() => { setShowAttachmentWarning(false); handleSend(true, attachmentWarningDelayedUntil); setAttachmentWarningDelayedUntil(undefined); }}>
-                {t('forgot_attachment.send_anyway')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={showAttachmentWarning}
+        onClose={() => setShowAttachmentWarning(false)}
+        onConfirm={() => {
+          setShowAttachmentWarning(false);
+          handleSend(true, attachmentWarningDelayedUntil);
+          setAttachmentWarningDelayedUntil(undefined);
+        }}
+        title={t('forgot_attachment.title')}
+        message={t('forgot_attachment.message', { keyword: attachmentWarningKeyword })}
+        confirmText={t('forgot_attachment.send_anyway')}
+        cancelText={t('forgot_attachment.back')}
+      />
 
-      {showCloseDialog && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150"
-          onClick={() => setShowCloseDialog(false)}
-        >
-          <div
-            ref={closeDialogRef}
-            role="alertdialog"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-            className="bg-background border border-border rounded-lg shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200"
-          >
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-foreground">{t('close_draft_title')}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{t('close_draft_message')}</p>
-            </div>
-            <div className="flex items-center justify-end gap-3 px-6 pb-6">
-              <Button variant="outline" onClick={() => setShowCloseDialog(false)}>
-                {t('cancel')}
-              </Button>
-              <Button variant="destructive" onClick={handleDiscardAndClose}>
-                {t('discard')}
-              </Button>
-              <Button onClick={handleSaveDraftAndClose}>
-                <Save className="w-4 h-4 me-2" />
-                {t('save_draft')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={showCloseDialog} onOpenChange={(open) => { if (!open) setShowCloseDialog(false); }}>
+        <DialogContent className="max-w-md" showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{t('close_draft_title')}</DialogTitle>
+            <DialogDescription>{t('close_draft_message')}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCloseDialog(false)}>
+              {t('cancel')}
+            </Button>
+            <Button variant="destructive" onClick={handleDiscardAndClose}>
+              {t('discard')}
+            </Button>
+            <Button onClick={handleSaveDraftAndClose}>
+              <Save className="w-4 h-4 me-2" />
+              {t('save_draft')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {previewAttachment && (
         <FilePreviewModal

@@ -15,8 +15,8 @@ If that resonates with you, we'd love your help. This guide covers how to get th
 
 NF Mail is an independent downstream of
 [Bulwark Webmail](https://github.com/bulwarkmail/webmail). Please keep upstream
-attribution intact. General fixes may also be good candidates for an upstream
-contribution, while NF-specific behavior belongs here.
+attribution intact when touching code that carries it. All development for
+NF Mail happens in this repository.
 
 ## Join the Community
 

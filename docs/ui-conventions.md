@@ -111,3 +111,59 @@ required reason to `scripts/ui-conventions-baseline.json`:
 
 `category` is `palette` or `space`. Entries without a non-empty `reason` are
 rejected. Keep exceptions rare and well justified.
+
+## Forms
+
+Build forms with the shadcn `Field` family (`components/ui/field.tsx`), not
+hand-rolled `<div>` stacks and bare `<label>` / `<p>` elements. The Field
+components give every control a consistent label, hint, and error slot, and they
+compose with the semantic tokens and spacing rules above.
+
+- **Layout with `FieldGroup`, not `space-y-*` divs.** Wrap the controls in a
+  single `FieldGroup` and put each control in its own `Field`. `FieldGroup`
+  lays the controls out vertically with `gap`, so it satisfies the
+  `gap-*`-over-`space-*` rule and keeps the `check:ui` ratchet moving in the
+  right direction.
+- **Label every control with `FieldLabel htmlFor`.** The `htmlFor` value must
+  match the control `id` so the label is programmatically associated. For a
+  control with no visible label, keep the association explicit with an
+  `aria-label` on the control.
+- **Hints and errors go in the Field slots.** Use `FieldDescription` for static
+  help text (for example, an "email cannot be changed" note) and `FieldError`
+  for validation messages. `FieldError` renders `role="alert"`; add
+  `aria-live="polite"` when the message appears after user input.
+- **Signal invalidity in two places.** Set `data-invalid` on the `Field` (this
+  turns the label and error text destructive) and `aria-invalid` on the control
+  itself (the `Input` / `Textarea` primitives already render the destructive
+  border and ring from `aria-invalid`). Do not hand-add a `border-destructive`
+  class — let `aria-invalid` drive it. Point `aria-describedby` at the error
+  element's `id` so assistive tech announces the message.
+- **Small option sets use `ToggleGroup`, not a native `<select>`.** For a short,
+  known list of mutually exclusive choices, a `ToggleGroup`
+  (`components/ui/toggle-group.tsx`) is more discoverable and keyboard-friendly
+  than a dropdown. Reserve `<select>` for long or open-ended lists.
+
+```tsx
+<form onSubmit={handleSubmit}>
+  <FieldGroup>
+    <Field data-invalid={errors.name ? true : undefined}>
+      <FieldLabel htmlFor="name">Name</FieldLabel>
+      <Input
+        id="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        aria-invalid={errors.name ? true : undefined}
+        aria-describedby={errors.name ? 'name-error' : undefined}
+      />
+      {errors.name && (
+        <FieldError id="name-error" aria-live="polite">
+          {errors.name}
+        </FieldError>
+      )}
+    </Field>
+  </FieldGroup>
+</form>
+```
+
+The identity management forms under `components/identity/` are the reference
+implementation of this pattern.

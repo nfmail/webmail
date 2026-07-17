@@ -79,6 +79,19 @@ describe('isPublicHttpUrl', () => {
     expect(lookup).not.toHaveBeenCalled();
   });
 
+  it('rejects non-routable, reserved, multicast, and mapped address ranges', async () => {
+    const isPublicHttpUrl = await load();
+    expect(await isPublicHttpUrl('http://100.64.0.1/')).toBe(false);
+    expect(await isPublicHttpUrl('http://198.18.0.1/')).toBe(false);
+    expect(await isPublicHttpUrl('http://192.0.2.1/')).toBe(false);
+    expect(await isPublicHttpUrl('http://224.0.0.1/')).toBe(false);
+    expect(await isPublicHttpUrl('http://240.0.0.1/')).toBe(false);
+    expect(await isPublicHttpUrl('http://[::ffff:7f00:1]/')).toBe(false);
+    expect(await isPublicHttpUrl('http://[2001:db8::1]/')).toBe(false);
+    expect(await isPublicHttpUrl('http://[ff02::1]/')).toBe(false);
+    expect(lookup).not.toHaveBeenCalled();
+  });
+
   it('rejects IPv6 loopback, ULA, and link-local literals', async () => {
     const isPublicHttpUrl = await load();
     expect(await isPublicHttpUrl('http://[::1]/')).toBe(false);

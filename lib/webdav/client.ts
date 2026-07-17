@@ -90,8 +90,8 @@ export class WebDAVClient {
     }
 
     const text = await response.text();
-    const requestUri = response.headers.get('X-WebDAV-Request-URI') || '';
-    return this.parseMultistatus(text, requestUri);
+    const requestPath = response.headers.get('X-WebDAV-Request-Path') || path;
+    return this.parseMultistatus(text, requestPath);
   }
 
   /**
@@ -226,14 +226,26 @@ export class WebDAVClient {
   /**
    * Parse a WebDAV multistatus XML response into WebDAVResource[]
    */
-  private parseMultistatus(xml: string, requestUrl: string): WebDAVResource[] {
+  private parseMultistatus(xml: string, requestPath: string): WebDAVResource[] {
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
     const responses = doc.getElementsByTagNameNS('DAV:', 'response');
     const resources: WebDAVResource[] = [];
 
-    // Normalize the request URL for comparison (skip the "self" entry)
-    const normalizedRequestUrl = requestUrl.replace(/\/+$/, '');
+    // The proxy deliberately does not expose the upstream origin or account
+    // URL. Compare the safe, account-relative request path to href suffixes.
+    const normalizedRequestPath = decodeURIComponent(requestPath).replace(/^\/+|\/+$/g, '');
+    let shallowestRootHref = '';
+    if (!normalizedRequestPath) {
+      const hrefs = Array.from(responses)
+        .map((response) => response.getElementsByTagNameNS('DAV:', 'href')[0]?.textContent || '')
+        .filter(Boolean);
+      shallowestRootHref = hrefs.sort((a, b) => {
+        const aDepth = new URL(a, 'http://dummy').pathname.split('/').filter(Boolean).length;
+        const bDepth = new URL(b, 'http://dummy').pathname.split('/').filter(Boolean).length;
+        return aDepth - bDepth;
+      })[0] || '';
+    }
 
     for (let i = 0; i < responses.length; i++) {
       const resp = responses[i];
@@ -245,7 +257,7 @@ export class WebDAVClient {
 
       // Skip the directory itself (the parent being listed)
       const normalizedHref = href.replace(/\/+$/, '');
-      if (this.isSameResource(normalizedHref, normalizedRequestUrl)) continue;
+      if (this.isSameResource(normalizedHref, normalizedRequestPath, shallowestRootHref)) continue;
 
       const propstat = resp.getElementsByTagNameNS('DAV:', 'propstat')[0];
       if (!propstat) continue;
@@ -289,14 +301,16 @@ export class WebDAVClient {
     return resources;
   }
 
-  private isSameResource(href1: string, href2: string): boolean {
-    // Compare by path only (ignore origin differences)
+  private isSameResource(href: string, requestPath: string, rootHref: string): boolean {
     try {
-      const path1 = new URL(href1, 'http://dummy').pathname.replace(/\/+$/, '');
-      const path2 = new URL(href2, 'http://dummy').pathname.replace(/\/+$/, '');
-      return path1 === path2;
+      const hrefPath = decodeURIComponent(new URL(href, 'http://dummy').pathname).replace(/\/+$/, '');
+      if (!requestPath) {
+        const rootPath = decodeURIComponent(new URL(rootHref, 'http://dummy').pathname).replace(/\/+$/, '');
+        return hrefPath === rootPath;
+      }
+      return hrefPath === `/${requestPath}` || hrefPath.endsWith(`/${requestPath}`);
     } catch {
-      return href1 === href2;
+      return href === rootHref;
     }
   }
 }

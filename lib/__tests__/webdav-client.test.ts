@@ -49,15 +49,17 @@ describe('WebDAVClient metadata parsing', () => {
 
     expect(resources).toHaveLength(1);
     expect(resources[0]).toMatchObject({
-      href: '/dav/file/user@example.com/my dir/report.txt',
+      path: '/my%20dir/report.txt',
+      href: '/my%20dir/report.txt',
       name: 'report.txt',
       contentType: 'text/plain',
       contentLength: 5,
     });
+    expect(JSON.stringify(resources)).not.toContain('user@example.com');
     expect(mockedFetch).toHaveBeenCalledWith('/api/webdav', expect.objectContaining({
       headers: expect.objectContaining({
         'X-WebDAV-Method': 'PROPFIND',
-        'X-WebDAV-Path': '/my dir',
+        'X-WebDAV-Path': '/my%20dir',
       }),
     }));
   });
@@ -75,5 +77,93 @@ describe('WebDAVClient metadata parsing', () => {
     const resources = await new WebDAVClient().list('/');
 
     expect(resources.map((resource) => resource.name)).toEqual(['inbox', 'readme.txt']);
+  });
+
+  it('stats exactly one resource without exposing its upstream href', async () => {
+    mockedFetch.mockResolvedValue(new Response(multistatus([
+      '/dav/file/user%40example.com/my%20dir/report.txt',
+    ]), {
+      status: 207,
+      headers: { 'X-WebDAV-Request-Path': '/my%20dir/report.txt' },
+    }));
+
+    const resource = await new WebDAVClient().stat('/my dir/report.txt');
+
+    expect(resource).toMatchObject({
+      path: '/my%20dir/report.txt',
+      href: '/my%20dir/report.txt',
+      name: 'report.txt',
+    });
+  });
+
+  it('returns coded and sanitized HTTP, network, and response errors', async () => {
+    mockedFetch
+      .mockResolvedValueOnce(new Response(null, { status: 401 }))
+      .mockRejectedValueOnce(
+        new Error('fetch failed at https://private.example?token=secret'),
+      )
+      .mockResolvedValueOnce(new Response('<not-xml', { status: 207 }));
+    const client = new WebDAVClient();
+
+    await expect(client.checkSupport()).rejects.toMatchObject({
+      name: 'WebDAVClientError',
+      code: 'http',
+      status: 401,
+      message: 'WebDAV PROPFIND failed.',
+    });
+    await expect(client.list('/')).rejects.toMatchObject({
+      name: 'WebDAVClientError',
+      code: 'network',
+      status: 0,
+      message: 'WebDAV PROPFIND failed.',
+    });
+    await expect(client.list('/')).rejects.toMatchObject({
+      name: 'WebDAVClientError',
+      code: 'invalid-response',
+      status: 502,
+      message: 'WebDAV PROPFIND failed.',
+    });
+  });
+
+  it('rejects ambiguous encoded names and unsafe input paths', async () => {
+    mockedFetch.mockResolvedValueOnce(new Response(multistatus([
+      '/dav/file/user%40example.com/',
+      '/dav/file/user%40example.com/report%2Fsecret.txt',
+    ]), {
+      status: 207,
+      headers: { 'X-WebDAV-Request-Path': '/' },
+    }));
+    const client = new WebDAVClient();
+
+    await expect(client.list('/')).rejects.toMatchObject({
+      code: 'invalid-response',
+      status: 502,
+    });
+    await expect(client.list('/safe/../secret')).rejects.toMatchObject({
+      code: 'invalid-response',
+      status: 400,
+    });
+    expect(mockedFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses coded HTTP errors for mutations too', async () => {
+    mockedFetch.mockResolvedValue(new Response(null, { status: 409 }));
+
+    await expect(new WebDAVClient().createDirectory('/existing'))
+      .rejects.toMatchObject({
+        name: 'WebDAVClientError',
+        code: 'http',
+        status: 409,
+        method: 'MKCOL',
+      });
+  });
+
+  it('stops before I/O when the request is already cancelled', async () => {
+    const controller = new AbortController();
+    controller.abort('test');
+
+    await expect(new WebDAVClient().list('/', controller.signal))
+      .rejects.toMatchObject({ name: 'AbortError' });
+    expect(mockedFetch).not.toHaveBeenCalled();
   });
 });

@@ -5,6 +5,13 @@ import { useTranslations, useLocale } from "next-intl";
 import { Search, BookUser, Trash2, Users, Download, X, UserPlus, CheckSquare, Square, Filter, Mail, Phone, Image as ImageIcon, RotateCcw, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ContactListItem } from "./contact-list-item";
 import { ContactContextMenu } from "./contact-context-menu";
 import { useContextMenu } from "@/hooks/use-context-menu";
@@ -418,17 +425,25 @@ export function ContactList({
 
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">{t("filters.birthday_month")}</label>
-              <select
-                value={filters.birthdayMonth ?? ""}
-                onChange={(e) => setFilters((f) => ({ ...f, birthdayMonth: e.target.value === "" ? null : Number(e.target.value) }))}
-                className="h-8 w-full text-sm rounded-md border border-input bg-background px-2"
-                aria-label={t("filters.birthday_month")}
+              <Select
+                value={filters.birthdayMonth === null ? "any" : String(filters.birthdayMonth)}
+                onValueChange={(value) =>
+                  setFilters((f) => ({
+                    ...f,
+                    birthdayMonth: value === "any" ? null : Number(value),
+                  }))
+                }
               >
-                <option value="">{t("filters.any_month")}</option>
-                {monthNames.map((name, i) => (
-                  <option key={i} value={i + 1}>{name}</option>
-                ))}
-              </select>
+                <SelectTrigger size="sm" className="w-full" aria-label={t("filters.birthday_month")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">{t("filters.any_month")}</SelectItem>
+                  {monthNames.map((name, i) => (
+                    <SelectItem key={i} value={String(i + 1)}>{name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
@@ -490,7 +505,7 @@ export function ContactList({
             variant="ghost"
             size="sm"
             onClick={onBulkDelete}
-            className="h-7 text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+            className="h-7 text-xs text-destructive hover:text-destructive/80"
           >
             <Trash2 className="w-3.5 h-3.5 me-1" />
             {t("bulk.delete")}

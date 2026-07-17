@@ -20,6 +20,12 @@ import { TableCell } from "@tiptap/extension-table-cell";
 import { QuotedHtml, serializeEditorContent } from "@/components/email/quoted-html";
 import { SignatureBlock } from "@/components/email/signature-block";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSettingsStore } from "@/stores/settings-store";
 import {
   Bold,
@@ -120,19 +126,27 @@ function ToolbarButton({
   disabled?: boolean;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      title={title}
-      className={cn(
-        "p-1.5 rounded hover:bg-accent transition-colors",
-        active && "bg-accent text-accent-foreground",
-        disabled && "opacity-40 cursor-not-allowed"
-      )}
-    >
-      {children}
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          // `title` is kept as the accessible name (icon-only control); the
+          // visible tooltip is rendered by Radix via TooltipContent below.
+          // NOTE: these strings are hardcoded English - not yet i18n'd.
+          aria-label={title}
+          className={cn(
+            "p-1.5 rounded hover:bg-accent transition-colors",
+            active && "bg-accent text-accent-foreground",
+            disabled && "opacity-40 cursor-not-allowed"
+          )}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{title}</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -357,6 +371,7 @@ export function RichTextEditor({
   return (
     <div className={cn("flex flex-col", hasError && "ring-2 ring-red-500 dark:ring-red-400 rounded", className)}>
       {/* Toolbar */}
+      <TooltipProvider delayDuration={300}>
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-1.5 border-b border-border/50 bg-muted/30">
         <ToolbarButton
           active={editor.isActive("bold")}
@@ -594,6 +609,7 @@ export function RichTextEditor({
           <Redo className="w-4 h-4" />
         </ToolbarButton>
       </div>
+      </TooltipProvider>
 
       {/* Editor */}
       <EditorContent editor={editor} />

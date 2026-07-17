@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAdminTabStore, isAdminTab } from '@/stores/admin-tab-store';
+import {
+  useAdminTabStore,
+  isAdminTab,
+  adminTabPanelId,
+  ADMIN_TAB_LABELS,
+} from '@/stores/admin-tab-store';
 import { DashboardTab } from './_tabs/dashboard';
 import { SettingsTab } from './_tabs/settings';
 import { BrandingTab } from './_tabs/branding';
@@ -33,17 +38,34 @@ export default function AdminPage() {
     }
   }, [setActiveTab]);
 
-  switch (activeTab) {
-    case 'dashboard': return <DashboardTab />;
-    case 'settings': return <SettingsTab />;
-    case 'branding': return <BrandingTab />;
-    case 'auth': return <AuthTab />;
-    case 'policy': return <PolicyTab />;
-    case 'plugins': return <PluginsTab />;
-    case 'themes': return <ThemesTab />;
-    case 'marketplace': return <MarketplaceTab />;
-    case 'version': return <VersionTab />;
-    case 'telemetry': return <TelemetryTab />;
-    case 'logs': return <LogsTab />;
-  }
+  const panel = (() => {
+    switch (activeTab) {
+      case 'dashboard': return <DashboardTab />;
+      case 'settings': return <SettingsTab />;
+      case 'branding': return <BrandingTab />;
+      case 'auth': return <AuthTab />;
+      case 'policy': return <PolicyTab />;
+      case 'plugins': return <PluginsTab />;
+      case 'themes': return <ThemesTab />;
+      case 'marketplace': return <MarketplaceTab />;
+      case 'version': return <VersionTab />;
+      case 'telemetry': return <TelemetryTab />;
+      case 'logs': return <LogsTab />;
+      default: return null;
+    }
+  })();
+
+  // Single tabpanel for the active tab (panels are switch-rendered, not all
+  // mounted). Labeled by aria-label rather than aria-labelledby because the
+  // matching trigger exists twice in the DOM (desktop + mobile sidebars), so
+  // there is no single trigger id to reference.
+  return (
+    <div
+      role="tabpanel"
+      id={adminTabPanelId(activeTab)}
+      aria-label={ADMIN_TAB_LABELS[activeTab]}
+    >
+      {panel}
+    </div>
+  );
 }

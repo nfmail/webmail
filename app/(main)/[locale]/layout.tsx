@@ -39,7 +39,11 @@ export default async function LocaleLayout({
               <TourProvider>
                 <ProtocolLaunchHandlerProvider>
                   <ProInterfaceRedirect />
-                  {children}
+                  {/* Primary landmark for every localized surface. `display:contents`
+                      keeps the full-viewport page layouts intact while still
+                      exposing a single <main> to assistive tech (axe
+                      landmark-one-main / region). */}
+                  <main className="contents">{children}</main>
                   <PluginDialogHost />
                   <PluginConsentDialog />
                   <PWAInstallPrompt />

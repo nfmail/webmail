@@ -20,6 +20,14 @@ import { usePolicyStore } from "@/stores/policy-store";
 import { toast } from "@/stores/toast-store";
 import { useIsDesktop, useIsMobile } from "@/hooks/use-media-query";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CalendarToolbar } from "@/components/calendar/calendar-toolbar";
 import { CalendarMonthView } from "@/components/calendar/calendar-month-view";
 import { CalendarWeekView } from "@/components/calendar/calendar-week-view";
@@ -1134,20 +1142,23 @@ export default function CalendarPage() {
     />
   ) : null;
 
-  const renderWebcalActionChoice = () => showWebcalActionChoice && pendingSubscription ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" onClick={closeWebcalActionChoice} aria-hidden="true" />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={tWebcalAction("title")}
-        className="relative bg-background border border-border rounded-lg shadow-xl w-full max-w-md mx-4 animate-in zoom-in-95 duration-200"
-      >
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold">{tWebcalAction("title")}</h2>
-          <p className="text-sm text-muted-foreground mt-1">{tWebcalAction("description", { name: pendingSubscription.name })}</p>
-        </div>
-        <div className="px-6 py-4 space-y-3">
+  const renderWebcalActionChoice = () => (
+    <Dialog
+      open={showWebcalActionChoice && !!pendingSubscription}
+      onOpenChange={(open) => {
+        if (!open) closeWebcalActionChoice();
+      }}
+    >
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{tWebcalAction("title")}</DialogTitle>
+          {pendingSubscription && (
+            <DialogDescription>
+              {tWebcalAction("description", { name: pendingSubscription.name })}
+            </DialogDescription>
+          )}
+        </DialogHeader>
+        <div className="space-y-3">
           <Button variant="outline" className="w-full justify-start h-auto py-3" onClick={handleImportWebcal}>
             <span className="text-start">
               <span className="block font-medium">{tWebcalAction("import_title")}</span>
@@ -1161,12 +1172,12 @@ export default function CalendarPage() {
             </span>
           </Button>
         </div>
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
+        <DialogFooter>
           <Button variant="ghost" onClick={closeWebcalActionChoice}>{tWebcalAction("cancel")}</Button>
-        </div>
-      </div>
-    </div>
-  ) : null;
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 
   if (!isAuthenticated) return null;
   if (!calendarEnabled) return null;
@@ -1298,6 +1309,8 @@ export default function CalendarPage() {
 
   return (
     <div className={cn("flex flex-col bg-background overflow-hidden pt-[env(safe-area-inset-top)]", isEmbedded ? "h-full" : "h-dvh")}>
+      {/* Page-level heading for assistive tech (axe page-has-heading-one). */}
+      <h1 className="sr-only">{t("title")}</h1>
       <AppTopBannerSlot />
       <div className={cn("relative flex flex-1 min-h-0 overflow-hidden", isMobile && "flex-col")}>
       {/* Left Navigation Rail (hidden when embedded in Pro shell) */}

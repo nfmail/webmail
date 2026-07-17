@@ -316,6 +316,11 @@ export default function ProHome() {
   return (
     <EmbeddedContext.Provider value={true}>
       <div className="flex flex-col h-dvh bg-background overflow-hidden pt-[env(safe-area-inset-top)]">
+        {/* Page-level heading for assistive tech (axe page-has-heading-one).
+            Reflects the active tab's title in the Pro workspace. */}
+        <h1 className="sr-only">
+          {tabs.find((tab) => tab.id === activeMainTabId)?.title ?? t("sidebar.mail")}
+        </h1>
         <div className="flex flex-1 overflow-hidden">
           {/* Leftmost Navigation Rail - identical to the standard layout */}
           <div

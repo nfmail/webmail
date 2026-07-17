@@ -3,7 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useAdminTabStore, type AdminTabId } from '@/stores/admin-tab-store';
+import {
+  useAdminTabStore,
+  ADMIN_TABS,
+  ADMIN_TAB_LABELS,
+  adminTabPanelId,
+  type AdminTabId,
+} from '@/stores/admin-tab-store';
 import {
   LayoutDashboard,
   Settings,
@@ -38,39 +44,40 @@ import { apiFetch, getPathPrefix, withBasePath } from '@/lib/browser-navigation'
 // at /admin so React doesn't fire a route transition on every tab switch -
 // matches the regular settings page pattern, fixes the dev-mode "Rendering…"
 // hang we saw with both /admin/<segment> routes and ?tab= search params.
+// Labels come from ADMIN_TAB_LABELS (shared with the panel's accessible name).
 const NAV_GROUPS: ReadonlyArray<{
   label: string;
-  items: ReadonlyArray<{ tab: AdminTabId; label: string; icon: typeof LayoutDashboard }>;
+  items: ReadonlyArray<{ tab: AdminTabId; icon: typeof LayoutDashboard }>;
 }> = [
   {
     label: 'Overview',
     items: [
-      { tab: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { tab: 'dashboard', icon: LayoutDashboard },
     ],
   },
   {
     label: 'Configuration',
     items: [
-      { tab: 'settings', label: 'Settings', icon: Settings },
-      { tab: 'branding', label: 'Branding', icon: Palette },
-      { tab: 'auth', label: 'Authentication', icon: Shield },
-      { tab: 'policy', label: 'Policy', icon: Scale },
+      { tab: 'settings', icon: Settings },
+      { tab: 'branding', icon: Palette },
+      { tab: 'auth', icon: Shield },
+      { tab: 'policy', icon: Scale },
     ],
   },
   {
     label: 'Extensions',
     items: [
-      { tab: 'plugins', label: 'Plugins', icon: Puzzle },
-      { tab: 'themes', label: 'Themes', icon: SwatchBook },
-      { tab: 'marketplace', label: 'Marketplace', icon: Store },
+      { tab: 'plugins', icon: Puzzle },
+      { tab: 'themes', icon: SwatchBook },
+      { tab: 'marketplace', icon: Store },
     ],
   },
   {
     label: 'System',
     items: [
-      { tab: 'version', label: 'Version', icon: Package },
-      { tab: 'telemetry', label: 'Telemetry', icon: Activity },
-      { tab: 'logs', label: 'Audit Log', icon: ScrollText },
+      { tab: 'version', icon: Package },
+      { tab: 'telemetry', icon: Activity },
+      { tab: 'logs', icon: ScrollText },
     ],
   },
 ];
@@ -185,10 +192,62 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // NEXT_PUBLIC_BASE_PATH=/webmail deployments don't redirect to "/".
   const prefix = getPathPrefix();
 
-  const navContent = (
+  // Activate a tab: update the store and, from a dynamic route
+  // (/admin/plugins/[id], /admin/marketplace/[slug]), navigate back to /admin
+  // so the panel renders. Shared by click and keyboard activation.
+  const activateTab = (tab: AdminTabId) => {
+    setActiveTab(tab);
+    if (pathname !== '/admin') router.push('/admin');
+  };
+
+  // ARIA tabs keyboard model (vertical list). Arrow keys move focus AND
+  // activate (automatic activation, matching the existing click behavior);
+  // Home/End jump to the ends. `idPrefix` keeps the desktop and mobile copies
+  // of the tablist from sharing DOM ids.
+  const handleTabKeyDown = (
+    e: React.KeyboardEvent<HTMLButtonElement>,
+    idPrefix: string,
+    tab: AdminTabId,
+  ) => {
+    const idx = ADMIN_TABS.indexOf(tab);
+    const last = ADMIN_TABS.length - 1;
+    let next: AdminTabId | null = null;
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        next = ADMIN_TABS[idx === last ? 0 : idx + 1];
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        next = ADMIN_TABS[idx === 0 ? last : idx - 1];
+        break;
+      case 'Home':
+        next = ADMIN_TABS[0];
+        break;
+      case 'End':
+        next = ADMIN_TABS[last];
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+    activateTab(next);
+    document.getElementById(`admin-tab-${idPrefix}-${next}`)?.focus();
+  };
+
+  // The tab that carries tabIndex=0 in the roving model. On dynamic routes
+  // (activeTab === null) the first tab is the focus entry point.
+  const focusableTab: AdminTabId = activeTab ?? ADMIN_TABS[0];
+
+  const renderNav = (idPrefix: string) => (
     <>
       <div className="flex-1 overflow-y-auto py-2">
-        <div className="px-2 space-y-0.5">
+        <div
+          role="tablist"
+          aria-orientation="vertical"
+          aria-label="Admin sections"
+          className="px-2 space-y-0.5"
+        >
           {NAV_GROUPS.map((group, groupIndex) => (
             <div key={group.label}>
               {groupIndex > 0 && <div className="mx-1 my-2 border-t border-border" />}
@@ -197,20 +256,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   {group.label}
                 </span>
               </div>
-              {group.items.map(({ tab, label, icon: Icon }) => {
+              {group.items.map(({ tab, icon: Icon }) => {
                 const active = activeTab === tab;
+                const label = ADMIN_TAB_LABELS[tab];
                 const showDot = tab === 'version' && hasUpdate;
-                const handleClick = () => {
-                  setActiveTab(tab);
-                  // From a dynamic route (/admin/plugins/[id], /admin/marketplace/[slug])
-                  // we still need a real navigation back to /admin so the page renders.
-                  if (pathname !== '/admin') router.push('/admin');
-                };
                 return (
                   <button
                     key={tab}
+                    id={`admin-tab-${idPrefix}-${tab}`}
                     type="button"
-                    onClick={handleClick}
+                    role="tab"
+                    aria-selected={active}
+                    aria-controls={adminTabPanelId(tab)}
+                    tabIndex={tab === focusableTab ? 0 : -1}
+                    onClick={() => activateTab(tab)}
+                    onKeyDown={(e) => handleTabKeyDown(e, idPrefix, tab)}
                     className={cn(
                       'w-full text-start px-3 py-2 rounded-md text-sm transition-colors duration-150 flex items-center gap-2.5',
                       active
@@ -335,7 +395,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           )}
           <span className="font-semibold text-sm text-foreground">Admin Panel</span>
         </div>
-        {navContent}
+        {renderNav('desktop')}
       </aside>
 
       {/* Mobile drawer overlay */}
@@ -374,7 +434,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <X className="w-5 h-5" />
           </button>
         </div>
-        {navContent}
+        {renderNav('mobile')}
       </aside>
 
       {/* Main content */}

@@ -64,6 +64,12 @@ import { resolveReplyFrom } from "@/lib/reply-identity";
 import { Search, Filter, ChevronDown, X, Paperclip, Star, Mail, MailOpen, RotateCcw, PenSquare, PenLine, CheckSquare, Square, AlertTriangle } from "lucide-react";
 import { ResizeHandle } from "@/components/layout/resize-handle";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useConfig } from "@/hooks/use-config";
 import { usePluginStore } from "@/stores/plugin-store";
 import { AppTopBannerSlot } from "@/components/plugins/app-top-banner-slot";
@@ -2623,6 +2629,9 @@ export default function Home() {
   return (
     <DragDropProvider>
       <div className={cn("flex flex-col bg-background overflow-hidden pt-[env(safe-area-inset-top)]", isEmbedded ? "h-full" : "h-dvh")}>
+        {/* Page-level heading for assistive tech (axe page-has-heading-one).
+            Visually hidden; reflects the active mailbox / view name. */}
+        <h1 className="sr-only">{currentMailboxName}</h1>
         <AppTopBannerSlot />
         {isRateLimited && rateLimitSecondsLeft !== null && (
           <div className="flex items-center justify-center gap-2 bg-amber-500/10 border-b border-amber-500/30 text-amber-700 dark:text-amber-300 text-sm py-1.5 px-4 flex-shrink-0">
@@ -2791,40 +2800,57 @@ export default function Home() {
             {/* Search Bar + Inline Advanced Filters */}
             <div className="border-b border-border bg-background">
               <div className="px-3 h-14 flex items-center">
+                <TooltipProvider delayDuration={300}>
                 <div className="flex items-center gap-1.5 w-full">
                   {/* Select / Select All toggle */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (selectedEmailIds.size > 0) {
-                        if (selectedEmailIds.size === activeEmails.length) {
-                          clearSelection();
-                        } else {
-                          selectAllEmails();
-                        }
-                      } else if (activeEmails.length > 0) {
-                        const currentId = selectedEmail?.id;
-                        const target = currentId && activeEmails.some((e) => e.id === currentId)
-                          ? currentId
-                          : activeEmails[0].id;
-                        toggleEmailSelection(target);
-                      }
-                    }}
-                    disabled={isScheduledView}
-                    className={cn(
-                      "flex-shrink-0 p-2 rounded-md transition-colors",
-                      selectedEmailIds.size > 0
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    )}
-                    title={isScheduledView ? t('email_viewer.scheduled_actions_only') : selectedEmailIds.size > 0 ? (selectedEmailIds.size === activeEmails.length ? t('email_list.batch_actions.clear_selection') : t('email_list.batch_actions.select_all')) : t('email_list.batch_actions.select')}
-                  >
-                    {selectedEmailIds.size > 0 ? (
-                      <CheckSquare className="w-4 h-4" />
-                    ) : (
-                      <Square className="w-4 h-4" />
-                    )}
-                  </button>
+                  {(() => {
+                    const selectLabel = isScheduledView
+                      ? t('email_viewer.scheduled_actions_only')
+                      : selectedEmailIds.size > 0
+                        ? (selectedEmailIds.size === activeEmails.length
+                            ? t('email_list.batch_actions.clear_selection')
+                            : t('email_list.batch_actions.select_all'))
+                        : t('email_list.batch_actions.select');
+                    return (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (selectedEmailIds.size > 0) {
+                                if (selectedEmailIds.size === activeEmails.length) {
+                                  clearSelection();
+                                } else {
+                                  selectAllEmails();
+                                }
+                              } else if (activeEmails.length > 0) {
+                                const currentId = selectedEmail?.id;
+                                const target = currentId && activeEmails.some((e) => e.id === currentId)
+                                  ? currentId
+                                  : activeEmails[0].id;
+                                toggleEmailSelection(target);
+                              }
+                            }}
+                            disabled={isScheduledView}
+                            className={cn(
+                              "flex-shrink-0 p-2 rounded-md transition-colors",
+                              selectedEmailIds.size > 0
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            )}
+                            aria-label={selectLabel}
+                          >
+                            {selectedEmailIds.size > 0 ? (
+                              <CheckSquare className="w-4 h-4" />
+                            ) : (
+                              <Square className="w-4 h-4" />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>{selectLabel}</TooltipContent>
+                      </Tooltip>
+                    );
+                  })()}
                   <form onSubmit={(e) => { e.preventDefault(); if (searchQuery.trim()) handleSearch(searchQuery); }} className="relative flex-1">
                     <Search className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -2849,27 +2875,42 @@ export default function Home() {
                       </button>
                     )}
                   </form>
-                  <button
-                    type="button"
-                    onClick={toggleAdvancedSearch}
-                    disabled={isUnifiedView || isScheduledView}
-                    className={cn(
-                      "relative flex-shrink-0 p-2 rounded-md transition-colors",
-                      (isUnifiedView || isScheduledView) && "opacity-50 cursor-not-allowed",
-                      isAdvancedSearchOpen || activeFilterCount(searchFilters) > 0
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    )}
-                    title={isUnifiedView ? t("unified_mailbox.search_unavailable") : isScheduledView ? t('email_viewer.scheduled_actions_only') : t("advanced_search.toggle_filters")}
-                  >
-                    <Filter className="w-4 h-4" />
-                    {!isAdvancedSearchOpen && activeFilterCount(searchFilters) > 0 && (
-                      <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
-                        {activeFilterCount(searchFilters)}
-                      </span>
-                    )}
-                  </button>
+                  {(() => {
+                    const filterLabel = isUnifiedView
+                      ? t("unified_mailbox.search_unavailable")
+                      : isScheduledView
+                        ? t('email_viewer.scheduled_actions_only')
+                        : t("advanced_search.toggle_filters");
+                    return (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            onClick={toggleAdvancedSearch}
+                            disabled={isUnifiedView || isScheduledView}
+                            className={cn(
+                              "relative flex-shrink-0 p-2 rounded-md transition-colors",
+                              (isUnifiedView || isScheduledView) && "opacity-50 cursor-not-allowed",
+                              isAdvancedSearchOpen || activeFilterCount(searchFilters) > 0
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            )}
+                            aria-label={filterLabel}
+                          >
+                            <Filter className="w-4 h-4" />
+                            {!isAdvancedSearchOpen && activeFilterCount(searchFilters) > 0 && (
+                              <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                                {activeFilterCount(searchFilters)}
+                              </span>
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>{filterLabel}</TooltipContent>
+                      </Tooltip>
+                    );
+                  })()}
                 </div>
+                </TooltipProvider>
               </div>
 
               {/* Filter Area */}
@@ -3115,23 +3156,29 @@ export default function Home() {
             </div>
 
             {/* Floating Compose Button */}
-            <Button
-              onClick={() => {
-                startFreshComposerSession();
-                setComposerMode('compose');
-                setShowComposer(true);
-                if (isMobile) setActiveView('viewer');
-              }}
-              className={cn(
-                "absolute z-40 rounded-full shadow-lg",
-                isMobile ? "bottom-4 end-4 h-14 w-14" : "bottom-4 end-4 h-12 w-12"
-              )}
-              aria-label={t('sidebar.compose')}
-              title={t('sidebar.compose_hint')}
-              data-tour="compose-button"
-            >
-              <PenSquare className={isMobile ? "h-6 w-6" : "h-5 w-5"} />
-            </Button>
+            <TooltipProvider delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => {
+                      startFreshComposerSession();
+                      setComposerMode('compose');
+                      setShowComposer(true);
+                      if (isMobile) setActiveView('viewer');
+                    }}
+                    className={cn(
+                      "absolute z-40 rounded-full shadow-lg",
+                      isMobile ? "bottom-4 end-4 h-14 w-14" : "bottom-4 end-4 h-12 w-12"
+                    )}
+                    aria-label={t('sidebar.compose')}
+                    data-tour="compose-button"
+                  >
+                    <PenSquare className={isMobile ? "h-6 w-6" : "h-5 w-5"} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('sidebar.compose_hint')}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           {/* Email list resize handle (desktop only) */}

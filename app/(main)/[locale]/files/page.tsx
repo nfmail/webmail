@@ -444,6 +444,8 @@ export default function FilesPage() {
 
   return (
     <div className={cn("flex flex-col bg-background overflow-hidden pt-[env(safe-area-inset-top)]", isEmbedded ? "h-full" : "h-dvh")}>
+      {/* Page-level heading for assistive tech (axe page-has-heading-one). */}
+      <h1 className="sr-only">{t("title")}</h1>
       <AppTopBannerSlot />
       <div className="flex flex-1 min-h-0 overflow-hidden">
       {!isMobile && !isEmbedded && (

@@ -4,8 +4,24 @@ import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Plus, Trash2 } from "lucide-react";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Plus, Trash2 } from "lucide-react";
 import { toast } from "@/stores/toast-store";
 import type {
   FilterRule,
@@ -25,6 +41,14 @@ interface FilterRuleModalProps {
   onSave: (rule: FilterRule) => void;
   onClose: () => void;
 }
+
+// Radix Select reserves the empty string for its internal "no value" state and
+// throws if a <SelectItem> receives value="". The mailbox and label pickers use
+// "" as a real "not chosen yet" option, so map it to a sentinel on the way into
+// Radix and back out on change to preserve the stored value shape.
+const EMPTY_VALUE_SENTINEL = "__nfw_select_empty__";
+const toRadixValue = (value: string) => (value === "" ? EMPTY_VALUE_SENTINEL : value);
+const fromRadixValue = (value: string) => (value === EMPTY_VALUE_SENTINEL ? "" : value);
 
 const ALL_FIELDS: FilterConditionField[] = [
   "from", "to", "cc", "subject", "header", "size", "body", "attachment",
@@ -99,8 +123,6 @@ export function FilterRuleModal({
     rule?.actions.length ? [...rule.actions] : [makeEmptyAction()]
   );
   const [stopProcessing, setStopProcessing] = useState(rule?.stopProcessing ?? false);
-
-  const modalRef = useFocusTrap({ isActive: true, onEscape: onClose });
 
   const { hierarchicalMailboxes, mailboxPathMap } = useMemo(() => {
     const tree = buildMailboxTree(mailboxes.filter((mb) => !mb.isShared));
@@ -225,97 +247,71 @@ export function FilterRuleModal({
     setActions((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const selectClass =
-    "px-2.5 py-1.5 text-sm rounded-md bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-150 cursor-pointer hover:border-muted-foreground";
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" onClick={onClose} aria-hidden="true" />
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={isEdit ? t("edit_rule") : t("new_rule")}
-        className="relative bg-background border border-border rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200"
-      >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">
-            {isEdit ? t("edit_rule") : t("new_rule")}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
-            aria-label={t("cancel")}
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Dialog open onOpenChange={(next) => { if (!next) onClose(); }}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? t("edit_rule") : t("new_rule")}</DialogTitle>
+        </DialogHeader>
 
-        <div className="px-6 py-4 space-y-6">
-          <div>
-            <label className="text-sm font-medium mb-1 block text-foreground">
-              {t("rule_name")}
-            </label>
+        <FieldGroup>
+          {/* Rule name */}
+          <Field>
+            <FieldLabel htmlFor="filter-rule-name">{t("rule_name")}</FieldLabel>
             <Input
+              id="filter-rule-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("rule_name_placeholder")}
               maxLength={200}
               autoFocus
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="text-sm font-medium mb-2 block text-foreground">
-              {t("match_type")}
-            </label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setMatchType("all")}
-                className={`px-3 py-1.5 text-xs rounded-md transition-colors duration-150 ${
-                  matchType === "all"
-                    ? "bg-primary text-primary-foreground font-medium"
-                    : "bg-muted hover:bg-accent text-foreground"
-                }`}
-              >
+          {/* Match type */}
+          <Field>
+            <FieldLabel>{t("match_type")}</FieldLabel>
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              value={matchType}
+              aria-label={t("match_type")}
+              // A match type is single-select and cannot be empty; ignore the
+              // deselect event Radix emits when the active item is toggled off.
+              onValueChange={(next) => next && setMatchType(next as "all" | "any")}
+            >
+              <ToggleGroupItem value="all" className="text-xs">
                 {t("match_all")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setMatchType("any")}
-                className={`px-3 py-1.5 text-xs rounded-md transition-colors duration-150 ${
-                  matchType === "any"
-                    ? "bg-primary text-primary-foreground font-medium"
-                    : "bg-muted hover:bg-accent text-foreground"
-                }`}
-              >
+              </ToggleGroupItem>
+              <ToggleGroupItem value="any" className="text-xs">
                 {t("match_any")}
-              </button>
-            </div>
-          </div>
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </Field>
 
-          <div>
-            <label className="text-sm font-medium mb-2 block text-foreground">
-              {t("conditions")}
-            </label>
-            <div className="space-y-2">
+          {/* Conditions */}
+          <Field>
+            <FieldLabel>{t("conditions")}</FieldLabel>
+            <div className="flex flex-col gap-2">
               {conditions.map((condition, index) => (
                 <div key={index} className="flex items-center gap-2 flex-wrap">
-                  <select
+                  <Select
                     value={condition.field}
-                    onChange={(e) =>
-                      updateCondition(index, { field: e.target.value as FilterConditionField })
+                    onValueChange={(v) =>
+                      updateCondition(index, { field: v as FilterConditionField })
                     }
-                    className={selectClass}
-                    aria-label={t("conditions")}
                   >
-                    {ALL_FIELDS.map((f) => (
-                      <option key={f} value={f}>
-                        {t(`condition_fields.${f}`)}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger size="sm" className="w-auto" aria-label={t("conditions")}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ALL_FIELDS.map((f) => (
+                        <SelectItem key={f} value={f}>
+                          {t(`condition_fields.${f}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
                   {condition.field === "header" && (
                     <Input
@@ -328,20 +324,23 @@ export function FilterRuleModal({
                     />
                   )}
 
-                  <select
+                  <Select
                     value={condition.comparator}
-                    onChange={(e) =>
-                      updateCondition(index, { comparator: e.target.value as FilterComparator })
+                    onValueChange={(v) =>
+                      updateCondition(index, { comparator: v as FilterComparator })
                     }
-                    className={selectClass}
-                    aria-label={t("comparators.contains")}
                   >
-                    {comparatorsFor(condition.field).map((c) => (
-                      <option key={c} value={c}>
-                        {t(`comparators.${c}`)}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger size="sm" className="w-auto" aria-label={t("comparators.contains")}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {comparatorsFor(condition.field).map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {t(`comparators.${c}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
                   {/* has_any takes no value; render a stub so the row layout
                       stays consistent but no input is editable. */}
@@ -400,53 +399,62 @@ export function FilterRuleModal({
                   </button>
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={() => setConditions((prev) => [...prev, makeEmptyCondition()])}
+                className="flex items-center gap-1 self-start text-sm text-primary hover:underline"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                {t("add_condition")}
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setConditions((prev) => [...prev, makeEmptyCondition()])}
-              className="flex items-center gap-1 mt-2 text-sm text-primary hover:underline"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              {t("add_condition")}
-            </button>
-          </div>
+          </Field>
 
-          <div>
-            <label className="text-sm font-medium mb-2 block text-foreground">
-              {t("actions")}
-            </label>
-            <div className="space-y-2">
+          {/* Actions */}
+          <Field>
+            <FieldLabel>{t("actions")}</FieldLabel>
+            <div className="flex flex-col gap-2">
               {actions.map((action, index) => (
                 <div key={index} className="flex items-center gap-2 flex-wrap">
-                  <select
+                  <Select
                     value={action.type}
-                    onChange={(e) =>
-                      updateAction(index, { type: e.target.value as FilterActionType })
+                    onValueChange={(v) =>
+                      updateAction(index, { type: v as FilterActionType })
                     }
-                    className={selectClass}
-                    aria-label={t("actions")}
                   >
-                    {ALL_ACTION_TYPES.map((a) => (
-                      <option key={a} value={a}>
-                        {t(`action_types.${a}`)}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger size="sm" className="w-auto" aria-label={t("actions")}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ALL_ACTION_TYPES.map((a) => (
+                        <SelectItem key={a} value={a}>
+                          {t(`action_types.${a}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
                   {ACTIONS_WITH_MAILBOX.has(action.type) && (
-                    <select
-                      value={action.value || ""}
-                      onChange={(e) => updateAction(index, { value: e.target.value })}
-                      className={`${selectClass} flex-1 min-w-[140px]`}
-                      aria-label={t("move_to_folder")}
+                    <Select
+                      value={toRadixValue(action.value || "")}
+                      onValueChange={(v) => updateAction(index, { value: fromRadixValue(v) })}
                     >
-                      <option value="">{t("move_to_folder")}</option>
-                      {hierarchicalMailboxes.map((mb) => (
-                        <option key={mb.id} value={mailboxPathMap.get(mb.id) || mb.name}>
-                          {"\u00A0".repeat(mb.depth * 3)}{mb.name}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger
+                        size="sm"
+                        className="flex-1 min-w-[140px]"
+                        aria-label={t("move_to_folder")}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={EMPTY_VALUE_SENTINEL}>{t("move_to_folder")}</SelectItem>
+                        {hierarchicalMailboxes.map((mb) => (
+                          <SelectItem key={mb.id} value={mailboxPathMap.get(mb.id) || mb.name}>
+                            {" ".repeat(mb.depth * 3)}{mb.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
 
                   {action.type === "forward" && (
@@ -469,17 +477,24 @@ export function FilterRuleModal({
                   )}
 
                   {action.type === "add_label" && (
-                    <select
-                      value={action.value || ""}
-                      onChange={(e) => updateAction(index, { value: e.target.value })}
-                      className={`${selectClass} flex-1 min-w-[140px]`}
-                      aria-label={t("label_placeholder")}
+                    <Select
+                      value={toRadixValue(action.value || "")}
+                      onValueChange={(v) => updateAction(index, { value: fromRadixValue(v) })}
                     >
-                      <option value="">{t("label_placeholder")}</option>
-                      {emailKeywords.map((kw) => (
-                        <option key={kw.id} value={kw.id}>{kw.label}</option>
-                      ))}
-                    </select>
+                      <SelectTrigger
+                        size="sm"
+                        className="flex-1 min-w-[140px]"
+                        aria-label={t("label_placeholder")}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={EMPTY_VALUE_SENTINEL}>{t("label_placeholder")}</SelectItem>
+                        {emailKeywords.map((kw) => (
+                          <SelectItem key={kw.id} value={kw.id}>{kw.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
 
                   <button
@@ -493,40 +508,39 @@ export function FilterRuleModal({
                   </button>
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={() => setActions((prev) => [...prev, makeEmptyAction()])}
+                className="flex items-center gap-1 self-start text-sm text-primary hover:underline"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                {t("add_action")}
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setActions((prev) => [...prev, makeEmptyAction()])}
-              className="flex items-center gap-1 mt-2 text-sm text-primary hover:underline"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              {t("add_action")}
-            </button>
-          </div>
+          </Field>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
+          {/* Stop processing */}
+          <Field orientation="horizontal">
+            <Checkbox
               id="stopProcessing"
               checked={stopProcessing}
-              onChange={(e) => setStopProcessing(e.target.checked)}
-              className="rounded border-input"
+              onCheckedChange={(checked) => setStopProcessing(checked === true)}
             />
-            <label htmlFor="stopProcessing" className="text-sm text-foreground">
+            <FieldLabel htmlFor="stopProcessing" className="font-normal">
               {t("stop_processing")}
-            </label>
-          </div>
-        </div>
+            </FieldLabel>
+          </Field>
+        </FieldGroup>
 
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
+        <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             {t("cancel")}
           </Button>
           <Button onClick={handleSave} disabled={!name.trim()}>
             {t("save")}
           </Button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

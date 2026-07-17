@@ -10,7 +10,7 @@
   --color-ring: #94a3b8;
   --color-background: #ffffff;
   --color-foreground: #0f172a;
-  --color-primary: #3b82f6;
+  --color-primary: #2563eb;
   --color-primary-foreground: #ffffff;
   --color-secondary: #f8fafc;
   --color-secondary-foreground: #0f172a;
@@ -18,7 +18,7 @@
   --color-muted-foreground: #64748b;
   --color-accent: #dbeafe;
   --color-accent-foreground: #1e40af;
-  --color-destructive: #ef4444;
+  --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
   --color-popover: #ffffff;
   --color-popover-foreground: #0f172a;
@@ -26,7 +26,7 @@
   /* Sidebar */
   --color-sidebar: #f8fafc;
   --color-sidebar-foreground: #0f172a;
-  --color-sidebar-primary: #3b82f6;
+  --color-sidebar-primary: #2563eb;
   --color-sidebar-primary-foreground: #ffffff;
   --color-sidebar-border: #e2e8f0;
   --color-sidebar-accent: #f1f5f9;
@@ -42,12 +42,12 @@
      Do not remove: consumed by NF-specific UI (status, selection, unread).
      --------------------------------------------------------------------- */
 
-  /* Semantic status colors */
-  --color-success: #22c55e;
+  /* Semantic status colors — see WCAG AA note at end of :root */
+  --color-success: #15803d;
   --color-success-foreground: #ffffff;
   --color-warning: #eab308;
-  --color-warning-foreground: #ffffff;
-  --color-info: #3b82f6;
+  --color-warning-foreground: #171717;
+  --color-info: #2563eb;
   --color-info-foreground: #ffffff;
 
   /* Selection states */
@@ -55,7 +55,7 @@
   --color-selection-foreground: #1e40af;
 
   /* Unread indicator */
-  --color-unread: #3b82f6;
+  --color-unread: #2563eb;
 
   /* Chart colors */
   --color-chart-1: #3b82f6;
@@ -81,6 +81,22 @@
   --density-header-py: 12px;
   --density-card-p: 16px;
   --density-sidebar-py: 4px;
+
+  /* ---------------------------------------------------------------------
+     WCAG AA CONTRAST (checked)
+     Foreground/background token pairings that render text (primary,
+     destructive, success, warning, info, unread, selection) are verified
+     to meet WCAG 2.x AA (≥4.5:1 for normal text) in BOTH :root and .dark.
+     Method: sRGB relative-luminance ratio (0.2126R'+.7152G'+.0722B',
+     gamma-expanded) per WCAG; rgba selection tokens composited over their
+     surface before measuring. Solid accents darkened within-hue to pass
+     (blue→#2563eb, red→#dc2626, green→#15803d). Yellow/light-blue accents
+     keep their hue and pair with a near-black foreground (#171717) instead,
+     the standard accessible approach for high-luminance fills.
+     Exception: --color-chart-* are non-text data-viz fills governed by WCAG
+     1.4.11 (3:1 non-text), not 1.4.3, so they are NOT held to 4.5:1 and are
+     left at their designed palette values.
+     --------------------------------------------------------------------- */
 }
 
 .dark {
@@ -97,7 +113,7 @@
   --color-muted-foreground: #a3a3a3;
   --color-accent: #1e3a8a;
   --color-accent-foreground: #dbeafe;
-  --color-destructive: #ef4444;
+  --color-destructive: #dc2626;
   --color-destructive-foreground: #fafafa;
   --color-popover: #1c1c1c;
   --color-popover-foreground: #fafafa;
@@ -116,13 +132,13 @@
   --color-card: #141414;
   --color-card-foreground: #fafafa;
 
-  /* Semantic status colors */
-  --color-success: #16a34a;
+  /* Semantic status colors — WCAG AA: light accents keep dark foreground */
+  --color-success: #15803d;
   --color-success-foreground: #ffffff;
   --color-warning: #ca8a04;
-  --color-warning-foreground: #ffffff;
+  --color-warning-foreground: #171717;
   --color-info: #60a5fa;
-  --color-info-foreground: #ffffff;
+  --color-info-foreground: #171717;
 
   /* Selection states */
   --color-selection: rgba(59, 130, 246, 0.25);

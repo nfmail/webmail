@@ -1,6 +1,13 @@
 import { ReactNode } from 'react';
 import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Select as UiSelect,
+  SelectContent as UiSelectContent,
+  SelectItem as UiSelectItem,
+  SelectTrigger as UiSelectTrigger,
+  SelectValue as UiSelectValue,
+} from '@/components/ui/select';
 
 interface SettingsSectionProps {
   title: string;
@@ -107,25 +114,61 @@ export function RadioGroup({ value, onChange, options }: RadioGroupProps) {
   );
 }
 
+// Radix Select reserves the empty string internally for the "no value" /
+// placeholder state and throws if a <SelectItem> receives an empty-string
+// value. Some callers legitimately use '' as an option (e.g. a "none" choice),
+// so we map '' to a sentinel on the way into Radix and back out on change.
+const EMPTY_VALUE_SENTINEL = '__nfw_select_empty__';
+
+const toRadixValue = (value: string) =>
+  value === '' ? EMPTY_VALUE_SENTINEL : value;
+const fromRadixValue = (value: string) =>
+  value === EMPTY_VALUE_SENTINEL ? '' : value;
+
 interface SelectProps {
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
+  disabled?: boolean;
+  className?: string;
+  id?: string;
+  'aria-label'?: string;
 }
 
-export function Select({ value, onChange, options }: SelectProps) {
+export function Select({
+  value,
+  onChange,
+  options,
+  disabled,
+  className,
+  id,
+  'aria-label': ariaLabel,
+}: SelectProps) {
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      dir="auto"
-      className="px-3 py-1.5 text-sm rounded-md bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-150 cursor-pointer hover:border-muted-foreground"
+    <UiSelect
+      value={toRadixValue(value)}
+      onValueChange={(next) => onChange(fromRadixValue(next))}
+      disabled={disabled}
     >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+      <UiSelectTrigger
+        id={id}
+        aria-label={ariaLabel}
+        dir="auto"
+        className={cn('text-sm', className)}
+      >
+        <UiSelectValue />
+      </UiSelectTrigger>
+      <UiSelectContent>
+        {options.map((option) => (
+          <UiSelectItem
+            key={option.value}
+            value={toRadixValue(option.value)}
+            dir="auto"
+          >
+            {option.label}
+          </UiSelectItem>
+        ))}
+      </UiSelectContent>
+    </UiSelect>
   );
 }

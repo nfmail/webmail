@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { SettingsSection, SettingItem, ToggleSwitch } from './settings-section';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { useVacationStore } from '@/stores/vacation-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useManagedAccountStore } from '@/stores/managed-account-store';
@@ -136,7 +139,7 @@ export function VacationSettings() {
   if (error) {
     return (
       <SettingsSection title={t('title')} description={t('description')}>
-        <div className="text-sm text-red-600 dark:text-red-400 py-4">
+        <div className="text-sm text-destructive py-4">
           {t('fetch_error')}
         </div>
       </SettingsSection>
@@ -144,21 +147,22 @@ export function VacationSettings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <SettingsSection title={t('title')} description={t('description')}>
         <SettingItem
           label={t('status.label')}
           description={t('status.description')}
+          htmlFor="vacation-enabled"
         >
           <div className="flex items-center gap-3">
             <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
               localEnabled
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                ? 'bg-success/10 text-success'
                 : 'bg-muted text-muted-foreground'
             }`}>
               {localEnabled ? t('status.active') : t('status.inactive')}
             </span>
-            <ToggleSwitch checked={localEnabled} onChange={setLocalEnabled} />
+            <ToggleSwitch id="vacation-enabled" checked={localEnabled} onChange={setLocalEnabled} />
           </div>
         </SettingItem>
       </SettingsSection>
@@ -167,23 +171,27 @@ export function VacationSettings() {
         <SettingItem
           label={t('date_range.start')}
           description={t('date_range.start_description')}
+          htmlFor="vacation-from-date"
         >
-          <input
+          <Input
+            id="vacation-from-date"
             type="datetime-local"
             value={localFromDate ? utcToLocalDatetime(localFromDate) : ''}
             onChange={(e) => setLocalFromDate(e.target.value ? new Date(e.target.value).toISOString() : '')}
-            className="px-3 py-1.5 text-sm rounded-md bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-150 hover:border-muted-foreground"
+            className="w-auto"
           />
         </SettingItem>
         <SettingItem
           label={t('date_range.end')}
           description={t('date_range.end_description')}
+          htmlFor="vacation-to-date"
         >
-          <input
+          <Input
+            id="vacation-to-date"
             type="datetime-local"
             value={localToDate ? utcToLocalDatetime(localToDate) : ''}
             onChange={(e) => setLocalToDate(e.target.value ? new Date(e.target.value).toISOString() : '')}
-            className="px-3 py-1.5 text-sm rounded-md bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-150 hover:border-muted-foreground"
+            className="w-auto"
           />
         </SettingItem>
       </SettingsSection>
@@ -192,30 +200,30 @@ export function VacationSettings() {
         <SettingItem
           label={t('message.subject_label')}
           description={t('message.subject_description')}
+          htmlFor="vacation-subject"
         >
-          <input
+          <Input
+            id="vacation-subject"
             type="text"
             value={localSubject}
             onChange={(e) => setLocalSubject(e.target.value)}
             placeholder={t('message.subject_placeholder')}
-            className="w-64 px-3 py-1.5 text-sm rounded-md bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-150 hover:border-muted-foreground"
+            className="w-64"
           />
         </SettingItem>
         <div className="py-3">
-          <label htmlFor="vacation-body" className="text-sm font-medium text-foreground block mb-1">
-            {t('message.body_label')}
-          </label>
-          <p className="text-xs text-muted-foreground mb-2">
-            {t('message.body_description')}
-          </p>
-          <textarea
-            id="vacation-body"
-            value={localTextBody}
-            onChange={(e) => setLocalTextBody(e.target.value)}
-            placeholder={t('message.body_placeholder')}
-            rows={6}
-            className="w-full px-3 py-2 text-sm rounded-md bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-150 hover:border-muted-foreground resize-y"
-          />
+          <Field>
+            <FieldLabel htmlFor="vacation-body">{t('message.body_label')}</FieldLabel>
+            <FieldDescription>{t('message.body_description')}</FieldDescription>
+            <Textarea
+              id="vacation-body"
+              value={localTextBody}
+              onChange={(e) => setLocalTextBody(e.target.value)}
+              placeholder={t('message.body_placeholder')}
+              rows={6}
+              className="resize-y"
+            />
+          </Field>
         </div>
       </SettingsSection>
 
@@ -241,7 +249,7 @@ export function VacationSettings() {
       )}
 
       {validationWarnings.length > 0 && (
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           {validationWarnings.map((warning, i) => (
             <div key={i} className="flex items-start gap-2 text-sm text-warning">
               <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />

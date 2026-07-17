@@ -46,9 +46,10 @@ export function LanguageSettings() {
         <LanguageSwitcher />
       </SettingItem>
 
-      <SettingItem label={t('date_format.label')} description={t('date_format.description')}>
+      <SettingItem label={t('date_format.label')} description={t('date_format.description')} htmlFor="date-format-select">
         <div className="flex flex-col items-end gap-2">
           <Select
+            id="date-format-select"
             value={dateFormat}
             onChange={(value) => updateSetting('dateFormat', value as DateFormat)}
             options={[
@@ -57,7 +58,7 @@ export function LanguageSettings() {
               { value: 'full', label: t('date_format.full') },
             ]}
           />
-          <div className="text-xs text-muted-foreground text-end space-y-0.5 font-mono">
+          <div className="flex flex-col gap-0.5 text-xs text-muted-foreground text-end font-mono">
             <div>
               <span className="opacity-70">{t('date_format.preview_today')} </span>
               <span className="text-foreground/90">{preview.today}</span>
@@ -74,8 +75,9 @@ export function LanguageSettings() {
         </div>
       </SettingItem>
 
-      <SettingItem label={t('date_locale.label')} description={t('date_locale.description')}>
+      <SettingItem label={t('date_locale.label')} description={t('date_locale.description')} htmlFor="date-locale-select">
         <Select
+          id="date-locale-select"
           value={dateLocale}
           onChange={(value) => updateSetting('dateLocale', value as DateLocale)}
           options={[
@@ -98,8 +100,9 @@ export function LanguageSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('first_day.label')} description={t('first_day.description')}>
+      <SettingItem label={t('first_day.label')} description={t('first_day.description')} htmlFor="first-day-of-week-select">
         <Select
+          id="first-day-of-week-select"
           value={firstDayOfWeek.toString()}
           onChange={(value) => updateSetting('firstDayOfWeek', parseInt(value) as FirstDayOfWeek)}
           options={[

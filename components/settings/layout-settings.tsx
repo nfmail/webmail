@@ -2,9 +2,10 @@
 
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, Folder } from 'lucide-react';
+import { Folder } from 'lucide-react';
 import { useSettingsStore, type ToolbarPosition, type MailLayout } from '@/stores/settings-store';
 import { SettingsSection, SettingItem, RadioGroup, ToggleSwitch } from './settings-section';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { usePolicyStore } from '@/stores/policy-store';
 import { useAccountStore } from '@/stores/account-store';
@@ -167,6 +168,7 @@ export function LayoutSettings() {
           <RadioGroup
             value={mailLayout}
             onChange={(value) => updateSetting('mailLayout', value as MailLayout)}
+            aria-label={tEmail('mail_layout.label')}
             options={[
               { value: 'split', label: tEmail('mail_layout.split') },
               { value: 'focus', label: tEmail('mail_layout.focus') },
@@ -182,6 +184,7 @@ export function LayoutSettings() {
         <RadioGroup
           value={toolbarPosition}
           onChange={(value) => updateSetting('toolbarPosition', value as ToolbarPosition)}
+          aria-label={t('toolbar_position.label')}
           options={[
             { value: 'top', label: t('toolbar_position.top') },
             { value: 'below-subject', label: t('toolbar_position.below_subject') },
@@ -189,43 +192,49 @@ export function LayoutSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('toolbar_labels.label')} description={t('toolbar_labels.description')}>
+      <SettingItem label={t('toolbar_labels.label')} description={t('toolbar_labels.description')} htmlFor="layout-toolbar-labels">
         <ToggleSwitch
+          id="layout-toolbar-labels"
           checked={showToolbarLabels}
           onChange={(checked) => updateSetting('showToolbarLabels', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('hide_account_switcher.label')} description={t('hide_account_switcher.description')}>
+      <SettingItem label={t('hide_account_switcher.label')} description={t('hide_account_switcher.description')} htmlFor="layout-hide-account-switcher">
         <ToggleSwitch
+          id="layout-hide-account-switcher"
           checked={hideAccountSwitcher}
           onChange={(checked) => updateSetting('hideAccountSwitcher', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('show_rail_account_list.label')} description={t('show_rail_account_list.description')}>
+      <SettingItem label={t('show_rail_account_list.label')} description={t('show_rail_account_list.description')} htmlFor="layout-show-rail-account-list">
         <ToggleSwitch
+          id="layout-show-rail-account-list"
           checked={showRailAccountList}
           onChange={(checked) => updateSetting('showRailAccountList', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('colorful_sidebar_icons.label')} description={t('colorful_sidebar_icons.description')}>
+      <SettingItem label={t('colorful_sidebar_icons.label')} description={t('colorful_sidebar_icons.description')} htmlFor="layout-colorful-sidebar-icons">
         <ToggleSwitch
+          id="layout-colorful-sidebar-icons"
           checked={colorfulSidebarIcons}
           onChange={(checked) => updateSetting('colorfulSidebarIcons', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('tint_list_rows.label')} description={t('tint_list_rows.description')}>
+      <SettingItem label={t('tint_list_rows.label')} description={t('tint_list_rows.description')} htmlFor="layout-tint-list-rows">
         <ToggleSwitch
+          id="layout-tint-list-rows"
           checked={tintListRowsByTag}
           onChange={(checked) => updateSetting('tintListRowsByTag', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('show_folder_total_count.label')} description={t('show_folder_total_count.description')}>
+      <SettingItem label={t('show_folder_total_count.label')} description={t('show_folder_total_count.description')} htmlFor="layout-show-folder-total-count">
         <ToggleSwitch
+          id="layout-show-folder-total-count"
           checked={showFolderTotalCount}
           onChange={(checked) => updateSetting('showFolderTotalCount', checked)}
         />
@@ -236,8 +245,10 @@ export function LayoutSettings() {
           label={t('unified_mailbox.label')}
           description={t('unified_mailbox.description')}
           locked={isSettingLocked('enableUnifiedMailbox')}
+          htmlFor="layout-unified-mailbox"
         >
           <ToggleSwitch
+            id="layout-unified-mailbox"
             checked={enableUnifiedMailbox}
             onChange={(v) => updateSetting('enableUnifiedMailbox', v)}
           />
@@ -250,8 +261,10 @@ export function LayoutSettings() {
             label={t('unified_mailbox.include_group.label')}
             description={t('unified_mailbox.include_group.description')}
             locked={isSettingLocked('includeGroupInUnified')}
+            htmlFor="layout-include-group-in-unified"
           >
             <ToggleSwitch
+              id="layout-include-group-in-unified"
               checked={includeGroupInUnified}
               onChange={(v) => updateSetting('includeGroupInUnified', v)}
             />
@@ -260,7 +273,7 @@ export function LayoutSettings() {
       )}
 
       {enableUnifiedMailbox && crossViews.some(c => c.allowed) && (
-        <div className="ms-4 border-s-2 border-border ps-4 -mt-2 space-y-2">
+        <div className="ms-4 border-s-2 border-border ps-4 -mt-2 flex flex-col gap-2">
           {crossViews.map(({ setting, value, allowed, labelKey, descKey }) => (
             allowed && !isSettingHidden(setting) && (
               <SettingItem
@@ -268,8 +281,10 @@ export function LayoutSettings() {
                 label={t(labelKey)}
                 description={t(descKey)}
                 locked={isSettingLocked(setting)}
+                htmlFor={`layout-${setting}`}
               >
                 <ToggleSwitch
+                  id={`layout-${setting}`}
                   checked={value}
                   onChange={(v) => updateSetting(setting, v)}
                 />
@@ -284,8 +299,10 @@ export function LayoutSettings() {
           label={t('all_mail.label')}
           description={t('all_mail.description')}
           locked={isSettingLocked('enableAllMailView')}
+          htmlFor="layout-all-mail-view"
         >
           <ToggleSwitch
+            id="layout-all-mail-view"
             checked={enableAllMailView}
             onChange={(v) => updateSetting('enableAllMailView', v)}
           />
@@ -293,7 +310,7 @@ export function LayoutSettings() {
       )}
 
       {allMailViewAllowed && enableAllMailView && (
-        <div className="ms-4 border-s-2 border-border ps-4 -mt-2 space-y-2">
+        <div className="ms-4 border-s-2 border-border ps-4 -mt-2 flex flex-col gap-2">
           <div>
             <div className="text-sm font-medium text-foreground">{t('all_mail.folders_label')}</div>
             <div className="text-xs text-muted-foreground">{t('all_mail.folders_description')}</div>
@@ -304,27 +321,21 @@ export function LayoutSettings() {
           {ownMailboxes.length === 0 ? (
             <p className="text-xs text-muted-foreground">{t('all_mail.no_folders')}</p>
           ) : (
-            <div className="space-y-0.5">
+            <div className="flex flex-col gap-0.5">
               {ownMailboxes.map((mb) => {
                 const checked = allMailSelected.has(mb.id);
                 return (
-                  <button
+                  <label
                     key={mb.id}
-                    type="button"
-                    onClick={() => toggleAllMailFolder(mb.id)}
-                    className="w-full flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-muted/50 text-start"
-                    role="checkbox"
-                    aria-checked={checked}
+                    className="w-full flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-muted/50 cursor-pointer"
                   >
-                    <span className={cn(
-                      "flex items-center justify-center w-4 h-4 rounded border flex-shrink-0 transition-colors",
-                      checked ? "bg-primary border-primary text-primary-foreground" : "border-border"
-                    )}>
-                      {checked && <Check className="w-3 h-3" />}
-                    </span>
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => toggleAllMailFolder(mb.id)}
+                    />
                     <Folder className={cn("w-4 h-4 flex-shrink-0", mb.role ? "text-primary" : "text-muted-foreground")} />
                     <span className="text-sm text-foreground truncate">{mb.name}</span>
-                  </button>
+                  </label>
                 );
               })}
             </div>
@@ -332,8 +343,9 @@ export function LayoutSettings() {
         </div>
       )}
 
-      <SettingItem label={t('pro_interface.label')} description={t('pro_interface.description')}>
+      <SettingItem label={t('pro_interface.label')} description={t('pro_interface.description')} htmlFor="layout-pro-interface">
         <ToggleSwitch
+          id="layout-pro-interface"
           checked={proInterface}
           onChange={(v) => updateSetting('proInterface', v)}
         />

@@ -31,19 +31,19 @@ function getPreviewIcon(file: SampleFile, colored: boolean, size: "sm" | "lg") {
   const cls = size === "sm" ? "w-4 h-4 flex-shrink-0" : "w-8 h-8 flex-shrink-0";
 
   if (file.isFolder) {
-    return <Folder className={cn(cls, colored ? "text-blue-500" : "text-muted-foreground")} />;
+    return <Folder className={cn(cls, colored ? "text-primary" : "text-muted-foreground")} />;
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase();
   switch (ext) {
     case "jpg": case "png": case "gif":
-      return <ImageIcon className={cn(cls, colored ? "text-emerald-500" : "text-muted-foreground")} />;
+      return <ImageIcon className={cn(cls, colored ? "text-success" : "text-muted-foreground")} />;
     case "mp3": case "wav":
       return <FileAudio className={cn(cls, colored ? "text-purple-500" : "text-muted-foreground")} />;
     case "pdf":
-      return <FileText className={cn(cls, colored ? "text-red-600" : "text-muted-foreground")} />;
+      return <FileText className={cn(cls, colored ? "text-destructive" : "text-muted-foreground")} />;
     case "md": case "json": case "js": case "ts":
-      return <FileCode className={cn(cls, colored ? "text-yellow-600" : "text-muted-foreground")} />;
+      return <FileCode className={cn(cls, colored ? "text-warning" : "text-muted-foreground")} />;
     default:
       return <File className={cn(cls, "text-muted-foreground")} />;
   }
@@ -149,12 +149,12 @@ function FilesSettingsPreview({ settings }: { settings: FilesSettings }) {
       </div>
       <div className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-foreground bg-accent rounded-sm mx-1">
         <ChevronDown className="w-2.5 h-2.5 flex-shrink-0" />
-        <FolderOpen className="w-3 h-3 flex-shrink-0 text-blue-500" />
+        <FolderOpen className="w-3 h-3 flex-shrink-0 text-primary" />
         <span className="truncate">Documents</span>
       </div>
       <div className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-muted-foreground" style={{ paddingLeft: "1.25rem" }}>
         <ChevronRight className="w-2.5 h-2.5 flex-shrink-0" />
-        <Folder className="w-3 h-3 flex-shrink-0 text-blue-500" />
+        <Folder className="w-3 h-3 flex-shrink-0 text-primary" />
         <span className="truncate">Photos</span>
       </div>
     </div>
@@ -200,12 +200,13 @@ export function FilesSettingsComponent() {
         <FilesSettingsPreview settings={settings} />
       </div>
 
-      <div className="space-y-8">
+      <div className="flex flex-col gap-8">
         <SettingsSection title={t("display.title")} description={t("display.description")}>
         <SettingItem label={t("folder_layout.label")} description={t("folder_layout.description")}>
           <RadioGroup
             value={settings.folderLayout}
             onChange={(v) => update({ folderLayout: v as FolderLayout })}
+            aria-label={t("folder_layout.label")}
             options={[
               { value: "inline", label: t("folder_layout.inline") },
               { value: "sidebar", label: t("folder_layout.sidebar") },
@@ -216,6 +217,7 @@ export function FilesSettingsComponent() {
           <RadioGroup
             value={settings.defaultViewMode}
             onChange={(v) => update({ defaultViewMode: v as "list" | "grid" })}
+            aria-label={t("default_view.label")}
             options={[
               { value: "list", label: t("default_view.list") },
               { value: "grid", label: t("default_view.grid") },
@@ -226,6 +228,7 @@ export function FilesSettingsComponent() {
           <RadioGroup
             value={settings.defaultSortKey}
             onChange={(v) => update({ defaultSortKey: v as "name" | "size" | "modified" })}
+            aria-label={t("default_sort.label")}
             options={[
               { value: "name", label: t("default_sort.name") },
               { value: "size", label: t("default_sort.size") },
@@ -237,6 +240,7 @@ export function FilesSettingsComponent() {
           <RadioGroup
             value={settings.defaultSortDir}
             onChange={(v) => update({ defaultSortDir: v as "asc" | "desc" })}
+            aria-label={t("sort_direction.label")}
             options={[
               { value: "asc", label: t("sort_direction.ascending") },
               { value: "desc", label: t("sort_direction.descending") },
@@ -246,21 +250,24 @@ export function FilesSettingsComponent() {
       </SettingsSection>
 
       <SettingsSection title={t("icons.title")} description={t("icons.description")}>
-        <SettingItem label={t("show_icons.label")} description={t("show_icons.description")}>
+        <SettingItem label={t("show_icons.label")} description={t("show_icons.description")} htmlFor="files-show-icons">
           <ToggleSwitch
+            id="files-show-icons"
             checked={settings.showIcons}
             onChange={(v) => update({ showIcons: v })}
           />
         </SettingItem>
-        <SettingItem label={t("colored_icons.label")} description={t("colored_icons.description")}>
+        <SettingItem label={t("colored_icons.label")} description={t("colored_icons.description")} htmlFor="files-colored-icons">
           <ToggleSwitch
+            id="files-colored-icons"
             checked={settings.coloredIcons}
             onChange={(v) => update({ coloredIcons: v })}
             disabled={!settings.showIcons}
           />
         </SettingItem>
-        <SettingItem label={t("show_thumbnails.label")} description={t("show_thumbnails.description")}>
+        <SettingItem label={t("show_thumbnails.label")} description={t("show_thumbnails.description")} htmlFor="files-show-thumbnails">
           <ToggleSwitch
+            id="files-show-thumbnails"
             checked={settings.showThumbnails}
             onChange={(v) => update({ showThumbnails: v })}
           />
@@ -268,8 +275,9 @@ export function FilesSettingsComponent() {
       </SettingsSection>
 
       <SettingsSection title={t("behavior.title")} description={t("behavior.description")}>
-        <SettingItem label={t("show_hidden.label")} description={t("show_hidden.description")}>
+        <SettingItem label={t("show_hidden.label")} description={t("show_hidden.description")} htmlFor="files-show-hidden">
           <ToggleSwitch
+            id="files-show-hidden"
             checked={settings.showHiddenFiles}
             onChange={(v) => update({ showHiddenFiles: v })}
           />

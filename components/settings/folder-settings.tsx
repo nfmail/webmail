@@ -287,6 +287,7 @@ export function FolderSettings() {
               }
             }}
             placeholder={parentId ? t('subfolder_name') : t('new_folder_name')}
+            aria-label={parentId ? t('subfolder_name') : t('new_folder_name')}
             className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             autoFocus
             disabled={isLoading}
@@ -333,6 +334,7 @@ export function FolderSettings() {
               if (e.key === 'Enter') handleRename(mb.id);
               if (e.key === 'Escape') cancelEdit();
             }}
+            aria-label={t('rename')}
             className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             autoFocus
             disabled={isLoading}
@@ -495,10 +497,10 @@ export function FolderSettings() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-8">
       {/* Folder List - primary section */}
       <SettingsSection title={t('folder_list')} description={t('folder_list_description')}>
-        <div className="space-y-0.5">
+        <div className="flex flex-col gap-0.5">
           {folderTree.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <Folder className="w-10 h-10 text-muted-foreground/40 mb-3" />
@@ -535,8 +537,9 @@ export function FolderSettings() {
           };
 
           return (
-            <SettingItem key={role} label={t(`role_${role}`)}>
+            <SettingItem key={role} label={t(`role_${role}`)} htmlFor={`folder-role-${role}`}>
               <Select
+                id={`folder-role-${role}`}
                 value={getRoleMailboxId(role)}
                 onChange={(value) => handleRoleChange(role, value)}
                 options={[

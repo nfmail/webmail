@@ -8,6 +8,14 @@ import * as OTPAuth from 'otpauth';
 import { Shield, Key, Smartphone, Lock, Trash2, Plus, Eye, EyeOff, Copy, Check, Loader2, Monitor, Terminal, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import { SettingsSection, SettingItem, ToggleSwitch } from './settings-section';
 import { useAccountSecurityStore, type AppPasswordInfo, type ApiKeyInfo, type AppCredentialInput } from '@/stores/account-security-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -54,75 +62,87 @@ function PasswordChangeSection() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2 mb-2">
         <Key className="w-4 h-4 text-muted-foreground" />
         <h4 className="text-sm font-medium text-foreground">{t('password.title')}</h4>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">{t('password.current')}</label>
-          <div className="relative">
-            <Input
-              type={showCurrent ? 'text' : 'password'}
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              className="pe-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowCurrent(!showCurrent)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-4">
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="security-current-password">{t('password.current')}</FieldLabel>
+              <div className="relative">
+                <Input
+                  id="security-current-password"
+                  type={showCurrent ? 'text' : 'password'}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="pe-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrent(!showCurrent)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="security-new-password">{t('password.new')}</FieldLabel>
+              <div className="relative">
+                <Input
+                  id="security-new-password"
+                  type={showNew ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  className="pe-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNew(!showNew)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </Field>
+            <Field data-invalid={error ? true : undefined}>
+              <FieldLabel htmlFor="security-confirm-password">{t('password.confirm')}</FieldLabel>
+              <Input
+                id="security-confirm-password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={8}
+                autoComplete="new-password"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? 'security-password-error' : undefined}
+              />
+              {error && (
+                <FieldError id="security-password-error" aria-live="polite">
+                  {error}
+                </FieldError>
+              )}
+            </Field>
+          </FieldGroup>
+          <Button
+            type="submit"
+            size="sm"
+            className="self-start"
+            disabled={isSaving || !currentPassword || !newPassword || !confirmPassword}
+          >
+            {isSaving ? <Loader2 className="w-4 h-4 me-2 animate-spin" /> : null}
+            {t('password.submit')}
+          </Button>
         </div>
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">{t('password.new')}</label>
-          <div className="relative">
-            <Input
-              type={showNew ? 'text' : 'password'}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              minLength={8}
-              autoComplete="new-password"
-              className="pe-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowNew(!showNew)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-        </div>
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">{t('password.confirm')}</label>
-          <Input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            minLength={8}
-            autoComplete="new-password"
-          />
-        </div>
-        {error && (
-          <p className="text-xs text-destructive">{error}</p>
-        )}
-        <Button
-          type="submit"
-          size="sm"
-          disabled={isSaving || !currentPassword || !newPassword || !confirmPassword}
-        >
-          {isSaving ? <Loader2 className="w-4 h-4 me-2 animate-spin" /> : null}
-          {t('password.submit')}
-        </Button>
       </form>
     </div>
   );
@@ -158,9 +178,10 @@ function DisplayNameSection() {
   }
 
   return (
-    <SettingItem label={t('display_name.label')} description={t('display_name.description')}>
+    <SettingItem label={t('display_name.label')} description={t('display_name.description')} htmlFor="security-display-name">
       <div className="flex items-center gap-2">
         <Input
+          id="security-display-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder={displayName || t('display_name.placeholder')}
@@ -279,40 +300,63 @@ function TotpSection() {
   }
 
   return (
-    <div className="space-y-3">
-      <SettingItem label={t('totp.label')} description={t('totp.description')}>
+    <div className="flex flex-col gap-3">
+      <SettingItem label={t('totp.label')} description={t('totp.description')} htmlFor="totp-toggle">
         <div className="flex items-center gap-2">
           <ToggleSwitch
+            id="totp-toggle"
             checked={otpEnabled || !!setupUrl}
             onChange={handleToggle}
             disabled={isSaving}
           />
-          <span className={cn('text-xs font-medium', otpEnabled ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground')}>
+          <span className={cn('text-xs font-medium', otpEnabled ? 'text-success' : 'text-muted-foreground')}>
             {otpEnabled ? t('totp.active') : t('totp.inactive')}
           </span>
         </div>
       </SettingItem>
 
       {setupUrl && (
-        <div className="ms-4 p-3 bg-muted rounded-md space-y-3">
+        <div className="ms-4 flex flex-col gap-3 p-3 bg-muted rounded-md">
           <p className="text-xs text-muted-foreground">{t('totp.setup_instructions')}</p>
           {qrDataUrl && (
             <div className="flex justify-center">
+              {/* QR codes need a fixed light backdrop for scanner contrast, regardless of theme. */}
               <img src={qrDataUrl} alt="TOTP QR code" className="rounded bg-white p-2" />
             </div>
           )}
           <div className="flex items-center gap-2">
             <code className="text-xs bg-background px-2 py-1 rounded border border-border flex-1 truncate">{setupUrl}</code>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t('password.current')}</label>
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t('totp.verification_code')}</label>
-            <Input value={otpCode} onChange={(e) => setOtpCode(e.target.value)} inputMode="numeric" maxLength={6} />
-          </div>
-          {setupError && <p className="text-xs text-destructive">{setupError}</p>}
+          <FieldGroup>
+            <Field data-invalid={setupError ? true : undefined}>
+              <FieldLabel htmlFor="totp-setup-password">{t('password.current')}</FieldLabel>
+              <Input
+                id="totp-setup-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                aria-invalid={setupError ? true : undefined}
+              />
+            </Field>
+            <Field data-invalid={setupError ? true : undefined}>
+              <FieldLabel htmlFor="totp-setup-code">{t('totp.verification_code')}</FieldLabel>
+              <Input
+                id="totp-setup-code"
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
+                inputMode="numeric"
+                maxLength={6}
+                aria-invalid={setupError ? true : undefined}
+                aria-describedby={setupError ? 'totp-setup-error' : undefined}
+              />
+              {setupError && (
+                <FieldError id="totp-setup-error" aria-live="polite">
+                  {setupError}
+                </FieldError>
+              )}
+            </Field>
+          </FieldGroup>
           <div className="flex gap-2">
             <Button size="sm" onClick={confirmSetup} disabled={isSaving || !password || !otpCode}>
               {isSaving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : null}
@@ -324,16 +368,25 @@ function TotpSection() {
       )}
 
       {disableOpen && (
-        <div className="ms-4 p-3 bg-muted rounded-md space-y-2">
+        <div className="ms-4 flex flex-col gap-2 p-3 bg-muted rounded-md">
           <p className="text-xs text-muted-foreground">{t('totp.disable_confirm_prompt')}</p>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t('password.current')}
-            autoComplete="current-password"
-          />
-          {setupError && <p className="text-xs text-destructive">{setupError}</p>}
+          <Field data-invalid={setupError ? true : undefined}>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t('password.current')}
+              aria-label={t('password.current')}
+              autoComplete="current-password"
+              aria-invalid={setupError ? true : undefined}
+              aria-describedby={setupError ? 'totp-disable-error' : undefined}
+            />
+            {setupError && (
+              <FieldError id="totp-disable-error" aria-live="polite">
+                {setupError}
+              </FieldError>
+            )}
+          </Field>
           <div className="flex gap-2">
             <Button size="sm" variant="destructive" onClick={handleDisable} disabled={isSaving || !password}>
               {isSaving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : null}
@@ -452,7 +505,7 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
 
   if (isLoadingAuth) {
     return (
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 mb-2">
           <Icon className="w-4 h-4 text-muted-foreground" />
           <h4 className="text-sm font-medium text-foreground">{tk('title')}</h4>
@@ -463,7 +516,7 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
   }
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-muted-foreground" />
@@ -477,7 +530,7 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
       <p className="text-xs text-muted-foreground">{tk('description')}</p>
 
       {createdSecret && (
-        <div className="p-3 bg-muted rounded-md space-y-2">
+        <div className="flex flex-col gap-2 p-3 bg-muted rounded-md">
           <p className="text-xs text-muted-foreground">{tk('copy_now_warning')}</p>
           <div className="flex items-center gap-2">
             <code className="text-xs bg-background px-2 py-1 rounded border border-border flex-1 font-mono break-all">
@@ -494,45 +547,59 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
       )}
 
       {showAdd && (
-        <form onSubmit={handleAdd} className="p-3 bg-muted rounded-md space-y-2">
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{tk('name_label')}</label>
-            <Input
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              placeholder={tk('name_placeholder')}
-              required
-            />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t('app_passwords.expires_label')}</label>
-            <Input type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t('app_passwords.allowed_ips_label')}</label>
-            <textarea
-              value={allowedIpsRaw}
-              onChange={(e) => setAllowedIpsRaw(e.target.value)}
-              placeholder={t('app_passwords.allowed_ips_placeholder')}
-              rows={2}
-              className="w-full text-xs font-mono px-3 py-2 rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <p className="text-[10px] text-muted-foreground mt-1">{t('app_passwords.allowed_ips_hint')}</p>
-          </div>
-          <div className="flex gap-2">
-            <Button type="submit" size="sm" disabled={isSaving || !newDescription.trim()}>
-              {isSaving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : null}
-              {t('app_passwords.create')}
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setShowAdd(false)}>
-              {t('app_passwords.cancel')}
-            </Button>
+        <form onSubmit={handleAdd} className="p-3 bg-muted rounded-md">
+          <div className="flex flex-col gap-4">
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor={`${i18nNamespace}-new-name`}>{tk('name_label')}</FieldLabel>
+                <Input
+                  id={`${i18nNamespace}-new-name`}
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder={tk('name_placeholder')}
+                  required
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor={`${i18nNamespace}-new-expires`}>{t('app_passwords.expires_label')}</FieldLabel>
+                <Input
+                  id={`${i18nNamespace}-new-expires`}
+                  type="date"
+                  value={expiresAt}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor={`${i18nNamespace}-new-ips`}>{t('app_passwords.allowed_ips_label')}</FieldLabel>
+                <Textarea
+                  id={`${i18nNamespace}-new-ips`}
+                  value={allowedIpsRaw}
+                  onChange={(e) => setAllowedIpsRaw(e.target.value)}
+                  placeholder={t('app_passwords.allowed_ips_placeholder')}
+                  rows={2}
+                  className="font-mono text-xs"
+                  aria-describedby={`${i18nNamespace}-new-ips-hint`}
+                />
+                <FieldDescription id={`${i18nNamespace}-new-ips-hint`}>
+                  {t('app_passwords.allowed_ips_hint')}
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+            <div className="flex gap-2">
+              <Button type="submit" size="sm" disabled={isSaving || !newDescription.trim()}>
+                {isSaving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : null}
+                {t('app_passwords.create')}
+              </Button>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setShowAdd(false)}>
+                {t('app_passwords.cancel')}
+              </Button>
+            </div>
           </div>
         </form>
       )}
 
       {entries.length > 0 ? (
-        <div className="space-y-1">
+        <div className="flex flex-col gap-1">
           {entries.map((entry) => (
             <CredentialRow key={entry.id} entry={entry} onRemove={handleRemove} isSaving={isSaving} />
           ))}
@@ -585,7 +652,7 @@ function EncryptionSection() {
   const isEnabled = encryptionType !== 'Disabled';
   return (
     <SettingItem label={t('encryption.label')} description={t('encryption.description')}>
-      <span className={cn('text-xs font-medium', isEnabled ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground')}>
+      <span className={cn('text-xs font-medium', isEnabled ? 'text-success' : 'text-muted-foreground')}>
         {isEnabled ? t('encryption.active', { type: encryptionType }) : t('encryption.inactive')}
       </span>
     </SettingItem>
@@ -607,34 +674,35 @@ function EmailClientSection() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <Monitor className="w-4 h-4 text-muted-foreground" />
         <h4 className="text-sm font-medium text-foreground">{t('email_client.title')}</h4>
       </div>
       <p className="text-xs text-muted-foreground">{t('email_client.description')}</p>
-      <div className="p-3 bg-muted/70 dark:bg-muted/40 rounded-md space-y-2">
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">
+      <div className="flex flex-col gap-2 p-3 bg-muted/70 dark:bg-muted/40 rounded-md">
+        <Field>
+          <FieldLabel htmlFor="security-jmap-username">
             {t('email_client.jmap_username_label')}
-          </label>
+          </FieldLabel>
           <div className="flex rounded-lg">
-            <input
+            <Input
+              id="security-jmap-username"
               type="text"
               readOnly
               value={jmapUsername}
-              className="py-2 px-3 block w-full bg-background border border-border border-e-transparent rounded-s-lg text-sm text-foreground focus:z-10 focus:border-ring focus:ring-ring"
+              className="rounded-e-none border-e-transparent focus-visible:z-10"
             />
             <button
               type="button"
               onClick={handleCopy}
-              className="h-[38px] px-3 shrink-0 inline-flex items-center gap-1.5 rounded-e-lg border border-border bg-muted text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="h-9 px-3 shrink-0 inline-flex items-center gap-1.5 rounded-e-lg border border-border bg-muted text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
               {copied ? t('email_client.copied') : t('email_client.copy')}
             </button>
           </div>
-        </div>
+        </Field>
         <p className="text-xs text-muted-foreground pt-1">{t('email_client.password_instructions')}</p>
       </div>
     </div>
@@ -745,7 +813,7 @@ function LinkDeviceSection() {
   }, [generate]);
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <QrCode className="w-4 h-4 text-muted-foreground" />
         <h4 className="text-sm font-medium text-foreground">{t('link_device.title')}</h4>
@@ -753,8 +821,9 @@ function LinkDeviceSection() {
       <p className="text-xs text-muted-foreground">{t('link_device.description')}</p>
 
       {qrDataUrl && remaining > 0 && (
-        <div className="p-3 bg-muted/70 dark:bg-muted/40 rounded-md space-y-2">
+        <div className="flex flex-col gap-2 p-3 bg-muted/70 dark:bg-muted/40 rounded-md">
           <div className="flex justify-center">
+            {/* QR codes need a fixed light backdrop for scanner contrast, regardless of theme. */}
             <img src={qrDataUrl} alt="Pairing QR code" className="rounded bg-white p-2" />
           </div>
           <p className="text-xs text-muted-foreground text-center">{t('link_device.instructions')}</p>
@@ -826,7 +895,7 @@ export function AccountSecuritySettings() {
     return (
       <SettingsSection title={t('title')} description={t('description')}>
         {isOAuth ? (
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6">
             <LinkDeviceSection />
             <div className="border-t border-border" />
             <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: sanitizeI18nHtml(t.raw('not_available')) }} />
@@ -840,7 +909,7 @@ export function AccountSecuritySettings() {
 
   return (
     <SettingsSection title={t('title')} description={t('description')}>
-      <div className="space-y-6">
+      <div className="flex flex-col gap-6">
         {!isOAuth && (
           <>
             <PasswordChangeSection />

@@ -3,6 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Shield, Mail, X, AlertTriangle, MailCheck, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const GAME_WIDTH = 400;
@@ -165,19 +171,19 @@ export function SpamSiegeGame({ onClose }: { onClose: () => void }) {
   }, [gameState, spawnEnemy, endGame]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="relative rounded-lg border border-border bg-card shadow-xl overflow-hidden select-none"
+    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent
+        showCloseButton={false}
+        className="gap-0 border-border bg-card p-0 shadow-xl overflow-hidden select-none"
         style={{ width: GAME_WIDTH, maxWidth: "95vw" }}
-        onClick={(e) => e.stopPropagation()}
       >
+        <DialogDescription className="sr-only">
+          Bonus game: click spam and phishing messages before they reach the inbox. Three misses ends the game.
+        </DialogDescription>
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">Spam Siege</span>
+            <DialogTitle className="text-sm font-medium text-foreground">Spam Siege</DialogTitle>
           </div>
           <button
             onClick={onClose}
@@ -255,7 +261,7 @@ export function SpamSiegeGame({ onClose }: { onClose: () => void }) {
           {gameState === "idle" && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background/95 px-8 text-center">
               <Shield className="w-10 h-10 text-primary" />
-              <div className="space-y-1.5">
+              <div className="flex flex-col gap-1.5">
                 <p className="text-base font-medium text-foreground">Spam Siege</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Click spam and phishing before they hit your inbox. Don&apos;t block legitimate
@@ -290,7 +296,7 @@ export function SpamSiegeGame({ onClose }: { onClose: () => void }) {
                   survived ? "text-success" : "text-muted-foreground/40"
                 )}
               />
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <p className="text-base font-medium text-foreground">
                   {survived ? "Inbox held" : "Inbox overrun"}
                 </p>
@@ -311,7 +317,7 @@ export function SpamSiegeGame({ onClose }: { onClose: () => void }) {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

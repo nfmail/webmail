@@ -41,8 +41,8 @@ function VersionUpdateTag() {
       className={cn(
         "ms-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium align-middle",
         important
-          ? "bg-red-500/15 text-red-700 dark:text-red-300"
-          : "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+          ? "bg-destructive/15 text-destructive"
+          : "bg-warning/15 text-warning",
       )}
     >
       {important ? label : `update: ${label}`}
@@ -163,8 +163,8 @@ export function AboutDataSettings() {
 
       <SettingsSection title={t('title')} description={t('description')}>
         {settingsSyncEnabled && (
-          <SettingItem label={t('settings_sync.label')} description={t('settings_sync.description')}>
-            <ToggleSwitch checked={!settingsSyncDisabled} onChange={(checked) => updateSetting('settingsSyncDisabled', !checked)} />
+          <SettingItem label={t('settings_sync.label')} description={t('settings_sync.description')} htmlFor="settings-sync-toggle">
+            <ToggleSwitch id="settings-sync-toggle" checked={!settingsSyncDisabled} onChange={(checked) => updateSetting('settingsSyncDisabled', !checked)} />
           </SettingItem>
         )}
 

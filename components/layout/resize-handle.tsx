@@ -10,11 +10,13 @@ interface ResizeHandleProps {
   onDoubleClick?: () => void;
   orientation?: "vertical" | "horizontal";
   className?: string;
+  /** Current position of the splitter as a percentage (0-100) for assistive tech. */
+  value?: number;
 }
 
 const KEYBOARD_STEP = 10;
 
-export function ResizeHandle({ onResizeStart, onResize, onResizeEnd, onDoubleClick, orientation = "vertical", className }: ResizeHandleProps) {
+export function ResizeHandle({ onResizeStart, onResize, onResizeEnd, onDoubleClick, orientation = "vertical", className, value = 50 }: ResizeHandleProps) {
   const isDragging = useRef(false);
   const startPos = useRef(0);
   const isHorizontal = orientation === "horizontal";
@@ -72,6 +74,9 @@ export function ResizeHandle({ onResizeStart, onResize, onResizeEnd, onDoubleCli
       role="separator"
       aria-orientation={isHorizontal ? "horizontal" : "vertical"}
       aria-label="Resize"
+      aria-valuenow={Math.round(Math.min(100, Math.max(0, value)))}
+      aria-valuemin={0}
+      aria-valuemax={100}
       tabIndex={0}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}

@@ -54,10 +54,8 @@ describe('ContactsSidebar — compose to group', () => {
     const onComposeGroup = renderSidebar();
     fireEvent.contextMenu(screen.getByText('Team'));
 
-    // Open the submenu (hover) then click "Cc".
-    const trigger = screen.getByText('groups.send_email').closest('.relative')!;
-    fireEvent.mouseOver(trigger);
-    fireEvent.mouseEnter(trigger);
+    // Open the submenu then click "Cc".
+    fireEvent.click(screen.getByRole('menuitem', { name: 'groups.send_email' }));
 
     fireEvent.click(screen.getByText('groups.send_email_cc'));
     expect(onComposeGroup).toHaveBeenCalledWith('g1', 'cc');

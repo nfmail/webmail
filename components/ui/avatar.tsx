@@ -1,6 +1,8 @@
 "use client";
 
+import * as React from "react";
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { Avatar as AvatarPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useContactStore, getContactPhotoUri } from "@/stores/contact-store";
@@ -147,15 +149,27 @@ interface AvatarProps {
   disableFavicon?: boolean;
   /** Background color used when no image source resolves. Overrides the hash-based default. */
   fallbackColor?: string;
+  /** Tooltip text. Defaults to the display name, then the email address. */
+  title?: string;
 }
 
-export function Avatar({ name, email, contactPhotoUri, size = "md", className, disableImages = false, disableFavicon = false, fallbackColor }: AvatarProps) {
-  const [imgError, setImgError] = useState(false);
+export function Avatar({ name, email, contactPhotoUri, size = "md", className, disableImages = false, disableFavicon = false, fallbackColor, title }: AvatarProps) {
+  // Set of image URLs known to be broken for this instance. Any source that
+  // errors (or resolves to the favicon 1x1 sentinel) is recorded here so the
+  // priority chain falls through to the next source and, ultimately, initials.
+  // This generalizes the previous favicon-only fallback to every image source.
+  const [failedSrcs, setFailedSrcs] = useState<Set<string>>(() => new Set());
   const [pluginAvatarUrl, setPluginAvatarUrl] = useState<string | null>(null);
   const [pluginAvatarFailed, setPluginAvatarFailed] = useState(false);
   const senderFavicons = useSettingsStore((s) => s.senderFavicons);
   const contacts = useContactStore((s) => s.contacts);
   const { devMode } = useConfig();
+
+  // Reset per-instance broken-image state whenever the identity being rendered
+  // changes, so a fresh subject is not penalized by a previous one's failures.
+  useEffect(() => {
+    setFailedSrcs(new Set());
+  }, [email, name, contactPhotoUri]);
 
   // Ask plugins (e.g. Gravatar) to resolve an avatar URL for this email address.
   // Runs whenever email or name changes; resets plugin avatar state on each change.
@@ -231,38 +245,62 @@ export function Avatar({ name, email, contactPhotoUri, size = "md", className, d
 
   const profilePic = email && domain ? getProfilePictureUrl(email, domain, devMode, name) : null;
   const showFavicon =
-    !disableFavicon && senderFavicons && faviconDomain && !PERSONAL_DOMAINS.has(faviconDomain) && !imgError && !domainFailed;
+    !disableFavicon && senderFavicons && faviconDomain && !PERSONAL_DOMAINS.has(faviconDomain) && !domainFailed;
 
   // Priority: contact photo > plugin avatar (e.g. Gravatar) > custom avatar > profile picture > company favicon > initials
   const customAvatar = devMode && email ? CUSTOM_AVATARS[email.toLowerCase()] : null;
   const pluginAvatar = pluginAvatarFailed ? null : pluginAvatarUrl;
-  const photoSrc = resolvedContactPhoto || pluginAvatar || customAvatar || profilePic || null;
-  const faviconSrc = !imgError && !domainFailed && showFavicon ? withBasePath(`/api/favicon?domain=${encodeURIComponent(faviconDomain!)}`) : null;
-  const imgSrc = disableImages ? null : (photoSrc || faviconSrc);
+  const faviconSrc =
+    showFavicon && faviconDomain
+      ? withBasePath(`/api/favicon?domain=${encodeURIComponent(faviconDomain)}`)
+      : null;
+
+  // Ordered candidate sources; the first that has not failed for this instance wins.
+  const candidateSrcs = disableImages
+    ? []
+    : ([resolvedContactPhoto, pluginAvatar, customAvatar, profilePic, faviconSrc].filter(
+        Boolean,
+      ) as string[]);
+  const imgSrc = candidateSrcs.find((src) => !failedSrcs.has(src)) ?? null;
   const isFavicon = imgSrc !== null && imgSrc === faviconSrc;
 
   const handleImgError = useCallback(() => {
-    // If the plugin avatar just failed, mark it and fall through to the next source
+    if (!imgSrc) return;
+    // Let the plugin hook layer know its resolved URL was unusable.
     if (pluginAvatar && imgSrc === pluginAvatar) {
       setPluginAvatarFailed(true);
-      return;
     }
-    setImgError(true);
-    // If this was a favicon URL (not a contact photo, plugin avatar, custom avatar or profile pic), remember the domain
-    if (faviconDomain && !resolvedContactPhoto && !pluginAvatar && !customAvatar && !profilePic) {
+    // If this was the domain favicon, remember the domain module-wide so other
+    // Avatar instances skip the known-bad request.
+    if (faviconDomain && faviconSrc && imgSrc === faviconSrc) {
       failedFaviconDomains.add(faviconDomain);
     }
-  }, [imgSrc, pluginAvatar, faviconDomain, resolvedContactPhoto, customAvatar, profilePic]);
+    // Record the broken URL so the next-priority source (or initials) is used.
+    setFailedSrcs((prev) => {
+      const next = new Set(prev);
+      next.add(imgSrc);
+      return next;
+    });
+  }, [imgSrc, pluginAvatar, faviconDomain, faviconSrc]);
+
+  const resolvedTitle = title ?? (name || email);
 
   return (
-    <div
+    <AvatarPrimitive.Root
+      data-slot="avatar"
       className={cn(
-        "rounded-full flex items-center justify-center font-semibold text-white overflow-hidden",
+        "rounded-full flex items-center justify-center font-semibold text-white overflow-hidden select-none",
         sizeClasses[size],
-        className
+        className,
       )}
-      style={{ backgroundColor: imgSrc ? (isFavicon ? "#ffffff" : "transparent") : (fallbackColor ?? getBackgroundColor()) }}
-      title={name || email}
+      style={{
+        backgroundColor: imgSrc
+          ? isFavicon
+            ? "#ffffff"
+            : "transparent"
+          : fallbackColor ?? getBackgroundColor(),
+      }}
+      title={resolvedTitle}
     >
       {imgSrc ? (
         <img
@@ -281,8 +319,113 @@ export function Avatar({ name, email, contactPhotoUri, size = "md", className, d
           }}
         />
       ) : (
-        getInitials()
+        <AvatarPrimitive.Fallback data-slot="avatar-fallback" className="leading-none">
+          {getInitials()}
+        </AvatarPrimitive.Fallback>
       )}
-    </div>
+    </AvatarPrimitive.Root>
   );
 }
+
+/**
+ * Vanilla shadcn/ui Avatar primitives, kept for future composition (e.g. cases
+ * that want Radix's async image loading directly). The rich {@link Avatar}
+ * above is the primary, behavior-rich component used across the app.
+ */
+function AvatarRoot({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+  return (
+    <AvatarPrimitive.Root
+      data-slot="avatar-root"
+      className={cn(
+        "relative flex size-8 shrink-0 overflow-hidden rounded-full select-none",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function AvatarImage({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+  return (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn("aspect-square size-full", className)}
+      {...props}
+    />
+  );
+}
+
+function AvatarFallback({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="avatar-badge"
+      className={cn(
+        "absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-background select-none",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="avatar-group"
+      className={cn(
+        "group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function AvatarGroupCount({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="avatar-group-count"
+      className={cn(
+        "relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export {
+  AvatarRoot,
+  AvatarImage,
+  AvatarFallback,
+  AvatarBadge,
+  AvatarGroup,
+  AvatarGroupCount,
+};
+
+export type { AvatarProps };

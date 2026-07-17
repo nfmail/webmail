@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface PromptDialogProps {
   isOpen: boolean;
@@ -18,6 +25,14 @@ interface PromptDialogProps {
   cancelText?: string;
 }
 
+/**
+ * PromptDialog built on the shadcn Dialog primitive plus a text Input.
+ *
+ * Radix handles focus trapping, Escape, and the aria wiring. A manual
+ * `mousedown`-outside listener is retained because Radix dismisses on
+ * `pointerdown`, whereas the characterization suite closes the dialog with
+ * `fireEvent.mouseDown(document.body)`.
+ */
 export function PromptDialog({
   isOpen,
   onClose,
@@ -30,41 +45,32 @@ export function PromptDialog({
   cancelText,
 }: PromptDialogProps) {
   const t = useTranslations("confirm_dialog");
-  const id = useId();
   const [value, setValue] = useState(defaultValue);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const dialogRef = useFocusTrap({
-    isActive: isOpen,
-    onEscape: onClose,
-    restoreFocus: true,
-  });
+  const handleOpenChange = (open: boolean) => {
+    if (!open) onClose();
+  };
 
   useEffect(() => {
     if (isOpen) {
       setValue(defaultValue);
-      const t = setTimeout(() => {
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      }, 50);
-      return () => clearTimeout(t);
     }
   }, [isOpen, defaultValue]);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleBackdropClick = (e: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+    const handleBackdropMouseDown = (e: MouseEvent) => {
+      const content = document.querySelector('[data-slot="dialog-content"]');
+      if (content && !content.contains(e.target as Node)) {
         onClose();
       }
     };
 
-    document.addEventListener("mousedown", handleBackdropClick);
-    return () => document.removeEventListener("mousedown", handleBackdropClick);
-  }, [isOpen, onClose, dialogRef]);
-
-  if (!isOpen) return null;
+    document.addEventListener("mousedown", handleBackdropMouseDown);
+    return () =>
+      document.removeEventListener("mousedown", handleBackdropMouseDown);
+  }, [isOpen, onClose]);
 
   const resolvedConfirmText = confirmText || t("confirm");
   const resolvedCancelText = cancelText || t("cancel");
@@ -82,45 +88,44 @@ export function PromptDialog({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150">
-      <div
-        ref={dialogRef}
-        role="dialog"
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-md"
         aria-modal="true"
-        aria-labelledby={`${id}-title`}
-        className="bg-background border border-border rounded-lg shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200"
+        aria-describedby={undefined}
       >
         <form onSubmit={handleSubmit}>
-          <div className="p-6">
-            <h2
-              id={`${id}-title`}
-              className="text-lg font-semibold text-foreground"
-            >
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold text-foreground">
               {title}
-            </h2>
-            {message && (
-              <p className="mt-2 text-sm text-muted-foreground">{message}</p>
-            )}
-            <Input
-              ref={inputRef}
-              type="text"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder={placeholder}
-              className="mt-4"
-            />
-          </div>
+            </DialogTitle>
+            {message ? (
+              <DialogDescription className="mt-2 text-sm text-muted-foreground">
+                {message}
+              </DialogDescription>
+            ) : null}
+          </DialogHeader>
 
-          <div className="flex items-center justify-end gap-3 px-6 pb-6">
+          <Input
+            type="text"
+            autoFocus
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={placeholder}
+            className="mt-4"
+          />
+
+          <DialogFooter className="mt-6">
             <Button type="button" variant="outline" onClick={onClose}>
               {resolvedCancelText}
             </Button>
             <Button type="submit" variant="default" disabled={!canSubmit}>
               {resolvedConfirmText}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

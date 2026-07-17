@@ -14,6 +14,9 @@ function makeMockClient(initial: FileNode[] = []) {
     getCapabilities: () => ({}),
     probeFileNodeSupport: async () => true,
     getFilesAccountId: () => 'acct',
+    supportsPrincipals: () => false,
+    getPrincipals: async () => [],
+    listAllFileNodesAcrossAccounts: async () => nodes.map(n => ({ ...n })),
     async listAllFileNodes() {
       return nodes.map(n => ({ ...n }));
     },
@@ -107,6 +110,8 @@ describe('file-store hierarchy (issue #379)', () => {
   beforeEach(() => {
     useFileStore.setState({
       client: null,
+      provider: null,
+      collaboration: null,
       currentParentId: null,
       currentPath: '/',
       pathStack: [{ id: null, name: '' }],

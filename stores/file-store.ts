@@ -1,6 +1,16 @@
 import { create } from 'zustand';
+import type {
+  FileItem,
+  FileItemPermissions,
+  FileProvider,
+} from '@/lib/files/provider';
+import type {
+  FileCollaborationPermissions,
+  FileCollaborationService,
+} from '@/lib/files/collaboration';
+import { createJmapFileServices } from '@/lib/files/jmap-provider';
 import type { IJMAPClient } from '@/lib/jmap/client-interface';
-import type { FileNode, FileNodeRights } from '@/lib/jmap/types';
+import type { FileNode } from '@/lib/jmap/types';
 
 export interface FileResource {
   id: string;
@@ -10,13 +20,11 @@ export interface FileResource {
   contentType: string;
   contentLength: number;
   lastModified: string;
-  blobId: string | null;
   parentId: string | null;
-  // Sharing (RFC 9670). `shareWith` has entries when this node is shared out by
-  // the current user; `myRights` describes what the viewer may do; `isShared`
-  // marks nodes owned by another principal and surfaced under "Shared with me".
-  myRights?: FileNodeRights;
-  shareWith?: Record<string, FileNodeRights> | null;
+  permissions: FileItemPermissions;
+  // Collaboration metadata stays separate from provider capabilities.
+  collaborationPermissions?: FileCollaborationPermissions;
+  shares?: Readonly<Record<string, FileCollaborationPermissions>> | null;
   isShared?: boolean;
   ownerAccountId?: string;
   ownerName?: string;
@@ -41,7 +49,11 @@ interface ClipboardState {
 
 interface UndoAction {
   type: 'rename' | 'move';
-  entries: { id: string; from: Partial<Pick<FileNode, 'name' | 'parentId'>>; to: Partial<Pick<FileNode, 'name' | 'parentId'>> }[];
+  entries: {
+    id: string;
+    from: { name?: string; parentId?: string | null };
+    to: { name?: string; parentId?: string | null };
+  }[];
   sourceParentId: string | null;
 }
 
@@ -58,6 +70,8 @@ interface FileState {
   /** Progress of the one-time legacy flat-node migration; null when idle. */
   migrationProgress: { current: number; total: number } | null;
   client: IJMAPClient | null;
+  provider: FileProvider | null;
+  collaboration: FileCollaborationService | null;
   /** Which connected account's files are being browsed. Pro shell only - null in single-account contexts. */
   currentAccountId: string | null;
   clipboard: ClipboardState | null;
@@ -114,7 +128,11 @@ interface FileState {
   addRecentFile: (name: string, id: string) => void;
   undoLastAction: () => Promise<void>;
   /** Add, update (rights), or remove (rights=null) a principal's share on a node. */
-  shareResource: (id: string, principalId: string, rights: FileNodeRights | null) => Promise<void>;
+  shareResource: (
+    id: string,
+    principalId: string,
+    permissions: FileCollaborationPermissions | null,
+  ) => Promise<void>;
   /** Load the top-level nodes shared with the user by other principals. */
   loadSharedRoots: () => Promise<void>;
 }
@@ -153,35 +171,27 @@ function isFolder(node: Pick<FileNode, 'blobId'>): boolean {
   return node.blobId == null;
 }
 
-// Direct children of a given parent in the FileNode hierarchy.
-function childrenOf(nodes: FileNode[], parentId: string | null): FileNode[] {
-  return nodes.filter(n => (n.parentId ?? null) === parentId);
-}
-
-// Nodes from a non-primary (shared) account are namespaced "accountId:nodeId"
-// by listAllFileNodesAcrossAccounts(). JMAP ids never contain ':', so the
-// separator unambiguously marks a node we're browsing inside a shared account.
-function isCrossAccountId(id: string | null): boolean {
-  return id != null && id.includes(':');
-}
-
-function nodeToResource(node: FileNode): FileResource {
-  const isDir = isFolder(node);
+function itemToResource(
+  item: FileItem,
+  collaboration?: FileCollaborationService | null,
+): FileResource {
+  const metadata = collaboration?.getMetadata(item.id);
+  const isDir = item.kind === 'directory';
   return {
-    id: node.id,
-    name: node.name,
-    serverName: node.name,
+    id: item.id,
+    name: item.name,
+    serverName: item.name,
     isDirectory: isDir,
-    contentType: isDir ? '' : node.type,
-    contentLength: node.size,
-    lastModified: node.updated || node.created,
-    blobId: node.blobId,
-    parentId: node.parentId,
-    myRights: node.myRights,
-    shareWith: node.shareWith,
-    isShared: node.isShared,
-    ownerAccountId: node.accountId,
-    ownerName: node.accountName,
+    contentType: item.mediaType ?? '',
+    contentLength: item.size ?? 0,
+    lastModified: item.modifiedAt ?? item.createdAt ?? '',
+    parentId: item.parentId,
+    permissions: item.permissions,
+    collaborationPermissions: metadata?.ownPermissions,
+    shares: metadata?.shares,
+    isShared: item.isShared,
+    ownerAccountId: item.owner?.id,
+    ownerName: item.owner?.displayName,
   };
 }
 
@@ -196,16 +206,50 @@ function sortResources(resources: FileResource[]): FileResource[] {
 // Resolve a display path (e.g. "/Documents/Notes") to a FileNode id by walking
 // the hierarchy from the root. Returns null for the root, or undefined if any
 // segment can't be found.
-function resolvePathToId(nodes: FileNode[], path: string): string | null | undefined {
+async function resolvePathToId(
+  provider: FileProvider,
+  path: string,
+): Promise<string | null | undefined> {
   if (path === '/' || path === '') return null;
   const segments = path.split('/').filter(Boolean);
   let parentId: string | null = null;
   for (const segment of segments) {
-    const match: FileNode | undefined = childrenOf(nodes, parentId).find(n => n.name === segment && isFolder(n));
+    const page = await provider.list({ parentId });
+    const match = page.items.find(
+      (item) => item.name === segment && item.kind === 'directory',
+    );
     if (!match) return undefined;
     parentId = match.id;
   }
   return parentId;
+}
+
+async function fileContentToBlob(
+  content: Blob | ReadableStream<Uint8Array>,
+  mediaType?: string,
+): Promise<Blob> {
+  if (content instanceof Blob) return content;
+  const blob = await new Response(content).blob();
+  return blob.type || !mediaType ? blob : blob.slice(0, blob.size, mediaType);
+}
+
+async function downloadToBrowser(
+  body: Blob | ReadableStream<Uint8Array>,
+  fileName: string,
+  mediaType: string,
+): Promise<void> {
+  const blob = await fileContentToBlob(body, mediaType);
+  const url = URL.createObjectURL(blob);
+  try {
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }
 
 function getUniqueName(name: string, existingNames: Set<string>): string {
@@ -235,6 +279,8 @@ export const useFileStore = create<FileState>((set, get) => ({
   uploadProgress: null,
   migrationProgress: null,
   client: null,
+  provider: null,
+  collaboration: null,
   currentAccountId: null,
   clipboard: null,
   uploadAbortController: null,
@@ -248,7 +294,14 @@ export const useFileStore = create<FileState>((set, get) => ({
   })(),
 
   initClient: (client: IJMAPClient, accountId?: string | null) => {
-    const patch: Partial<FileState> = { client };
+    const services = createJmapFileServices(client, {
+      id: accountId ? `jmap-files:${accountId}` : 'jmap-files',
+    });
+    const patch: Partial<FileState> = {
+      client,
+      provider: services.provider,
+      collaboration: services.collaboration,
+    };
     if (accountId !== undefined) patch.currentAccountId = accountId;
     set(patch);
   },
@@ -256,6 +309,8 @@ export const useFileStore = create<FileState>((set, get) => ({
   clearClient: () => {
     set({
       client: null,
+      provider: null,
+      collaboration: null,
       currentAccountId: null,
       supportsFiles: null,
       pathStack: [{ id: null, name: '' }],
@@ -269,14 +324,14 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   checkSupport: async () => {
-    const { client } = get();
-    if (!client) {
+    const { client, provider } = get();
+    if (!provider) {
       set({ supportsFiles: false });
       return false;
     }
-    // First check capability, then probe with a real request
-    const supported = await client.probeFileNodeSupport();
-    if (!supported) {
+    const capabilities = await provider.getCapabilities();
+    const supported = capabilities.browse;
+    if (!supported && client) {
       console.warn('[Files] JMAP FileNode not supported. Available capabilities:', Object.keys(client.getCapabilities()));
     }
     set({ supportsFiles: supported });
@@ -479,8 +534,8 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   navigate: async (parentId: string | null, name?: string) => {
-    const { client, pathStack } = get();
-    if (!client) return;
+    const { provider, collaboration, pathStack } = get();
+    if (!provider) return;
 
     set({ isLoading: true, error: null, currentParentId: parentId, selectedResources: new Set() });
 
@@ -505,20 +560,26 @@ export const useFileStore = create<FileState>((set, get) => ({
     try { localStorage.setItem('files-path-stack', JSON.stringify(newStack)); } catch { /* ignore */ }
 
     try {
-      // Fetch the whole tree once and select the current parent's direct
-      // children locally. Hierarchy is derived from parentId links, exactly as
-      // the JMAP FileNode spec intends (issue #379). When browsing inside a
-      // folder shared by another principal (namespaced id), pull the tree
-      // across all accessible accounts so the shared subtree is visible.
-      const allNodes = isCrossAccountId(parentId)
-        ? await client.listAllFileNodesAcrossAccounts()
-        : await client.listAllFileNodes();
-      const resources = sortResources(childrenOf(allNodes, parentId).map(nodeToResource));
+      const page = await provider.list({ parentId });
+      const resources = sortResources(
+        page.items.map((item) => itemToResource(item, collaboration)),
+      );
 
-      // Prune recent files whose backing node no longer exists on the server
+      // Prune recent files whose backing item no longer exists. The JMAP
+      // adapter resolves these from the listing cache, while other providers
+      // may use their native metadata operation.
       const { recentFiles } = get();
-      const existingIds = new Set(allNodes.map(n => n.id));
-      const prunedRecent = recentFiles.filter(r => existingIds.has(r.id));
+      const existence = await Promise.all(
+        recentFiles.map(async (recent) => {
+          try {
+            await provider.stat({ itemId: recent.id });
+            return true;
+          } catch {
+            return false;
+          }
+        }),
+      );
+      const prunedRecent = recentFiles.filter((_, index) => existence[index]);
       if (prunedRecent.length !== recentFiles.length) {
         try { localStorage.setItem('files-recent-files', JSON.stringify(prunedRecent)); } catch { /* ignore */ }
         set({ resources, recentFiles: prunedRecent, isLoading: false });
@@ -555,11 +616,10 @@ export const useFileStore = create<FileState>((set, get) => ({
     }
     // Fallback: resolve the path against the live hierarchy (covers favorites
     // and recent paths outside the current breadcrumb stack).
-    const { client } = get();
-    if (client) {
+    const { provider } = get();
+    if (provider) {
       try {
-        const allNodes = await client.listAllFileNodes();
-        const id = resolvePathToId(allNodes, path);
+        const id = await resolvePathToId(provider, path);
         if (id !== undefined) {
           await navigate(id, segments[segments.length - 1]);
         }
@@ -581,16 +641,16 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   createDirectory: async (name: string) => {
-    const { client, currentParentId, refresh } = get();
-    if (!client) return;
+    const { provider, currentParentId, refresh } = get();
+    if (!provider) return;
 
-    await client.createFileDirectory(name, currentParentId);
+    await provider.createDirectory({ name, parentId: currentParentId });
     await refresh();
   },
 
   uploadFile: async (file: File) => {
-    const { client, currentParentId } = get();
-    if (!client) return;
+    const { provider, currentParentId } = get();
+    if (!provider) return;
 
     const abortController = new AbortController();
     set({ uploadAbortController: abortController });
@@ -598,23 +658,35 @@ export const useFileStore = create<FileState>((set, get) => ({
 
     try {
       if (abortController.signal.aborted) return;
-      const { blobId, type } = await client.uploadBlob(file, {
+      await provider.upload({
+        parentId: currentParentId,
+        name: file.name,
+        body: file,
+        mediaType: file.type || 'application/octet-stream',
+        size: file.size,
         signal: abortController.signal,
-        onProgress: (loaded, total) => {
-          set({ uploadProgress: { name: file.name, loaded, total, current: 1, totalFiles: 1 } });
+        onProgress: ({ transferredBytes, totalBytes }) => {
+          set({
+            uploadProgress: {
+              name: file.name,
+              loaded: transferredBytes,
+              total: totalBytes ?? file.size,
+              current: 1,
+              totalFiles: 1,
+            },
+          });
         },
       });
       if (abortController.signal.aborted) return;
       set({ uploadProgress: { name: file.name, loaded: file.size, total: file.size, current: 1, totalFiles: 1 } });
-      await client.createFileNode(file.name, blobId, type || file.type || 'application/octet-stream', file.size, currentParentId);
     } finally {
       set({ uploadProgress: null, uploadAbortController: null });
     }
   },
 
   uploadFiles: async (files: File[]) => {
-    const { client, currentParentId, resources } = get();
-    if (!client) return;
+    const { provider, currentParentId, resources } = get();
+    if (!provider) return;
 
     const abortController = new AbortController();
     set({ uploadAbortController: abortController });
@@ -630,15 +702,27 @@ export const useFileStore = create<FileState>((set, get) => ({
 
       try {
         const idx = i;
-        const { blobId, type } = await client.uploadBlob(file, {
+        await provider.upload({
+          parentId: currentParentId,
+          name: uniqueName,
+          body: file,
+          mediaType: file.type || 'application/octet-stream',
+          size: file.size,
           signal: abortController.signal,
-          onProgress: (loaded, total) => {
-            set({ uploadProgress: { name: file.name, loaded, total, current: idx + 1, totalFiles } });
+          onProgress: ({ transferredBytes, totalBytes }) => {
+            set({
+              uploadProgress: {
+                name: file.name,
+                loaded: transferredBytes,
+                total: totalBytes ?? file.size,
+                current: idx + 1,
+                totalFiles,
+              },
+            });
           },
         });
         if (abortController.signal.aborted) break;
         set({ uploadProgress: { name: file.name, loaded: file.size, total: file.size, current: i + 1, totalFiles } });
-        await client.createFileNode(uniqueName, blobId, type || file.type || 'application/octet-stream', file.size, currentParentId);
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') break;
         set({ uploadProgress: null, uploadAbortController: null });
@@ -658,8 +742,8 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   uploadFolder: async (files: File[]) => {
-    const { client, currentParentId } = get();
-    if (!client || files.length === 0) return;
+    const { provider, currentParentId } = get();
+    if (!provider || files.length === 0) return;
 
     const abortController = new AbortController();
     set({ uploadAbortController: abortController });
@@ -689,7 +773,11 @@ export const useFileStore = create<FileState>((set, get) => ({
       const dirName = slash >= 0 ? dir.slice(slash + 1) : dir;
       const parentId = dirIds.get(parentPath) ?? currentParentId;
       try {
-        const created = await client.createFileDirectory(dirName, parentId);
+        const created = await provider.createDirectory({
+          name: dirName,
+          parentId,
+          signal: abortController.signal,
+        });
         dirIds.set(dir, created.id);
       } catch {
         // Directory may already exist - leave it unmapped; files fall back to
@@ -709,10 +797,15 @@ export const useFileStore = create<FileState>((set, get) => ({
       set({ uploadProgress: { name: relativePath, loaded: 0, total: file.size, current: i + 1, totalFiles } });
 
       try {
-        const { blobId, type } = await client.uploadBlob(file);
-        if (abortController.signal.aborted) break;
+        await provider.upload({
+          parentId,
+          name: file.name,
+          body: file,
+          mediaType: file.type || 'application/octet-stream',
+          size: file.size,
+          signal: abortController.signal,
+        });
         set({ uploadProgress: { name: relativePath, loaded: file.size, total: file.size, current: i + 1, totalFiles } });
-        await client.createFileNode(file.name, blobId, type || file.type || 'application/octet-stream', file.size, parentId);
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') break;
         set({ uploadProgress: null, uploadAbortController: null });
@@ -724,14 +817,13 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   deleteResource: async (name: string) => {
-    const { client, resources, recentFiles, refresh } = get();
-    if (!client) return;
+    const { provider, resources, recentFiles, refresh } = get();
+    if (!provider) return;
 
     const resource = resources.find(r => r.name === name);
     if (!resource) return;
 
-    // The server removes descendant nodes (onDestroyRemoveChildren).
-    await client.destroyFileNodes([resource.id]);
+    await provider.delete({ itemId: resource.id });
     const nextRecentFiles = recentFiles.filter(r => r.id !== resource.id);
     set({ recentFiles: nextRecentFiles });
     try { localStorage.setItem('files-recent-files', JSON.stringify(nextRecentFiles)); } catch { /* ignore */ }
@@ -739,8 +831,8 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   deleteResources: async (names: string[]) => {
-    const { client, resources, recentFiles, refresh } = get();
-    if (!client) return;
+    const { provider, resources, recentFiles, refresh } = get();
+    if (!provider) return;
 
     const idsToDelete: string[] = [];
     for (const name of names) {
@@ -750,8 +842,9 @@ export const useFileStore = create<FileState>((set, get) => ({
 
     if (idsToDelete.length === 0) return;
 
-    // The server removes descendant nodes (onDestroyRemoveChildren).
-    await client.destroyFileNodes(idsToDelete);
+    for (const itemId of idsToDelete) {
+      await provider.delete({ itemId });
+    }
     const deletedIdSet = new Set(idsToDelete);
     const nextRecentFiles = recentFiles.filter(r => !deletedIdSet.has(r.id));
     set({ selectedResources: new Set() });
@@ -761,13 +854,13 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   renameResource: async (oldName: string, newName: string) => {
-    const { client, resources, refresh } = get();
-    if (!client) return;
+    const { provider, resources, refresh } = get();
+    if (!provider) return;
 
     const resource = resources.find(r => r.name === oldName);
     if (!resource) return;
 
-    await client.updateFileNode(resource.id, { name: newName });
+    await provider.rename({ itemId: resource.id, name: newName });
 
     set({
       lastAction: {
@@ -780,13 +873,18 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   downloadResource: async (name: string) => {
-    const { client, resources } = get();
-    if (!client) return;
+    const { provider, resources } = get();
+    if (!provider) return;
 
     const resource = resources.find(r => r.name === name);
-    if (!resource?.blobId) return;
+    if (!resource || resource.isDirectory) return;
 
-    await client.downloadBlob(resource.blobId, resource.name, resource.contentType);
+    const download = await provider.download({ itemId: resource.id });
+    await downloadToBrowser(
+      download.body,
+      download.fileName,
+      download.mediaType,
+    );
   },
 
   downloadResources: async (names: string[]) => {
@@ -797,44 +895,46 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   getImageUrl: async (name: string) => {
-    const { client, resources } = get();
-    if (!client) throw new Error('No client');
+    const { provider, resources } = get();
+    if (!provider) throw new Error('No file provider');
 
     const resource = resources.find(r => r.name === name);
-    if (!resource?.blobId) throw new Error('No blob');
+    if (!resource || resource.isDirectory) throw new Error('No file content');
 
-    return client.fetchBlobAsObjectUrl(resource.blobId, resource.name, resource.contentType);
+    const download = await provider.download({ itemId: resource.id });
+    const blob = await fileContentToBlob(download.body, download.mediaType);
+    return URL.createObjectURL(blob);
   },
 
   getFileContent: async (name: string) => {
-    const { client, resources } = get();
-    if (!client) throw new Error('No client');
+    const { provider, resources } = get();
+    if (!provider) throw new Error('No file provider');
 
     const resource = resources.find(r => r.name === name);
-    if (!resource?.blobId) throw new Error('No blob');
+    if (!resource || resource.isDirectory) throw new Error('No file content');
 
-    const url = client.getBlobDownloadUrl(resource.blobId, resource.name, resource.contentType);
-    const response = await fetch(url, {
-      headers: { 'Authorization': client.getAuthHeader() },
-    });
-    if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`);
-    const blob = await response.blob();
-    return { blob, contentType: resource.contentType || 'application/octet-stream' };
+    const download = await provider.download({ itemId: resource.id });
+    const blob = await fileContentToBlob(download.body, download.mediaType);
+    return { blob, contentType: download.mediaType };
   },
 
   createTextFile: async (name: string) => {
-    const { client, currentParentId, refresh } = get();
-    if (!client) return;
+    const { provider, currentParentId, refresh } = get();
+    if (!provider) return;
 
-    const emptyBlob = new File([''], name, { type: 'text/plain' });
-    const { blobId } = await client.uploadBlob(emptyBlob);
-    await client.createFileNode(name, blobId, 'text/plain', 0, currentParentId);
+    await provider.upload({
+      parentId: currentParentId,
+      name,
+      body: new Blob([''], { type: 'text/plain' }),
+      mediaType: 'text/plain',
+      size: 0,
+    });
     await refresh();
   },
 
   duplicateResource: async (name: string) => {
-    const { client, resources, currentParentId, refresh } = get();
-    if (!client) return;
+    const { provider, resources, currentParentId, refresh } = get();
+    if (!provider) return;
 
     const resource = resources.find(r => r.name === name);
     if (!resource) return;
@@ -844,13 +944,17 @@ export const useFileStore = create<FileState>((set, get) => ({
       ? `${name.substring(0, dotIdx)} (copy)${name.substring(dotIdx)}`
       : `${name} (copy)`;
 
-    await client.copyFileNode(resource.id, copyName, currentParentId);
+    await provider.copy({
+      itemId: resource.id,
+      name: copyName,
+      destinationParentId: currentParentId,
+    });
     await refresh();
   },
 
   moveToFolder: async (names: string[], targetFolder: string) => {
-    const { client, resources, refresh } = get();
-    if (!client) return;
+    const { provider, resources, refresh } = get();
+    if (!provider) return;
 
     const targetResource = resources.find(r => r.name === targetFolder && r.isDirectory);
     if (!targetResource) return;
@@ -859,7 +963,10 @@ export const useFileStore = create<FileState>((set, get) => ({
     for (const name of names) {
       const resource = resources.find(r => r.name === name);
       if (!resource || resource.id === targetResource.id) continue;
-      await client.updateFileNode(resource.id, { parentId: targetResource.id });
+      await provider.move({
+        itemId: resource.id,
+        destinationParentId: targetResource.id,
+      });
       entries.push({ id: resource.id, from: { parentId: resource.parentId }, to: { parentId: targetResource.id } });
     }
     set({
@@ -870,8 +977,8 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   moveToParent: async (names: string[]) => {
-    const { client, resources, pathStack, refresh } = get();
-    if (!client || pathStack.length <= 1) return;
+    const { provider, resources, pathStack, refresh } = get();
+    if (!provider || pathStack.length <= 1) return;
 
     // Move into the grandparent of the current folder's contents, i.e. the
     // entry one level up in the breadcrumb stack.
@@ -881,7 +988,10 @@ export const useFileStore = create<FileState>((set, get) => ({
     for (const name of names) {
       const resource = resources.find(r => r.name === name);
       if (!resource) continue;
-      await client.updateFileNode(resource.id, { parentId: newParentId });
+      await provider.move({
+        itemId: resource.id,
+        destinationParentId: newParentId,
+      });
       entries.push({ id: resource.id, from: { parentId: resource.parentId }, to: { parentId: newParentId } });
     }
     set({
@@ -906,8 +1016,8 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   pasteResources: async () => {
-    const { client, currentParentId, clipboard, refresh } = get();
-    if (!client || !clipboard) return;
+    const { provider, currentParentId, clipboard, refresh } = get();
+    if (!provider || !clipboard) return;
 
     const entries: UndoAction['entries'] = [];
 
@@ -916,10 +1026,14 @@ export const useFileStore = create<FileState>((set, get) => ({
       const displayName = clipboard.names[i];
 
       if (clipboard.mode === 'cut') {
-        await client.updateFileNode(id, { parentId: currentParentId });
+        await provider.move({ itemId: id, destinationParentId: currentParentId });
         entries.push({ id, from: { parentId: clipboard.sourceParentId }, to: { parentId: currentParentId } });
       } else {
-        await client.copyFileNode(id, displayName, currentParentId);
+        await provider.copy({
+          itemId: id,
+          name: displayName,
+          destinationParentId: currentParentId,
+        });
       }
     }
 
@@ -961,25 +1075,29 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   listPath: async (path: string) => {
-    const { client } = get();
-    if (!client) return [];
+    const { provider, collaboration } = get();
+    if (!provider) return [];
 
     try {
-      const allNodes = await client.listAllFileNodes();
-      const parentId = resolvePathToId(allNodes, path);
+      const parentId = await resolvePathToId(provider, path);
       if (parentId === undefined) return [];
-      return sortResources(childrenOf(allNodes, parentId).map(nodeToResource));
+      const page = await provider.list({ parentId });
+      return sortResources(
+        page.items.map((item) => itemToResource(item, collaboration)),
+      );
     } catch {
       return [];
     }
   },
 
   listByParentId: async (parentId: string | null) => {
-    const { client } = get();
-    if (!client) return [];
+    const { provider, collaboration } = get();
+    if (!provider) return [];
     try {
-      const allNodes = await client.listAllFileNodes();
-      return sortResources(childrenOf(allNodes, parentId).map(nodeToResource));
+      const page = await provider.list({ parentId });
+      return sortResources(
+        page.items.map((item) => itemToResource(item, collaboration)),
+      );
     } catch {
       return [];
     }
@@ -1004,44 +1122,44 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   undoLastAction: async () => {
-    const { client, lastAction, refresh } = get();
-    if (!client || !lastAction) return;
+    const { provider, lastAction, refresh } = get();
+    if (!provider || !lastAction) return;
 
     for (const entry of lastAction.entries) {
-      await client.updateFileNode(entry.id, entry.from);
+      if (entry.from.name !== undefined) {
+        await provider.rename({ itemId: entry.id, name: entry.from.name });
+      }
+      if (entry.from.parentId !== undefined) {
+        await provider.move({
+          itemId: entry.id,
+          destinationParentId: entry.from.parentId,
+        });
+      }
     }
     set({ lastAction: null });
     await refresh();
   },
 
-  shareResource: async (id: string, principalId: string, rights: FileNodeRights | null) => {
-    const { client, refresh } = get();
-    if (!client) return;
-    // currentAccountId is the webmail's connected-account key ("user@host"),
-    // not a JMAP account id - Stalwart parses accountId strictly while
-    // deserializing the request, so sending it rejects the whole call with
-    // notRequest. The client is already the per-account client; let
-    // setFileNodeShare resolve its own files account.
-    await client.setFileNodeShare(id, principalId, rights);
+  shareResource: async (id, principalId, permissions) => {
+    const { collaboration, refresh } = get();
+    if (!collaboration) return;
+    await collaboration.setShare(id, principalId, permissions);
     await refresh();
   },
 
   loadSharedRoots: async () => {
-    const { client } = get();
-    if (!client) {
+    const { collaboration } = get();
+    if (!collaboration) {
       set({ sharedRoots: [] });
       return;
     }
     try {
-      const all = await client.listAllFileNodesAcrossAccounts();
-      const idSet = new Set(all.map(n => n.id));
-      // A shared node is a "root" of the shared-with-me tree when its parent is
-      // not among the nodes the user can see (either null, or owned by a
-      // principal whose ancestor folders weren't shared).
-      const roots = all.filter(n =>
-        n.isShared && (n.parentId == null || !idSet.has(n.parentId)),
-      );
-      set({ sharedRoots: sortResources(roots.map(nodeToResource)) });
+      const roots = await collaboration.listSharedRoots();
+      set({
+        sharedRoots: sortResources(
+          roots.map((item) => itemToResource(item, collaboration)),
+        ),
+      });
     } catch (error) {
       console.error('[Files] Failed to load shared roots:', error);
       set({ sharedRoots: [] });

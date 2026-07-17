@@ -6,6 +6,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      update_visual_baselines:
+        description: "Regenerate visual baselines and upload them as an artifact"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -173,7 +178,23 @@ jobs:
       # or mail server is needed. Snapshots are OS-dependent and the runner is
       # ubuntu, matching the platform the baselines were generated on.
       - name: Run visual regression suite
+        if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
         run: npm run test:visual
+
+      # Manual dispatch path: render fresh baselines on the CI platform (the
+      # canonical rendering environment) and expose them as an artifact so a
+      # maintainer can commit them after review.
+      - name: Regenerate visual baselines
+        if: ${{ github.event.inputs.update_visual_baselines == 'true' }}
+        run: npm run test:visual:update
+
+      - name: Upload regenerated baselines
+        if: ${{ github.event.inputs.update_visual_baselines == 'true' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-baselines
+          path: e2e/visual/__screenshots__/
+          retention-days: 7
 
       # test-results/ holds the actual/expected/diff PNGs and Playwright traces
       # for any surface that drifted, so a red run can be triaged from the

@@ -4,6 +4,13 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface NewFolderDialogProps {
   onConfirm: (name: string) => Promise<void>;
@@ -29,30 +36,28 @@ export function NewFolderDialog({ onConfirm, onCancel }: NewFolderDialogProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onCancel}>
-      <div
-        className="bg-background border border-border rounded-lg shadow-lg p-6 w-full max-w-sm mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-lg font-semibold mb-4">{t("new_folder")}</h2>
-        <form onSubmit={handleSubmit}>
+    <Dialog open onOpenChange={(open) => { if (!open) onCancel(); }}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>{t("new_folder")}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("new_folder_name")}
-            className="mb-4"
           />
-          <div className="flex justify-end gap-2">
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
               {t("cancel")}
             </Button>
             <Button type="submit" disabled={!name.trim() || isSubmitting}>
               {t("create")}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

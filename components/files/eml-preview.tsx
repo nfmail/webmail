@@ -66,7 +66,7 @@ export function EmlPreview({ message }: { message: ParsedEml }) {
       onClick={(e) => e.stopPropagation()}
     >
       <h2 className="text-lg font-semibold text-foreground break-words">{message.subject || ""}</h2>
-      <div className="mt-2 space-y-0.5 text-sm text-muted-foreground border-b border-border pb-3">
+      <div className="mt-2 flex flex-col gap-0.5 text-sm text-muted-foreground border-b border-border pb-3">
         {message.from && (
           <div><span className="font-medium text-foreground">{t("from")}: </span>{formatAddress(message.from)}</div>
         )}

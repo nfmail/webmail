@@ -103,7 +103,7 @@ export function ContactImportDialog({
     <div className="flex flex-col h-full">
       <div className="px-6 py-4 border-b border-border flex items-center justify-between">
         <h2 className="text-lg font-semibold">{t("import.title")}</h2>
-        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8" aria-label={t("import.close")}>
           <X className="w-4 h-4" />
         </Button>
       </div>
@@ -111,8 +111,8 @@ export function ContactImportDialog({
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {result !== null ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mb-4">
-              <Check className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="w-12 h-12 rounded-full bg-success/15 flex items-center justify-center mb-4">
+              <Check className="w-6 h-6 text-success" />
             </div>
             <p className="text-sm font-medium">{t("import.success", { count: result })}</p>
             <Button variant="outline" size="sm" onClick={onClose} className="mt-4">
@@ -145,7 +145,7 @@ export function ContactImportDialog({
             </button>
 
             {error && (
-              <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 px-3 py-2 rounded flex items-center gap-2">
+              <div className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                 {error}
               </div>
@@ -154,7 +154,7 @@ export function ContactImportDialog({
         ) : (
           <>
             {error && (
-              <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 px-3 py-2 rounded flex items-center gap-2">
+              <div className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                 {error}
               </div>

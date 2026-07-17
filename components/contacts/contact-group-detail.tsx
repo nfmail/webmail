@@ -60,7 +60,8 @@ export function ContactGroupDetail({
               variant="outline"
               size="sm"
               onClick={onDelete}
-              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950 touch-manipulation"
+              aria-label={t("groups.delete_confirm_title")}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 touch-manipulation"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -120,6 +121,8 @@ export function ContactGroupDetail({
                   <Button
                     variant="ghost"
                     size="icon"
+                    // i18n follow-up: no "remove member" key exists in the contacts namespace.
+                    aria-label={mName ? `Remove ${mName}` : "Remove member"}
                     className={cn(
                       "h-8 w-8 transition-opacity",
                       isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"

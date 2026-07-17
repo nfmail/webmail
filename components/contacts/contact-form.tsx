@@ -624,7 +624,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
         <h2 className="text-lg font-semibold">
           {isEditing ? t("edit_title") : t("create_title")}
         </h2>
-        <button type="button" onClick={onCancel} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground">
+        <button type="button" onClick={onCancel} aria-label={t("cancel")} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground">
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -775,7 +775,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                       <option value="private">{t("context_private")}</option>
                     </Select>
                     {emails.length > 1 && (
-                      <Button type="button" variant="ghost" size="icon" onClick={() => setEmails(emails.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                      <Button type="button" variant="ghost" size="icon" aria-label="Remove email" onClick={() => setEmails(emails.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                         <X className="w-3 h-3" />
                       </Button>
                     )}
@@ -838,7 +838,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     <option value="work">{t("context_work")}</option>
                     <option value="private">{t("context_private")}</option>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setPhones(phones.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove phone" onClick={() => setPhones(phones.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -877,7 +877,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
             <div className="space-y-3">
               {addresses.map((addr, i) => (
                 <div key={i} className="rounded-md border border-border/60 bg-muted/20 p-3 space-y-2 relative">
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setAddresses(addresses.filter((_, j) => j !== i))} className="h-6 w-6 absolute top-2 right-2">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove address" onClick={() => setAddresses(addresses.filter((_, j) => j !== i))} className="h-6 w-6 absolute top-2 right-2">
                     <X className="w-3 h-3" />
                   </Button>
                   <Input value={addr.street} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], street: e.target.value }; setAddresses(n); }} placeholder={t("street")} />
@@ -923,7 +923,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     placeholder={t("service_placeholder")}
                     className="w-24"
                   />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setOnlineServices(onlineServices.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove online service" onClick={() => setOnlineServices(onlineServices.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -955,7 +955,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     <option value="death">{t("anniversary_death")}</option>
                     <option value="other">{t("anniversary_other")}</option>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setAnniversaries(anniversaries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove date" onClick={() => setAnniversaries(anniversaries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -996,7 +996,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     <option value="medium">{t("level_medium")}</option>
                     <option value="low">{t("level_low")}</option>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setPersonalInfoEntries(personalInfoEntries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove entry" onClick={() => setPersonalInfoEntries(personalInfoEntries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -1162,6 +1162,8 @@ function CategoryComboBox({
               <button
                 type="button"
                 onClick={() => removeKeyword(kw)}
+                // i18n follow-up: no "remove category" key exists in the contacts.form namespace.
+                aria-label={`Remove ${kw}`}
                 className="hover:text-destructive transition-colors"
               >
                 <X className="w-3 h-3" />

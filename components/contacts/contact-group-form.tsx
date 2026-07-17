@@ -87,7 +87,7 @@ export function ContactGroupForm({
 
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {error && (
-          <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 px-3 py-2 rounded">
+          <div className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded">
             {error}
           </div>
         )}
@@ -175,7 +175,9 @@ export function ContactGroupForm({
                   <button
                     type="button"
                     onClick={() => toggleMember(id)}
-                    className="hover:text-red-600 dark:hover:text-red-400"
+                    // i18n follow-up: no "remove member" key exists in the contacts namespace.
+                    aria-label={`Remove ${getContactDisplayName(contact)}`}
+                    className="hover:text-destructive"
                   >
                     <X className="w-3 h-3" />
                   </button>

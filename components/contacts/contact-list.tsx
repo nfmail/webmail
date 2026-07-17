@@ -481,6 +481,8 @@ export function ContactList({
                 onSelectAll(sortedIds);
               }
             }}
+            aria-pressed={allSelected}
+            aria-label={allSelected ? t("bulk.clear") : t("bulk.select_all")}
             className="p-1 rounded hover:bg-muted/50 transition-colors"
           >
             {allSelected ? (
@@ -510,14 +512,17 @@ export function ContactList({
             <Trash2 className="w-3.5 h-3.5 me-1" />
             {t("bulk.delete")}
           </Button>
-          <Button variant="ghost" size="icon" onClick={onClearSelection} className="h-7 w-7">
+          <Button variant="ghost" size="icon" onClick={onClearSelection} className="h-7 w-7" aria-label={t("bulk.clear")}>
             <X className="w-3.5 h-3.5" />
           </Button>
         </div>
       )}
 
       {/* Contact list */}
-      <div className="flex-1 overflow-y-auto">
+      {/* tabIndex + role/aria-label make the scroll pane keyboard-focusable:
+          rows are click-target divs (not focusable), so without this the
+          scroll region fails axe scrollable-region-focusable. */}
+      <div className="flex-1 overflow-y-auto" tabIndex={0} role="group" aria-label={t("title")}>
         {sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-6 text-center">
             {searchQuery || activeFilters > 0 ? (

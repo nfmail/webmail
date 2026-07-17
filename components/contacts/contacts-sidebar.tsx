@@ -278,6 +278,11 @@ export function ContactsSidebar({
             variant="ghost"
             onClick={() => setShowMenu(v => !v)}
             className="h-7 w-7"
+            aria-haspopup="menu"
+            aria-expanded={showMenu}
+            // i18n follow-up: no generic "create" menu key exists; this trigger
+            // opens new contact / group / address book / import actions.
+            aria-label="Create new"
           >
             <Plus className="w-4 h-4" />
           </Button>

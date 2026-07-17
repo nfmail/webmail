@@ -70,6 +70,10 @@ export function ContactListItem({ contact, isSelected, isChecked, hasSelection, 
       {hasSelection && (
         <button
           onClick={onCheckboxClick}
+          role="checkbox"
+          aria-checked={isChecked}
+          // i18n follow-up: no per-row select key exists in the contacts namespace.
+          aria-label={name ? `Select ${name}` : "Select contact"}
           className={cn(
             "p-1 rounded flex-shrink-0 transition-all duration-200",
             "hover:bg-muted/50 hover:scale-110",

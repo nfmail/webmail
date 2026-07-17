@@ -8,7 +8,7 @@ import { useCalendarStore } from '@/stores/calendar-store';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useTaskStore } from '@/stores/task-store';
 import { useCalendarNotificationStore } from '@/stores/calendar-notification-store';
-import { useToastStore } from '@/stores/toast-store';
+import { toast } from '@/stores/toast-store';
 import { getPendingAlerts, getPendingTaskAlerts, buildAlertKey } from '@/lib/calendar-alerts';
 import { playNotificationSound } from '@/lib/notification-sound';
 import { getPathPrefix } from '@/lib/browser-navigation';
@@ -24,9 +24,13 @@ export function useCalendarAlerts() {
   const { calendarNotificationsEnabled, calendarNotificationSound, enableCalendarTasks, notificationSoundChoice } = useSettingsStore();
   const { tasks: storeTasks } = useTaskStore();
   const { acknowledgedAlerts, acknowledgeAlert, cleanupStaleAlerts } = useCalendarNotificationStore();
-  const addToast = useToastStore((s) => s.addToast);
   const t = useTranslations('calendar.notifications');
+  const tNotif = useTranslations('notifications');
   const locale = useLocale();
+
+  const goToCalendar = useCallback(() => {
+    window.location.href = `${getPathPrefix(locale)}/${locale}/calendar`;
+  }, [locale]);
 
   const lastProactiveFetchRef = useRef<number>(0);
   const proactiveEventsRef = useRef<CalendarEvent[]>([]);
@@ -63,13 +67,12 @@ export function useCalendarAlerts() {
           ? `${timeLabel} · ${alert.calendarName}`
           : timeLabel;
 
-        addToast({
-          type: 'info',
-          title: alert.event.title || t('alert_title'),
+        toast.info(alert.event.title || t('alert_title'), {
           message,
           duration: 15000,
-          onClick: () => {
-            window.location.href = `${getPathPrefix(locale)}/${locale}/calendar`;
+          action: {
+            label: tNotif('click_to_view'),
+            onClick: goToCalendar,
           },
         });
       }
@@ -92,13 +95,12 @@ export function useCalendarAlerts() {
             ? `${t('task_due')} · ${taskAlert.calendarName}`
             : t('task_due');
 
-          addToast({
-            type: 'info',
-            title: taskAlert.task.title || t('alert_title'),
+          toast.info(taskAlert.task.title || t('alert_title'), {
             message: taskMsg,
             duration: 15000,
-            onClick: () => {
-              window.location.href = `${getPathPrefix(locale)}/${locale}/calendar`;
+            action: {
+              label: tNotif('click_to_view'),
+              onClick: goToCalendar,
             },
           });
         }
@@ -109,7 +111,7 @@ export function useCalendarAlerts() {
   }, [
     calendarNotificationsEnabled, calendarNotificationSound, notificationSoundChoice,
     isAuthenticated, events, calendars, acknowledgedAlerts,
-    acknowledgeAlert, addToast, t, locale, enableCalendarTasks, storeTasks,
+    acknowledgeAlert, t, tNotif, goToCalendar, enableCalendarTasks, storeTasks,
   ]);
 
   const proactiveFetch = useCallback(async () => {

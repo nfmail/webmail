@@ -68,8 +68,7 @@
         "components/settings/vacation-settings.tsx": 6,
         "components/templates/template-form.tsx": 5,
         "components/templates/template-manager-modal.tsx": 5,
-        "components/templates/template-picker.tsx": 2,
-        "components/ui/toast.tsx": 2
+        "components/templates/template-picker.tsx": 2
       }
     },
     "space": {

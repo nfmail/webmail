@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Email address",
     "recipient_name_placeholder": "Display name",
     "autocomplete_search_server": "Search the server",
-    "autocomplete_searching": "Searching..."
+    "autocomplete_searching": "Searching...",
+    "attach_from_jmap_files": "Attach from JMAP Files",
+    "jmap_files": {
+      "title": "Attach from JMAP Files",
+      "description": "Choose files already stored on the server. They will be attached without uploading them again.",
+      "back": "Back",
+      "open_folder": "Open folder",
+      "empty": "This folder contains no files.",
+      "selected": "{count, plural, =0 {No files selected} one {# file selected} other {# files selected}}",
+      "attach": "{count, plural, one {Attach # file} other {Attach # files}}",
+      "load_error": "JMAP Files could not be loaded.",
+      "attach_error": "The selected files could not be attached."
+    }
   },
   "confirm_dialog": {
     "confirm": "Confirm",

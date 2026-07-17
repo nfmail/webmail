@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "이메일 주소",
     "recipient_name_placeholder": "표시 이름",
     "autocomplete_search_server": "서버에서 검색",
-    "autocomplete_searching": "검색 중..."
+    "autocomplete_searching": "검색 중...",
+    "attach_from_jmap_files": "JMAP 파일에서 첨부",
+    "jmap_files": {
+      "title": "JMAP 파일에서 첨부",
+      "description": "서버에 이미 저장된 파일을 선택하세요. 다시 업로드하지 않고 첨부됩니다.",
+      "back": "뒤로",
+      "open_folder": "폴더 열기",
+      "empty": "이 폴더에 파일이 없습니다.",
+      "selected": "{count, plural, =0 {선택한 파일 없음} other {파일 #개 선택됨}}",
+      "attach": "{count, plural, other {파일 #개 첨부}}",
+      "load_error": "JMAP 파일을 불러오지 못했습니다.",
+      "attach_error": "선택한 파일을 첨부하지 못했습니다."
+    }
   },
   "confirm_dialog": {
     "confirm": "확인",

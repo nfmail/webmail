@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "آدرس ایمیل",
     "recipient_name_placeholder": "نام نمایشی",
     "autocomplete_search_server": "جستجو در سرور",
-    "autocomplete_searching": "در حال جستجو..."
+    "autocomplete_searching": "در حال جستجو...",
+    "attach_from_jmap_files": "پیوست از فایل‌های JMAP",
+    "jmap_files": {
+      "title": "پیوست از فایل‌های JMAP",
+      "description": "فایل‌هایی را که از قبل روی سرور ذخیره شده‌اند انتخاب کنید. این فایل‌ها بدون بارگذاری مجدد پیوست می‌شوند.",
+      "back": "بازگشت",
+      "open_folder": "باز کردن پوشه",
+      "empty": "این پوشه هیچ فایلی ندارد.",
+      "selected": "{count, plural, =0 {هیچ فایلی انتخاب نشده است} other {# فایل انتخاب شده است}}",
+      "attach": "{count, plural, other {پیوست کردن # فایل}}",
+      "load_error": "بارگیری فایل‌های JMAP انجام نشد.",
+      "attach_error": "پیوست کردن فایل‌های انتخاب‌شده انجام نشد."
+    }
   },
   "confirm_dialog": {
     "confirm": "تأیید",

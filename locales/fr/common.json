@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Adresse e-mail",
     "recipient_name_placeholder": "Nom d'affichage",
     "autocomplete_search_server": "Rechercher sur le serveur",
-    "autocomplete_searching": "Recherche en cours..."
+    "autocomplete_searching": "Recherche en cours...",
+    "attach_from_jmap_files": "Joindre depuis Fichiers JMAP",
+    "jmap_files": {
+      "title": "Joindre depuis Fichiers JMAP",
+      "description": "Choisissez des fichiers déjà stockés sur le serveur. Ils seront joints sans être téléversés à nouveau.",
+      "back": "Retour",
+      "open_folder": "Ouvrir le dossier",
+      "empty": "Ce dossier ne contient aucun fichier.",
+      "selected": "{count, plural, =0 {Aucun fichier sélectionné} one {# fichier sélectionné} other {# fichiers sélectionnés}}",
+      "attach": "{count, plural, one {Joindre # fichier} other {Joindre # fichiers}}",
+      "load_error": "Impossible de charger les fichiers JMAP.",
+      "attach_error": "Impossible de joindre les fichiers sélectionnés."
+    }
   },
   "confirm_dialog": {
     "confirm": "Confirmer",

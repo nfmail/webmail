@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "E-Mail-Adresse",
     "recipient_name_placeholder": "Anzeigename",
     "autocomplete_search_server": "Auf dem Server suchen",
-    "autocomplete_searching": "Suche läuft..."
+    "autocomplete_searching": "Suche läuft...",
+    "attach_from_jmap_files": "Aus JMAP-Dateien anhängen",
+    "jmap_files": {
+      "title": "Aus JMAP-Dateien anhängen",
+      "description": "Wählen Sie Dateien aus, die bereits auf dem Server gespeichert sind. Sie werden ohne erneutes Hochladen angehängt.",
+      "back": "Zurück",
+      "open_folder": "Ordner öffnen",
+      "empty": "Dieser Ordner enthält keine Dateien.",
+      "selected": "{count, plural, =0 {Keine Dateien ausgewählt} one {# Datei ausgewählt} other {# Dateien ausgewählt}}",
+      "attach": "{count, plural, one {# Datei anhängen} other {# Dateien anhängen}}",
+      "load_error": "Die JMAP-Dateien konnten nicht geladen werden.",
+      "attach_error": "Die ausgewählten Dateien konnten nicht angehängt werden."
+    }
   },
   "confirm_dialog": {
     "confirm": "Bestätigen",

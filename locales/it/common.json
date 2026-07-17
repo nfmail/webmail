@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Indirizzo email",
     "recipient_name_placeholder": "Nome visualizzato",
     "autocomplete_search_server": "Cerca nel server",
-    "autocomplete_searching": "Ricerca in corso..."
+    "autocomplete_searching": "Ricerca in corso...",
+    "attach_from_jmap_files": "Allega da File JMAP",
+    "jmap_files": {
+      "title": "Allega da File JMAP",
+      "description": "Seleziona i file già archiviati sul server. Verranno allegati senza caricarli di nuovo.",
+      "back": "Indietro",
+      "open_folder": "Apri cartella",
+      "empty": "Questa cartella non contiene file.",
+      "selected": "{count, plural, =0 {Nessun file selezionato} one {# file selezionato} other {# file selezionati}}",
+      "attach": "{count, plural, one {Allega # file} other {Allega # file}}",
+      "load_error": "Non è stato possibile caricare i file JMAP.",
+      "attach_error": "Non è stato possibile allegare i file selezionati."
+    }
   },
   "confirm_dialog": {
     "confirm": "Conferma",

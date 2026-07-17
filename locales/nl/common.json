@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "E-mailadres",
     "recipient_name_placeholder": "Weergavenaam",
     "autocomplete_search_server": "Op de server zoeken",
-    "autocomplete_searching": "Bezig met zoeken..."
+    "autocomplete_searching": "Bezig met zoeken...",
+    "attach_from_jmap_files": "Bijvoegen vanuit JMAP-bestanden",
+    "jmap_files": {
+      "title": "Bijvoegen vanuit JMAP-bestanden",
+      "description": "Selecteer bestanden die al op de server zijn opgeslagen. Ze worden bijgevoegd zonder opnieuw te uploaden.",
+      "back": "Terug",
+      "open_folder": "Map openen",
+      "empty": "Deze map bevat geen bestanden.",
+      "selected": "{count, plural, =0 {Geen bestanden geselecteerd} one {# bestand geselecteerd} other {# bestanden geselecteerd}}",
+      "attach": "{count, plural, one {# bestand bijvoegen} other {# bestanden bijvoegen}}",
+      "load_error": "De JMAP-bestanden konden niet worden geladen.",
+      "attach_error": "De geselecteerde bestanden konden niet worden bijgevoegd."
+    }
   },
   "confirm_dialog": {
     "confirm": "Bevestigen",

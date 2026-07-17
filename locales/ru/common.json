@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Адрес эл. почты",
     "recipient_name_placeholder": "Отображаемое имя",
     "autocomplete_search_server": "Искать на сервере",
-    "autocomplete_searching": "Поиск..."
+    "autocomplete_searching": "Поиск...",
+    "attach_from_jmap_files": "Прикрепить из файлов JMAP",
+    "jmap_files": {
+      "title": "Прикрепить из файлов JMAP",
+      "description": "Выберите файлы, уже сохранённые на сервере. Они будут прикреплены без повторной загрузки.",
+      "back": "Назад",
+      "open_folder": "Открыть папку",
+      "empty": "В этой папке нет файлов.",
+      "selected": "{count, plural, =0 {Файлы не выбраны} one {Выбран # файл} few {Выбрано # файла} many {Выбрано # файлов} other {Выбрано # файла}}",
+      "attach": "{count, plural, one {Прикрепить # файл} few {Прикрепить # файла} many {Прикрепить # файлов} other {Прикрепить # файла}}",
+      "load_error": "Не удалось загрузить файлы JMAP.",
+      "attach_error": "Не удалось прикрепить выбранные файлы."
+    }
   },
   "confirm_dialog": {
     "confirm": "Подтвердить",

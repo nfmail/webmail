@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "メールアドレス",
     "recipient_name_placeholder": "表示名",
     "autocomplete_search_server": "サーバーを検索",
-    "autocomplete_searching": "検索中..."
+    "autocomplete_searching": "検索中...",
+    "attach_from_jmap_files": "JMAP ファイルから添付",
+    "jmap_files": {
+      "title": "JMAP ファイルから添付",
+      "description": "サーバーに保存済みのファイルを選択してください。再アップロードせずに添付されます。",
+      "back": "戻る",
+      "open_folder": "フォルダーを開く",
+      "empty": "このフォルダーにファイルはありません。",
+      "selected": "{count, plural, =0 {ファイルが選択されていません} other {# 件のファイルを選択中}}",
+      "attach": "{count, plural, other {# 件のファイルを添付}}",
+      "load_error": "JMAP ファイルを読み込めませんでした。",
+      "attach_error": "選択したファイルを添付できませんでした。"
+    }
   },
   "confirm_dialog": {
     "confirm": "確認",

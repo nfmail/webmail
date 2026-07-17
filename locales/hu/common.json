@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "E-mail-cím",
     "recipient_name_placeholder": "Megjelenített név",
     "autocomplete_search_server": "Keresés a kiszolgálón",
-    "autocomplete_searching": "Keresés..."
+    "autocomplete_searching": "Keresés...",
+    "attach_from_jmap_files": "Csatolás a JMAP Fájlokból",
+    "jmap_files": {
+      "title": "Csatolás a JMAP Fájlokból",
+      "description": "Válassz a szerveren tárolt fájlok közül. A csatolásukhoz nem kell újra feltölteni őket.",
+      "back": "Vissza",
+      "open_folder": "Mappa megnyitása",
+      "empty": "Ez a mappa nem tartalmaz fájlokat.",
+      "selected": "{count, plural, =0 {Nincs fájl kiválasztva} one {# fájl kiválasztva} other {# fájl kiválasztva}}",
+      "attach": "{count, plural, one {# fájl csatolása} other {# fájl csatolása}}",
+      "load_error": "A JMAP Fájlokat nem sikerült betölteni.",
+      "attach_error": "A kiválasztott fájlokat nem sikerült csatolni."
+    }
   },
   "confirm_dialog": {
     "confirm": "Megerősítés",

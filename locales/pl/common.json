@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Adres e-mail",
     "recipient_name_placeholder": "Wyświetlana nazwa",
     "autocomplete_search_server": "Szukaj na serwerze",
-    "autocomplete_searching": "Wyszukiwanie..."
+    "autocomplete_searching": "Wyszukiwanie...",
+    "attach_from_jmap_files": "Załącz z plików JMAP",
+    "jmap_files": {
+      "title": "Załącz z plików JMAP",
+      "description": "Wybierz pliki zapisane już na serwerze. Zostaną załączone bez ponownego przesyłania.",
+      "back": "Wstecz",
+      "open_folder": "Otwórz folder",
+      "empty": "Ten folder nie zawiera plików.",
+      "selected": "{count, plural, =0 {Nie wybrano żadnych plików} one {Wybrano # plik} few {Wybrano # pliki} many {Wybrano # plików} other {Wybrano # pliku}}",
+      "attach": "{count, plural, one {Załącz # plik} few {Załącz # pliki} many {Załącz # plików} other {Załącz # pliku}}",
+      "load_error": "Nie udało się wczytać plików JMAP.",
+      "attach_error": "Nie udało się załączyć wybranych plików."
+    }
   },
   "confirm_dialog": {
     "confirm": "Potwierdź",

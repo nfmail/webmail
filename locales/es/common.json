@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Dirección de correo",
     "recipient_name_placeholder": "Nombre para mostrar",
     "autocomplete_search_server": "Buscar en el servidor",
-    "autocomplete_searching": "Buscando..."
+    "autocomplete_searching": "Buscando...",
+    "attach_from_jmap_files": "Adjuntar desde Archivos JMAP",
+    "jmap_files": {
+      "title": "Adjuntar desde Archivos JMAP",
+      "description": "Selecciona archivos que ya estén almacenados en el servidor. Se adjuntarán sin volver a subirlos.",
+      "back": "Volver",
+      "open_folder": "Abrir carpeta",
+      "empty": "Esta carpeta no contiene archivos.",
+      "selected": "{count, plural, =0 {No hay archivos seleccionados} one {# archivo seleccionado} other {# archivos seleccionados}}",
+      "attach": "{count, plural, one {Adjuntar # archivo} other {Adjuntar # archivos}}",
+      "load_error": "No se pudieron cargar los archivos JMAP.",
+      "attach_error": "No se pudieron adjuntar los archivos seleccionados."
+    }
   },
   "confirm_dialog": {
     "confirm": "Confirmar",

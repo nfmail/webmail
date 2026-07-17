@@ -22,10 +22,7 @@ import { useIsMobile } from "@/hooks/use-media-query";
 import { useRefreshGesture } from "@/hooks/use-refresh-gesture";
 import { usePolicyStore } from "@/stores/policy-store";
 import { FileBrowser } from "@/components/files/file-browser";
-import { FileProviderSelector, type FileProviderKind } from "@/components/files/file-provider-selector";
 import type { FileCollaborationPermissions } from "@/lib/files/collaboration";
-import { WebDavFileProvider } from "@/lib/files/webdav-provider";
-import { WebDAVClient } from "@/lib/webdav/client";
 import { ImagePreviewModal } from "@/components/files/image-preview-modal";
 import { FilePreviewModal } from "@/components/files/file-preview-modal";
 import { loadFilesSettings } from "@/components/files/files-settings-dialog";
@@ -58,7 +55,6 @@ export default function FilesPage() {
     clipboard,
     collaboration,
     provider,
-    initProvider,
     initClient,
     checkSupport,
     migrateLegacyFlatNodes,
@@ -103,7 +99,6 @@ export default function FilesPage() {
   const isMobile = useIsMobile();
   const isEmbedded = useIsEmbedded();
   const [folderLayout, setFolderLayout] = useState<FolderLayout>(() => loadFilesSettings().folderLayout);
-  const [selectedProvider, setSelectedProvider] = useState<FileProviderKind>("jmap");
   const hasFetched = useRef(false);
 
   // Sync folderLayout when settings change
@@ -411,35 +406,6 @@ export default function FilesPage() {
 
   const currentFilesAccountId = useFileStore((s) => s.currentAccountId);
 
-  const attachProvider = useCallback((
-    kind: FileProviderKind,
-    accountId: string | null,
-    jmapClient = accountId ? getClientForAccount(accountId) : client,
-  ) => {
-    if (kind === "jmap") {
-      if (!jmapClient) return;
-      initClient(jmapClient, accountId);
-    } else {
-      const account = accountId ? accounts.find((candidate) => candidate.id === accountId) : null;
-      const accountSlot = accountId
-        ? (typeof account?.cookieSlot === "number" ? account.cookieSlot : null)
-        : undefined;
-      const webdavClient = new WebDAVClient(accountSlot);
-      initProvider(
-        new WebDavFileProvider(webdavClient, {
-          id: accountId ? `webdav-files:${accountId}` : "webdav-files",
-          displayName: "WebDAV",
-        }),
-        { accountId },
-      );
-    }
-    setSelectedProvider(kind);
-  }, [accounts, client, getClientForAccount, initClient, initProvider]);
-
-  const handleSelectProvider = useCallback((kind: FileProviderKind) => {
-    attachProvider(kind, currentFilesAccountId ?? activeAccountId);
-  }, [activeAccountId, attachProvider, currentFilesAccountId]);
-
   const handleShare = useCallback(async (
     id: string,
     principalId: string,
@@ -471,8 +437,8 @@ export default function FilesPage() {
   const handleSelectAccount = useCallback((accountId: string) => {
     const nextClient = getClientForAccount(accountId);
     if (!nextClient) return;
-    attachProvider("jmap", accountId, nextClient);
-  }, [attachProvider, getClientForAccount]);
+    initClient(nextClient, accountId);
+  }, [getClientForAccount, initClient]);
 
   if (!isAuthenticated) return null;
 
@@ -528,19 +494,6 @@ export default function FilesPage() {
                 </div>
               ) : (
                 <div className="flex flex-col flex-1 min-h-0">
-                  {!isAccountPicker && provider && (
-                    <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
-                      <FileProviderSelector
-                        value={selectedProvider}
-                        onChange={handleSelectProvider}
-                        label={t("title")}
-                        disabled={isLoading}
-                      />
-                      <span className="truncate text-xs text-muted-foreground">
-                        {provider.descriptor.displayName}
-                      </span>
-                    </div>
-                  )}
                   {supportsFiles === null && provider ? (
                     <div className="flex flex-1 items-center justify-center" role="status">
                       <Loader2 className="size-5 animate-spin text-muted-foreground" />

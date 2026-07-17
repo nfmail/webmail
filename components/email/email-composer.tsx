@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Paperclip, Send, Save, Check, Loader2, AlertCircle, FileText, BookmarkPlus, CalendarClock, ChevronDown, MailCheck, Search } from "lucide-react";
+import { X, Paperclip, Send, Save, Check, Loader2, AlertCircle, FileText, BookmarkPlus, CalendarClock, ChevronDown, MailCheck, Search, Database } from "lucide-react";
 import { cn, formatFileSize, formatDateTime, generateUUID } from "@/lib/utils";
 import { debug } from "@/lib/debug";
 import { toast } from "@/stores/toast-store";
@@ -54,6 +54,11 @@ import { RichTextEditor } from "@/components/email/rich-text-editor";
 import type { Editor } from "@tiptap/react";
 import { htmlToPlainText as htmlToPlainTextShared } from "@/lib/html-to-text";
 import { fileStorage } from "@/lib/plugin-storage";
+import { JmapFilePickerDialog } from "@/components/email/jmap-file-picker-dialog";
+import {
+  JmapEmailAttachmentSource,
+  type StoredEmailAttachment,
+} from "@/lib/files/email-attachment-source";
 
 /**
  * Derives the text/plain alternative from the composer's HTML body, preserving
@@ -534,6 +539,7 @@ export function EmailComposer({
   const [fromOverrideEmail, setFromOverrideEmail] = useState<string>(initialData?.fromOverrideEmail ?? '');
   const [fromOverrideName, setFromOverrideName] = useState<string>(initialData?.fromOverrideName ?? '');
   const [showTemplatePicker, setShowTemplatePicker] = useState(false);
+  const [showJmapFilePicker, setShowJmapFilePicker] = useState(false);
   const [showSaveAsTemplate, setShowSaveAsTemplate] = useState(false);
   const [showCloseDialog, setShowCloseDialog] = useState(false);
   const [showAllAttachments, setShowAllAttachments] = useState(false);
@@ -581,6 +587,10 @@ export function EmailComposer({
   const composerClient = currentIdentityParts.localAccountId
     ? (useAuthStore.getState().getClientForAccount(currentIdentityParts.localAccountId) ?? client)
     : client;
+  const jmapAttachmentSource = useMemo(
+    () => composerClient ? new JmapEmailAttachmentSource(composerClient) : null,
+    [composerClient],
+  );
   const currentIdentityRawId = currentIdentityParts.rawId ?? currentIdentity?.id;
   // Alias identities often lack a configured signature - fall back to the primary
   // identity's signature so replies (which auto-select a matching alias) still
@@ -1211,6 +1221,29 @@ export function EmailComposer({
       fileInputRef.current.value = '';
     }
   };
+
+  const addStoredAttachments = useCallback((
+    selected: readonly StoredEmailAttachment[],
+  ) => {
+    setAttachments((current) => {
+      const existingBlobIds = new Set(
+        current.flatMap((attachment) =>
+          attachment.blobId ? [attachment.blobId] : []),
+      );
+      const additions = selected
+        .filter((attachment) => !existingBlobIds.has(attachment.blobId))
+        .map((attachment) => {
+          existingBlobIds.add(attachment.blobId);
+          return {
+            blobId: attachment.blobId,
+            name: attachment.name,
+            type: attachment.type,
+            size: attachment.size,
+          };
+        });
+      return additions.length > 0 ? [...current, ...additions] : current;
+    });
+  }, []);
 
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const dragTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -2515,6 +2548,16 @@ export function EmailComposer({
             <Button
               variant="ghost"
               size="icon"
+              disabled={!jmapAttachmentSource}
+              onClick={() => setShowJmapFilePicker(true)}
+              className="h-9 w-9"
+              title={t('attach_from_jmap_files')}
+            >
+              <Database className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setShowTemplatePicker(true)}
               title={t('use_template')}
               className="h-9 w-9"
@@ -2619,6 +2662,13 @@ export function EmailComposer({
           onSelect={handleTemplateSelect}
         />
       )}
+
+      <JmapFilePickerDialog
+        isOpen={showJmapFilePicker}
+        source={jmapAttachmentSource}
+        onClose={() => setShowJmapFilePicker(false)}
+        onAttach={addStoredAttachments}
+      />
 
       {showSaveAsTemplate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">

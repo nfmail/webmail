@@ -22,7 +22,7 @@ import { useIsMobile } from "@/hooks/use-media-query";
 import { useRefreshGesture } from "@/hooks/use-refresh-gesture";
 import { usePolicyStore } from "@/stores/policy-store";
 import { FileBrowser } from "@/components/files/file-browser";
-import type { FileNodeRights } from "@/lib/jmap/types";
+import type { FileCollaborationPermissions } from "@/lib/files/collaboration";
 import { ImagePreviewModal } from "@/components/files/image-preview-modal";
 import { FilePreviewModal } from "@/components/files/file-preview-modal";
 import { loadFilesSettings } from "@/components/files/files-settings-dialog";
@@ -51,6 +51,7 @@ export default function FilesPage() {
     uploadProgress,
     migrationProgress,
     clipboard,
+    collaboration,
     initClient,
     checkSupport,
     migrateLegacyFlatNodes,
@@ -403,12 +404,12 @@ export default function FilesPage() {
 
   const currentFilesAccountId = useFileStore((s) => s.currentAccountId);
 
-  // Sharing: the browsing client (store-attached) drives the principal picker
-  // and share mutations. supportsPrincipals() gates the whole Share affordance.
-  const sharingEnabled = !!storeClient?.supportsPrincipals();
-  const filesAccountId = storeClient?.getFilesAccountId() ?? null;
-  const handleShare = useCallback(async (id: string, principalId: string, rights: FileNodeRights | null) => {
-    await shareResource(id, principalId, rights);
+  const handleShare = useCallback(async (
+    id: string,
+    principalId: string,
+    permissions: FileCollaborationPermissions | null,
+  ) => {
+    await shareResource(id, principalId, permissions);
   }, [shareResource]);
 
   // Pro shell only: all connected accounts are equal top-level entries at
@@ -550,9 +551,7 @@ export default function FilesPage() {
                   onSelectAccount={handleSelectAccount}
                   accountPickerMode={isAccountPicker}
                   accountLabel={currentAccountLabel}
-                  client={storeClient}
-                  ownAccountId={filesAccountId}
-                  sharingEnabled={sharingEnabled}
+                  collaboration={collaboration}
                   onShare={handleShare}
                 />
                 </div>

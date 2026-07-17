@@ -27,8 +27,10 @@ import { Avatar } from "@/components/ui/avatar";
 import { getDroppedFilesAndFolders } from "@/lib/webdav/drop-utils";
 import type { FileResource } from "@/stores/file-store";
 import { ShareCollectionDialog } from "@/components/settings/share-collection-dialog";
-import type { IJMAPClient } from "@/lib/jmap/client-interface";
-import type { FileNodeRights } from "@/lib/jmap/types";
+import type {
+  FileCollaborationPermissions,
+  FileCollaborationService,
+} from "@/lib/files/collaboration";
 
 type SortKey = "name" | "size" | "modified";
 type SortDir = "asc" | "desc";
@@ -98,14 +100,14 @@ interface FileBrowserProps {
   accountPickerMode?: boolean;
   /** Pro shell only: label of the currently-attached account, shown as a breadcrumb segment after Home. */
   accountLabel?: string | null;
-  /** JMAP client for the browsing account, used by the share dialog to list principals. */
-  client?: IJMAPClient | null;
-  /** Files account id of the browsing account; used to exclude self from the share picker. */
-  ownAccountId?: string | null;
-  /** True when the server supports JMAP Sharing (principals); gates the Share action. */
-  sharingEnabled?: boolean;
+  /** Optional provider-neutral collaboration service for this file provider. */
+  collaboration?: FileCollaborationService | null;
   /** Add/update/remove a principal's share on a node. Set null rights to revoke. */
-  onShare?: (id: string, principalId: string, rights: FileNodeRights | null) => Promise<void>;
+  onShare?: (
+    id: string,
+    principalId: string,
+    permissions: FileCollaborationPermissions | null,
+  ) => Promise<void>;
 }
 
 const IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "gif", "svg", "webp", "bmp", "ico", "avif"]);
@@ -241,10 +243,10 @@ function getGridIcon(resource: FileResource) {
   return getFileIconByName(resource.name, "lg");
 }
 
-// Small inline indicator: a node shared out by the user (shareWith has entries)
+// Small inline indicator: a node shared out by the user (shares has entries)
 // or a node shared *with* the user by another principal (isShared).
 function ShareBadge({ resource, t }: { resource: FileResource; t: (key: string) => string }) {
-  const sharedOut = !!resource.shareWith && Object.keys(resource.shareWith).length > 0;
+  const sharedOut = !!resource.shares && Object.keys(resource.shares).length > 0;
   if (resource.isShared) {
     return (
       <Share2
@@ -380,9 +382,7 @@ export function FileBrowser({
   onSelectAccount,
   accountPickerMode,
   accountLabel,
-  client,
-  ownAccountId,
-  sharingEnabled,
+  collaboration,
   onShare,
 }: FileBrowserProps) {
   const t = useTranslations("files");
@@ -390,15 +390,20 @@ export function FileBrowser({
   const [renameTarget, setRenameTarget] = useState<string | null>(null);
   const [shareTargetId, setShareTargetId] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
-  // The share dialog is bound to a node id (not name) so its shareWith stays
+  // The share dialog is bound to a node id (not name) so its share metadata stays
   // live after a share refresh re-derives the resource list.
   const shareTarget = shareTargetId ? resources.find(r => r.id === shareTargetId) ?? null : null;
-  // A node is shareable when the server supports JMAP Sharing, the viewer owns
-  // it (not a shared-with-me node), and holds the mayShare right (owned nodes
-  // report full rights; treat missing myRights as allowed).
+  // A node is shareable when collaboration is available, the viewer owns it,
+  // and holds the provider-neutral manage-sharing permission.
   const canShare = useCallback((r: FileResource | null | undefined): boolean =>
-    !!(sharingEnabled && onShare && client && r && !r.isShared && (r.myRights?.mayShare ?? true)),
-    [sharingEnabled, onShare, client]);
+    !!(
+      collaboration?.enabled
+      && onShare
+      && r
+      && !r.isShared
+      && (r.collaborationPermissions?.manageSharing ?? true)
+    ),
+    [collaboration, onShare]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; name: string } | null>(null);
   const [emptyContextMenu, setEmptyContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [showNewTextFile, setShowNewTextFile] = useState(false);
@@ -2005,15 +2010,19 @@ export function FileBrowser({
       )}
 
       {/* Share dialog */}
-      {shareTarget && client && onShare && (
+      {shareTarget && collaboration && onShare && (
         <ShareCollectionDialog
-          client={client}
+          principalSource={collaboration}
           kind="file"
           collectionName={shareTarget.name}
-          shareWith={shareTarget.shareWith}
-          ownAccountId={ownAccountId || ""}
+          shareWith={shareTarget.shares}
+          ownAccountId={collaboration.ownPrincipalId || ""}
           onShare={(principalId, rights) =>
-            onShare(shareTarget.id, principalId, rights as FileNodeRights | null)}
+            onShare(
+              shareTarget.id,
+              principalId,
+              rights as FileCollaborationPermissions | null,
+            )}
           onClose={() => setShareTargetId(null)}
         />
       )}

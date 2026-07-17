@@ -6,11 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { X, Loader2, UserPlus, Trash2, Users, ChevronDown } from "lucide-react";
 import type { IJMAPClient } from "@/lib/jmap/client-interface";
-import type { Principal, CalendarRights, AddressBookRights, FileNodeRights } from "@/lib/jmap/types";
+import type { CalendarRights, AddressBookRights } from "@/lib/jmap/types";
+import type {
+  FileCollaborationPermissions,
+  FileCollaborationPrincipal,
+} from "@/lib/files/collaboration";
 import { toast } from "@/stores/toast-store";
 
 type ShareKind = "calendar" | "addressBook" | "file";
-type AnyRights = CalendarRights | AddressBookRights | FileNodeRights;
+type AnyRights =
+  | CalendarRights
+  | AddressBookRights
+  | FileCollaborationPermissions;
+type SharePrincipal = FileCollaborationPrincipal;
 
 type RolePreset = "freeBusy" | "read" | "readWrite" | "manager" | "custom";
 
@@ -39,18 +47,21 @@ const ADDRESS_BOOK_PRESETS: Record<Exclude<RolePreset, "custom" | "freeBusy">, A
   manager: { mayRead: true, mayWrite: true, mayShare: true, mayDelete: true },
 };
 
-const FILE_PRESETS: Record<Exclude<RolePreset, "custom" | "freeBusy">, FileNodeRights> = {
+const FILE_PRESETS: Record<
+  Exclude<RolePreset, "custom" | "freeBusy">,
+  FileCollaborationPermissions
+> = {
   read: {
-    mayRead: true, mayAddChildren: false, mayRename: false,
-    mayDelete: false, mayModifyContent: false, mayShare: false,
+    read: true, addChildren: false, rename: false,
+    delete: false, modifyContent: false, manageSharing: false,
   },
   readWrite: {
-    mayRead: true, mayAddChildren: true, mayRename: true,
-    mayDelete: true, mayModifyContent: true, mayShare: false,
+    read: true, addChildren: true, rename: true,
+    delete: true, modifyContent: true, manageSharing: false,
   },
   manager: {
-    mayRead: true, mayAddChildren: true, mayRename: true,
-    mayDelete: true, mayModifyContent: true, mayShare: true,
+    read: true, addChildren: true, rename: true,
+    delete: true, modifyContent: true, manageSharing: true,
   },
 };
 
@@ -73,9 +84,12 @@ function detectAddressBookPreset(r: AddressBookRights): RolePreset {
   return "custom";
 }
 
-function detectFilePreset(r: FileNodeRights): RolePreset {
-  for (const [name, preset] of Object.entries(FILE_PRESETS) as [Exclude<RolePreset, "custom" | "freeBusy">, FileNodeRights][]) {
-    const keys = Object.keys(preset) as (keyof FileNodeRights)[];
+function detectFilePreset(r: FileCollaborationPermissions): RolePreset {
+  for (const [name, preset] of Object.entries(FILE_PRESETS) as [
+    Exclude<RolePreset, "custom" | "freeBusy">,
+    FileCollaborationPermissions,
+  ][]) {
+    const keys = Object.keys(preset) as (keyof FileCollaborationPermissions)[];
     if (keys.every((k) => preset[k] === (r[k] ?? false))) {
       return name;
     }
@@ -92,12 +106,15 @@ function presetRights(kind: ShareKind, preset: RolePreset): AnyRights | undefine
 
 function detectPreset(kind: ShareKind, rights: AnyRights): RolePreset {
   if (kind === "calendar") return detectCalendarPreset(rights as CalendarRights);
-  if (kind === "file") return detectFilePreset(rights as FileNodeRights);
+  if (kind === "file") return detectFilePreset(rights as FileCollaborationPermissions);
   return detectAddressBookPreset(rights as AddressBookRights);
 }
 
 interface ShareCollectionDialogProps {
-  client: IJMAPClient;
+  client?: IJMAPClient;
+  principalSource?: {
+    listPrincipals(): Promise<readonly SharePrincipal[]>;
+  };
   kind: ShareKind;
   collectionName: string;
   shareWith: Record<string, AnyRights> | null | undefined;
@@ -108,6 +125,7 @@ interface ShareCollectionDialogProps {
 
 export function ShareCollectionDialog({
   client,
+  principalSource,
   kind,
   collectionName,
   shareWith,
@@ -118,7 +136,7 @@ export function ShareCollectionDialog({
   const t = useTranslations("sharing");
   const tCommon = useTranslations("common");
   const modalRef = useRef<HTMLDivElement>(null);
-  const [allPrincipals, setAllPrincipals] = useState<Principal[]>([]);
+  const [allPrincipals, setAllPrincipals] = useState<SharePrincipal[]>([]);
   const [loadingPrincipals, setLoadingPrincipals] = useState(true);
   const [search, setSearch] = useState("");
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -128,21 +146,24 @@ export function ShareCollectionDialog({
   useEffect(() => {
     let cancelled = false;
     setLoadingPrincipals(true);
-    client.getPrincipals().then((list) => {
+    const load = principalSource
+      ? principalSource.listPrincipals()
+      : client?.getPrincipals() ?? Promise.resolve([]);
+    load.then((list) => {
       if (cancelled) return;
-      setAllPrincipals(list);
+      setAllPrincipals([...list]);
       setLoadingPrincipals(false);
     }).catch(() => {
       if (!cancelled) setLoadingPrincipals(false);
     });
     return () => { cancelled = true; };
-  }, [client]);
+  }, [client, principalSource]);
 
   // Map of every fetched principal by id, used for name/description lookups in
   // the shared list. Must include principals that already have a share so the
   // list shows their name rather than the raw id.
   const allPrincipalsById = useMemo(() => {
-    const map = new Map<string, Principal>();
+    const map = new Map<string, SharePrincipal>();
     for (const p of allPrincipals) map.set(p.id, p);
     return map;
   }, [allPrincipals]);
@@ -189,7 +210,7 @@ export function ShareCollectionDialog({
     }
   };
 
-  const handleAdd = async (principal: Principal) => {
+  const handleAdd = async (principal: SharePrincipal) => {
     const rights = presetRights(kind, "read");
     if (!rights) return;
     setSavingId(principal.id);

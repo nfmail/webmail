@@ -1,140 +1,265 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { Dispatcher } from 'undici';
 import { logger } from '@/lib/logger';
 import { getStalwartCredentials } from '@/lib/stalwart/credentials';
+import {
+  WEBDAV_MAX_FILE_BYTES,
+  WEBDAV_MAX_PROPFIND_REQUEST_BYTES,
+  WEBDAV_MAX_PROPFIND_RESPONSE_BYTES,
+  WEBDAV_REQUEST_TIMEOUT_MS,
+  WebDavProxyError,
+  acquireWebDavRequestSlot,
+  assertContentLength,
+  assertSameOriginWebDavRequest,
+  boundedReadableStream,
+  buildDavTargetUrl,
+  findWebDavProxyError,
+  normalizeDavRelativePath,
+  readStreamWithLimit,
+  resolveWebDavUpstream,
+} from '@/lib/webdav/proxy-security';
 
 const ALLOWED_METHODS = new Set(['PROPFIND', 'MKCOL', 'GET', 'PUT', 'DELETE', 'MOVE', 'COPY']);
+const BODY_METHODS = new Set(['PROPFIND', 'PUT']);
+const DESTINATION_METHODS = new Set(['MOVE', 'COPY']);
 
-function normalizeDavRelativePath(rawPath: string): string {
-  const sanitized = rawPath.replace(/\\/g, '/').split(/[?#]/, 1)[0] ?? '';
-  const segments = sanitized.split('/').filter(Boolean);
+type PinnedFetchInit = RequestInit & {
+  dispatcher: Dispatcher;
+  duplex?: 'half';
+};
 
-  return segments.map((segment) => {
-    let decoded: string;
-    try {
-      decoded = decodeURIComponent(segment);
-    } catch {
-      throw new Error('Invalid WebDAV path encoding');
-    }
-
-    if (decoded === '.' || decoded === '..' || decoded.includes('/') || decoded.includes('\\') || decoded.includes('\0')) {
-      throw new Error('Invalid WebDAV path segment');
-    }
-
-    return encodeURIComponent(decoded);
-  }).join('/');
+function jsonError(error: string, status: number) {
+  return NextResponse.json(
+    { error },
+    { status, headers: { 'Cache-Control': 'no-store' } },
+  );
 }
 
-function buildDavTargetUrl(baseUrl: string, username: string, rawPath: string): string {
-  const rootUrl = new URL(`${baseUrl.replace(/\/$/, '')}/dav/file/${encodeURIComponent(username)}/`);
-  const relativePath = normalizeDavRelativePath(rawPath);
-  return relativePath ? new URL(relativePath, rootUrl).toString() : rootUrl.toString();
+function validatedHeader(
+  request: NextRequest,
+  name: string,
+  maximumLength = 255,
+): string | null {
+  const value = request.headers.get(name);
+  if (value === null) return null;
+  if (value.length > maximumLength || /[\0\r\n]/.test(value)) {
+    throw new WebDavProxyError('header_invalid', 400, `Invalid ${name} header`);
+  }
+  return value;
+}
+
+function assertResponseLength(response: Response, maximum: number): void {
+  const raw = response.headers.get('content-length');
+  if (raw !== null && (!/^\d+$/.test(raw) || Number(raw) > maximum)) {
+    throw new WebDavProxyError('response_too_large', 502, 'WebDAV response is too large');
+  }
+}
+
+function getUpstreamHeaders(
+  request: NextRequest,
+  method: string,
+  baseUrl: string,
+  username: string,
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  const depth = validatedHeader(request, 'Depth', 8);
+  const contentType = validatedHeader(request, 'Content-Type');
+  const destination = validatedHeader(request, 'X-WebDAV-Destination', 4096);
+  const overwrite = validatedHeader(request, 'Overwrite', 1);
+
+  if (method === 'PROPFIND') {
+    if (depth !== null && depth !== '0' && depth !== '1') {
+      throw new WebDavProxyError('depth_invalid', 400, 'Invalid Depth header');
+    }
+    // RFC 4918 otherwise permits an unbounded default Depth. A missing browser
+    // header is deliberately reduced to the target resource only.
+    headers.Depth = depth ?? '0';
+  } else if (depth !== null) {
+    throw new WebDavProxyError('depth_invalid', 400, 'Invalid Depth header');
+  }
+
+  if (contentType) headers['Content-Type'] = contentType;
+
+  if (DESTINATION_METHODS.has(method)) {
+    if (!destination) {
+      throw new WebDavProxyError('destination_missing', 400, 'Missing WebDAV destination');
+    }
+    headers.Destination = buildDavTargetUrl(baseUrl, username, destination);
+    if (overwrite !== null && overwrite !== 'T' && overwrite !== 'F') {
+      throw new WebDavProxyError('overwrite_invalid', 400, 'Invalid Overwrite header');
+    }
+    headers.Overwrite = overwrite ?? 'F';
+  } else if (destination !== null || overwrite !== null) {
+    throw new WebDavProxyError('destination_invalid', 400, 'Unexpected WebDAV destination headers');
+  }
+
+  return headers;
 }
 
 /**
- * POST /api/webdav
- * Proxies WebDAV requests to the Stalwart server.
- *
- * Headers:
- *   X-WebDAV-Method: The actual WebDAV method (PROPFIND, MKCOL, GET, PUT, DELETE, MOVE, COPY)
- *   X-WebDAV-Path: Resource path relative to the user's DAV root (default: /)
- *   X-WebDAV-Destination: Destination path for MOVE/COPY (relative to user's DAV root)
- *   Depth: WebDAV Depth header (forwarded as-is)
- *   Content-Type: Forwarded for PROPFIND (XML) and PUT (file upload)
- *   Overwrite: WebDAV Overwrite header for MOVE/COPY
+ * Server-side WebDAV bridge. The browser supplies only an account-relative
+ * path and operation; credentials and the configured upstream origin remain
+ * server-side.
  */
 export async function POST(request: NextRequest) {
+  let method = 'UNKNOWN';
+  let releaseSlot: (() => void) | null = null;
+  let dispatcher: Dispatcher | null = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  let timedOut = false;
+  let detachClientAbort: (() => void) | null = null;
+  const controller = new AbortController();
+  let cleanedUp = false;
+
+  const cleanup = (abort = false) => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    if (timeout) clearTimeout(timeout);
+    detachClientAbort?.();
+    if (abort && !controller.signal.aborted) controller.abort();
+    releaseSlot?.();
+    if (dispatcher) void dispatcher.close().catch(() => undefined);
+  };
+
   try {
+    assertSameOriginWebDavRequest(request);
+
     const creds = await getStalwartCredentials(request);
-    if (!creds) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!creds) return jsonError('Not authenticated', 401);
+
+    method = request.headers.get('X-WebDAV-Method')?.toUpperCase() ?? '';
+    if (!ALLOWED_METHODS.has(method)) {
+      return jsonError('Invalid WebDAV method', 400);
     }
 
-    const method = request.headers.get('X-WebDAV-Method')?.toUpperCase();
-    if (!method || !ALLOWED_METHODS.has(method)) {
-      return NextResponse.json({ error: 'Invalid WebDAV method' }, { status: 400 });
+    const davPath = request.headers.get('X-WebDAV-Path') ?? '/';
+    const normalizedPath = normalizeDavRelativePath(davPath);
+
+    if (method === 'PROPFIND') {
+      assertContentLength(request.headers, WEBDAV_MAX_PROPFIND_REQUEST_BYTES);
+    } else if (method === 'PUT') {
+      assertContentLength(request.headers, WEBDAV_MAX_FILE_BYTES);
+    } else if (request.body && BODY_METHODS.has(method) === false) {
+      const rawLength = request.headers.get('content-length');
+      if (rawLength !== null && rawLength !== '0') {
+        throw new WebDavProxyError('body_invalid', 400, 'Unexpected WebDAV request body');
+      }
     }
 
-    const davPath = request.headers.get('X-WebDAV-Path') || '/';
-    const baseUrl = creds.serverUrl.replace(/\/$/, '');
-    const targetUrl = buildDavTargetUrl(baseUrl, creds.username, davPath);
+    releaseSlot = acquireWebDavRequestSlot();
+    const upstream = await resolveWebDavUpstream(creds.serverUrl);
+    dispatcher = upstream.dispatcher;
 
-    // Build headers for the upstream request
-    const upstreamHeaders: Record<string, string> = {
-      'Authorization': creds.authHeader,
+    timeout = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+      cleanup();
+    }, WEBDAV_REQUEST_TIMEOUT_MS);
+
+    const requestSignal = request.signal;
+    const abortFromClient = () => {
+      controller.abort(requestSignal.reason);
+      cleanup();
+    };
+    requestSignal?.addEventListener('abort', abortFromClient, { once: true });
+    detachClientAbort = () => requestSignal?.removeEventListener('abort', abortFromClient);
+
+    const targetUrl = buildDavTargetUrl(upstream.baseUrl, creds.username, normalizedPath);
+    const upstreamHeaders = {
+      Authorization: creds.authHeader,
+      ...getUpstreamHeaders(request, method, upstream.baseUrl, creds.username),
     };
 
-    // Forward relevant WebDAV headers
-    const depth = request.headers.get('Depth');
-    if (depth) upstreamHeaders['Depth'] = depth;
-
-    const contentType = request.headers.get('Content-Type');
-    if (contentType) upstreamHeaders['Content-Type'] = contentType;
-
-    // For MOVE/COPY, construct the full Destination URL from the relative path
-    const destination = request.headers.get('X-WebDAV-Destination');
-    if (destination) {
-      upstreamHeaders['Destination'] = buildDavTargetUrl(baseUrl, creds.username, destination);
-    }
-
-    const overwrite = request.headers.get('Overwrite');
-    if (overwrite) upstreamHeaders['Overwrite'] = overwrite;
-
-    // Forward request body for methods that need it.
-    // PUT streams directly to upstream to avoid buffering large uploads in memory.
-    // PROPFIND bodies are small XML and are read fully.
-    let body: ArrayBuffer | ReadableStream<Uint8Array> | null = null;
+    let body: BodyInit | null = null;
     if (method === 'PROPFIND') {
-      body = await request.arrayBuffer();
-    } else if (method === 'PUT') {
-      body = request.body;
+      const propfindBody = await readStreamWithLimit(
+        request.body,
+        WEBDAV_MAX_PROPFIND_REQUEST_BYTES,
+        'request_too_large',
+      );
+      body = propfindBody.buffer as ArrayBuffer;
+    } else if (method === 'PUT' && request.body) {
+      body = boundedReadableStream(
+        request.body,
+        WEBDAV_MAX_FILE_BYTES,
+        'request_too_large',
+      );
     }
 
     const response = await fetch(targetUrl, {
       method,
       headers: upstreamHeaders,
       body,
-      redirect: 'follow',
-      // `duplex: 'half'` is required by undici when sending a streaming request body.
+      redirect: 'manual',
+      signal: controller.signal,
+      dispatcher,
       ...(method === 'PUT' ? { duplex: 'half' } : {}),
-    } as Parameters<typeof fetch>[1] & { duplex?: 'half' });
+    } as PinnedFetchInit);
 
-    // For file downloads (GET), stream the response back
-    if (method === 'GET') {
-      const headers = new Headers();
-      headers.set('Content-Type', response.headers.get('Content-Type') || 'application/octet-stream');
-      const contentLength = response.headers.get('Content-Length');
-      if (contentLength) headers.set('Content-Length', contentLength);
-      headers.set('X-WebDAV-Request-URI', targetUrl);
-
-      return new NextResponse(response.body, {
-        status: response.status,
-        headers,
-      });
+    if (response.status >= 300 && response.status < 400) {
+      await response.body?.cancel();
+      throw new WebDavProxyError('redirect_denied', 502, 'WebDAV server redirect was denied');
     }
 
-    // For PROPFIND, return XML with the actual request URI for href comparison
-    if (method === 'PROPFIND') {
-      const text = await response.text();
-      const headers = new Headers();
-      headers.set('Content-Type', 'application/xml; charset=utf-8');
-      headers.set('X-WebDAV-Request-URI', targetUrl);
-
-      return new NextResponse(text, {
-        status: response.status,
-        headers,
-      });
-    }
-
-    // For other methods (MKCOL, DELETE, MOVE, COPY, PUT), return the status
-    return new NextResponse(null, {
-      status: response.status,
+    const responseHeaders = new Headers({
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
     });
-  } catch (error) {
-    if (error instanceof Error && error.message.startsWith('Invalid WebDAV path')) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+
+    if (method === 'GET') {
+      assertResponseLength(response, WEBDAV_MAX_FILE_BYTES);
+      const contentType = response.headers.get('Content-Type');
+      const contentLength = response.headers.get('Content-Length');
+      if (contentType) responseHeaders.set('Content-Type', contentType);
+      if (contentLength) responseHeaders.set('Content-Length', contentLength);
+
+      if (!response.body) {
+        cleanup();
+        return new NextResponse(null, { status: response.status, headers: responseHeaders });
+      }
+
+      const bodyStream = boundedReadableStream(
+        response.body,
+        WEBDAV_MAX_FILE_BYTES,
+        'response_too_large',
+        cleanup,
+      );
+      return new NextResponse(bodyStream, { status: response.status, headers: responseHeaders });
     }
 
-    logger.error('WebDAV proxy error', { error: error instanceof Error ? error.message : 'Unknown' });
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    if (method === 'PROPFIND') {
+      assertResponseLength(response, WEBDAV_MAX_PROPFIND_RESPONSE_BYTES);
+      const xml = await readStreamWithLimit(response.body, WEBDAV_MAX_PROPFIND_RESPONSE_BYTES);
+      responseHeaders.set('Content-Type', 'application/xml; charset=utf-8');
+      responseHeaders.set('X-WebDAV-Request-Path', normalizedPath ? `/${normalizedPath}` : '/');
+      cleanup();
+      return new NextResponse(xml.buffer as ArrayBuffer, {
+        status: response.status,
+        headers: responseHeaders,
+      });
+    }
+
+    await response.body?.cancel();
+    cleanup();
+    return new NextResponse(null, { status: response.status, headers: responseHeaders });
+  } catch (error) {
+    cleanup(true);
+    const proxyFailure = findWebDavProxyError(error);
+    if (proxyFailure) {
+      if (proxyFailure.status >= 500) {
+        logger.error('WebDAV proxy request failed', {
+          code: proxyFailure.code,
+          method,
+        });
+      }
+      return jsonError(proxyFailure.publicMessage, proxyFailure.status);
+    }
+    if (timedOut || (error instanceof Error && error.name === 'AbortError')) {
+      logger.error('WebDAV proxy request failed', { code: 'timeout', method });
+      return jsonError('WebDAV server timed out', 504);
+    }
+
+    logger.error('WebDAV proxy request failed', { code: 'upstream_failure', method });
+    return jsonError('WebDAV proxy request failed', 502);
   }
 }

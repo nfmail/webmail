@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   Paperclip,
   Star,
@@ -79,7 +80,8 @@ export function AdvancedSearchPanel({
 
   return (
     <div className="border-b border-border bg-muted/30 animate-in slide-in-from-top-2 fade-in duration-200">
-      <div className="px-4 py-3 space-y-3">
+      <div className="px-4 py-3">
+        <FieldGroup className="gap-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-foreground">{t("title")}</span>
           <div className="flex items-center gap-1">
@@ -94,55 +96,60 @@ export function AdvancedSearchPanel({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t("from")}</label>
+          <Field className="gap-1.5">
+            <FieldLabel htmlFor="adv-search-from" className="text-xs font-normal text-muted-foreground">{t("from")}</FieldLabel>
             <Input
+              id="adv-search-from"
               value={filters.from}
               onChange={(e) => handleTextChange("from", e.target.value)}
               placeholder={t("from_placeholder")}
               className="h-8 text-sm"
             />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t("to")}</label>
+          </Field>
+          <Field className="gap-1.5">
+            <FieldLabel htmlFor="adv-search-to" className="text-xs font-normal text-muted-foreground">{t("to")}</FieldLabel>
             <Input
+              id="adv-search-to"
               value={filters.to}
               onChange={(e) => handleTextChange("to", e.target.value)}
               placeholder={t("to_placeholder")}
               className="h-8 text-sm"
             />
-          </div>
+          </Field>
         </div>
 
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">{t("subject")}</label>
+        <Field className="gap-1.5">
+          <FieldLabel htmlFor="adv-search-subject" className="text-xs font-normal text-muted-foreground">{t("subject")}</FieldLabel>
           <Input
+            id="adv-search-subject"
             value={filters.subject}
             onChange={(e) => handleTextChange("subject", e.target.value)}
             placeholder={t("subject_placeholder")}
             className="h-8 text-sm"
           />
-        </div>
+        </Field>
 
         <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t("date_after")}</label>
+          <Field className="gap-1.5">
+            <FieldLabel htmlFor="adv-search-date-after" className="text-xs font-normal text-muted-foreground">{t("date_after")}</FieldLabel>
             <Input
+              id="adv-search-date-after"
               type="date"
               value={filters.dateAfter}
               onChange={(e) => handleDateChange("dateAfter", e.target.value)}
               className="h-8 text-sm"
             />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">{t("date_before")}</label>
+          </Field>
+          <Field className="gap-1.5">
+            <FieldLabel htmlFor="adv-search-date-before" className="text-xs font-normal text-muted-foreground">{t("date_before")}</FieldLabel>
             <Input
+              id="adv-search-date-before"
               type="date"
               value={filters.dateBefore}
               onChange={(e) => handleDateChange("dateBefore", e.target.value)}
               className="h-8 text-sm"
             />
-          </div>
+          </Field>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -165,6 +172,7 @@ export function AdvancedSearchPanel({
             onClick={() => handleToggle("isUnread", filters.isUnread)}
           />
         </div>
+        </FieldGroup>
       </div>
     </div>
   );

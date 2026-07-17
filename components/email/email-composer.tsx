@@ -1,10 +1,24 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { X, Paperclip, Send, Save, Check, Loader2, AlertCircle, FileText, BookmarkPlus, CalendarClock, ChevronDown, MailCheck, Search, Database } from "lucide-react";
 import { cn, formatFileSize, formatDateTime, generateUUID } from "@/lib/utils";
 import { debug } from "@/lib/debug";
@@ -552,24 +566,6 @@ export function EmailComposer({
   const [scheduleError, setScheduleError] = useState('');
   const [showSendMenu, setShowSendMenu] = useState(false);
   const sendMenuRef = useRef<HTMLDivElement>(null);
-
-  const saveTemplateModalRef = useFocusTrap({
-    isActive: showSaveAsTemplate,
-    onEscape: () => setShowSaveAsTemplate(false),
-    restoreFocus: true,
-  });
-
-  const closeDialogRef = useFocusTrap({
-    isActive: showCloseDialog,
-    onEscape: () => setShowCloseDialog(false),
-    restoreFocus: true,
-  });
-
-  const attachmentWarningRef = useFocusTrap({
-    isActive: showAttachmentWarning,
-    onEscape: () => setShowAttachmentWarning(false),
-    restoreFocus: true,
-  });
 
   const { client } = useAuthStore();
   const currentIdentity = selectedIdentityId
@@ -2072,7 +2068,7 @@ export function EmailComposer({
       {/* Header - mobile: clean bar with close/send, desktop: title bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={handleClose} className="h-9 w-9 md:h-8 md:w-8">
+          <Button variant="ghost" size="icon" onClick={handleClose} aria-label={tCommon('close')} className="h-9 w-9 md:h-8 md:w-8">
             <X className="w-5 h-5 md:w-4 md:h-4" />
           </Button>
           <div className="flex items-center gap-2">
@@ -2201,6 +2197,7 @@ export function EmailComposer({
                   onClick={() => setSubAddressTag('')}
                   className="h-6 px-2 text-xs"
                   title={t('remove_sub_address')}
+                  aria-label={t('remove_sub_address')}
                 >
                   <X className="w-3 h-3" />
                 </Button>
@@ -2505,6 +2502,7 @@ export function EmailComposer({
                       onClick={() => removeAttachment(index)}
                       className="ms-1 hover:text-red-500 min-w-[20px] min-h-[20px] flex items-center justify-center"
                       title={att.uploading ? t('upload_cancel') : undefined}
+                      aria-label={att.uploading ? t('upload_cancel') : `${tCommon('delete')} ${att.name}`}
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -2526,6 +2524,7 @@ export function EmailComposer({
 
         {/* Bottom toolbar */}
         <div className="flex items-center justify-between px-4 py-2.5 border-t bg-background shrink-0 pb-[calc(0.625rem+env(safe-area-inset-bottom)/2)]">
+          <TooltipProvider delayDuration={300}>
           {/* Left side actions */}
           <div className="flex items-center gap-1">
             <input
@@ -2536,60 +2535,85 @@ export function EmailComposer({
               className="hidden"
               accept="*/*"
             />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => fileInputRef.current?.click()}
-              className="h-9 w-9"
-              title={t('attach')}
-            >
-              <Paperclip className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={!jmapAttachmentSource}
-              onClick={() => setShowJmapFilePicker(true)}
-              className="h-9 w-9"
-              title={t('attach_from_jmap_files')}
-            >
-              <Database className="size-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowTemplatePicker(true)}
-              title={t('use_template')}
-              className="h-9 w-9"
-            >
-              <FileText className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowSaveAsTemplate(true)}
-              title={t('save_as_template')}
-              className="h-9 w-9"
-            >
-              <BookmarkPlus className="w-4 h-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-9 w-9"
+                  aria-label={t('attach')}
+                >
+                  <Paperclip className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('attach')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={!jmapAttachmentSource}
+                  onClick={() => setShowJmapFilePicker(true)}
+                  className="h-9 w-9"
+                  aria-label={t('attach_from_jmap_files')}
+                >
+                  <Database className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('attach_from_jmap_files')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowTemplatePicker(true)}
+                  aria-label={t('use_template')}
+                  className="h-9 w-9"
+                >
+                  <FileText className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('use_template')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowSaveAsTemplate(true)}
+                  aria-label={t('save_as_template')}
+                  className="h-9 w-9"
+                >
+                  <BookmarkPlus className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('save_as_template')}</TooltipContent>
+            </Tooltip>
             {/* Sign/encrypt controls are contributed by crypto plugins via the
                 composer-toolbar slot (rendered below). */}
 
             {/* Read-receipt request toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setRequestReadReceipt(v => !v)}
-              className={cn(
-                "h-9 w-9",
-                requestReadReceipt && "bg-green-600 text-white hover:bg-green-600 hover:text-white dark:bg-green-600 dark:hover:bg-green-600"
-              )}
-              title={requestReadReceipt ? t('read_receipt_on') : t('read_receipt_off')}
-              aria-pressed={requestReadReceipt}
-            >
-              <MailCheck className="w-4 h-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setRequestReadReceipt(v => !v)}
+                  className={cn(
+                    "h-9 w-9",
+                    requestReadReceipt && "bg-green-600 text-white hover:bg-green-600 hover:text-white dark:bg-green-600 dark:hover:bg-green-600"
+                  )}
+                  aria-label={requestReadReceipt ? t('read_receipt_on') : t('read_receipt_off')}
+                  aria-pressed={requestReadReceipt}
+                >
+                  <MailCheck className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{requestReadReceipt ? t('read_receipt_on') : t('read_receipt_off')}</TooltipContent>
+            </Tooltip>
             <PluginSlot name="composer-toolbar" />
           </div>
 
@@ -2604,26 +2628,35 @@ export function EmailComposer({
             </button>
             {composerClient?.hasDelayedSend() ? (
               <div ref={sendMenuRef} className="relative hidden md:inline-flex">
-                <Button
-                  onClick={() => handleSend()}
-                  disabled={!canSend || isSending}
-                  title={getSendTooltip()}
-                  className="rounded-e-none border-e border-primary-foreground/20"
-                >
-                  <Send className="w-4 h-4 me-2" />
-                  {t('send')}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => setShowSendMenu((open) => !open)}
-                  disabled={!canSend || isSending}
-                  title={t('schedule_send')}
-                  className="rounded-s-none px-2"
-                  aria-haspopup="menu"
-                  aria-expanded={showSendMenu}
-                >
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => handleSend()}
+                      disabled={!canSend || isSending}
+                      className="rounded-e-none border-e border-primary-foreground/20"
+                    >
+                      <Send className="w-4 h-4 me-2" />
+                      {t('send')}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{getSendTooltip()}</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      onClick={() => setShowSendMenu((open) => !open)}
+                      disabled={!canSend || isSending}
+                      aria-label={t('schedule_send')}
+                      className="rounded-s-none px-2"
+                      aria-haspopup="menu"
+                      aria-expanded={showSendMenu}
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t('schedule_send')}</TooltipContent>
+                </Tooltip>
                 {showSendMenu && (
                   <div
                     role="menu"
@@ -2642,17 +2675,22 @@ export function EmailComposer({
                 )}
               </div>
             ) : (
-              <Button
-                onClick={() => handleSend()}
-                disabled={!canSend || isSending}
-                title={getSendTooltip()}
-                className="hidden md:inline-flex"
-              >
-                <Send className="w-4 h-4 me-2" />
-                {t('send')}
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => handleSend()}
+                    disabled={!canSend || isSending}
+                    className="hidden md:inline-flex"
+                  >
+                    <Send className="w-4 h-4 me-2" />
+                    {t('send')}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{getSendTooltip()}</TooltipContent>
+              </Tooltip>
             )}
           </div>
+          </TooltipProvider>
         </div>
 
       {showTemplatePicker && (
@@ -2670,117 +2708,85 @@ export function EmailComposer({
         onAttach={addStoredAttachments}
       />
 
-      {showSaveAsTemplate && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div
-            ref={saveTemplateModalRef}
-            role="dialog"
-            aria-modal="true"
-            className="bg-background border border-border rounded-lg shadow-xl w-full max-w-lg p-6 animate-in zoom-in-95 duration-200"
-          >
-            <h3 className="text-lg font-semibold text-foreground mb-4">{t('save_as_template')}</h3>
-            <TemplateForm
-              initialData={{
-                subject,
-                body,
-                to: withInput(to, toInput).map(r => formatRecipient(r.name, r.email)),
-                cc: withInput(cc, ccInput).map(r => formatRecipient(r.name, r.email)),
-                bcc: withInput(bcc, bccInput).map(r => formatRecipient(r.name, r.email)),
-              }}
-              onSave={(data) => {
-                addTemplate(data);
-                setShowSaveAsTemplate(false);
-              }}
-              onCancel={() => setShowSaveAsTemplate(false)}
-            />
-          </div>
-        </div>
-      )}
+      <Dialog open={showSaveAsTemplate} onOpenChange={(open) => { if (!open) setShowSaveAsTemplate(false); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{t('save_as_template')}</DialogTitle>
+          </DialogHeader>
+          <TemplateForm
+            initialData={{
+              subject,
+              body,
+              to: withInput(to, toInput).map(r => formatRecipient(r.name, r.email)),
+              cc: withInput(cc, ccInput).map(r => formatRecipient(r.name, r.email)),
+              bcc: withInput(bcc, bccInput).map(r => formatRecipient(r.name, r.email)),
+            }}
+            onSave={(data) => {
+              addTemplate(data);
+              setShowSaveAsTemplate(false);
+            }}
+            onCancel={() => setShowSaveAsTemplate(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
-      {showScheduleDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-background border border-border rounded-lg shadow-xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-semibold text-foreground mb-2">{t('schedule_send')}</h3>
-            <p className="text-sm text-muted-foreground mb-4">{t('schedule_send_description')}</p>
-            <Input
-              type="datetime-local"
-              value={scheduleValue}
-              onChange={(e) => {
-                setScheduleValue(e.target.value);
-                setScheduleError('');
-              }}
-              className={cn(scheduleError && "border-destructive focus-visible:ring-destructive")}
-            />
-            {scheduleError && <p className="mt-2 text-sm text-destructive">{scheduleError}</p>}
-            <div className="mt-5 flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setShowScheduleDialog(false)}>{tCommon('cancel')}</Button>
-              <Button onClick={handleScheduleSend} disabled={!canSend || isSending}>{t('schedule_send')}</Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={showScheduleDialog} onOpenChange={(open) => { if (!open) setShowScheduleDialog(false); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('schedule_send')}</DialogTitle>
+            <DialogDescription>{t('schedule_send_description')}</DialogDescription>
+          </DialogHeader>
+          <Input
+            type="datetime-local"
+            value={scheduleValue}
+            onChange={(e) => {
+              setScheduleValue(e.target.value);
+              setScheduleError('');
+            }}
+            className={cn(scheduleError && "border-destructive focus-visible:ring-destructive")}
+          />
+          {scheduleError && <p className="text-sm text-destructive">{scheduleError}</p>}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowScheduleDialog(false)}>{tCommon('cancel')}</Button>
+            <Button onClick={handleScheduleSend} disabled={!canSend || isSending}>{t('schedule_send')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {showAttachmentWarning && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150"
-          onClick={() => setShowAttachmentWarning(false)}
-        >
-          <div
-            ref={attachmentWarningRef}
-            role="alertdialog"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-            className="bg-background border border-border rounded-lg shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200"
-          >
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-foreground">{t('forgot_attachment.title')}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t('forgot_attachment.message', { keyword: attachmentWarningKeyword })}
-              </p>
-            </div>
-            <div className="flex items-center justify-end gap-3 px-6 pb-6">
-              <Button variant="outline" onClick={() => setShowAttachmentWarning(false)}>
-                {t('forgot_attachment.back')}
-              </Button>
-              <Button onClick={() => { setShowAttachmentWarning(false); handleSend(true, attachmentWarningDelayedUntil); setAttachmentWarningDelayedUntil(undefined); }}>
-                {t('forgot_attachment.send_anyway')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={showAttachmentWarning}
+        onClose={() => setShowAttachmentWarning(false)}
+        onConfirm={() => {
+          setShowAttachmentWarning(false);
+          handleSend(true, attachmentWarningDelayedUntil);
+          setAttachmentWarningDelayedUntil(undefined);
+        }}
+        title={t('forgot_attachment.title')}
+        message={t('forgot_attachment.message', { keyword: attachmentWarningKeyword })}
+        confirmText={t('forgot_attachment.send_anyway')}
+        cancelText={t('forgot_attachment.back')}
+      />
 
-      {showCloseDialog && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150"
-          onClick={() => setShowCloseDialog(false)}
-        >
-          <div
-            ref={closeDialogRef}
-            role="alertdialog"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-            className="bg-background border border-border rounded-lg shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200"
-          >
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-foreground">{t('close_draft_title')}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{t('close_draft_message')}</p>
-            </div>
-            <div className="flex items-center justify-end gap-3 px-6 pb-6">
-              <Button variant="outline" onClick={() => setShowCloseDialog(false)}>
-                {t('cancel')}
-              </Button>
-              <Button variant="destructive" onClick={handleDiscardAndClose}>
-                {t('discard')}
-              </Button>
-              <Button onClick={handleSaveDraftAndClose}>
-                <Save className="w-4 h-4 me-2" />
-                {t('save_draft')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={showCloseDialog} onOpenChange={(open) => { if (!open) setShowCloseDialog(false); }}>
+        <DialogContent className="max-w-md" showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{t('close_draft_title')}</DialogTitle>
+            <DialogDescription>{t('close_draft_message')}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCloseDialog(false)}>
+              {t('cancel')}
+            </Button>
+            <Button variant="destructive" onClick={handleDiscardAndClose}>
+              {t('discard')}
+            </Button>
+            <Button onClick={handleSaveDraftAndClose}>
+              <Save className="w-4 h-4 me-2" />
+              {t('save_draft')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {previewAttachment && (
         <FilePreviewModal

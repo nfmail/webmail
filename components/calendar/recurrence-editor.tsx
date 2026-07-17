@@ -5,6 +5,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { addYears, format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { CalendarRecurrenceRule } from "@/lib/jmap/types";
 
 type EditorFrequency = "daily" | "weekly" | "monthly" | "yearly";
@@ -254,7 +261,7 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
   const selectCls = "rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
 
   return (
-    <div className="mt-2 rounded-md border border-border bg-muted/20 p-3 space-y-3">
+    <div className="mt-2 rounded-md border border-border bg-muted/20 p-3 flex flex-col gap-3">
       <div className="flex items-center gap-2 text-sm">
         <span className="shrink-0">{t("recurrence.editor_every")}</span>
         <Input
@@ -269,16 +276,16 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
           className="w-16 shrink-0"
           aria-label={t("recurrence.editor_every")}
         />
-        <select
-          value={frequency}
-          onChange={(e) => setFrequency(e.target.value as EditorFrequency)}
-          className={`${selectCls} flex-1 min-w-0`}
-          aria-label={t("recurrence.title")}
-        >
-          {EDITOR_FREQUENCIES.map((f) => (
-            <option key={f} value={f}>{t(UNIT_LABEL_KEYS[f])}</option>
-          ))}
-        </select>
+        <Select value={frequency} onValueChange={(v) => setFrequency(v as EditorFrequency)}>
+          <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.title")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {EDITOR_FREQUENCIES.map((f) => (
+              <SelectItem key={f} value={f}>{t(UNIT_LABEL_KEYS[f])}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {frequency === "weekly" && (
@@ -305,30 +312,30 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
       {frequency === "yearly" && (
         <div className="flex items-center gap-2 text-sm">
           <span className="shrink-0">{capitalize(t("recurrence.editor_in"))}</span>
-          <select
-            value={month}
-            onChange={(e) => setMonth(parseInt(e.target.value, 10))}
-            className={`${selectCls} flex-1 min-w-0`}
-            aria-label={t("recurrence.editor_in")}
-          >
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-              <option key={m} value={m}>{capitalize(monthName(m, locale))}</option>
-            ))}
-          </select>
+          <Select value={String(month)} onValueChange={(v) => setMonth(parseInt(v, 10))}>
+            <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.editor_in")}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                <SelectItem key={m} value={String(m)}>{capitalize(monthName(m, locale))}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       )}
 
       {(frequency === "monthly" || frequency === "yearly") && (
         <div className="flex items-center gap-2 text-sm">
-          <select
-            value={monthlyMode}
-            onChange={(e) => setMonthlyMode(e.target.value as MonthlyMode)}
-            className={`${selectCls} shrink-0`}
-            aria-label={t("recurrence.editor_repeats_on")}
-          >
-            <option value="day">{capitalize(t("recurrence.editor_on_day"))}</option>
-            <option value="nth">{capitalize(t("recurrence.editor_on_the"))}</option>
-          </select>
+          <Select value={monthlyMode} onValueChange={(v) => setMonthlyMode(v as MonthlyMode)}>
+            <SelectTrigger className="shrink-0" aria-label={t("recurrence.editor_repeats_on")}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="day">{capitalize(t("recurrence.editor_on_day"))}</SelectItem>
+              <SelectItem value="nth">{capitalize(t("recurrence.editor_on_the"))}</SelectItem>
+            </SelectContent>
+          </Select>
           {monthlyMode === "day" ? (
             <Input
               type="number"
@@ -344,26 +351,26 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
             />
           ) : (
             <>
-              <select
-                value={nth}
-                onChange={(e) => setNth(parseInt(e.target.value, 10))}
-                className={`${selectCls} flex-1 min-w-0`}
-                aria-label={t("recurrence.editor_on_the")}
-              >
-                {[1, 2, 3, 4, -1].map((n) => (
-                  <option key={n} value={n}>{capitalize(nthLabel(n, t))}</option>
-                ))}
-              </select>
-              <select
-                value={nthDay}
-                onChange={(e) => setNthDay(e.target.value)}
-                className={`${selectCls} flex-1 min-w-0`}
-                aria-label={t("recurrence.editor_on_the")}
-              >
-                {WEEKDAYS.map((d) => (
-                  <option key={d} value={d}>{capitalize(weekdayName(d, locale))}</option>
-                ))}
-              </select>
+              <Select value={String(nth)} onValueChange={(v) => setNth(parseInt(v, 10))}>
+                <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.editor_on_the")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4, -1].map((n) => (
+                    <SelectItem key={n} value={String(n)}>{capitalize(nthLabel(n, t))}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={nthDay} onValueChange={setNthDay}>
+                <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.editor_on_the")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {WEEKDAYS.map((d) => (
+                    <SelectItem key={d} value={d}>{capitalize(weekdayName(d, locale))}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </>
           )}
         </div>
@@ -371,16 +378,19 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
 
       <div className="flex items-center gap-2 text-sm">
         <span className="shrink-0">{t("recurrence.editor_ends")}</span>
-        <select
-          value={endsMode}
-          onChange={(e) => setEndsMode(e.target.value as EndsMode)}
-          className={`${selectCls} ${endsMode === "never" ? "flex-1" : "shrink-0"} min-w-0`}
-          aria-label={t("recurrence.editor_ends")}
-        >
-          <option value="never">{t("recurrence.editor_never")}</option>
-          <option value="on">{t("recurrence.until")}</option>
-          <option value="after">{t("recurrence.editor_ends_after")}</option>
-        </select>
+        <Select value={endsMode} onValueChange={(v) => setEndsMode(v as EndsMode)}>
+          <SelectTrigger
+            className={`${endsMode === "never" ? "flex-1" : "shrink-0"} min-w-0`}
+            aria-label={t("recurrence.editor_ends")}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="never">{t("recurrence.editor_never")}</SelectItem>
+            <SelectItem value="on">{t("recurrence.until")}</SelectItem>
+            <SelectItem value="after">{t("recurrence.editor_ends_after")}</SelectItem>
+          </SelectContent>
+        </Select>
         {endsMode === "on" && (
           <input
             type="date"

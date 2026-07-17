@@ -8,6 +8,9 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useManagedAccountStore } from "@/stores/managed-account-store";
 import { toast } from "@/stores/toast-store";
 import { SettingsSection } from "./settings-section";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 import type { AddressBook, AddressBookRights } from "@/lib/jmap/types";
 import { ShareCollectionDialog } from "./share-collection-dialog";
@@ -30,39 +33,37 @@ function AddressBookEditRow({
   const isValid = name.trim().length > 0;
 
   return (
-    <div className="space-y-3 p-3 rounded-md border border-primary/30 bg-accent/30">
-      <div>
-        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-          {t("name_label")}
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && isValid) onSave(name.trim());
-            if (e.key === "Escape") onCancel();
-          }}
-          className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          autoFocus
-          disabled={isLoading}
-        />
-      </div>
-      <div className="flex items-center gap-2 pt-1">
-        <button
+    <div className="p-3 rounded-md border border-primary/30 bg-accent/30">
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="address-book-edit-name" className="text-xs">
+            {t("name_label")}
+          </FieldLabel>
+          <Input
+            id="address-book-edit-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && isValid) onSave(name.trim());
+              if (e.key === "Escape") onCancel();
+            }}
+            autoFocus
+            disabled={isLoading}
+          />
+        </Field>
+      </FieldGroup>
+      <div className="flex items-center gap-2 pt-3">
+        <Button
+          size="sm"
           onClick={() => isValid && onSave(name.trim())}
           disabled={isLoading || !isValid}
-          className="px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
         >
           {tCal("save")}
-        </button>
-        <button
-          onClick={onCancel}
-          disabled={isLoading}
-          className="px-3 py-1.5 text-xs bg-muted text-foreground rounded-md hover:bg-accent"
-        >
+        </Button>
+        <Button size="sm" variant="secondary" onClick={onCancel} disabled={isLoading}>
           {tCal("cancel")}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -223,7 +224,7 @@ export function AddressBookManagementSettings() {
   return (
     <>
     <SettingsSection title={tSettings("manage_title")} description={tSettings("manage_description")}>
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {/* In scoped mode (managing a shared account) hide the user's own
             address books and show only the managed account's group. */}
         {(managedAccountId ? [] : personal).map(renderBook)}
@@ -231,7 +232,7 @@ export function AddressBookManagementSettings() {
         {Array.from(sharedGroups.entries())
           .filter(([accountId]) => !managedAccountId || accountId === managedAccountId)
           .map(([accountId, group]) => (
-          <div key={accountId} className="mt-4 space-y-2">
+          <div key={accountId} className="mt-4 flex flex-col gap-2">
             <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <Share2 className="w-3 h-3" />
               {t("shared_prefix", { name: group.accountName })}
@@ -264,7 +265,7 @@ export function AddressBookManagementSettings() {
     {!managedAccountId && (
     <div className="mt-8">
       <SettingsSection title={tSettings("categories_title")} description={tSettings("categories_description")}>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           {sortedKeywords.map(([keyword, count]) => {
             if (editingKeyword === keyword) {
               return (

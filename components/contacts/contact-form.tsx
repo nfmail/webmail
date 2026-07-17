@@ -1,11 +1,18 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, Children, isValidElement } from "react";
 import { useTranslations } from "next-intl";
 import { X, Plus, ChevronDown, ChevronRight, User, Building, MapPin, Globe, Cake, Heart, Tag, StickyNote, Mail, Phone, Calendar, UserCircle, Book, Camera, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
+import {
+  Select as SelectRoot,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { normalizeContactPhotoUri } from "@/stores/contact-store";
 import { cn } from "@/lib/utils";
 import type { ContactCard, ContactOnlineService, ContactAnniversary, ContactPersonalInfo, AddressBook, AnniversaryDate, PartialDate, ContactAddress, ContactMedia } from "@/lib/jmap/types";
@@ -125,25 +132,63 @@ async function processImageFile(file: File): Promise<{ uri: string; mediaType: s
   });
 }
 
+// Sentinel standing in for the empty-string option value. Radix Select forbids
+// an empty-string item value, so it is mapped to this sentinel internally and
+// translated back to "" across the value / onChange boundary. This lets the
+// wrapper keep its native-<select> prop signature (value + change event carrying
+// e.target.value) so every call site stays unchanged.
+const EMPTY_OPTION_VALUE = "__empty__";
+
 function Select({ value, onChange, children, className }: {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   children: React.ReactNode;
   className?: string;
 }) {
+  const options = Children.toArray(children)
+    .filter(isValidElement)
+    .map((child) => {
+      const optionProps = (
+        child as React.ReactElement<{
+          value?: string;
+          children?: React.ReactNode;
+          disabled?: boolean;
+        }>
+      ).props;
+      const optionValue = optionProps.value ?? "";
+      return {
+        itemValue: optionValue === "" ? EMPTY_OPTION_VALUE : optionValue,
+        label: optionProps.children,
+        disabled: optionProps.disabled,
+      };
+    });
+
   return (
-    <select
-      value={value}
-      onChange={onChange}
-      className={cn(
-        "text-sm bg-transparent border border-input rounded-md px-2.5 py-2 text-foreground",
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
-        "hover:border-muted-foreground/50 transition-colors",
-        className
-      )}
+    <SelectRoot
+      value={value === "" ? EMPTY_OPTION_VALUE : value}
+      onValueChange={(next) => {
+        const normalized = next === EMPTY_OPTION_VALUE ? "" : next;
+        onChange({
+          target: { value: normalized },
+          currentTarget: { value: normalized },
+        } as unknown as React.ChangeEvent<HTMLSelectElement>);
+      }}
     >
-      {children}
-    </select>
+      <SelectTrigger size="sm" className={className}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((option) => (
+          <SelectItem
+            key={option.itemValue}
+            value={option.itemValue}
+            disabled={option.disabled}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </SelectRoot>
   );
 }
 
@@ -579,7 +624,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
         <h2 className="text-lg font-semibold">
           {isEditing ? t("edit_title") : t("create_title")}
         </h2>
-        <button type="button" onClick={onCancel} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground">
+        <button type="button" onClick={onCancel} aria-label={t("cancel")} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground">
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -587,7 +632,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
       <div className="flex-1 overflow-y-auto">
         <div className="px-6 py-4 max-w-3xl">
           {error && (
-            <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 px-3 py-2 rounded-lg border border-red-200 dark:border-red-900 mb-4">
+            <div className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg border border-destructive/30 mb-4">
               {error}
             </div>
           )}
@@ -626,7 +671,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
             <div className="flex flex-col gap-1 min-w-0 flex-1">
               <p className="text-xs text-muted-foreground">{t("photo_hint")}</p>
               {photoError && (
-                <p className="text-xs text-red-600 dark:text-red-400">{photoError}</p>
+                <p className="text-xs text-destructive">{photoError}</p>
               )}
               {photoUri && (
                 <button
@@ -645,10 +690,10 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {addressBooks && addressBooks.length > 1 && (
             <FormSection icon={Book} title={t("section_address_book") || "Directory"}>
-              <select
+              <Select
                 value={selectedBookId}
                 onChange={(e) => setSelectedBookId(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full"
               >
                 <option value="">{t("select_address_book") || "Select a directory..."}</option>
                 {addressBooks.map((book) => (
@@ -656,7 +701,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     {book.accountName ? `${book.name} (${book.accountName})` : book.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </FormSection>
           )}
 
@@ -668,13 +713,13 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
-                  {t("given_name")} <span className="text-red-500">*</span>
+                  {t("given_name")} <span className="text-destructive">*</span>
                 </label>
                 <Input value={givenName} onChange={(e) => setGivenName(e.target.value)} placeholder={t("given_name")} autoFocus />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
-                  {t("surname")} <span className="text-red-500">*</span>
+                  {t("surname")} <span className="text-destructive">*</span>
                 </label>
                 <Input value={surname} onChange={(e) => setSurname(e.target.value)} placeholder={t("surname")} />
               </div>
@@ -715,7 +760,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                       }}
                       onBlur={() => handleEmailBlur(i, entry.address)}
                       placeholder={t("email_placeholder")}
-                      className={cn("flex-1", emailErrors[i] && "border-red-500 focus:ring-red-500")}
+                      className={cn("flex-1", emailErrors[i] && "border-destructive focus:ring-destructive")}
                     />
                     <Select
                       value={entry.context}
@@ -730,13 +775,13 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                       <option value="private">{t("context_private")}</option>
                     </Select>
                     {emails.length > 1 && (
-                      <Button type="button" variant="ghost" size="icon" onClick={() => setEmails(emails.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                      <Button type="button" variant="ghost" size="icon" aria-label="Remove email" onClick={() => setEmails(emails.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                         <X className="w-3 h-3" />
                       </Button>
                     )}
                   </div>
                   {emailErrors[i] && (
-                    <p className="text-xs text-red-600 dark:text-red-400 mt-1 ms-1">{emailErrors[i]}</p>
+                    <p className="text-xs text-destructive mt-1 ms-1">{emailErrors[i]}</p>
                   )}
                 </div>
               ))}
@@ -793,7 +838,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     <option value="work">{t("context_work")}</option>
                     <option value="private">{t("context_private")}</option>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setPhones(phones.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove phone" onClick={() => setPhones(phones.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -832,7 +877,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
             <div className="space-y-3">
               {addresses.map((addr, i) => (
                 <div key={i} className="rounded-md border border-border/60 bg-muted/20 p-3 space-y-2 relative">
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setAddresses(addresses.filter((_, j) => j !== i))} className="h-6 w-6 absolute top-2 right-2">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove address" onClick={() => setAddresses(addresses.filter((_, j) => j !== i))} className="h-6 w-6 absolute top-2 right-2">
                     <X className="w-3 h-3" />
                   </Button>
                   <Input value={addr.street} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], street: e.target.value }; setAddresses(n); }} placeholder={t("street")} />
@@ -878,7 +923,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     placeholder={t("service_placeholder")}
                     className="w-24"
                   />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setOnlineServices(onlineServices.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove online service" onClick={() => setOnlineServices(onlineServices.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -910,7 +955,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     <option value="death">{t("anniversary_death")}</option>
                     <option value="other">{t("anniversary_other")}</option>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setAnniversaries(anniversaries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove date" onClick={() => setAnniversaries(anniversaries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -951,7 +996,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     <option value="medium">{t("level_medium")}</option>
                     <option value="low">{t("level_low")}</option>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setPersonalInfoEntries(personalInfoEntries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove entry" onClick={() => setPersonalInfoEntries(personalInfoEntries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
@@ -1117,6 +1162,8 @@ function CategoryComboBox({
               <button
                 type="button"
                 onClick={() => removeKeyword(kw)}
+                // i18n follow-up: no "remove category" key exists in the contacts.form namespace.
+                aria-label={`Remove ${kw}`}
                 className="hover:text-destructive transition-colors"
               >
                 <X className="w-3 h-3" />

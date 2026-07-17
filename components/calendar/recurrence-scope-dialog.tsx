@@ -2,8 +2,14 @@
 
 import { useState, useId } from "react";
 import { useTranslations } from "next-intl";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Repeat, Trash2 } from "lucide-react";
 
 export type RecurrenceEditScope = "this" | "this_and_future" | "all";
@@ -25,15 +31,8 @@ export function RecurrenceScopeDialog({
   const id = useId();
   const [selected, setSelected] = useState<RecurrenceEditScope>("this");
 
-  const dialogRef = useFocusTrap({
-    isActive: isOpen,
-    onEscape: onClose,
-    restoreFocus: true,
-  });
-
-  if (!isOpen) return null;
-
   const isDelete = actionType === "delete";
+  const heading = isDelete ? t("delete_title") : t("edit_title");
 
   const options: { value: RecurrenceEditScope; label: string }[] = [
     { value: "this", label: t("this_event") },
@@ -42,15 +41,8 @@ export function RecurrenceScopeDialog({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150">
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={`${id}-title`}
-        aria-describedby={`${id}-desc`}
-        className="bg-background border border-border rounded-lg shadow-xl w-full max-w-sm animate-in zoom-in-95 duration-200"
-      >
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent showCloseButton={false} className="max-w-sm gap-0 p-0">
         <div className="p-6">
           <div className="flex items-start gap-3 mb-4">
             <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
@@ -63,16 +55,14 @@ export function RecurrenceScopeDialog({
               )}
             </div>
             <div>
-              <h2 id={`${id}-title`} className="text-lg font-semibold">
-                {isDelete ? t("delete_title") : t("edit_title")}
-              </h2>
-              <p id={`${id}-desc`} className="text-sm text-muted-foreground mt-1">
+              <DialogTitle className="text-lg font-semibold">{heading}</DialogTitle>
+              <DialogDescription className="mt-1">
                 {t("description")}
-              </p>
+              </DialogDescription>
             </div>
           </div>
 
-          <div className="space-y-2" role="radiogroup" aria-labelledby={`${id}-title`}>
+          <div className="flex flex-col gap-2" role="radiogroup" aria-label={heading}>
             {options.map((option) => (
               <label
                 key={option.value}
@@ -96,7 +86,7 @@ export function RecurrenceScopeDialog({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 pb-6">
+        <DialogFooter className="px-6 pb-6">
           <Button variant="outline" onClick={onClose}>
             {t("cancel")}
           </Button>
@@ -106,8 +96,8 @@ export function RecurrenceScopeDialog({
           >
             {isDelete ? t("delete") : t("save")}
           </Button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -5,6 +5,13 @@ import { useTranslations, useLocale } from "next-intl";
 import { Search, BookUser, Trash2, Users, Download, X, UserPlus, CheckSquare, Square, Filter, Mail, Phone, Image as ImageIcon, RotateCcw, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ContactListItem } from "./contact-list-item";
 import { ContactContextMenu } from "./contact-context-menu";
 import { useContextMenu } from "@/hooks/use-context-menu";
@@ -418,17 +425,25 @@ export function ContactList({
 
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">{t("filters.birthday_month")}</label>
-              <select
-                value={filters.birthdayMonth ?? ""}
-                onChange={(e) => setFilters((f) => ({ ...f, birthdayMonth: e.target.value === "" ? null : Number(e.target.value) }))}
-                className="h-8 w-full text-sm rounded-md border border-input bg-background px-2"
-                aria-label={t("filters.birthday_month")}
+              <Select
+                value={filters.birthdayMonth === null ? "any" : String(filters.birthdayMonth)}
+                onValueChange={(value) =>
+                  setFilters((f) => ({
+                    ...f,
+                    birthdayMonth: value === "any" ? null : Number(value),
+                  }))
+                }
               >
-                <option value="">{t("filters.any_month")}</option>
-                {monthNames.map((name, i) => (
-                  <option key={i} value={i + 1}>{name}</option>
-                ))}
-              </select>
+                <SelectTrigger size="sm" className="w-full" aria-label={t("filters.birthday_month")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">{t("filters.any_month")}</SelectItem>
+                  {monthNames.map((name, i) => (
+                    <SelectItem key={i} value={String(i + 1)}>{name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
@@ -466,6 +481,8 @@ export function ContactList({
                 onSelectAll(sortedIds);
               }
             }}
+            aria-pressed={allSelected}
+            aria-label={allSelected ? t("bulk.clear") : t("bulk.select_all")}
             className="p-1 rounded hover:bg-muted/50 transition-colors"
           >
             {allSelected ? (
@@ -490,27 +507,30 @@ export function ContactList({
             variant="ghost"
             size="sm"
             onClick={onBulkDelete}
-            className="h-7 text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+            className="h-7 text-xs text-destructive hover:text-destructive/80"
           >
             <Trash2 className="w-3.5 h-3.5 me-1" />
             {t("bulk.delete")}
           </Button>
-          <Button variant="ghost" size="icon" onClick={onClearSelection} className="h-7 w-7">
+          <Button variant="ghost" size="icon" onClick={onClearSelection} className="h-7 w-7" aria-label={t("bulk.clear")}>
             <X className="w-3.5 h-3.5" />
           </Button>
         </div>
       )}
 
       {/* Contact list */}
-      <div className="flex-1 overflow-y-auto">
+      {/* tabIndex + role/aria-label make the scroll pane keyboard-focusable:
+          rows are click-target divs (not focusable), so without this the
+          scroll region fails axe scrollable-region-focusable. */}
+      <div className="flex-1 overflow-y-auto" tabIndex={0} role="group" aria-label={t("title")}>
         {sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-6 text-center">
             {searchQuery || activeFilters > 0 ? (
               <>
                 {activeFilters > 0 && !searchQuery ? (
-                  <Filter className="w-10 h-10 mb-3 text-muted-foreground/30" />
+                  <Filter className="w-10 h-10 mb-3 text-muted-foreground" />
                 ) : (
-                  <Search className="w-10 h-10 mb-3 text-muted-foreground/30" />
+                  <Search className="w-10 h-10 mb-3 text-muted-foreground" />
                 )}
                 <p className="text-sm font-medium text-foreground">
                   {searchQuery ? t("empty_search") : t("empty_filtered")}
@@ -534,7 +554,7 @@ export function ContactList({
               </>
             ) : (
               <>
-                <BookUser className="w-10 h-10 mb-3 text-muted-foreground/30" />
+                <BookUser className="w-10 h-10 mb-3 text-muted-foreground" />
                 <p className="text-sm font-medium text-foreground">{t("empty_state_title")}</p>
                 <p className="text-xs text-muted-foreground mt-1">{t("empty_state_subtitle")}</p>
                 <Button size="sm" className="mt-3" onClick={onCreateNew}>
@@ -578,7 +598,7 @@ export function ContactList({
               <div>
                 {groupedSections.map(({ letter, items }) => (
                   <section key={letter}>
-                    <div className="sticky top-0 z-10 px-4 py-0.5 bg-background/90 backdrop-blur-sm text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wide">
+                    <div className="sticky top-0 z-10 px-4 py-0.5 bg-background/90 backdrop-blur-sm text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
                       {letter}
                     </div>
                     {items.map(renderItem)}

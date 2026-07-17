@@ -1,6 +1,11 @@
 import { ReactNode } from 'react';
 import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Switch } from '@/components/ui/switch';
+import {
+  ToggleGroup as UiToggleGroup,
+  ToggleGroupItem as UiToggleGroupItem,
+} from '@/components/ui/toggle-group';
 import {
   Select as UiSelect,
   SelectContent as UiSelectContent,
@@ -17,14 +22,14 @@ interface SettingsSectionProps {
 
 export function SettingsSection({ title, description, children }: SettingsSectionProps) {
   return (
-    <div data-search-label={title} className="space-y-4">
+    <div data-search-label={title} className="flex flex-col gap-4">
       <div>
         <h3 className="text-lg font-medium text-foreground">{title}</h3>
         {description && (
           <p className="text-sm text-muted-foreground mt-1">{description}</p>
         )}
       </div>
-      <div className="space-y-4">{children}</div>
+      <div className="flex flex-col gap-4">{children}</div>
     </div>
   );
 }
@@ -34,9 +39,15 @@ interface SettingItemProps {
   description?: string;
   children: ReactNode;
   locked?: boolean;
+  /**
+   * When set, associates the item's visible label with the control that renders
+   * this `id`, giving the control a programmatic label. Match it to the `id`
+   * (or `SelectTrigger id`) of the control passed as children.
+   */
+  htmlFor?: string;
 }
 
-export function SettingItem({ label, description, children, locked }: SettingItemProps) {
+export function SettingItem({ label, description, children, locked, htmlFor }: SettingItemProps) {
   return (
     <div
       data-search-label={label}
@@ -44,7 +55,7 @@ export function SettingItem({ label, description, children, locked }: SettingIte
     >
       <div className="flex-1 min-w-0 sm:pe-4">
         <div className="flex items-center gap-1.5">
-          <label className="text-sm font-medium text-foreground">{label}</label>
+          <label htmlFor={htmlFor} className="text-sm font-medium text-foreground">{label}</label>
           {locked && <Lock className="w-3 h-3 text-muted-foreground" aria-label="Managed by administrator" />}
         </div>
         {description && (
@@ -60,29 +71,25 @@ interface ToggleSwitchProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
+  id?: string;
+  'aria-label'?: string;
 }
 
-export function ToggleSwitch({ checked, onChange, disabled }: ToggleSwitchProps) {
+export function ToggleSwitch({
+  checked,
+  onChange,
+  disabled,
+  id,
+  'aria-label': ariaLabel,
+}: ToggleSwitchProps) {
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
+    <Switch
+      id={id}
+      aria-label={ariaLabel}
+      checked={checked}
+      onCheckedChange={onChange}
       disabled={disabled}
-      onClick={() => onChange(!checked)}
-      className={cn(
-        'relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-150',
-        checked ? 'bg-primary' : 'bg-muted',
-        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-      )}
-    >
-      <span
-        className={cn(
-          'inline-block h-4 w-4 transform rounded-full bg-background transition-transform duration-150',
-          checked ? 'ltr:translate-x-6 rtl:-translate-x-6' : 'ltr:translate-x-1 rtl:-translate-x-1'
-        )}
-      />
-    </button>
+    />
   );
 }
 
@@ -90,27 +97,31 @@ interface RadioGroupProps {
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
+  'aria-label'?: string;
 }
 
-export function RadioGroup({ value, onChange, options }: RadioGroupProps) {
+export function RadioGroup({
+  value,
+  onChange,
+  options,
+  'aria-label': ariaLabel,
+}: RadioGroupProps) {
   return (
-    <div className="flex gap-1.5">
+    <UiToggleGroup
+      type="single"
+      variant="outline"
+      value={value}
+      aria-label={ariaLabel}
+      // Radix emits '' when the active item is toggled off; a radio group is
+      // single-select and cannot be empty, so ignore the deselect event.
+      onValueChange={(next) => next && onChange(next)}
+    >
       {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          onClick={() => onChange(option.value)}
-          className={cn(
-            'px-3 py-1.5 text-xs rounded-md transition-colors duration-150',
-            value === option.value
-              ? 'bg-primary text-primary-foreground font-medium'
-              : 'bg-muted hover:bg-accent text-foreground'
-          )}
-        >
+        <UiToggleGroupItem key={option.value} value={option.value} className="text-xs">
           {option.label}
-        </button>
+        </UiToggleGroupItem>
       ))}
-    </div>
+    </UiToggleGroup>
   );
 }
 

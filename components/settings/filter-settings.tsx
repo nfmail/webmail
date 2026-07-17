@@ -93,9 +93,9 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
   const matchLabel = rule.matchType === "all" ? t("match_all_conditions") : t("match_any_condition");
 
   return (
-    <div className="mt-1.5 space-y-1 text-xs">
+    <div className="mt-1.5 flex flex-col gap-1 text-xs">
       <div className="flex items-baseline gap-1.5 flex-wrap">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
           {t("if")}
         </span>
         {rule.conditions.map((c, i) => {
@@ -104,10 +104,10 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
           return (
             <span key={i} className="contents">
               {i > 0 && (
-                <span className="text-[10px] text-muted-foreground/70 italic">{joiner}</span>
+                <span className="text-[10px] text-muted-foreground italic">{joiner}</span>
               )}
               <span className="inline-flex items-baseline gap-1 px-1.5 py-px rounded-sm bg-muted/60 text-foreground">
-                <span className="font-medium text-blue-600 dark:text-blue-400">{field}</span>
+                <span className="font-medium text-primary">{field}</span>
                 <span className="text-muted-foreground">{comparator}</span>
                 {!(c.field === "attachment" && c.comparator === "has_any") && (
                   <span className="text-foreground">
@@ -115,7 +115,7 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
                       ? c.value.map((v, k) => (
                           <span key={k}>
                             {k > 0 && (
-                              <span className="text-muted-foreground/70 italic mx-0.5">
+                              <span className="text-muted-foreground italic mx-0.5">
                                 {t("or")}
                               </span>
                             )}
@@ -129,11 +129,11 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
             </span>
           );
         })}
-        <span className="text-[10px] text-muted-foreground/60 italic">({matchLabel})</span>
+        <span className="text-[10px] text-muted-foreground italic">({matchLabel})</span>
       </div>
 
       <div className="flex items-baseline gap-1.5 flex-wrap">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-success">
           {t("then")}
         </span>
         {rule.actions.map((a, i) => {
@@ -141,10 +141,10 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
           return (
             <span key={i} className="contents">
               {i > 0 && (
-                <span className="text-muted-foreground/50">›</span>
+                <span className="text-muted-foreground">›</span>
               )}
               <span className="inline-flex items-baseline gap-1 px-1.5 py-px rounded-sm bg-muted/60 text-foreground">
-                <span className="font-medium text-emerald-600 dark:text-emerald-400">{action}</span>
+                <span className="font-medium text-success">{action}</span>
                 {a.value && <span className="text-muted-foreground">“{a.value}”</span>}
               </span>
             </span>
@@ -424,7 +424,7 @@ export function FilterSettings() {
   if (error) {
     return (
       <SettingsSection title={t("title")} description={t("description")}>
-        <div className="text-sm text-red-600 dark:text-red-400 py-4">
+        <div className="text-sm text-destructive py-4">
           {t("fetch_error")}
         </div>
       </SettingsSection>
@@ -432,10 +432,10 @@ export function FilterSettings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <SettingsSection title={t("title")} description={t("description")}>
         {isOpaque && (
-          <div className="flex items-start gap-2 p-3 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-700 dark:text-amber-400">
+          <div className="flex items-start gap-2 p-3 rounded-md bg-warning/10 border border-warning/20 text-sm text-warning">
             <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
               <p>{t("opaque_warning")}</p>
@@ -449,11 +449,11 @@ export function FilterSettings() {
                 </button>
                 {showResetConfirm ? (
                   <span className="flex items-center gap-2">
-                    <span className="text-red-600 dark:text-red-400">{t("reset_warning")}</span>
+                    <span className="text-destructive">{t("reset_warning")}</span>
                     <button
                       type="button"
                       onClick={handleResetToVisual}
-                      className="text-red-600 dark:text-red-400 hover:underline font-medium"
+                      className="text-destructive hover:underline font-medium"
                     >
                       {t("confirm_reset")}
                     </button>
@@ -469,7 +469,7 @@ export function FilterSettings() {
                   <button
                     type="button"
                     onClick={handleResetToVisual}
-                    className="text-red-600 dark:text-red-400 hover:underline font-medium flex items-center gap-1"
+                    className="text-destructive hover:underline font-medium flex items-center gap-1"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     {t("reset_to_visual")}
@@ -487,20 +487,20 @@ export function FilterSettings() {
               try { localStorage.setItem('settings-active-tab', 'vacation'); } catch { /* ignore */ }
               window.dispatchEvent(new CustomEvent('settings-tab-change', { detail: 'vacation' }));
             }}
-            className="flex items-center gap-3 w-full p-3 rounded-md border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors text-start"
+            className="flex items-center gap-3 w-full p-3 rounded-md border border-success/30 bg-success/10 hover:bg-success/15 transition-colors text-start"
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40">
-              <PalmtreeIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/15">
+              <PalmtreeIcon className="w-4 h-4 text-success" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-green-700 dark:text-green-400">
+              <p className="text-sm font-medium text-success">
                 {t("vacation_active")}
               </p>
-              <p className="text-xs text-green-600/70 dark:text-green-400/70">
+              <p className="text-xs text-success/70">
                 {t("vacation_active_description")}
               </p>
             </div>
-            <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+            <span className="text-xs text-success font-medium">
               {t("vacation_configure")} &rarr;
             </span>
           </button>
@@ -514,7 +514,7 @@ export function FilterSettings() {
         )}
 
         {!isOpaque && rules.length > 0 && (
-          <div className="space-y-1" role="list" aria-label={t("rule_list")}>
+          <div className="flex flex-col gap-1" role="list" aria-label={t("rule_list")}>
             {rules.map((rule, index) => {
               const readonly = isReadonlyRule(rule);
 
@@ -637,7 +637,7 @@ export function FilterSettings() {
                     <button
                       type="button"
                       onClick={() => setDeleteConfirmId(rule.id)}
-                      className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                      className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-destructive transition-colors"
                       aria-label={t("delete_rule")}
                     >
                       <X className="w-4 h-4" />
@@ -684,8 +684,11 @@ export function FilterSettings() {
           )}
           {!isOpaque && rules.length > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">{t("expanded_view")}</span>
+              <label htmlFor="expanded-filter-view-toggle" className="text-xs text-muted-foreground">
+                {t("expanded_view")}
+              </label>
               <ToggleSwitch
+                id="expanded-filter-view-toggle"
                 checked={expandedFilterView}
                 onChange={(v) => updateSetting("expandedFilterView", v)}
               />

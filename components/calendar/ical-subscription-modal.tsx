@@ -1,9 +1,23 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { X, Loader2, Globe } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, Globe } from "lucide-react";
 import type { IJMAPClient } from '@/lib/jmap/client-interface';
 import { useCalendarStore, type ICalSubscription } from "@/stores/calendar-store";
 import { CalendarColorPicker } from "@/components/settings/calendar-management-settings";
@@ -31,7 +45,6 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
   const [refreshInterval, setRefreshInterval] = useState(editSubscription?.refreshInterval || 60);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const isValid = url.trim().length > 0 && name.trim().length > 0;
 
@@ -80,63 +93,19 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
     }
   }, [url, name, color, refreshInterval, client, isEdit, editSubscription, addICalSubscription, updateICalSubscription, onClose, t]);
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [onClose]);
-
-  useEffect(() => {
-    const modal = modalRef.current;
-    if (!modal) return;
-    const focusableEls = modal.querySelectorAll<HTMLElement>(
-      'input, select, textarea, button, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstEl = focusableEls[0];
-    const lastEl = focusableEls[focusableEls.length - 1];
-
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return;
-      if (e.shiftKey && document.activeElement === firstEl) {
-        e.preventDefault();
-        lastEl?.focus();
-      } else if (!e.shiftKey && document.activeElement === lastEl) {
-        e.preventDefault();
-        firstEl?.focus();
-      }
-    };
-    modal.addEventListener("keydown", handler);
-    firstEl?.focus();
-    return () => modal.removeEventListener("keydown", handler);
-  }, []);
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" onClick={onClose} aria-hidden="true" />
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
+    <Dialog open onOpenChange={(open) => { if (!open && !isSubmitting) onClose(); }}>
+      <DialogContent
+        showCloseButton={!isSubmitting}
+        className="max-w-md gap-0 p-0"
         aria-label={t("title")}
-        className="relative bg-background border border-border rounded-lg shadow-xl w-full max-w-md mx-4 animate-in zoom-in-95 duration-200"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <div className="flex items-center gap-2">
-            <Globe className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-semibold">{isEdit ? t("edit_title") : t("title")}</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
-            aria-label={tCommon("close")}
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        <DialogHeader className="flex-row items-center gap-2 px-6 py-4 border-b border-border">
+          <Globe className="w-5 h-5 text-primary" />
+          <DialogTitle className="text-lg font-semibold">{isEdit ? t("edit_title") : t("title")}</DialogTitle>
+        </DialogHeader>
 
-        <div className="px-6 py-4 space-y-4">
+        <div className="flex flex-col gap-4 px-6 py-4">
           <p className="text-sm text-muted-foreground">{t("description")}</p>
 
           <div>
@@ -148,6 +117,7 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder={t("url_placeholder")}
+              autoFocus
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={isSubmitting}
               onKeyDown={(e) => { if (e.key === "Enter" && isValid) handleSubmit(); }}
@@ -180,28 +150,32 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
               {t("refresh_interval")}
             </label>
-            <select
-              value={refreshInterval}
-              onChange={(e) => setRefreshInterval(Number(e.target.value))}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            <Select
+              value={String(refreshInterval)}
+              onValueChange={(v) => setRefreshInterval(Number(v))}
               disabled={isSubmitting}
             >
-              <option value={15}>{t("interval_15")}</option>
-              <option value={30}>{t("interval_30")}</option>
-              <option value={60}>{t("interval_60")}</option>
-              <option value={360}>{t("interval_360")}</option>
-              <option value={1440}>{t("interval_1440")}</option>
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">{t("interval_15")}</SelectItem>
+                <SelectItem value="30">{t("interval_30")}</SelectItem>
+                <SelectItem value="60">{t("interval_60")}</SelectItem>
+                <SelectItem value="360">{t("interval_360")}</SelectItem>
+                <SelectItem value="1440">{t("interval_1440")}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {error && (
-            <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 rounded-md px-3 py-2">
+            <div className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
               {error}
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
+        <DialogFooter className="px-6 py-4 border-t border-border">
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             {tCommon("cancel")}
           </Button>
@@ -215,8 +189,8 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
               isEdit ? t("save") : t("subscribe")
             )}
           </Button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

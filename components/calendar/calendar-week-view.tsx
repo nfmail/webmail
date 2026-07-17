@@ -205,7 +205,7 @@ export function CalendarWeekView({
         "flex min-h-0 min-w-0 flex-col flex-1",
         isMobile ? "overflow-x-auto overflow-y-hidden" : "overflow-hidden"
       )}
-      role="grid"
+      role="group"
       aria-label={t("views.week")}
     >
       <div className={cn("flex min-h-0 flex-col flex-1", isMobile && "min-w-[880px]")}>      {hasAllDay && (
@@ -304,7 +304,7 @@ export function CalendarWeekView({
         </div>
       )}
 
-      <div className="flex border-b border-border" role="row">
+      <div className="flex border-b border-border">
         <div className={cn("flex-shrink-0", isMobile ? "w-10 sticky left-0 z-10 bg-background" : "w-14")} />
         <div className="flex-1 border-s border-border grid grid-cols-7">
           {weekDays.map((day) => {
@@ -315,7 +315,6 @@ export function CalendarWeekView({
               <button
                 key={day.toISOString()}
                 onClick={() => onSelectDate(day)}
-                role="columnheader"
                 aria-label={fullLabel}
                 className={cn(
                   "text-center py-2 text-sm border-e border-border last:border-e-0 transition-colors touch-manipulation",
@@ -368,8 +367,6 @@ export function CalendarWeekView({
                 <div
                   key={key}
                   className="relative border-e border-border last:border-e-0"
-                  role="row"
-                  aria-label={intlFormatter.dateTime(day, { weekday: "long", month: "long", day: "numeric" })}
                   onPointerDown={(e) => handleGridPointerDown(e, key, day)}
                   onPointerMove={handleGridPointerMove}
                   onPointerUp={handleGridPointerUp}
@@ -380,8 +377,7 @@ export function CalendarWeekView({
                   {HOURS.map((h) => (
                     <div
                       key={h}
-                      role="gridcell"
-                      aria-label={`${intlFormatter.dateTime(day, { weekday: "short" })} ${formatHour(h)}`}
+                      aria-hidden="true"
                       onClick={() => handleSlotClick(day, h)}
                       onDoubleClick={() => handleSlotDoubleClick(day, h)}
                       onContextMenu={onContextMenuEmpty ? (e) => onContextMenuEmpty(e, day, h, false) : undefined}

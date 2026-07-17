@@ -140,10 +140,10 @@ export function CalendarMonthView({
   }, [t]);
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden" role="grid" aria-label={formatFullDate(selectedDate)}>
-      <div className="grid grid-cols-7 border-b border-border" role="row">
+    <div className="flex flex-col flex-1 overflow-hidden" role="group" aria-label={formatFullDate(selectedDate)}>
+      <div className="grid grid-cols-7 border-b border-border">
         {dayHeaderKeys.map((d) => (
-          <div key={d} role="columnheader" className={cn(
+          <div key={d} className={cn(
             "text-center text-xs font-medium text-muted-foreground py-2 border-e border-border last:border-e-0",
             isMobile && "py-1.5 text-[11px]"
           )}>
@@ -157,7 +157,7 @@ export function CalendarMonthView({
           <div key={wi} className={cn(
             "relative flex-1 border-b border-border last:border-b-0",
             isMobile ? "min-h-[52px]" : "min-h-[100px]"
-          )} role="row" style={isMobile ? undefined : { minHeight: Math.max(100, 34 + rowCount * 22 + 8) }}>
+          )} style={isMobile ? undefined : { minHeight: Math.max(100, 34 + rowCount * 22 + 8) }}>
             <div className="grid grid-cols-7 h-full">
             {week.map((day) => {
               const inMonth = checkIsSameMonth(day, selectedDate);
@@ -170,8 +170,7 @@ export function CalendarMonthView({
               return (
                 <div
                   key={key}
-                  role="gridcell"
-                  aria-selected={selected}
+                  aria-current={selected ? "date" : undefined}
                   aria-label={fullDateLabel}
                   onClick={() => onSelectDate(day)}
                   onDoubleClick={() => onCreateAtTime?.(day)}
@@ -194,7 +193,7 @@ export function CalendarMonthView({
                         isMobile ? "w-7 h-7 text-xs" : "w-6 h-6 text-xs",
                         today && !selected && "bg-primary text-primary-foreground font-bold",
                         selected && "bg-primary text-primary-foreground font-bold",
-                        !inMonth && !selected && !today && "text-muted-foreground/50",
+                        !inMonth && !selected && !today && "text-muted-foreground",
                         inMonth && !selected && !today && "font-medium"
                       )}
                     >

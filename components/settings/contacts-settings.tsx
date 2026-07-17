@@ -61,8 +61,10 @@ export function ContactsSettings() {
       <SettingItem
         label={tSettings("group_by_letter_label")}
         description={tSettings("group_by_letter_description")}
+        htmlFor="contacts-group-by-letter-toggle"
       >
         <ToggleSwitch
+          id="contacts-group-by-letter-toggle"
           checked={groupContactsByLetter}
           onChange={(checked) => updateSetting("groupContactsByLetter", checked)}
         />

@@ -65,7 +65,7 @@ export function ThemesSettings() {
     <SettingsSection title="Themes" description="Choose from themes deployed by your administrator and built-in presets.">
 
       {forcedThemeId && (
-        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
+        <div className="mb-4 rounded-lg border border-warning/20 bg-warning/10 px-3 py-2 text-xs text-warning">
           Theme selection is locked by an administrator.
         </div>
       )}
@@ -162,7 +162,7 @@ function ThemeCard({ name, author, preview, css, isDark, isDefaultTheme, isActiv
             <span className="text-sm font-medium text-foreground truncate">{name}</span>
             <div className="flex items-center gap-1 flex-shrink-0">
               {isForceEnabled && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 font-medium flex items-center gap-0.5" title="Admin enforced">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-warning/15 text-warning font-medium flex items-center gap-0.5" title="Admin enforced">
                   <Lock className="w-2.5 h-2.5" />
                 </span>
               )}

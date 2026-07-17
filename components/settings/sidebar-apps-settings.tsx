@@ -6,6 +6,8 @@ import { Plus, Pencil, Trash2, ExternalLink, PanelRight, GripVertical } from "lu
 import { icons as lucideIcons, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { SettingsSection, SettingItem, ToggleSwitch } from "./settings-section";
 import { IconPicker } from "@/components/layout/icon-picker";
 import { useSettingsStore, type SidebarApp } from "@/stores/settings-store";
@@ -77,95 +79,88 @@ function AppForm({
     : null;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border border-border rounded-lg bg-secondary/30">
-      <div>
-        <label className="text-sm font-medium">{t("name_label")}</label>
-        <Input
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder={t("name_placeholder")}
-          className="mt-1"
-        />
-        {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
-      </div>
-
-      <div>
-        <label className="text-sm font-medium">{t("url_label")}</label>
-        <Input
-          value={formData.url}
-          onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-          placeholder="https://example.com"
-          className="mt-1"
-        />
-        {errors.url && <p className="text-xs text-destructive mt-1">{errors.url}</p>}
-      </div>
-
-      <div>
-        <label className="text-sm font-medium block mb-1">{t("icon_label")}</label>
-        <div className="flex items-center gap-2 mb-2">
-          {SelectedIcon && (
-            <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
-              <SelectedIcon className="w-4 h-4" />
-            </div>
-          )}
-          <span className="text-sm text-muted-foreground">{formData.icon}</span>
-        </div>
-        <IconPicker value={formData.icon} onChange={(icon) => setFormData({ ...formData, icon })} />
-        {errors.icon && <p className="text-xs text-destructive mt-1">{errors.icon}</p>}
-      </div>
-
-      <div>
-        <label className="text-sm font-medium block mb-2">{t("open_mode_label")}</label>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setFormData({ ...formData, openMode: "tab" })}
-            className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-md text-sm border transition-colors",
-              formData.openMode === "tab"
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border hover:bg-muted"
-            )}
-          >
-            <ExternalLink className="w-4 h-4" />
-            {t("open_new_tab")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setFormData({ ...formData, openMode: "inline" })}
-            className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-md text-sm border transition-colors",
-              formData.openMode === "inline"
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border hover:bg-muted"
-            )}
-          >
-            <PanelRight className="w-4 h-4" />
-            {t("open_inline")}
-          </button>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">{t("show_on_mobile")}</label>
-        <button
-          type="button"
-          onClick={() => setFormData({ ...formData, showOnMobile: !formData.showOnMobile })}
-          className={cn(
-            "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
-            formData.showOnMobile ? "bg-primary" : "bg-muted-foreground/30"
-          )}
-        >
-          <span
-            className={cn(
-              "inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform",
-              formData.showOnMobile ? "translate-x-4.5" : "translate-x-0.5"
-            )}
+    <form onSubmit={handleSubmit} className="p-4 border border-border rounded-lg bg-secondary/30">
+      <FieldGroup>
+        <Field data-invalid={errors.name ? true : undefined}>
+          <FieldLabel htmlFor="sidebar-app-name">{t("name_label")}</FieldLabel>
+          <Input
+            id="sidebar-app-name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder={t("name_placeholder")}
+            aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? "sidebar-app-name-error" : undefined}
           />
-        </button>
-      </div>
+          {errors.name && (
+            <FieldError id="sidebar-app-name-error" aria-live="polite">
+              {errors.name}
+            </FieldError>
+          )}
+        </Field>
 
-      <div className="flex gap-2 justify-end">
+        <Field data-invalid={errors.url ? true : undefined}>
+          <FieldLabel htmlFor="sidebar-app-url">{t("url_label")}</FieldLabel>
+          <Input
+            id="sidebar-app-url"
+            value={formData.url}
+            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+            placeholder="https://example.com"
+            aria-invalid={errors.url ? true : undefined}
+            aria-describedby={errors.url ? "sidebar-app-url-error" : undefined}
+          />
+          {errors.url && (
+            <FieldError id="sidebar-app-url-error" aria-live="polite">
+              {errors.url}
+            </FieldError>
+          )}
+        </Field>
+
+        <Field data-invalid={errors.icon ? true : undefined}>
+          <FieldLabel>{t("icon_label")}</FieldLabel>
+          <div className="flex items-center gap-2">
+            {SelectedIcon && (
+              <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
+                <SelectedIcon className="w-4 h-4" />
+              </div>
+            )}
+            <span className="text-sm text-muted-foreground">{formData.icon}</span>
+          </div>
+          <IconPicker value={formData.icon} onChange={(icon) => setFormData({ ...formData, icon })} />
+          {errors.icon && <FieldError aria-live="polite">{errors.icon}</FieldError>}
+        </Field>
+
+        <Field>
+          <FieldLabel>{t("open_mode_label")}</FieldLabel>
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            value={formData.openMode}
+            // Radix emits '' when the active item is toggled off; this is a
+            // mutually-exclusive choice and cannot be empty, so ignore it.
+            onValueChange={(next) => next && setFormData({ ...formData, openMode: next as "tab" | "inline" })}
+          >
+            <ToggleGroupItem value="tab" className="gap-2">
+              <ExternalLink className="w-4 h-4" />
+              {t("open_new_tab")}
+            </ToggleGroupItem>
+            <ToggleGroupItem value="inline" className="gap-2">
+              <PanelRight className="w-4 h-4" />
+              {t("open_inline")}
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </Field>
+
+        <Field orientation="horizontal">
+          <FieldLabel htmlFor="sidebar-app-show-on-mobile">{t("show_on_mobile")}</FieldLabel>
+          <ToggleSwitch
+            id="sidebar-app-show-on-mobile"
+            checked={formData.showOnMobile}
+            onChange={(checked) => setFormData({ ...formData, showOnMobile: checked })}
+          />
+        </Field>
+      </FieldGroup>
+
+      <div className="flex gap-2 justify-end pt-4">
         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
           {t("cancel")}
         </Button>
@@ -240,8 +235,9 @@ export function SidebarAppsSettings() {
   return (
     <>
       <SettingsSection title={t("title")} description={t("description")}>
-        <SettingItem label={t("keep_loaded")} description={t("keep_loaded_description")}>
+        <SettingItem label={t("keep_loaded")} description={t("keep_loaded_description")} htmlFor="sidebar-apps-keep-loaded">
           <ToggleSwitch
+            id="sidebar-apps-keep-loaded"
             checked={keepAppsLoaded}
             onChange={(v) => updateSetting("keepAppsLoaded", v)}
           />
@@ -249,7 +245,7 @@ export function SidebarAppsSettings() {
       </SettingsSection>
 
       <SettingsSection title={t("manage_title")} description={t("manage_description")}>
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           {sidebarApps.length === 0 && !showAddForm && (
             <p className="text-sm text-muted-foreground py-4 text-center">{tApps("no_apps_hint")}</p>
           )}
@@ -282,7 +278,7 @@ export function SidebarAppsSettings() {
                     : "border-border hover:bg-muted/50"
                 )}
               >
-                <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground flex-shrink-0">
+                <div className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-muted-foreground flex-shrink-0">
                   <GripVertical className="w-4 h-4" />
                 </div>
                 <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
@@ -295,7 +291,7 @@ export function SidebarAppsSettings() {
                 <span className={cn(
                   "text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0",
                   app.openMode === "inline"
-                    ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                    ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground"
                 )}>
                   {app.openMode === "inline" ? tApps("inline_badge") : tApps("tab_badge")}

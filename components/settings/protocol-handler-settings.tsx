@@ -91,8 +91,9 @@ export function ProtocolHandlerSettings({ supportsCalendar }: ProtocolHandlerSet
         </SettingItem>
       )}
 
-      <SettingItem label={t("protocol_open_mode_label")} description={t("protocol_open_mode_description")}>
+      <SettingItem label={t("protocol_open_mode_label")} description={t("protocol_open_mode_description")} htmlFor="protocol-open-mode-select">
         <Select
+          id="protocol-open-mode-select"
           value={protocolOpenMode}
           onChange={handleOpenModeChange}
           options={[

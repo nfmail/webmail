@@ -42,8 +42,9 @@ export function ContentSendersSettings() {
   return (
     <SettingsSection title={t('title')} description={t('description')}>
       {isFeatureEnabled('externalContentEnabled') && !isSettingHidden('externalContentPolicy') && (
-      <SettingItem label={t('external_content.label')} description={t('external_content.description')} locked={isSettingLocked('externalContentPolicy')}>
+      <SettingItem label={t('external_content.label')} description={t('external_content.description')} locked={isSettingLocked('externalContentPolicy')} htmlFor="external-content-policy-select">
         <Select
+          id="external-content-policy-select"
           value={externalContentPolicy}
           onChange={(value) =>
             updateSetting('externalContentPolicy', value as 'ask' | 'block' | 'allow')
@@ -57,8 +58,9 @@ export function ContentSendersSettings() {
       </SettingItem>
       )}
 
-      <SettingItem label={t('always_light_mode.label')} description={t('always_light_mode.description')}>
+      <SettingItem label={t('always_light_mode.label')} description={t('always_light_mode.description')} htmlFor="email-always-light-mode-toggle">
         <ToggleSwitch
+          id="email-always-light-mode-toggle"
           checked={emailAlwaysLightMode}
           onChange={(checked) => updateSetting('emailAlwaysLightMode', checked)}
         />
@@ -74,8 +76,9 @@ export function ContentSendersSettings() {
         </button>
       </SettingItem>
 
-      <SettingItem label={t('trusted_senders.use_address_book_label')} description={t('trusted_senders.use_address_book_description')}>
+      <SettingItem label={t('trusted_senders.use_address_book_label')} description={t('trusted_senders.use_address_book_description')} htmlFor="trusted-senders-use-address-book-toggle">
         <ToggleSwitch
+          id="trusted-senders-use-address-book-toggle"
           checked={!!trustedSendersAddressBook}
           onChange={(checked) => updateSetting('trustedSendersAddressBook', checked)}
         />

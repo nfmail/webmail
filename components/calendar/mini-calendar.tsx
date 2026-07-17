@@ -175,7 +175,7 @@ export function MiniCalendar({
                 {showWeekNumbers && isFirstDayOfRow && (
                   <div
                     key={`wk-${index}`}
-                    className="flex items-center justify-center w-5 text-[9px] text-muted-foreground/60 font-medium"
+                    className="flex items-center justify-center w-5 text-[9px] text-muted-foreground font-medium"
                   >
                     {weekNumbers[index / 7]}
                   </div>
@@ -185,7 +185,7 @@ export function MiniCalendar({
                   onClick={() => onSelectDate(day)}
                   className={cn(
                     "relative flex items-center justify-center w-7 h-7 text-xs rounded-full transition-colors",
-                    !inMonth && "text-muted-foreground/40",
+                    !inMonth && "text-muted-foreground",
                     inMonth && !selected && "hover:bg-muted",
                     today && !selected && "font-bold text-primary",
                     selected && "bg-primary text-primary-foreground"
@@ -239,7 +239,7 @@ export function MiniCalendar({
                   "py-2 text-xs rounded-md transition-colors",
                   isSelected && "bg-primary text-primary-foreground",
                   !isSelected && isCurrentYear && "font-bold text-primary",
-                  !isSelected && !isCurrentYear && !inDecade && "text-muted-foreground/40",
+                  !isSelected && !isCurrentYear && !inDecade && "text-muted-foreground",
                   !isSelected && !isCurrentYear && "hover:bg-muted"
                 )}
               >

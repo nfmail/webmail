@@ -5,10 +5,10 @@ const webServerCommand =
 
 export default defineConfig({
   testDir: './e2e',
-  // The visual regression suite has its own config (playwright.visual.config.ts)
-  // with theme/viewport projects and a mock-backed server; keep it out of the
-  // default smoke run.
-  testIgnore: '**/visual/**',
+  // The visual regression and a11y suites have their own configs
+  // (playwright.visual.config.ts, playwright.a11y.config.ts) with their own
+  // projects and mock-backed servers; keep both out of the default smoke run.
+  testIgnore: ['**/visual/**', '**/a11y/**'],
   timeout: 60_000,
   retries: 0,
   use: {

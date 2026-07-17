@@ -7,6 +7,8 @@ import { SettingsSection, SettingItem, ToggleSwitch, Select } from './settings-s
 import { playNotificationSound, NOTIFICATION_SOUNDS } from '@/lib/notification-sound';
 import type { NotificationSoundChoice } from '@/lib/notification-sound';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { CheckCircle2, Lock, Volume2, XCircle } from 'lucide-react';
 import { usePolicyStore } from '@/stores/policy-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -135,50 +137,53 @@ export function NotificationSettings() {
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-8">
       <SettingsSection title={t('push.title')} description={t('push.description')}>
-        <div className="rounded-md border p-4 space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <label className="text-sm font-medium inline-flex items-center gap-1.5" htmlFor="push-relay-url">
-              {t('push.relay_label')}
-              {pushRelayLocked && (
-                <Lock className="w-3 h-3 text-muted-foreground" aria-label={t('push.relay_locked')} />
+        <div className="rounded-md border border-border bg-card p-4">
+          <FieldGroup>
+            <Field>
+              <div className="flex items-center justify-between gap-3">
+                <FieldLabel htmlFor="push-relay-url">
+                  {t('push.relay_label')}
+                  {pushRelayLocked && (
+                    <Lock className="w-3 h-3 text-muted-foreground" aria-label={t('push.relay_locked')} />
+                  )}
+                </FieldLabel>
+                <PushStatusBadge status={pushStatus} t={t} />
+              </div>
+              <FieldDescription>
+                {pushRelayLocked ? t('push.relay_locked_desc') : t('push.relay_desc')}
+              </FieldDescription>
+              <Input
+                id="push-relay-url"
+                type="url"
+                inputMode="url"
+                autoComplete="off"
+                spellCheck={false}
+                value={relayUrl}
+                onChange={(e) => setRelayUrl(e.target.value)}
+                placeholder={t('push.relay_placeholder')}
+                disabled={busy || pushStatus.kind === 'unsupported' || pushRelayLocked}
+                readOnly={pushRelayLocked}
+              />
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={handleEnablePush}
+                  disabled={busy || pushStatus.kind === 'unsupported' || !isValidRelay || !client}
+                >
+                  {pushStatus.kind === 'enabled' ? t('push.reenable') : t('push.enable')}
+                </Button>
+                {pushStatus.kind === 'enabled' && (
+                  <Button variant="outline" onClick={handleDisablePush} disabled={busy}>
+                    {t('push.disable')}
+                  </Button>
+                )}
+              </div>
+              {pushStatus.kind === 'unsupported' && (
+                <FieldDescription>{t('push.ios_hint')}</FieldDescription>
               )}
-            </label>
-            <PushStatusBadge status={pushStatus} t={t} />
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {pushRelayLocked ? t('push.relay_locked_desc') : t('push.relay_desc')}
-          </p>
-          <input
-            id="push-relay-url"
-            type="url"
-            inputMode="url"
-            autoComplete="off"
-            spellCheck={false}
-            value={relayUrl}
-            onChange={(e) => setRelayUrl(e.target.value)}
-            placeholder={t('push.relay_placeholder')}
-            disabled={busy || pushStatus.kind === 'unsupported' || pushRelayLocked}
-            readOnly={pushRelayLocked}
-            className="w-full rounded border bg-background px-3 py-2 text-sm disabled:opacity-50"
-          />
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={handleEnablePush}
-              disabled={busy || pushStatus.kind === 'unsupported' || !isValidRelay || !client}
-            >
-              {pushStatus.kind === 'enabled' ? t('push.reenable') : t('push.enable')}
-            </Button>
-            {pushStatus.kind === 'enabled' && (
-              <Button variant="outline" onClick={handleDisablePush} disabled={busy}>
-                {t('push.disable')}
-              </Button>
-            )}
-          </div>
-          {pushStatus.kind === 'unsupported' && (
-            <p className="text-xs text-muted-foreground">{t('push.ios_hint')}</p>
-          )}
+            </Field>
+          </FieldGroup>
         </div>
       </SettingsSection>
 
@@ -186,6 +191,7 @@ export function NotificationSettings() {
         <SettingItem
           label={t('sound_selection.choose')}
           description={t('sound_selection.choose_desc')}
+          htmlFor="notification-sound-select"
         >
           <div className="flex items-center gap-2">
             <Button
@@ -198,6 +204,7 @@ export function NotificationSettings() {
               <Volume2 className="w-4 h-4" />
             </Button>
             <Select
+              id="notification-sound-select"
               value={notificationSoundChoice}
               onChange={(value) => {
                 const choice = value as NotificationSoundChoice;
@@ -216,8 +223,10 @@ export function NotificationSettings() {
           label={t('email.enabled')}
           description={t('email.enabled_desc')}
           locked={isSettingLocked('emailNotificationsEnabled')}
+          htmlFor="email-notifications-enabled"
         >
           <ToggleSwitch
+            id="email-notifications-enabled"
             checked={emailNotificationsEnabled}
             onChange={(checked) => updateSetting('emailNotificationsEnabled', checked)}
           />
@@ -227,8 +236,10 @@ export function NotificationSettings() {
         <SettingItem
           label={t('email.sound')}
           description={t('email.sound_desc')}
+          htmlFor="email-notification-sound"
         >
           <ToggleSwitch
+            id="email-notification-sound"
             checked={emailNotificationSound}
             onChange={(checked) => updateSetting('emailNotificationSound', checked)}
             disabled={!emailNotificationsEnabled}
@@ -242,8 +253,10 @@ export function NotificationSettings() {
           label={t('calendar.enabled')}
           description={t('calendar.enabled_desc')}
           locked={isSettingLocked('calendarNotificationsEnabled')}
+          htmlFor="calendar-notifications-enabled"
         >
           <ToggleSwitch
+            id="calendar-notifications-enabled"
             checked={calendarNotificationsEnabled}
             onChange={(checked) => updateSetting('calendarNotificationsEnabled', checked)}
           />
@@ -253,8 +266,10 @@ export function NotificationSettings() {
         <SettingItem
           label={t('calendar.sound')}
           description={t('calendar.sound_desc')}
+          htmlFor="calendar-notification-sound"
         >
           <ToggleSwitch
+            id="calendar-notification-sound"
             checked={calendarNotificationSound}
             onChange={(checked) => updateSetting('calendarNotificationSound', checked)}
             disabled={!calendarNotificationsEnabled}
@@ -264,8 +279,10 @@ export function NotificationSettings() {
         <SettingItem
           label={t('calendar.invitation_parsing')}
           description={t('calendar.invitation_parsing_desc')}
+          htmlFor="calendar-invitation-parsing"
         >
           <ToggleSwitch
+            id="calendar-invitation-parsing"
             checked={calendarInvitationParsingEnabled}
             onChange={(checked) => updateSetting('calendarInvitationParsingEnabled', checked)}
           />
@@ -286,7 +303,7 @@ function PushStatusBadge({
 }) {
   if (status.kind === 'enabled') {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+      <span className="inline-flex items-center gap-1 text-xs text-success">
         <CheckCircle2 className="w-3.5 h-3.5" />
         {t('push.status_active')}
       </span>

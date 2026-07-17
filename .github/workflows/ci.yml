@@ -6,6 +6,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      update_visual_baselines:
+        description: "Regenerate visual baselines and upload them as an artifact"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -141,5 +146,106 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  visual-regression:
+    name: Visual regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Verify toolchain
+        run: npm run check:toolchain
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Compares the committed Linux-rendered baselines against a freshly
+      # rendered run. The config (playwright.visual.config.ts) boots its own
+      # dev server against the built-in mock JMAP backend, so no separate build
+      # or mail server is needed. Snapshots are OS-dependent and the runner is
+      # ubuntu, matching the platform the baselines were generated on.
+      - name: Run visual regression suite
+        if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
+        run: npm run test:visual
+
+      # Manual dispatch path: render fresh baselines on the CI platform (the
+      # canonical rendering environment) and expose them as an artifact so a
+      # maintainer can commit them after review.
+      - name: Regenerate visual baselines
+        if: ${{ github.event.inputs.update_visual_baselines == 'true' }}
+        run: npm run test:visual:update
+
+      - name: Upload regenerated baselines
+        if: ${{ github.event.inputs.update_visual_baselines == 'true' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-baselines
+          path: e2e/visual/__screenshots__/
+          retention-days: 7
+
+      # test-results/ holds the actual/expected/diff PNGs and Playwright traces
+      # for any surface that drifted, so a red run can be triaged from the
+      # artifact without reproducing locally.
+      - name: Upload visual diff artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-regression-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  a11y-scan:
+    name: Accessibility scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Verify toolchain
+        run: npm run check:toolchain
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # axe-core scans of the key surfaces. The config
+      # (playwright.a11y.config.ts) boots its own dev server against the
+      # built-in mock JMAP backend, so no separate build or mail server is
+      # needed — the same self-contained setup the visual suite uses.
+      - name: Run accessibility scan
+        run: npm run test:a11y
+
+      # test-results/ holds the axe violation attachments and Playwright traces
+      # for any surface with a serious/critical finding, so a red run can be
+      # triaged from the artifact without reproducing locally.
+      - name: Upload a11y artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: a11y-scan-results
+          path: test-results/
           if-no-files-found: ignore
           retention-days: 7

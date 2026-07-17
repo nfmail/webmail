@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { ArrowLeft, Users, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { ContactList } from "@/components/contacts/contact-list";
@@ -829,6 +830,8 @@ export default function ContactsPage() {
 
   return (
     <div className={cn("flex flex-col bg-background overflow-hidden pt-[env(safe-area-inset-top)]", isEmbedded ? "h-full" : "h-dvh")}>
+      {/* Page-level heading for assistive tech (axe page-has-heading-one). */}
+      <h1 className="sr-only">{t("title")}</h1>
       <AppTopBannerSlot />
       <div className={cn("flex flex-1 min-h-0 overflow-hidden", isMobile && "flex-col")}>
       {/* Navigation Rail - desktop only (hidden when embedded in Pro shell) */}
@@ -1065,17 +1068,26 @@ export default function ContactsPage() {
           }}
         />
       )}
-      {showImportDialog && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-background rounded-lg border border-border shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
-            <ContactImportDialog
-              existingContacts={contacts}
-              onImport={handleImportContacts}
-              onClose={() => setShowImportDialog(false)}
-            />
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={showImportDialog}
+        onOpenChange={(open) => {
+          if (!open) setShowImportDialog(false);
+        }}
+      >
+        <DialogContent
+          showCloseButton={false}
+          className="sm:max-w-2xl max-h-[80vh] overflow-hidden p-0 gap-0"
+        >
+          {/* The child renders its own visible header; expose an sr-only title
+              so Radix has an accessible name for the dialog. */}
+          <DialogTitle className="sr-only">{t("import.title")}</DialogTitle>
+          <ContactImportDialog
+            existingContacts={contacts}
+            onImport={handleImportContacts}
+            onClose={() => setShowImportDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
       {sharingAddressBookId && client && (() => {
         const book = addressBooks.find((b) => b.id === sharingAddressBookId);
         if (!book) return null;

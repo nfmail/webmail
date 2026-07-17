@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/stores/settings-store';
-import type { ArchiveMode, HoverAction } from '@/stores/settings-store';
+import type { ArchiveMode, HoverAction, HoverActionsMode, HoverActionsCorner } from '@/stores/settings-store';
 import { ALL_HOVER_ACTIONS } from '@/stores/settings-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useEmailStore } from '@/stores/email-store';
-import { cn } from '@/lib/utils';
-import { SettingsSection, SettingItem, Select, ToggleSwitch } from './settings-section';
+import { SettingsSection, SettingItem, Select, ToggleSwitch, RadioGroup } from './settings-section';
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { AlertTriangle, FolderSync, Loader2 } from 'lucide-react';
 import { usePolicyStore } from '@/stores/policy-store';
 
@@ -101,8 +102,9 @@ export function ReadingSettings() {
   return (
     <SettingsSection title={t('title')} description={t('description')}>
       {!isSettingHidden('markAsReadDelay') && (
-      <SettingItem label={t('mark_read.label')} description={t('mark_read.description')} locked={isSettingLocked('markAsReadDelay')}>
+      <SettingItem label={t('mark_read.label')} description={t('mark_read.description')} locked={isSettingLocked('markAsReadDelay')} htmlFor="reading-mark-read-delay">
         <Select
+          id="reading-mark-read-delay"
           value={markAsReadDelay.toString()}
           onChange={(value) => updateSetting('markAsReadDelay', parseInt(value))}
           options={[
@@ -116,9 +118,10 @@ export function ReadingSettings() {
       )}
 
       {!isSettingHidden('deleteAction') && (
-      <SettingItem label={t('delete_action.label')} description={t('delete_action.description')} locked={isSettingLocked('deleteAction')}>
+      <SettingItem label={t('delete_action.label')} description={t('delete_action.description')} locked={isSettingLocked('deleteAction')} htmlFor="reading-delete-action">
         <div className="flex flex-col gap-2">
           <Select
+            id="reading-delete-action"
             value={deleteAction}
             onChange={(value) => updateSetting('deleteAction', value as 'trash' | 'trash-and-read' | 'permanent')}
             options={[
@@ -137,9 +140,10 @@ export function ReadingSettings() {
       </SettingItem>
       )}
 
-      <SettingItem label={t('archive_mode.label')} description={t('archive_mode.description')}>
+      <SettingItem label={t('archive_mode.label')} description={t('archive_mode.description')} htmlFor="reading-archive-mode">
         <div className="flex flex-col gap-2">
           <Select
+            id="reading-archive-mode"
             value={archiveMode}
             onChange={(value) => updateSetting('archiveMode', value as ArchiveMode)}
             options={[
@@ -170,15 +174,17 @@ export function ReadingSettings() {
         </div>
       </SettingItem>
 
-      <SettingItem label={t('permanently_delete_junk.label')} description={t('permanently_delete_junk.description')}>
+      <SettingItem label={t('permanently_delete_junk.label')} description={t('permanently_delete_junk.description')} htmlFor="reading-permanently-delete-junk">
         <ToggleSwitch
+          id="reading-permanently-delete-junk"
           checked={permanentlyDeleteJunk}
           onChange={(checked) => updateSetting('permanentlyDeleteJunk', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('return_to_list_after_action.label')} description={t('return_to_list_after_action.description')}>
+      <SettingItem label={t('return_to_list_after_action.label')} description={t('return_to_list_after_action.description')} htmlFor="reading-return-to-list">
         <ToggleSwitch
+          id="reading-return-to-list"
           checked={returnToListAfterAction}
           onChange={(checked) => updateSetting('returnToListAfterAction', checked)}
         />
@@ -189,112 +195,92 @@ export function ReadingSettings() {
         label={t('show_preview.label')}
         description={isFocusedLayout ? t('show_preview.focus_description') : t('show_preview.description')}
         locked={isSettingLocked('showPreview')}
+        htmlFor="reading-show-preview"
       >
-        <ToggleSwitch checked={showPreview} onChange={(checked) => updateSetting('showPreview', checked)} />
+        <ToggleSwitch id="reading-show-preview" checked={showPreview} onChange={(checked) => updateSetting('showPreview', checked)} />
       </SettingItem>
       )}
 
-      <SettingItem label={t('disable_threading.label')} description={t('disable_threading.description')}>
+      <SettingItem label={t('disable_threading.label')} description={t('disable_threading.description')} htmlFor="reading-disable-threading">
         <ToggleSwitch
+          id="reading-disable-threading"
           checked={disableThreading}
           onChange={(checked) => updateSetting('disableThreading', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('hide_inline_image_attachments.label')} description={t('hide_inline_image_attachments.description')}>
+      <SettingItem label={t('hide_inline_image_attachments.label')} description={t('hide_inline_image_attachments.description')} htmlFor="reading-hide-inline-images">
         <ToggleSwitch
+          id="reading-hide-inline-images"
           checked={hideInlineImageAttachments}
           onChange={(checked) => updateSetting('hideInlineImageAttachments', checked)}
         />
       </SettingItem>
 
-      <SettingItem label={t('attachment_image_previews.label')} description={t('attachment_image_previews.description')}>
+      <SettingItem label={t('attachment_image_previews.label')} description={t('attachment_image_previews.description')} htmlFor="reading-attachment-image-previews">
         <ToggleSwitch
+          id="reading-attachment-image-previews"
           checked={attachmentImagePreviewsEnabled}
           onChange={(checked) => updateSetting('attachmentImagePreviewsEnabled', checked)}
         />
       </SettingItem>
 
       {isFeatureEnabled('hoverActionsConfigEnabled') && (
-      <div className="py-3 border-b border-border space-y-3">
-        <div>
-          <label className="text-sm font-medium text-foreground">{t('hover_actions.label')}</label>
-          <p className="text-xs text-muted-foreground mt-1">{t('hover_actions.description')}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {ALL_HOVER_ACTIONS.map((action) => {
-            const isEnabled = hoverActions.includes(action.id);
-            return (
-              <button
-                key={action.id}
-                type="button"
-                onClick={() => {
-                  const newActions = isEnabled
-                    ? hoverActions.filter((a: HoverAction) => a !== action.id)
-                    : [...hoverActions, action.id];
-                  updateSetting('hoverActions', newActions);
-                }}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded-md transition-colors duration-150',
-                  isEnabled
-                    ? 'bg-primary text-primary-foreground font-medium'
-                    : 'bg-muted hover:bg-accent text-foreground'
-                )}
-              >
+      <div className="py-3 border-b border-border flex flex-col gap-3">
+        <Field>
+          <FieldLabel>{t('hover_actions.label')}</FieldLabel>
+          <FieldDescription>{t('hover_actions.description')}</FieldDescription>
+          <ToggleGroup
+            type="multiple"
+            variant="outline"
+            value={hoverActions}
+            onValueChange={(next) => updateSetting('hoverActions', next as HoverAction[])}
+            aria-label={t('hover_actions.label')}
+            className="flex flex-wrap gap-2"
+          >
+            {ALL_HOVER_ACTIONS.map((action) => (
+              <ToggleGroupItem key={action.id} value={action.id} className="text-xs">
                 {t(`hover_actions.${action.labelKey}`)}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="pt-2 space-y-2">
-          <label className="text-xs font-medium text-foreground">{t('hover_actions.mode_label')}</label>
-          <div className="flex gap-2">
-            {(['inline', 'floating'] as const).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => updateSetting('hoverActionsMode', mode)}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded-md transition-colors duration-150',
-                  hoverActionsMode === mode
-                    ? 'bg-primary text-primary-foreground font-medium'
-                    : 'bg-muted hover:bg-accent text-foreground'
-                )}
-              >
-                {t(`hover_actions.mode_${mode}`)}
-              </button>
+              </ToggleGroupItem>
             ))}
-          </div>
-        </div>
+          </ToggleGroup>
+        </Field>
+
+        <Field className="pt-2">
+          <FieldLabel className="text-xs">{t('hover_actions.mode_label')}</FieldLabel>
+          <RadioGroup
+            value={hoverActionsMode}
+            onChange={(value) => updateSetting('hoverActionsMode', value as HoverActionsMode)}
+            aria-label={t('hover_actions.mode_label')}
+            options={[
+              { value: 'inline', label: t('hover_actions.mode_inline') },
+              { value: 'floating', label: t('hover_actions.mode_floating') },
+            ]}
+          />
+        </Field>
 
         {hoverActionsMode === 'floating' && (
-          <div className="pt-1 space-y-2">
-            <label className="text-xs font-medium text-foreground">{t('hover_actions.corner_label')}</label>
-            <div className="grid grid-cols-2 gap-2 w-48">
-              {(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const).map((corner) => (
-                <button
-                  key={corner}
-                  type="button"
-                  onClick={() => updateSetting('hoverActionsCorner', corner)}
-                  className={cn(
-                    'px-2 py-1.5 text-xs rounded-md transition-colors duration-150 text-center',
-                    hoverActionsCorner === corner
-                      ? 'bg-primary text-primary-foreground font-medium'
-                      : 'bg-muted hover:bg-accent text-foreground'
-                  )}
-                >
-                  {t(`hover_actions.corner_${corner}`)}
-                </button>
-              ))}
-            </div>
-          </div>
+          <Field className="pt-1">
+            <FieldLabel className="text-xs">{t('hover_actions.corner_label')}</FieldLabel>
+            <RadioGroup
+              value={hoverActionsCorner}
+              onChange={(value) => updateSetting('hoverActionsCorner', value as HoverActionsCorner)}
+              aria-label={t('hover_actions.corner_label')}
+              options={[
+                { value: 'top-left', label: t('hover_actions.corner_top-left') },
+                { value: 'top-right', label: t('hover_actions.corner_top-right') },
+                { value: 'bottom-left', label: t('hover_actions.corner_bottom-left') },
+                { value: 'bottom-right', label: t('hover_actions.corner_bottom-right') },
+              ]}
+            />
+          </Field>
         )}
       </div>
       )}
 
-      <SettingItem label={t('attachment_click_action.label')} description={t('attachment_click_action.description')}>
+      <SettingItem label={t('attachment_click_action.label')} description={t('attachment_click_action.description')} htmlFor="reading-attachment-click-action">
         <Select
+          id="reading-attachment-click-action"
           value={mailAttachmentAction}
           onChange={(value) => updateSetting('mailAttachmentAction', value as 'preview' | 'download')}
           options={[
@@ -304,8 +290,9 @@ export function ReadingSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('attachment_position.label')} description={t('attachment_position.description')}>
+      <SettingItem label={t('attachment_position.label')} description={t('attachment_position.description')} htmlFor="reading-attachment-position">
         <Select
+          id="reading-attachment-position"
           value={attachmentPosition}
           onChange={(value) => updateSetting('attachmentPosition', value as 'beside-sender' | 'below-header')}
           options={[
@@ -316,8 +303,9 @@ export function ReadingSettings() {
       </SettingItem>
 
       {!isSettingHidden('emailsPerPage') && (
-      <SettingItem label={t('emails_per_page.label')} description={t('emails_per_page.description')} locked={isSettingLocked('emailsPerPage')}>
+      <SettingItem label={t('emails_per_page.label')} description={t('emails_per_page.description')} locked={isSettingLocked('emailsPerPage')} htmlFor="reading-emails-per-page">
         <Select
+          id="reading-emails-per-page"
           value={emailsPerPage.toString()}
           onChange={(value) => updateSetting('emailsPerPage', parseInt(value))}
           options={[

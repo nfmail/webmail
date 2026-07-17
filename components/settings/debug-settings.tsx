@@ -20,20 +20,22 @@ export function DebugSettings() {
 
   return (
     <SettingsSection title={t('debug_mode.label')} description={t('debug_mode.description')}>
-      <SettingItem label={t('debug_mode.label')} description={t('debug_mode.description')} locked={isSettingLocked('debugMode')}>
-        <ToggleSwitch checked={debugMode} onChange={(checked) => updateSetting('debugMode', checked)} />
+      <SettingItem label={t('debug_mode.label')} description={t('debug_mode.description')} locked={isSettingLocked('debugMode')} htmlFor="debug-mode-toggle">
+        <ToggleSwitch id="debug-mode-toggle" checked={debugMode} onChange={(checked) => updateSetting('debugMode', checked)} />
       </SettingItem>
 
       {debugMode && (
-        <div className="ms-4 border-s-2 border-muted ps-4 space-y-1">
+        <div className="ms-4 flex flex-col gap-1 border-s-2 border-muted ps-4">
           <p className="text-xs text-muted-foreground mb-2">{t('debug_categories.description')}</p>
           {ALL_DEBUG_CATEGORIES.map((cat) => (
             <SettingItem
               key={cat.id}
               label={t(`debug_categories.${cat.labelKey}`)}
               description={t(`debug_categories.${cat.labelKey}_description`)}
+              htmlFor={`debug-category-${cat.id}-toggle`}
             >
               <ToggleSwitch
+                id={`debug-category-${cat.id}-toggle`}
                 checked={debugCategories?.[cat.id] !== false}
                 onChange={(checked) => {
                   updateSetting('debugCategories', {

@@ -4,6 +4,8 @@ import { useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useSettingsStore } from "@/stores/settings-store";
 import { SettingsSection, SettingItem, Select, ToggleSwitch } from "./settings-section";
+import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -42,6 +44,7 @@ function insertTokenAtCursor(
 }
 
 interface TemplateEditorProps {
+  id: string;
   label: string;
   description: string;
   value: string;
@@ -55,6 +58,7 @@ interface TemplateEditorProps {
 }
 
 function TemplateEditor({
+  id,
   label,
   description,
   value,
@@ -68,21 +72,20 @@ function TemplateEditor({
 }: TemplateEditorProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   return (
-    <div data-search-label={label} className="space-y-3 py-3 border-b border-border last:border-0">
-      <div>
-        <label className="text-sm font-medium text-foreground">{label}</label>
-        <p className="text-xs text-muted-foreground mt-1">{description}</p>
-      </div>
-      <div className="flex flex-col gap-2">
+    <div data-search-label={label} className="py-3 border-b border-border last:border-0">
+      <Field>
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <FieldDescription>{description}</FieldDescription>
         <div className="flex items-stretch gap-2">
-          <input
+          <Input
+            id={id}
             ref={inputRef}
             type="text"
             value={value}
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
             spellCheck={false}
-            className="flex-1 px-3 py-1.5 text-sm rounded-md bg-muted border border-border text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-150"
+            className="font-mono"
           />
           <button
             type="button"
@@ -119,11 +122,11 @@ function TemplateEditor({
             </button>
           ))}
         </div>
-        <div className="text-xs text-muted-foreground">
+        <FieldDescription>
           <span className="opacity-70">{previewLabel} </span>
-          <span className="font-mono text-foreground/90 break-all">{preview}</span>
-        </div>
-      </div>
+          <span className="font-mono text-foreground break-all">{preview}</span>
+        </FieldDescription>
+      </Field>
     </div>
   );
 }
@@ -186,6 +189,7 @@ export function DownloadsSettings() {
   return (
     <SettingsSection title={t("title")} description={t("description")}>
       <TemplateEditor
+        id="downloads-email-template"
         label={t("email_template.label")}
         description={t("email_template.description")}
         value={emailDownloadTemplate}
@@ -198,6 +202,7 @@ export function DownloadsSettings() {
         placeholder={DEFAULT_EMAIL_TEMPLATE}
       />
       <TemplateEditor
+        id="downloads-attachment-template"
         label={t("attachment_template.label")}
         description={t("attachment_template.description")}
         value={attachmentDownloadTemplate}
@@ -210,6 +215,7 @@ export function DownloadsSettings() {
         placeholder={DEFAULT_ATTACHMENT_TEMPLATE}
       />
       <TemplateEditor
+        id="downloads-bundle-template"
         label={t("bundle_template.label")}
         description={t("bundle_template.description")}
         value={bundleDownloadTemplate}
@@ -221,8 +227,9 @@ export function DownloadsSettings() {
         previewLabel={t("preview")}
         placeholder={DEFAULT_BUNDLE_TEMPLATE}
       />
-      <SettingItem label={t("spaces.label")} description={t("spaces.description")}>
+      <SettingItem label={t("spaces.label")} description={t("spaces.description")} htmlFor="downloads-space-replacement">
         <Select
+          id="downloads-space-replacement"
           value={filenameSpaceReplacement}
           onChange={(value) => updateSetting("filenameSpaceReplacement", value as "keep" | "underscore" | "dash")}
           options={[
@@ -232,26 +239,30 @@ export function DownloadsSettings() {
           ]}
         />
       </SettingItem>
-      <SettingItem label={t("lowercase.label")} description={t("lowercase.description")}>
+      <SettingItem label={t("lowercase.label")} description={t("lowercase.description")} htmlFor="downloads-lowercase">
         <ToggleSwitch
+          id="downloads-lowercase"
           checked={filenameLowercase}
           onChange={(checked) => updateSetting("filenameLowercase", checked)}
         />
       </SettingItem>
-      <SettingItem label={t("strip_diacritics.label")} description={t("strip_diacritics.description")}>
+      <SettingItem label={t("strip_diacritics.label")} description={t("strip_diacritics.description")} htmlFor="downloads-strip-diacritics">
         <ToggleSwitch
+          id="downloads-strip-diacritics"
           checked={filenameStripDiacritics}
           onChange={(checked) => updateSetting("filenameStripDiacritics", checked)}
         />
       </SettingItem>
-      <SettingItem label={t("collapse_separators.label")} description={t("collapse_separators.description")}>
+      <SettingItem label={t("collapse_separators.label")} description={t("collapse_separators.description")} htmlFor="downloads-collapse-separators">
         <ToggleSwitch
+          id="downloads-collapse-separators"
           checked={filenameCollapseSeparators}
           onChange={(checked) => updateSetting("filenameCollapseSeparators", checked)}
         />
       </SettingItem>
-      <SettingItem label={t("after_export.label")} description={t("after_export.description")}>
+      <SettingItem label={t("after_export.label")} description={t("after_export.description")} htmlFor="downloads-post-export-action">
         <Select
+          id="downloads-post-export-action"
           value={postExportAction}
           onChange={(value) => updateSetting("postExportAction", value as "keep" | "archive" | "trash")}
           options={[

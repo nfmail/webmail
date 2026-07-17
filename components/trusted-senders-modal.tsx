@@ -196,7 +196,7 @@ export function TrustedSendersModal({ isOpen, onClose }: TrustedSendersModalProp
           ) : activeSenders.length === 0 ? (
             /* Empty State */
             <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-              <ShieldCheck className="w-12 h-12 text-muted-foreground/50 mb-4" />
+              <ShieldCheck className="w-12 h-12 text-muted-foreground mb-4" />
               <h3 className="text-base font-medium text-foreground mb-2">
                 {t("empty_title")}
               </h3>
@@ -214,7 +214,7 @@ export function TrustedSendersModal({ isOpen, onClose }: TrustedSendersModalProp
           ) : filteredSenders.length === 0 ? (
             /* No search results */
             <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-              <Search className="w-10 h-10 text-muted-foreground/50 mb-3" />
+              <Search className="w-10 h-10 text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground">
                 {t("no_results")}
               </p>

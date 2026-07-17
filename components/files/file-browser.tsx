@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo, Fragment } from "react";
 import { useTranslations } from "next-intl";
 import {
   Folder, File, Upload, FolderPlus, Download, Trash2,
-  Pencil, RefreshCw, Home, ChevronRight, MoreVertical,
+  Pencil, RefreshCw, Home, MoreVertical,
   Search, ArrowUp, ArrowDown, X, LayoutGrid, LayoutList,
   Copy, Clipboard, Scissors, Info, Image as ImageIcon,
   FilePlus, CopyPlus, FileText, FileAudio, FileVideo,
@@ -15,6 +15,27 @@ import {
 } from "lucide-react";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn, formatFileSize } from "@/lib/utils";
 import { NewFolderDialog } from "@/components/files/new-folder-dialog";
 import { RenameDialog } from "@/components/files/rename-dialog";
@@ -320,20 +341,54 @@ function SkeletonRow() {
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-3">
           <div className="w-4 h-4 shrink-0" />
-          <div className="w-5 h-5 rounded bg-muted animate-pulse shrink-0" />
-          <div className="h-4 rounded bg-muted animate-pulse w-40" />
+          <Skeleton className="w-5 h-5 shrink-0" />
+          <Skeleton className="h-4 w-40" />
         </div>
       </td>
       <td className="px-4 py-2.5 hidden md:table-cell">
-        <div className="h-4 rounded bg-muted animate-pulse w-14" />
+        <Skeleton className="h-4 w-14" />
       </td>
       <td className="px-4 py-2.5 hidden lg:table-cell">
-        <div className="h-4 rounded bg-muted animate-pulse w-32" />
+        <Skeleton className="h-4 w-32" />
       </td>
       <td className="px-2 py-2.5">
-        <div className="h-4 w-4 rounded bg-muted animate-pulse" />
+        <Skeleton className="h-4 w-4" />
       </td>
     </tr>
+  );
+}
+
+// Icon-only toolbar control: an accessible name (aria-label) plus a Radix
+// tooltip surfacing the same label, matching the rich-text-editor pattern.
+function ToolbarIconButton({
+  label,
+  onClick,
+  disabled,
+  className,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("h-8 w-8", className)}
+          onClick={onClick}
+          disabled={disabled}
+          aria-label={label}
+        >
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -947,6 +1002,7 @@ export function FileBrowser({
   const someSelected = selectedResources.size > 0 && !allSelected;
 
   return (
+    <TooltipProvider delayDuration={300}>
     <div
       ref={containerRef}
       className="flex flex-col flex-1 min-h-0"
@@ -959,38 +1015,45 @@ export function FileBrowser({
       {/* Toolbar */}
       <div role="toolbar" aria-label={t("toolbar")} className="flex items-center gap-2 px-4 py-2 border-b border-border bg-background">
         {isNarrow && folderLayout === "sidebar" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 -ms-2"
+          <ToolbarIconButton
+            className="-ms-2"
             onClick={() => setNarrowSidebarOpen((v) => !v)}
-            aria-label={t("open_folder_tree")}
+            label={t("open_folder_tree")}
           >
             <Menu className="w-4 h-4" />
-          </Button>
+          </ToolbarIconButton>
         )}
         {/* Breadcrumbs */}
-        <nav aria-label={t("breadcrumb_root")} className="flex items-center gap-1 text-sm flex-1 min-w-0 overflow-x-auto">
-          {breadcrumbs.map((crumb, i) => (
-            <span key={`${i}:${crumb.path}`} className="flex items-center gap-1 shrink-0">
-              {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
-              <button
-                onClick={() => crumb.isAccount
-                  ? onNavigate('/', '__account_root__')
-                  : onNavigate(crumb.path)}
-                onContextMenu={(e) => crumb.isAccount ? undefined : handleBreadcrumbRightClick(e, crumb.path)}
-                className={cn(
-                  "px-1.5 py-0.5 rounded hover:bg-muted transition-colors",
-                  i === breadcrumbs.length - 1
-                    ? "font-medium text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {i === 0 ? <Home className="w-4 h-4" /> : crumb.name}
-              </button>
-            </span>
-          ))}
-        </nav>
+        <Breadcrumb aria-label={t("breadcrumb_root")} className="flex-1 min-w-0">
+          <BreadcrumbList className="flex-nowrap gap-1 text-sm overflow-x-auto sm:gap-1">
+            {breadcrumbs.map((crumb, i) => (
+              <Fragment key={`${i}:${crumb.path}`}>
+                {i > 0 && <BreadcrumbSeparator />}
+                <BreadcrumbItem className="shrink-0">
+                  <BreadcrumbLink
+                    asChild
+                    className={cn(
+                      "px-1.5 py-0.5 rounded hover:bg-muted transition-colors",
+                      i === breadcrumbs.length - 1
+                        ? "font-medium text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <button
+                      onClick={() => crumb.isAccount
+                        ? onNavigate('/', '__account_root__')
+                        : onNavigate(crumb.path)}
+                      onContextMenu={(e) => crumb.isAccount ? undefined : handleBreadcrumbRightClick(e, crumb.path)}
+                      aria-label={i === 0 ? t("breadcrumb_root") : crumb.name}
+                    >
+                      {i === 0 ? <Home className="w-4 h-4" /> : crumb.name}
+                    </button>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </Fragment>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
 
         {/* Action buttons */}
         <div className="flex items-center gap-1 shrink-0">
@@ -1028,96 +1091,71 @@ export function FileBrowser({
             </Button>
           )}
           {!accountPickerMode && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
+            <ToolbarIconButton
               onClick={() => setShowSearch(v => !v)}
-              title={t("search_placeholder")}
+              label={t("search_placeholder")}
             >
               <Search className="w-4 h-4" />
-            </Button>
+            </ToolbarIconButton>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn("h-8 w-8", viewMode === "grid" && "bg-muted")}
+          <ToolbarIconButton
+            className={cn(viewMode === "grid" && "bg-muted")}
             onClick={() => handleViewModeChange(viewMode === "list" ? "grid" : "list")}
-            title={viewMode === "list" ? t("grid_view") : t("list_view")}
+            label={viewMode === "list" ? t("grid_view") : t("list_view")}
           >
             {viewMode === "list" ? <LayoutGrid className="w-4 h-4" /> : <LayoutList className="w-4 h-4" />}
-          </Button>
+          </ToolbarIconButton>
           {!accountPickerMode && (
             <>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn("h-8 w-8", showDetails && "bg-muted")}
+              <ToolbarIconButton
+                className={cn(showDetails && "bg-muted")}
                 onClick={onToggleDetails}
-                title={t("details")}
+                label={t("details")}
               >
                 <Info className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn("h-8 w-8", favorites.includes(currentPath) && "text-yellow-500")}
+              </ToolbarIconButton>
+              <ToolbarIconButton
+                className={cn(favorites.includes(currentPath) && "text-yellow-500")}
                 onClick={() => onToggleFavorite(currentPath)}
-                title={t("toggle_favorite")}
+                label={t("toggle_favorite")}
               >
                 <Star className={cn("w-4 h-4", favorites.includes(currentPath) && "fill-current")} />
-              </Button>
-              {canUpload && <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+              </ToolbarIconButton>
+              {canUpload && <ToolbarIconButton
                 onClick={() => fileInputRef.current?.click()}
-                title={t("upload")}
+                label={t("upload")}
                 disabled={isUploading}
               >
                 <Upload className="w-4 h-4" />
-              </Button>}
-              {canUpload && canCreateDirectory && <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+              </ToolbarIconButton>}
+              {canUpload && canCreateDirectory && <ToolbarIconButton
                 onClick={() => folderInputRef.current?.click()}
-                title={t("upload_folder")}
+                label={t("upload_folder")}
                 disabled={isUploading}
               >
                 <FolderUp className="w-4 h-4" />
-              </Button>}
-              {canCreateDirectory && <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+              </ToolbarIconButton>}
+              {canCreateDirectory && <ToolbarIconButton
                 onClick={() => setShowNewFolder(true)}
-                title={t("new_folder")}
+                label={t("new_folder")}
               >
                 <FolderPlus className="w-4 h-4" />
-              </Button>}
-              {canUpload && <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+              </ToolbarIconButton>}
+              {canUpload && <ToolbarIconButton
                 onClick={() => setShowNewTextFile(true)}
-                title={t("new_text_file")}
+                label={t("new_text_file")}
               >
                 <FilePlus className="w-4 h-4" />
-              </Button>}
+              </ToolbarIconButton>}
             </>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
+          <ToolbarIconButton
             onClick={onRefresh}
-            title={t("refresh")}
-            aria-label={t("refresh")}
+            label={t("refresh")}
             disabled={isLoading}
           >
             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
-          </Button>
+          </ToolbarIconButton>
         </div>
       </div>
 
@@ -1218,14 +1256,10 @@ export function FileBrowser({
               </button>
             </span>
           </div>
-          <div className="h-1 bg-primary/20 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-300"
-              style={{ width: uploadProgress.total > 0
-                ? `${(uploadProgress.loaded / uploadProgress.total) * 100}%`
-                : '0%' }}
-            />
-          </div>
+          <Progress
+            className="h-1"
+            value={uploadProgress.total > 0 ? (uploadProgress.loaded / uploadProgress.total) * 100 : 0}
+          />
         </div>
       )}
 
@@ -1294,7 +1328,7 @@ export function FileBrowser({
                   <Star className="w-3 h-3" />
                   {t("favorites")}
                 </h4>
-                <div className="space-y-0.5">
+                <div className="flex flex-col gap-0.5">
                   {favorites.map((fav) => (
                     <button
                       key={fav}
@@ -1317,7 +1351,7 @@ export function FileBrowser({
                   <Clock className="w-3 h-3" />
                   {t("recent")}
                 </h4>
-                <div className="space-y-0.5">
+                <div className="flex flex-col gap-0.5">
                   {recentFiles.slice(0, 10).map((recent) => (
                     <button
                       key={recent.id}
@@ -1419,10 +1453,14 @@ export function FileBrowser({
             onCreateTextFile={() => setShowNewTextFile(true)}
           />
         ) : resources.length === 0 && !searchQuery ? (
-          <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center">
-            <Folder className="size-10 text-muted-foreground" aria-hidden="true" />
-            <p className="text-sm font-medium">{t("empty_state_title")}</p>
-          </div>
+          <Empty className="h-full border-0">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Folder className="size-6 text-muted-foreground" aria-hidden="true" />
+              </EmptyMedia>
+              <EmptyTitle className="text-sm">{t("empty_state_title")}</EmptyTitle>
+            </EmptyHeader>
+          </Empty>
         ) : viewMode === "grid" ? (
           /* ======= GRID VIEW ======= */
           <div className="p-4" role="grid" aria-label={t("file_list")}>
@@ -1691,6 +1729,7 @@ export function FileBrowser({
                         e.stopPropagation();
                         handleContextMenu(e, resource.name);
                       }}
+                      aria-label={t("context_menu")}
                       className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <MoreVertical className="w-4 h-4" />
@@ -1972,7 +2011,7 @@ export function FileBrowser({
                 : getFileIconByName(detailResource.name, "lg")}
               <p className="text-sm font-medium text-center break-all">{detailResource.name}</p>
             </div>
-            <dl className="space-y-3 text-sm">
+            <dl className="flex flex-col gap-3 text-sm">
               <div>
                 <dt className="text-muted-foreground text-xs">{t("type")}</dt>
                 <dd>{detailResource.isDirectory ? t("folder") : (detailResource.contentType || t("file"))}</dd>
@@ -2055,5 +2094,6 @@ export function FileBrowser({
         />
       )}
     </div>
+    </TooltipProvider>
   );
 }

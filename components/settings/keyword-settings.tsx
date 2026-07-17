@@ -6,6 +6,9 @@ import { useSettingsStore, KEYWORD_PALETTE, DEFAULT_KEYWORDS, type KeywordDefini
 import { useAuthStore } from "@/stores/auth-store";
 import { useEmailStore } from "@/stores/email-store";
 import { SettingsSection } from "./settings-section";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Plus, Pencil, Trash2, GripVertical, Check, X, RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -75,7 +78,7 @@ function KeywordRow({
       )}
     >
       <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-50 cursor-grab" />
-      <div className={cn("w-5 h-5 rounded-full shrink-0", palette?.dot || "bg-gray-500")} />
+      <div className={cn("w-5 h-5 rounded-full shrink-0", palette?.dot || "bg-muted-foreground")} />
       <span className="flex-1 text-sm font-medium truncate">{keyword.label}</span>
       <span className="text-xs text-muted-foreground font-mono">{"$label:" + keyword.id}</span>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -132,49 +135,44 @@ function KeywordEditForm({
   };
 
   return (
-    <div className="space-y-3 p-3 rounded-md border border-primary/30 bg-accent/30">
-      <div>
-        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-          {t("label_field")}
-        </label>
-        <input
-          type="text"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          className="w-full px-2.5 py-1.5 text-sm rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-          placeholder={t("label_placeholder")}
-          autoFocus
-          maxLength={30}
-          onKeyDown={(e) => e.key === "Enter" && handleSave()}
-        />
-        {isDuplicate && (
-          <p className="text-xs text-destructive mt-1">{t("id_exists")}</p>
-        )}
-      </div>
-      <div>
-        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-          {t("color_field")}
-        </label>
-        <KeywordColorPicker value={color} onChange={setColor} />
-      </div>
-      <div className="flex items-center gap-2 justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-border hover:bg-muted transition-colors"
-        >
+    <div className="p-3 rounded-md border border-primary/30 bg-accent/30">
+      <FieldGroup>
+        <Field data-invalid={isDuplicate ? true : undefined}>
+          <FieldLabel htmlFor="keyword-edit-label" className="text-xs">
+            {t("label_field")}
+          </FieldLabel>
+          <Input
+            id="keyword-edit-label"
+            type="text"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder={t("label_placeholder")}
+            autoFocus
+            maxLength={30}
+            onKeyDown={(e) => e.key === "Enter" && handleSave()}
+            aria-invalid={isDuplicate ? true : undefined}
+            aria-describedby={isDuplicate ? "keyword-edit-label-error" : undefined}
+          />
+          {isDuplicate && (
+            <FieldError id="keyword-edit-label-error" aria-live="polite">
+              {t("id_exists")}
+            </FieldError>
+          )}
+        </Field>
+        <Field>
+          <FieldLabel className="text-xs">{t("color_field")}</FieldLabel>
+          <KeywordColorPicker value={color} onChange={setColor} />
+        </Field>
+      </FieldGroup>
+      <div className="flex items-center gap-2 justify-end pt-3">
+        <Button type="button" variant="outline" size="sm" onClick={onCancel}>
           <X className="w-3.5 h-3.5" />
           {t("cancel")}
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isValid}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-        >
+        </Button>
+        <Button type="button" size="sm" onClick={handleSave} disabled={!isValid}>
           <Check className="w-3.5 h-3.5" />
           {isEditing ? t("save") : t("add")}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -266,7 +264,7 @@ export function KeywordSettings() {
 
   return (
     <SettingsSection title={t("title")} description={t("description")}>
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {isMigrating && (
           <div className="flex items-center gap-2 p-2 text-xs text-muted-foreground bg-accent/50 rounded-md">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -309,25 +307,23 @@ export function KeywordSettings() {
           />
         ) : (
           <div className="flex items-center gap-2 pt-1">
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
+              className="border-dashed"
               onClick={() => {
                 setIsAdding(true);
                 setEditingId(null);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-dashed border-border hover:border-primary hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
             >
               <Plus className="w-3.5 h-3.5" />
               {t("add_keyword")}
-            </button>
-            <button
-              type="button"
-              onClick={handleResetDefaults}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-border hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-            >
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={handleResetDefaults}>
               <RotateCcw className="w-3.5 h-3.5" />
               {t("reset_defaults")}
-            </button>
+            </Button>
           </div>
         )}
       </div>

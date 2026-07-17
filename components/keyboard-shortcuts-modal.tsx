@@ -154,7 +154,7 @@ function ShortcutRow({
       <div className="flex items-center gap-1.5 ms-4">
         {keys.map((key, index) => (
           <span key={index}>
-            {index > 0 && <span className="text-muted-foreground/50 mx-1 text-xs">or</span>}
+            {index > 0 && <span className="text-muted-foreground mx-1 text-xs">or</span>}
             <kbd
               className={cn(
                 "inline-flex items-center justify-center",

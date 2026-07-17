@@ -24,8 +24,9 @@ export function CalendarSettings() {
 
   return (
     <SettingsSection title={t('title')}>
-      <SettingItem label={t('default_view')}>
+      <SettingItem label={t('default_view')} htmlFor="calendar-default-view-select">
         <Select
+          id="calendar-default-view-select"
           value={viewMode}
           onChange={(value) => setViewMode(value as CalendarViewMode)}
           options={[
@@ -40,8 +41,10 @@ export function CalendarSettings() {
       <SettingItem
         label={t('show_time_in_month_view')}
         description={t('show_time_in_month_view_desc')}
+        htmlFor="calendar-show-time-in-month-view-toggle"
       >
         <ToggleSwitch
+          id="calendar-show-time-in-month-view-toggle"
           checked={showTimeInMonthView}
           onChange={(checked) => updateSetting('showTimeInMonthView', checked)}
         />
@@ -50,8 +53,10 @@ export function CalendarSettings() {
       <SettingItem
         label={t('show_week_numbers')}
         description={t('show_week_numbers_desc')}
+        htmlFor="calendar-show-week-numbers-toggle"
       >
         <ToggleSwitch
+          id="calendar-show-week-numbers-toggle"
           checked={showWeekNumbers}
           onChange={(checked) => updateSetting('showWeekNumbers', checked)}
         />
@@ -60,8 +65,10 @@ export function CalendarSettings() {
       <SettingItem
         label={t('hover_preview')}
         description={t('hover_preview_desc')}
+        htmlFor="calendar-hover-preview-select"
       >
         <Select
+          id="calendar-hover-preview-select"
           value={calendarHoverPreview}
           onChange={(value) => updateSetting('calendarHoverPreview', value as 'off' | 'instant' | 'delay-500ms' | 'delay-1s' | 'delay-2s')}
           options={[
@@ -77,8 +84,10 @@ export function CalendarSettings() {
       <SettingItem
         label={t('show_birthday_calendar')}
         description={t('show_birthday_calendar_desc')}
+        htmlFor="calendar-show-birthday-calendar-toggle"
       >
         <ToggleSwitch
+          id="calendar-show-birthday-calendar-toggle"
           checked={showBirthdayCalendar}
           onChange={(checked) => updateSetting('showBirthdayCalendar', checked)}
         />
@@ -89,8 +98,10 @@ export function CalendarSettings() {
       <SettingItem
         label={t('enable_tasks')}
         description={t('enable_tasks_desc')}
+        htmlFor="calendar-enable-tasks-toggle"
       >
         <ToggleSwitch
+          id="calendar-enable-tasks-toggle"
           checked={enableCalendarTasks}
           onChange={(checked) => updateSetting('enableCalendarTasks', checked)}
         />
@@ -100,8 +111,10 @@ export function CalendarSettings() {
         <SettingItem
           label={t('show_tasks_on_calendar')}
           description={t('show_tasks_on_calendar_desc')}
+          htmlFor="calendar-show-tasks-on-calendar-toggle"
         >
           <ToggleSwitch
+            id="calendar-show-tasks-on-calendar-toggle"
             checked={showTasksOnCalendar}
             onChange={(checked) => updateSetting('showTasksOnCalendar', checked)}
           />

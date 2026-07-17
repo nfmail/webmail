@@ -380,7 +380,7 @@ export function FilePreviewModal({ name, onClose, onDownload, getFileContent }: 
           // it with pdf.js (canvas) instead. The header's open-in-new-tab /
           // download actions are the fallback if pdf.js can't render the doc.
           <div
-            className="w-full max-w-3xl h-full overflow-auto rounded-lg bg-neutral-200 dark:bg-neutral-800 p-2"
+            className="w-full max-w-3xl h-full overflow-auto rounded-lg bg-muted p-2"
             onClick={(e) => e.stopPropagation()}
           >
             <PdfMobileViewer url={objectUrl} />

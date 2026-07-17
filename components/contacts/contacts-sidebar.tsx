@@ -278,6 +278,11 @@ export function ContactsSidebar({
             variant="ghost"
             onClick={() => setShowMenu(v => !v)}
             className="h-7 w-7"
+            aria-haspopup="menu"
+            aria-expanded={showMenu}
+            // i18n follow-up: no generic "create" menu key exists; this trigger
+            // opens new contact / group / address book / import actions.
+            aria-label="Create new"
           >
             <Plus className="w-4 h-4" />
           </Button>
@@ -332,7 +337,7 @@ export function ContactsSidebar({
             "w-full flex items-center gap-2 px-3 text-sm transition-colors",
             isAllActive
               ? "bg-accent text-accent-foreground font-medium"
-              : "text-foreground/80 hover:bg-muted"
+              : "text-foreground hover:bg-muted"
           )}
           style={{ paddingBlock: 'var(--density-sidebar-py, 4px)', minHeight: '32px' }}
         >
@@ -363,7 +368,7 @@ export function ContactsSidebar({
                       <ChevronRight className="w-3 h-3 text-muted-foreground" />
                     )}
                     <User className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-xs font-semibold text-foreground/90 uppercase tracking-wider truncate">
+                    <span className="text-xs font-semibold text-foreground uppercase tracking-wider truncate">
                       {group.label}
                     </span>
                   </button>
@@ -372,7 +377,7 @@ export function ContactsSidebar({
                   <div className="ps-2">
                     {owned.length > 0 && (
                       <div className="mt-1">
-                        <div className="px-3 py-0.5 text-[10px] font-medium text-muted-foreground/80 uppercase tracking-wider">
+                        <div className="px-3 py-0.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                           {t("address_books.title")}
                         </div>
                         {owned.map((book) => (
@@ -390,7 +395,7 @@ export function ContactsSidebar({
                     )}
                     {sharedGroups.map((sg) => (
                       <div key={`${group.key}-shared-${sg.label}`} className="mt-1">
-                        <div className="px-3 py-0.5 text-[10px] font-medium text-muted-foreground/80 uppercase tracking-wider flex items-center gap-1">
+                        <div className="px-3 py-0.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                           <Share2 className="w-3 h-3" />
                           {sg.label}
                         </div>
@@ -486,7 +491,7 @@ export function ContactsSidebar({
                     "w-full flex items-center gap-2 ps-5 pe-3 text-sm transition-colors",
                     isActive
                       ? "bg-accent text-accent-foreground font-medium"
-                      : "text-foreground/80 hover:bg-muted"
+                      : "text-foreground hover:bg-muted"
                   )}
                   style={{ paddingBlock: 'var(--density-sidebar-py, 4px)', minHeight: '32px' }}
                 >
@@ -526,7 +531,7 @@ export function ContactsSidebar({
                   "w-full flex items-center gap-2 ps-5 pe-3 text-sm transition-colors",
                   activeCategory === "uncategorized"
                     ? "bg-accent text-accent-foreground font-medium"
-                    : "text-foreground/80 hover:bg-muted"
+                    : "text-foreground hover:bg-muted"
                 )}
                 style={{ paddingBlock: 'var(--density-sidebar-py, 4px)', minHeight: '32px' }}
               >
@@ -782,7 +787,7 @@ function CategoryItem({
         "w-full flex items-center gap-2 ps-5 pe-3 text-sm transition-colors",
         isActive
           ? "bg-accent text-accent-foreground font-medium"
-          : "text-foreground/80 hover:bg-muted",
+          : "text-foreground hover:bg-muted",
         isDragOver && "bg-primary/20 ring-2 ring-primary/50"
       )}
       style={{ paddingBlock: 'var(--density-sidebar-py, 4px)', minHeight: '32px' }}
@@ -850,7 +855,7 @@ function AddressBookItem({
         "w-full flex items-center gap-2 ps-5 pe-3 text-sm transition-colors",
         isActive
           ? "bg-accent text-accent-foreground font-medium"
-          : "text-foreground/80 hover:bg-muted",
+          : "text-foreground hover:bg-muted",
         isDragOver && "bg-primary/20 ring-2 ring-primary/50"
       )}
       style={{ paddingBlock: 'var(--density-sidebar-py, 4px)', minHeight: '32px' }}

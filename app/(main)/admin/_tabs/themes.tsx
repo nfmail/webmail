@@ -482,7 +482,7 @@ export function ThemesTab() {
         </div>
         {themes.length === 0 ? (
           <div className="p-12 text-center">
-            <Palette className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+            <Palette className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">No themes installed</p>
             <p className="text-xs text-muted-foreground mt-1">Upload a theme ZIP file to get started</p>
           </div>

@@ -11,6 +11,7 @@ import {
   Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useFileStore, type FileResource } from "@/stores/file-store";
 
 interface FolderNode {
@@ -164,10 +165,10 @@ export function FolderTreeSidebar({ currentPath, onNavigate, listByParentId, wid
 
         {/* Folder tree */}
         {rootChildren === null && loadingIds.has("root") ? (
-          <div className="px-3 py-2 space-y-2">
-            <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-            <div className="h-4 w-20 bg-muted animate-pulse rounded" />
-            <div className="h-4 w-28 bg-muted animate-pulse rounded" />
+          <div className="flex flex-col gap-2 px-3 py-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-28" />
           </div>
         ) : (
           rootChildren?.map(folder => (

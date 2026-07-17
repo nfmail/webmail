@@ -128,6 +128,54 @@ export function ProTabBar({
     }
   };
 
+  // ARIA tabs keyboard model. The bar interleaves both panes' tabs, so arrow
+  // keys navigate within the focused tab's own pane set (dual-pane semantics):
+  // moving among the main pane's tabs re-activates in the main pane, and the
+  // split pane's tabs in the split pane. Focus moves with activation (Left/
+  // Right, Home/End), matching the WAI-ARIA automatic-activation tabs pattern.
+  const handleTabKeyDown = (
+    e: React.KeyboardEvent<HTMLDivElement>,
+    tab: ProTab,
+  ) => {
+    // Ignore keys bubbling up from the close button; only act when the tab
+    // element itself holds focus.
+    if (e.target !== e.currentTarget) return;
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+
+    const paneTabs = tabs.filter((t) => t.paneId === tab.paneId);
+    const idx = paneTabs.findIndex((t) => t.id === tab.id);
+    if (idx === -1 || paneTabs.length < 2) return;
+    const last = paneTabs.length - 1;
+
+    let next: ProTab | undefined;
+    switch (e.key) {
+      case "ArrowRight":
+        next = paneTabs[idx === last ? 0 : idx + 1];
+        break;
+      case "ArrowLeft":
+        next = paneTabs[idx === 0 ? last : idx - 1];
+        break;
+      case "Home":
+        next = paneTabs[0];
+        break;
+      case "End":
+        next = paneTabs[last];
+        break;
+    }
+    if (!next || next.id === tab.id) return;
+
+    e.preventDefault();
+    onActivate(next.id);
+    // Move DOM focus to the newly activated tab within the same tablist.
+    const root = e.currentTarget.parentElement;
+    const nodes = root
+      ? Array.from(root.querySelectorAll<HTMLElement>('[role="tab"]'))
+      : [];
+    nodes
+      .find((n) => n.dataset.tabId === next!.id && n.dataset.paneId === next!.paneId)
+      ?.focus();
+  };
+
   return (
     <div
       className={cn(
@@ -154,10 +202,12 @@ export function ProTabBar({
             key={tab.id}
             role="tab"
             aria-selected={isActive}
+            tabIndex={isActive ? 0 : -1}
             data-tab-id={tab.id}
             data-pane-id={tab.paneId}
             draggable
             onClick={() => onActivate(tab.id)}
+            onKeyDown={(e) => handleTabKeyDown(e, tab)}
             onMouseDown={(e) => {
               if (e.button === 1 && tab.closeable) {
                 e.preventDefault();

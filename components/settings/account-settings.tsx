@@ -113,7 +113,7 @@ export function AccountSettings() {
   }, [setManagedAccount]);
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-8">
       <SettingsSection title={t('title')} description={t('description')}>
         {/* Display Name */}
         <SettingItem label={t('name_label')}>
@@ -172,8 +172,8 @@ export function AccountSettings() {
         {/* Demo mode indicator */}
         {isDemoMode && (
           <SettingItem label={t('account_type_label')}>
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-amber-600 dark:text-amber-400">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-warning">
+              <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
               {t('demo_account')}
             </span>
           </SettingItem>
@@ -183,7 +183,7 @@ export function AccountSettings() {
       {/* Logged-in accounts list */}
       {accounts.length > 0 && (
         <SettingsSection title={t('accounts.title')} description={t('accounts.description')}>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {accounts.map((a, index) => (
               <AccountRow
                 key={a.id}
@@ -232,7 +232,7 @@ export function AccountSettings() {
           into a scoped settings view (filters, vacation, calendars, contacts). */}
       {sharedAccounts.length > 0 && (
         <SettingsSection title={t('shared_accounts.title')} description={t('shared_accounts.description')}>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {sharedAccounts.map((acc) => {
               const editable = firstScopedTab(acc.capabilities) !== null;
               return (
@@ -329,7 +329,7 @@ function AccountRow({
       )}
     >
       <div
-        className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground flex-shrink-0"
+        className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-muted-foreground flex-shrink-0"
         title={labels.dragHandle}
       >
         <GripVertical className="w-4 h-4" />
@@ -366,7 +366,7 @@ function AccountRow({
             {account.displayName || account.label}
           </span>
           {account.isDefault && (
-            <Star className="w-3 h-3 text-amber-500 flex-shrink-0 fill-amber-500" aria-label={labels.default} />
+            <Star className="w-3 h-3 text-warning flex-shrink-0 fill-warning" aria-label={labels.default} />
           )}
         </div>
         <p className="text-xs text-muted-foreground truncate">
@@ -378,7 +378,7 @@ function AccountRow({
           ) : (
             <span className={cn(
               'w-1.5 h-1.5 rounded-full',
-              account.isConnected ? 'bg-green-500' : 'bg-muted-foreground/40'
+              account.isConnected ? 'bg-success' : 'bg-muted-foreground/40'
             )} />
           )}
           <span className="text-[10px] text-muted-foreground truncate">
@@ -392,7 +392,7 @@ function AccountRow({
           <button
             type="button"
             onClick={onSetDefault}
-            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-amber-500 transition-colors"
+            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-warning transition-colors"
             title={labels.setDefault}
             aria-label={labels.setDefault}
           >

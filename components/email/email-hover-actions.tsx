@@ -146,6 +146,7 @@ export function EmailHoverActions({
         key={actionId}
         onClick={(e) => handleAction(e, actionId)}
         title={title}
+        aria-label={title}
         className={cn(
           "p-1.5 rounded-md transition-colors duration-100 text-muted-foreground hover:bg-black/5 dark:hover:bg-white/10",
           className,

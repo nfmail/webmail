@@ -136,7 +136,7 @@ export function UnsubscribeBanner({
   return (
     <>
       <span className="relative inline-flex items-center">
-        <span className="text-muted-foreground/40 mx-1">·</span>
+        <span className="text-muted-foreground mx-1">·</span>
         <button
           onClick={() => setShowConfirm(true)}
           className="text-xs text-blue-600 dark:text-blue-400 hover:underline bg-transparent p-0 min-h-0 leading-normal"

@@ -18,28 +18,36 @@ export function generateAccountId(username: string, serverUrl: string): string {
   }
 }
 
+/**
+ * 12 distinct hues for deterministic avatars. Each is dark enough that white
+ * initials clear WCAG AA (>=4.5:1) against it - the previous 500/600-weight
+ * shades (e.g. teal #0d9488 at 3.74:1) failed the contrast axe scan, so every
+ * entry here is the darker same-hue shade verified >=4.5:1 vs #fff. Order is
+ * load-bearing: avatars index into this array by hash, so appending/reordering
+ * changes existing users' colors.
+ */
+export const AVATAR_COLORS = [
+  '#1d4ed8', // blue   (6.70:1)
+  '#6d28d9', // violet (7.10:1)
+  '#be185d', // pink   (6.04:1)
+  '#b91c1c', // red    (6.47:1)
+  '#c2410c', // orange (5.18:1)
+  '#b45309', // amber  (5.02:1)
+  '#4d7c0f', // lime   (4.99:1)
+  '#15803d', // green  (5.02:1)
+  '#0f766e', // teal   (5.47:1)
+  '#0e7490', // cyan   (5.36:1)
+  '#4338ca', // indigo (7.90:1)
+  '#7e22ce', // purple (6.98:1)
+] as const;
+
 /** Deterministic avatar/accent color from an email string */
 export function generateAvatarColor(email: string): string {
   let hash = 0;
   for (let i = 0; i < email.length; i++) {
     hash = ((hash << 5) - hash + email.charCodeAt(i)) | 0;
   }
-  // 12 distinct, accessible hues
-  const colors = [
-    '#2563eb', // blue
-    '#7c3aed', // violet
-    '#db2777', // pink
-    '#dc2626', // red
-    '#ea580c', // orange
-    '#d97706', // amber
-    '#65a30d', // lime
-    '#16a34a', // green
-    '#0d9488', // teal
-    '#0891b2', // cyan
-    '#6366f1', // indigo
-    '#9333ea', // purple
-  ];
-  return colors[Math.abs(hash) % colors.length];
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
 /** Get initials for an avatar from a display name or email */

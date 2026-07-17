@@ -9,6 +9,7 @@ import { useContactStore, getContactPhotoUri } from "@/stores/contact-store";
 import { useConfig } from "@/hooks/use-config";
 import { avatarHooks } from "@/lib/plugin-hooks";
 import { withBasePath } from "@/lib/browser-navigation";
+import { AVATAR_COLORS } from "@/lib/account-utils";
 
 const IS_DEV = process.env.NODE_ENV !== "production";
 
@@ -233,8 +234,11 @@ export function Avatar({ name, email, contactPhotoUri, size = "md", className, d
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    const hue = Math.abs(hash) % 360;
-    return `hsl(${hue}, 70%, 50%)`;
+    // Index into the shared AA-safe palette instead of hsl(hue, 70%, 50%): the
+    // continuous formula produced yellow/green/cyan/teal fills below 4.5:1
+    // against the white initials, failing the contrast axe scan. Same hash ->
+    // same index keeps colors deterministic per sender.
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
   };
 
   const sizeClasses = {

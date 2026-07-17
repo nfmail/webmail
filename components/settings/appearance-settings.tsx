@@ -49,11 +49,11 @@ function DensityPreview({ density }: { density: Density }) {
               </span>
               <span className="text-[10px] text-muted-foreground flex-shrink-0 tabular-nums">12:00</span>
             </div>
-            <div className={cn("truncate", row.unread ? "font-medium text-foreground" : "text-foreground/80")}>
+            <div className={cn("truncate", row.unread ? "font-medium text-foreground" : "text-foreground")}>
               {row.subject}
             </div>
             {cfg.showPreview && (
-              <div className="truncate text-muted-foreground/70">{row.preview}</div>
+              <div className="truncate text-muted-foreground">{row.preview}</div>
             )}
           </div>
         </div>
@@ -118,20 +118,21 @@ export function AppearanceSettings() {
       )}
 
       {!isSettingHidden('animationsEnabled') && (
-      <SettingItem label={t('animations.label')} description={t('animations.description')} locked={isSettingLocked('animationsEnabled')}>
+      <SettingItem label={t('animations.label')} description={t('animations.description')} locked={isSettingLocked('animationsEnabled')} htmlFor="animations-enabled-toggle">
         <ToggleSwitch
+          id="animations-enabled-toggle"
           checked={animationsEnabled}
           onChange={(checked) => updateSetting('animationsEnabled', checked)}
         />
       </SettingItem>
       )}
 
-      <SettingItem label={tAdvanced('sender_favicons.label')} description={tAdvanced('sender_favicons.description')}>
-        <ToggleSwitch checked={senderFavicons} onChange={(checked) => updateSetting('senderFavicons', checked)} />
+      <SettingItem label={tAdvanced('sender_favicons.label')} description={tAdvanced('sender_favicons.description')} htmlFor="sender-favicons-toggle">
+        <ToggleSwitch id="sender-favicons-toggle" checked={senderFavicons} onChange={(checked) => updateSetting('senderFavicons', checked)} />
       </SettingItem>
 
-      <SettingItem label={tAdvanced('show_avatars_in_junk.label')} description={tAdvanced('show_avatars_in_junk.description')}>
-        <ToggleSwitch checked={showAvatarsInJunk} onChange={(checked) => updateSetting('showAvatarsInJunk', checked)} />
+      <SettingItem label={tAdvanced('show_avatars_in_junk.label')} description={tAdvanced('show_avatars_in_junk.description')} htmlFor="show-avatars-in-junk-toggle">
+        <ToggleSwitch id="show-avatars-in-junk-toggle" checked={showAvatarsInJunk} onChange={(checked) => updateSetting('showAvatarsInJunk', checked)} />
       </SettingItem>
 
       <SettingItem label={tTour('restart_title')} description={tTour('restart_desc')}>
@@ -146,8 +147,9 @@ export function AppearanceSettings() {
         </Button>
       </SettingItem>
 
-      <SettingItem label={tTour('show_on_new_devices_title')} description={tTour('show_on_new_devices_desc')}>
+      <SettingItem label={tTour('show_on_new_devices_title')} description={tTour('show_on_new_devices_desc')} htmlFor="show-onboarding-new-devices-toggle">
         <ToggleSwitch
+          id="show-onboarding-new-devices-toggle"
           checked={showOnboardingOnNewDevices}
           onChange={(checked) => updateSetting('showOnboardingOnNewDevices', checked)}
         />

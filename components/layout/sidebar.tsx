@@ -177,7 +177,7 @@ function getIconClass(isSelected: boolean, isVirtual: boolean, colorful: boolean
   if (colorful && roleKey && ROLE_ICON_COLOR[roleKey]) {
     return cn(base, ROLE_ICON_COLOR[roleKey]);
   }
-  return cn(base, isSelected ? "text-foreground" : "text-foreground/80");
+  return cn(base, isSelected ? "text-foreground" : "text-foreground");
 }
 
 function SidebarRowCounts({
@@ -201,25 +201,17 @@ function SidebarRowCounts({
 
   const unreadNode = unreadCount > 0 ? (
     onUnreadClick ? (
-      <span
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           onUnreadClick();
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            e.stopPropagation();
-            onUnreadClick();
-          }
         }}
         className={cn(unreadClass, "cursor-pointer hover:underline")}
         title={`${unreadCount} unread`}
       >
         {unreadCount}
-      </span>
+      </button>
     ) : (
       <span className={unreadClass}>{unreadCount}</span>
     )
@@ -230,7 +222,7 @@ function SidebarRowCounts({
 
       {unreadNode}
       {unreadCount > 0 && totalCount > 0 && (
-        <span className="text-xs text-muted-foreground/60">/</span>
+        <span className="text-xs text-muted-foreground">/</span>
       )}
       {totalCount > 0 && <span className={totalClass}>{totalCount}</span>}
     </span>
@@ -343,18 +335,20 @@ function SidebarRow({
         <span className="flex items-center justify-center flex-shrink-0 w-4 h-4">
           {icon}
         </span>
-        {!isCollapsed && (
-          <>
-            <span className="flex-1 truncate">{label}</span>
-            <SidebarRowCounts
-              unread={unread}
-              total={total}
-              isSelected={isSelected}
-              onUnreadClick={onUnreadClick}
-            />
-          </>
-        )}
+        {!isCollapsed && <span className="flex-1 truncate">{label}</span>}
       </button>
+      {/* Counts live OUTSIDE the label button: the unread counter is itself a
+          button, and a button nested in a button is a serious a11y violation
+          (nested-interactive). As a sibling it stays keyboard-focusable and
+          click behavior is preserved. */}
+      {!isCollapsed && (
+        <SidebarRowCounts
+          unread={unread}
+          total={total}
+          isSelected={isSelected}
+          onUnreadClick={onUnreadClick}
+        />
+      )}
     </div>
   );
 }
@@ -391,50 +385,48 @@ function SidebarSectionHeader({
     : "text-sm font-semibold text-foreground truncate";
 
   return (
-    <button
-      onClick={onToggle}
+    <div
       className={cn(
         "group w-full flex items-center pb-1 select-none rounded-sm hover:bg-muted/40 transition-colors",
         paddingX,
         paddingY
       )}
     >
-      {expanded ? (
-        <ChevronDown className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-      ) : (
-        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-      )}
-      {icon && <span className="ms-1.5 flex-shrink-0">{icon}</span>}
-      <span className={cn(textClass, icon ? "ms-1.5" : "ms-1.5")}>
-        {label}
-      </span>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={expanded}
+        className="flex items-center min-w-0 flex-1 text-start"
+      >
+        {expanded ? (
+          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+        ) : (
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+        )}
+        {icon && <span className="ms-1.5 flex-shrink-0">{icon}</span>}
+        <span className={cn(textClass, "ms-1.5")}>
+          {label}
+        </span>
+      </button>
       {onSettings && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <span
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onSettings();
               }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onSettings();
-                }
-              }}
-              className="ms-auto p-1 rounded text-muted-foreground/70 hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+              className="ms-auto p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               aria-label={settingsTitle}
             >
               <Settings className="w-3.5 h-3.5" />
-            </span>
+            </button>
           </TooltipTrigger>
           {settingsTitle && <TooltipContent>{settingsTitle}</TooltipContent>}
         </Tooltip>
       )}
-    </button>
+    </div>
   );
 }
 

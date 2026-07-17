@@ -1,9 +1,12 @@
 "use client";
 
-import { useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { SettingsSection, SettingItem, ToggleSwitch, RadioGroup } from "@/components/settings/settings-section";
 
 export type FolderLayout = "inline" | "sidebar";
@@ -54,27 +57,6 @@ interface FilesSettingsDialogProps {
 
 export function FilesSettingsDialog({ isOpen, onClose, settings, onSettingsChange }: FilesSettingsDialogProps) {
   const t = useTranslations("files");
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    if (isOpen) window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
 
   const update = (patch: Partial<FilesSettings>) => {
     const next = { ...settings, ...patch };
@@ -83,22 +65,13 @@ export function FilesSettingsDialog({ isOpen, onClose, settings, onSettingsChang
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t("settings_title")}
-        className="bg-background border border-border rounded-lg shadow-lg w-full max-w-md mx-4 max-h-[80vh] flex flex-col"
-      >
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold">{t("settings_title")}</h2>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent className="sm:max-w-md max-h-[80vh] gap-0 overflow-hidden p-0">
+        <DialogHeader className="border-b border-border p-4 text-start">
+          <DialogTitle>{t("settings_title")}</DialogTitle>
+        </DialogHeader>
 
-        <div className="overflow-y-auto p-4 space-y-6">
+        <div className="flex flex-col gap-6 overflow-y-auto p-4">
           <SettingsSection title={t("settings_display")}>
             <SettingItem label={t("settings_folder_layout")} description={t("settings_folder_layout_desc")}>
               <RadioGroup
@@ -174,7 +147,7 @@ export function FilesSettingsDialog({ isOpen, onClose, settings, onSettingsChang
             </SettingItem>
           </SettingsSection>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

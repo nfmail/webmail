@@ -7,6 +7,12 @@ import { cn } from "@/lib/utils";
 import { Trash2, Mail, MailX, MailOpen, Loader2, SearchX, AlertTriangle, CalendarClock } from "lucide-react";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useEmailStore } from "@/stores/email-store";
 import { useAuthStore } from "@/stores/auth-store";
@@ -328,61 +334,78 @@ export function EmailList({
               {t('batch_actions.selected_messages', { count: selectedEmailIds.size })}
             </span>
           </div>
+          <TooltipProvider delayDuration={300}>
           <div className="flex items-center gap-1 animate-in fade-in slide-in-from-right-3 duration-300">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleBatchMarkAsRead(true)}
-              title={t('batch_actions.mark_read')}
-              disabled={isProcessing}
-              className="hover:bg-accent transition-colors disabled:opacity-50"
-            >
-              {isProcessing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <MailOpen className="w-4 h-4" />
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleBatchMarkAsRead(false)}
-              title={t('batch_actions.mark_unread')}
-              disabled={isProcessing}
-              className="hover:bg-accent transition-colors disabled:opacity-50"
-            >
-              {isProcessing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Mail className="w-4 h-4" />
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleBatchDelete}
-              title={t('batch_actions.delete')}
-              disabled={isProcessing}
-              className="text-red-600 dark:text-red-400 hover:bg-red-100/50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
-            >
-              {isProcessing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Trash2 className="w-4 h-4" />
-              )}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleBatchMarkAsRead(true)}
+                  aria-label={t('batch_actions.mark_read')}
+                  disabled={isProcessing}
+                  className="hover:bg-accent transition-colors disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <MailOpen className="w-4 h-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('batch_actions.mark_read')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleBatchMarkAsRead(false)}
+                  aria-label={t('batch_actions.mark_unread')}
+                  disabled={isProcessing}
+                  className="hover:bg-accent transition-colors disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Mail className="w-4 h-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('batch_actions.mark_unread')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleBatchDelete}
+                  aria-label={t('batch_actions.delete')}
+                  disabled={isProcessing}
+                  className="text-red-600 dark:text-red-400 hover:bg-red-100/50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('batch_actions.delete')}</TooltipContent>
+            </Tooltip>
             <div className="w-px h-6 bg-border mx-1" />
+            {/* Visible-text button: accessible name comes from its label, no tooltip needed. */}
             <Button
               variant="ghost"
               size="sm"
               onClick={clearSelection}
-              title={t('batch_actions.clear_selection')}
               disabled={isProcessing}
               className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
             >
               {t('batch_actions.clear_selection')}
             </Button>
           </div>
+          </TooltipProvider>
         </div>
       </div>
 

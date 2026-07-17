@@ -3,18 +3,26 @@
 import { useState, useEffect } from 'react';
 import { usePluginStore } from '@/stores/plugin-store';
 import { usePolicyStore } from '@/stores/policy-store';
-import { SettingsSection, ToggleSwitch } from './settings-section';
+import { SettingsSection, ToggleSwitch, Select } from './settings-section';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Puzzle, Lock, Server } from 'lucide-react';
 import { toast } from '@/stores/toast-store';
+import { Input } from '@/components/ui/input';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import type { InstalledPlugin, PluginStatus, SettingFieldSchema } from '@/lib/plugin-types';
 
 const STATUS_COLORS: Record<PluginStatus, string> = {
   installed: 'bg-muted text-muted-foreground',
-  enabled: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  running: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  enabled: 'bg-primary/15 text-primary',
+  running: 'bg-success/15 text-success',
   disabled: 'bg-muted text-muted-foreground',
-  error: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  error: 'bg-destructive/15 text-destructive',
 };
 
 export function PluginsSettings() {
@@ -75,12 +83,12 @@ export function PluginsSettings() {
       {/* Plugin List */}
       {plugins.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Puzzle className="w-12 h-12 text-muted-foreground/30 mb-3" />
+          <Puzzle className="w-12 h-12 text-muted-foreground mb-3" />
           <p className="text-sm text-muted-foreground mb-1">No plugins available</p>
-          <p className="text-xs text-muted-foreground/70">Your administrator has not deployed any plugins</p>
+          <p className="text-xs text-muted-foreground">Your administrator has not deployed any plugins</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           {plugins.map(plugin => {
             const requireApproval = isFeatureEnabled('requirePluginApproval');
             const isApproved = plugin.adminApproved || plugin.managed || isPluginApproved(plugin.id);
@@ -142,42 +150,47 @@ function PluginCard({ plugin, isExpanded, isForceEnabled, isManaged, needsApprov
               {plugin.status}
             </span>
             {isForceEnabled && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 flex items-center gap-0.5">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-warning/15 text-warning flex items-center gap-0.5">
                 <Lock className="w-2.5 h-2.5" /> Forced
               </span>
             )}
             {isManaged && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400 flex items-center gap-0.5">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-info/15 text-info flex items-center gap-0.5">
                 <Server className="w-2.5 h-2.5" /> Managed
               </span>
             )}
             {needsApproval && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-warning/15 text-warning">
                 Awaiting approval
               </span>
             )}
           </div>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-xs text-muted-foreground">{plugin.author}</span>
-            <span className="text-xs text-muted-foreground/50">v{plugin.version}</span>
-            <span className="text-xs text-muted-foreground/50">{plugin.type}</span>
+            <span className="text-xs text-muted-foreground">v{plugin.version}</span>
+            <span className="text-xs text-muted-foreground">{plugin.type}</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          <ToggleSwitch checked={plugin.enabled} onChange={onToggle} disabled={controlsDisabled || isForceEnabled || needsApproval} />
+          <ToggleSwitch
+            checked={plugin.enabled}
+            onChange={onToggle}
+            disabled={controlsDisabled || isForceEnabled || needsApproval}
+            aria-label={plugin.name}
+          />
         </div>
       </div>
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="border-t border-border p-3 space-y-3">
+        <div className="border-t border-border p-3 flex flex-col gap-3">
           {isForceEnabled && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">This plugin is forced by an administrator and cannot be disabled.</p>
+            <p className="text-xs text-warning">This plugin is forced by an administrator and cannot be disabled.</p>
           )}
 
           {needsApproval && (
-            <p className="text-xs text-orange-600 dark:text-orange-400">This plugin is awaiting admin approval and cannot be enabled until an administrator approves it.</p>
+            <p className="text-xs text-warning">This plugin is awaiting admin approval and cannot be enabled until an administrator approves it.</p>
           )}
 
           {/* Description */}
@@ -209,17 +222,19 @@ function PluginCard({ plugin, isExpanded, isForceEnabled, isManaged, needsApprov
 
           {/* Settings (auto-generated from schema) */}
           {plugin.settingsSchema && Object.keys(plugin.settingsSchema).length > 0 && (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <span className="text-xs font-medium text-foreground">Settings:</span>
-              {Object.entries(plugin.settingsSchema).map(([key, schema]) => (
-                <PluginSettingField
-                  key={key}
-                  fieldKey={key}
-                  schema={schema}
-                  value={plugin.settings[key] ?? schema.default}
-                  onChange={(value) => onUpdateSettings({ [key]: value })}
-                />
-              ))}
+              <FieldGroup>
+                {Object.entries(plugin.settingsSchema).map(([key, schema]) => (
+                  <PluginSettingField
+                    key={key}
+                    fieldKey={key}
+                    schema={schema}
+                    value={plugin.settings[key] ?? schema.default}
+                    onChange={(value) => onUpdateSettings({ [key]: value })}
+                  />
+                ))}
+              </FieldGroup>
             </div>
           )}
         </div>
@@ -237,68 +252,66 @@ interface PluginSettingFieldProps {
   onChange: (value: unknown) => void;
 }
 
-function PluginSettingField({ schema, value, onChange }: PluginSettingFieldProps) {
+function PluginSettingField({ fieldKey, schema, value, onChange }: PluginSettingFieldProps) {
+  const fieldId = `plugin-setting-${fieldKey}`;
+
   switch (schema.type) {
     case 'boolean':
       return (
-        <div data-search-label={schema.label} className="flex items-center justify-between">
-          <div>
-            <span className="text-xs text-foreground">{schema.label}</span>
-            {schema.description && <p className="text-[10px] text-muted-foreground">{schema.description}</p>}
-          </div>
-          <ToggleSwitch checked={value as boolean} onChange={(v) => onChange(v)} />
-        </div>
+        <Field data-search-label={schema.label} orientation="horizontal">
+          <FieldContent>
+            <FieldLabel htmlFor={fieldId}>{schema.label}</FieldLabel>
+            {schema.description && <FieldDescription>{schema.description}</FieldDescription>}
+          </FieldContent>
+          <ToggleSwitch id={fieldId} checked={value as boolean} onChange={(v) => onChange(v)} />
+        </Field>
       );
 
     case 'select':
       return (
-        <div data-search-label={schema.label} className="flex items-center justify-between">
-          <div>
-            <span className="text-xs text-foreground">{schema.label}</span>
-            {schema.description && <p className="text-[10px] text-muted-foreground">{schema.description}</p>}
-          </div>
-          <select
+        <Field data-search-label={schema.label}>
+          <FieldLabel htmlFor={fieldId}>{schema.label}</FieldLabel>
+          {schema.description && <FieldDescription>{schema.description}</FieldDescription>}
+          <Select
+            id={fieldId}
             value={String(value)}
-            onChange={(e) => onChange(e.target.value)}
-            className="text-xs bg-background border border-border rounded px-2 py-1 text-foreground"
-          >
-            {schema.options?.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-        </div>
+            onChange={(next) => onChange(next)}
+            options={(schema.options ?? []).map((opt) => ({ value: opt, label: opt }))}
+            className="w-auto"
+          />
+        </Field>
       );
 
     case 'string':
       return (
-        <div data-search-label={schema.label}>
-          <span className="text-xs text-foreground">{schema.label}</span>
-          {schema.description && <p className="text-[10px] text-muted-foreground">{schema.description}</p>}
-          <input
+        <Field data-search-label={schema.label}>
+          <FieldLabel htmlFor={fieldId}>{schema.label}</FieldLabel>
+          {schema.description && <FieldDescription>{schema.description}</FieldDescription>}
+          <Input
+            id={fieldId}
             type="text"
             value={String(value ?? '')}
             onChange={(e) => onChange(e.target.value)}
-            className="mt-1 w-full text-xs bg-background border border-border rounded px-2 py-1 text-foreground"
+            className="text-xs"
           />
-        </div>
+        </Field>
       );
 
     case 'number':
       return (
-        <div data-search-label={schema.label} className="flex items-center justify-between">
-          <div>
-            <span className="text-xs text-foreground">{schema.label}</span>
-            {schema.description && <p className="text-[10px] text-muted-foreground">{schema.description}</p>}
-          </div>
-          <input
+        <Field data-search-label={schema.label}>
+          <FieldLabel htmlFor={fieldId}>{schema.label}</FieldLabel>
+          {schema.description && <FieldDescription>{schema.description}</FieldDescription>}
+          <Input
+            id={fieldId}
             type="number"
             value={Number(value ?? schema.default ?? 0)}
             min={schema.min}
             max={schema.max}
             onChange={(e) => onChange(Number(e.target.value))}
-            className="w-20 text-xs bg-background border border-border rounded px-2 py-1 text-foreground"
+            className="w-20 text-xs"
           />
-        </div>
+        </Field>
       );
 
     default:

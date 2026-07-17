@@ -135,7 +135,7 @@ export function CalendarDayView({
   const layouted = useMemo(() => layoutOverlappingEvents(timedEvents, selectedDate), [timedEvents, selectedDate]);
 
   return (
-    <div className="flex min-h-0 flex-col flex-1 overflow-hidden" role="grid" aria-label={intlFormatter.dateTime(selectedDate, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}>
+    <div className="flex min-h-0 flex-col flex-1 overflow-hidden" role="group" aria-label={intlFormatter.dateTime(selectedDate, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}>
       <div className={cn("px-4 py-3 border-b border-border", isMobile && "px-3 py-2")}>
         <h3 className={cn("font-semibold", isMobile ? "text-base" : "text-lg", today && "text-primary")}>
           {isMobile
@@ -156,7 +156,7 @@ export function CalendarDayView({
           {allDayEvents.length > 0 && (
             <>
               <div className="text-[10px] text-muted-foreground mb-1">{t("events.all_day")}</div>
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 {allDayEvents.map((ev) => {
                   const calId = getPrimaryCalendarId(ev);
                   return (
@@ -178,7 +178,7 @@ export function CalendarDayView({
           {dayTasks.length > 0 && (
             <>
               <div className={cn("text-[10px] text-muted-foreground mb-1", allDayEvents.length > 0 && "mt-2")}>{t("tasks.label")}</div>
-              <div className="space-y-0.5">
+              <div className="flex flex-col gap-0.5">
                 {dayTasks.map((task) => {
                   const isCompleted = task.progress === "completed";
                   const cal = calendars.find(c => task.calendarIds[c.id]);
@@ -232,8 +232,6 @@ export function CalendarDayView({
 
           <div
             className="flex-1 relative border-s border-border"
-            role="row"
-            aria-label={t("views.day")}
             onPointerDown={(e) => handleGridPointerDown(e, dayKey, selectedDate)}
             onPointerMove={handleGridPointerMove}
             onPointerUp={handleGridPointerUp}
@@ -244,8 +242,7 @@ export function CalendarDayView({
             {HOURS.map((h) => (
               <div
                 key={h}
-                role="gridcell"
-                aria-label={formatHour(h)}
+                aria-hidden="true"
                 onClick={() => handleSlotClick(selectedDate, h)}
                 onDoubleClick={() => handleSlotDoubleClick(selectedDate, h)}
                 onContextMenu={onContextMenuEmpty ? (e) => onContextMenuEmpty(e, selectedDate, h, false) : undefined}

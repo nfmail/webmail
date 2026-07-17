@@ -7,6 +7,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { getActiveAccountSlotHeaders } from '@/lib/auth/active-account-slot';
 import { toast } from '@/stores/toast-store';
 import { SettingsSection } from './settings-section';
+import { Input } from '@/components/ui/input';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Plus, Pencil, Trash2, Calendar as CalendarIcon, Copy, Link, Upload, Globe, RefreshCw, Eraser, Users } from 'lucide-react';
 import { ShareCollectionDialog } from './share-collection-dialog';
 import type { CalendarRights } from '@/lib/jmap/types';
@@ -86,32 +88,30 @@ export function CalendarEditForm({
   const isValid = name.trim().length > 0;
 
   return (
-    <div className="space-y-3 p-3 rounded-md border border-primary/30 bg-accent/30">
-      <div>
-        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-          {t('name')}
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && isValid) onSave({ name: name.trim(), color });
-            if (e.key === 'Escape') onCancel();
-          }}
-          placeholder={t('name_placeholder')}
-          className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          autoFocus
-          disabled={isLoading}
-        />
-      </div>
+    <div className="flex flex-col gap-3 p-3 rounded-md border border-primary/30 bg-accent/30">
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="calendar-name">{t('name')}</FieldLabel>
+          <Input
+            id="calendar-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && isValid) onSave({ name: name.trim(), color });
+              if (e.key === 'Escape') onCancel();
+            }}
+            placeholder={t('name_placeholder')}
+            autoFocus
+            disabled={isLoading}
+          />
+        </Field>
 
-      <div>
-        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-          {t('color')}
-        </label>
-        <CalendarColorPicker value={color} onChange={setColor} allowCustom />
-      </div>
+        <Field>
+          <FieldLabel>{t('color')}</FieldLabel>
+          <CalendarColorPicker value={color} onChange={setColor} allowCustom />
+        </Field>
+      </FieldGroup>
 
       <div className="flex items-center gap-2 pt-1">
         <button
@@ -389,7 +389,7 @@ export function CalendarManagementSettings() {
 
   return (
     <SettingsSection title={t('title')} description={t('description')}>
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {calendars
           .filter(cal => !isSubscriptionCalendar(cal.id))
           .filter(cal => !managedAccountId || cal.accountId === managedAccountId)
@@ -434,15 +434,15 @@ export function CalendarManagementSettings() {
 
           if (clearingId === cal.id) {
             return (
-              <div key={cal.id} className="flex items-center gap-3 py-2.5 px-3 bg-amber-500/5 rounded-md border border-amber-500/20">
-                <Eraser className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <div key={cal.id} className="flex items-center gap-3 py-2.5 px-3 bg-warning/5 rounded-md border border-warning/20">
+                <Eraser className="w-4 h-4 text-warning flex-shrink-0" />
                 <p className="text-sm text-foreground flex-1">
                   {t('confirm_clear', { name: cal.name })}
                 </p>
                 <button
                   onClick={() => handleClear(cal.id)}
                   disabled={isLoading}
-                  className="px-3 py-1 text-xs font-medium bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50"
+                  className="px-3 py-1 text-xs font-medium bg-warning text-warning-foreground rounded-md hover:bg-warning/90 disabled:opacity-50"
                 >
                   {t('clear_events')}
                 </button>
@@ -557,7 +557,7 @@ export function CalendarManagementSettings() {
                 <button
                   type="button"
                   onClick={() => setClearingId(cal.id)}
-                  className="p-1.5 rounded-md hover:bg-amber-500/10 text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                  className="p-1.5 rounded-md hover:bg-warning/10 text-muted-foreground hover:text-warning transition-colors"
                   title={t('clear_events')}
                 >
                   <Eraser className="w-3.5 h-3.5" />
@@ -615,7 +615,7 @@ export function CalendarManagementSettings() {
 
       {/* iCal Subscriptions */}
       {icalSubscriptions.length > 0 && (
-        <div className="mt-6 space-y-2">
+        <div className="mt-6 flex flex-col gap-2">
           <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
             <Globe className="w-4 h-4 text-muted-foreground" />
             {tSub('section_title')}

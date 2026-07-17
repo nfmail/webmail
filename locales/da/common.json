@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "E-mailadresse",
     "recipient_name_placeholder": "Visningsnavn",
     "autocomplete_search_server": "Søg på serveren",
-    "autocomplete_searching": "Søger..."
+    "autocomplete_searching": "Søger...",
+    "attach_from_jmap_files": "Vedhæft fra JMAP-filer",
+    "jmap_files": {
+      "title": "Vedhæft fra JMAP-filer",
+      "description": "Vælg filer, der allerede er gemt på serveren. De vedhæftes uden at blive uploadet igen.",
+      "back": "Tilbage",
+      "open_folder": "Åbn mappe",
+      "empty": "Denne mappe indeholder ingen filer.",
+      "selected": "{count, plural, =0 {Ingen filer valgt} one {# fil valgt} other {# filer valgt}}",
+      "attach": "{count, plural, one {Vedhæft # fil} other {Vedhæft # filer}}",
+      "load_error": "JMAP-filerne kunne ikke indlæses.",
+      "attach_error": "De valgte filer kunne ikke vedhæftes."
+    }
   },
   "confirm_dialog": {
     "confirm": "Bekræft",

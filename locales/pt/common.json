@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Endereço de e-mail",
     "recipient_name_placeholder": "Nome de exibição",
     "autocomplete_search_server": "Pesquisar no servidor",
-    "autocomplete_searching": "Pesquisando..."
+    "autocomplete_searching": "Pesquisando...",
+    "attach_from_jmap_files": "Anexar dos Arquivos JMAP",
+    "jmap_files": {
+      "title": "Anexar dos Arquivos JMAP",
+      "description": "Selecione arquivos já armazenados no servidor. Eles serão anexados sem um novo envio.",
+      "back": "Voltar",
+      "open_folder": "Abrir pasta",
+      "empty": "Esta pasta não contém arquivos.",
+      "selected": "{count, plural, =0 {Nenhum arquivo selecionado} one {# arquivo selecionado} other {# arquivos selecionados}}",
+      "attach": "{count, plural, one {Anexar # arquivo} other {Anexar # arquivos}}",
+      "load_error": "Não foi possível carregar os arquivos JMAP.",
+      "attach_error": "Não foi possível anexar os arquivos selecionados."
+    }
   },
   "confirm_dialog": {
     "confirm": "Confirmar",

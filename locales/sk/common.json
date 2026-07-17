@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "E-mailová adresa",
     "recipient_name_placeholder": "Zobrazené meno",
     "autocomplete_search_server": "Hľadať na serveri",
-    "autocomplete_searching": "Hľadanie..."
+    "autocomplete_searching": "Hľadanie...",
+    "attach_from_jmap_files": "Priložiť zo súborov JMAP",
+    "jmap_files": {
+      "title": "Priložiť zo súborov JMAP",
+      "description": "Vyberte súbory, ktoré sú už uložené na serveri. Priložia sa bez opätovného nahrávania.",
+      "back": "Späť",
+      "open_folder": "Otvoriť priečinok",
+      "empty": "Tento priečinok neobsahuje žiadne súbory.",
+      "selected": "{count, plural, =0 {Nie je vybraný žiadny súbor} one {Vybraný # súbor} few {Vybrané # súbory} other {Vybraných # súborov}}",
+      "attach": "{count, plural, one {Priložiť # súbor} few {Priložiť # súbory} other {Priložiť # súborov}}",
+      "load_error": "Súbory JMAP sa nepodarilo načítať.",
+      "attach_error": "Vybrané súbory sa nepodarilo priložiť."
+    }
   },
   "confirm_dialog": {
     "confirm": "Potvrdiť",

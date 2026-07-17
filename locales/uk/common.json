@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Адреса ел. пошти",
     "recipient_name_placeholder": "Відображуване ім'я",
     "autocomplete_search_server": "Шукати на сервері",
-    "autocomplete_searching": "Пошук..."
+    "autocomplete_searching": "Пошук...",
+    "attach_from_jmap_files": "Прикріпити з файлів JMAP",
+    "jmap_files": {
+      "title": "Прикріпити з файлів JMAP",
+      "description": "Виберіть файли, які вже збережені на сервері. Їх буде прикріплено без повторного завантаження.",
+      "back": "Назад",
+      "open_folder": "Відкрити папку",
+      "empty": "У цій папці немає файлів.",
+      "selected": "{count, plural, =0 {Файли не вибрано} one {Вибрано # файл} few {Вибрано # файли} many {Вибрано # файлів} other {Вибрано # файла}}",
+      "attach": "{count, plural, one {Прикріпити # файл} few {Прикріпити # файли} many {Прикріпити # файлів} other {Прикріпити # файла}}",
+      "load_error": "Не вдалося завантажити файли JMAP.",
+      "attach_error": "Не вдалося прикріпити вибрані файли."
+    }
   },
   "confirm_dialog": {
     "confirm": "Підтвердити",

@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "E-pasta adrese",
     "recipient_name_placeholder": "Parādāmais vārds",
     "autocomplete_search_server": "Meklēt serverī",
-    "autocomplete_searching": "Meklē..."
+    "autocomplete_searching": "Meklē...",
+    "attach_from_jmap_files": "Pievienot no JMAP failiem",
+    "jmap_files": {
+      "title": "Pievienot no JMAP failiem",
+      "description": "Izvēlieties failus, kas jau glabājas serverī. Tie tiks pievienoti bez atkārtotas augšupielādes.",
+      "back": "Atpakaļ",
+      "open_folder": "Atvērt mapi",
+      "empty": "Šajā mapē nav failu.",
+      "selected": "{count, plural, =0 {Nav atlasīts neviens fails} one {Atlasīts # fails} other {Atlasīti # faili}}",
+      "attach": "{count, plural, one {Pievienot # failu} other {Pievienot # failus}}",
+      "load_error": "Neizdevās ielādēt JMAP failus.",
+      "attach_error": "Neizdevās pievienot atlasītos failus."
+    }
   },
   "confirm_dialog": {
     "confirm": "Apstiprināt",

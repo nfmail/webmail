@@ -681,7 +681,19 @@
     "recipient_email_placeholder": "Adresă de e-mail",
     "recipient_name_placeholder": "Numele afișat",
     "autocomplete_search_server": "Caută pe server",
-    "autocomplete_searching": "Se caută..."
+    "autocomplete_searching": "Se caută...",
+    "attach_from_jmap_files": "Atașează din Fișiere JMAP",
+    "jmap_files": {
+      "title": "Atașează din Fișiere JMAP",
+      "description": "Selectează fișiere deja stocate pe server. Acestea vor fi atașate fără a fi încărcate din nou.",
+      "back": "Înapoi",
+      "open_folder": "Deschide dosarul",
+      "empty": "Acest dosar nu conține fișiere.",
+      "selected": "{count, plural, =0 {Niciun fișier selectat} one {# fișier selectat} few {# fișiere selectate} other {# de fișiere selectate}}",
+      "attach": "{count, plural, one {Atașează # fișier} few {Atașează # fișiere} other {Atașează # de fișiere}}",
+      "load_error": "Fișierele JMAP nu au putut fi încărcate.",
+      "attach_error": "Fișierele selectate nu au putut fi atașate."
+    }
   },
   "confirm_dialog": {
     "confirm": "Confirmare",

@@ -26,13 +26,21 @@
   /* Sidebar */
   --color-sidebar: #f8fafc;
   --color-sidebar-foreground: #0f172a;
+  --color-sidebar-primary: #3b82f6;
+  --color-sidebar-primary-foreground: #ffffff;
   --color-sidebar-border: #e2e8f0;
   --color-sidebar-accent: #f1f5f9;
   --color-sidebar-accent-foreground: #0f172a;
+  --color-sidebar-ring: #94a3b8;
 
   /* Card */
   --color-card: #ffffff;
   --color-card-foreground: #0f172a;
+
+  /* ---------------------------------------------------------------------
+     NF project extension tokens (below) — NOT part of the shadcn base set.
+     Do not remove: consumed by NF-specific UI (status, selection, unread).
+     --------------------------------------------------------------------- */
 
   /* Semantic status colors */
   --color-success: #22c55e;
@@ -55,6 +63,12 @@
   --color-chart-3: #f59e0b;
   --color-chart-4: #ef4444;
   --color-chart-5: #8b5cf6;
+
+  /* Border radius — shadcn base token. The rounded-* utility scale is left at
+     Tailwind v4 defaults (sm .25rem / md .375rem / lg .5rem / xl .75rem) so
+     existing components are visually unchanged; shadcn components that read
+     var(--radius) directly resolve against this value. */
+  --radius: 0.625rem;
 
   /* Settings variables */
   --font-size-base: 16px;
@@ -91,9 +105,12 @@
   /* Sidebar */
   --color-sidebar: #0a0a0a;
   --color-sidebar-foreground: #fafafa;
+  --color-sidebar-primary: #fafafa;
+  --color-sidebar-primary-foreground: #171717;
   --color-sidebar-border: #262626;
   --color-sidebar-accent: #1a1a1a;
   --color-sidebar-accent-foreground: #fafafa;
+  --color-sidebar-ring: #d4d4d4;
 
   /* Card */
   --color-card: #141414;
@@ -142,11 +159,15 @@
   --color-popover-foreground: var(--color-popover-foreground);
   --color-sidebar: var(--color-sidebar);
   --color-sidebar-foreground: var(--color-sidebar-foreground);
+  --color-sidebar-primary: var(--color-sidebar-primary);
+  --color-sidebar-primary-foreground: var(--color-sidebar-primary-foreground);
   --color-sidebar-border: var(--color-sidebar-border);
   --color-sidebar-accent: var(--color-sidebar-accent);
   --color-sidebar-accent-foreground: var(--color-sidebar-accent-foreground);
+  --color-sidebar-ring: var(--color-sidebar-ring);
   --color-card: var(--color-card);
   --color-card-foreground: var(--color-card-foreground);
+  /* NF project extension tokens (below) — not part of the shadcn base set. */
   --color-success: var(--color-success);
   --color-success-foreground: var(--color-success-foreground);
   --color-warning: var(--color-warning);

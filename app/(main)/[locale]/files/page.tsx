@@ -22,7 +22,10 @@ import { useIsMobile } from "@/hooks/use-media-query";
 import { useRefreshGesture } from "@/hooks/use-refresh-gesture";
 import { usePolicyStore } from "@/stores/policy-store";
 import { FileBrowser } from "@/components/files/file-browser";
+import { FileProviderSelector, type FileProviderKind } from "@/components/files/file-provider-selector";
 import type { FileCollaborationPermissions } from "@/lib/files/collaboration";
+import { WebDavFileProvider } from "@/lib/files/webdav-provider";
+import { WebDAVClient } from "@/lib/webdav/client";
 import { ImagePreviewModal } from "@/components/files/image-preview-modal";
 import { FilePreviewModal } from "@/components/files/file-preview-modal";
 import { loadFilesSettings } from "@/components/files/files-settings-dialog";
@@ -46,12 +49,16 @@ export default function FilesPage() {
     resources,
     isLoading,
     error,
+    errorCode,
     supportsFiles,
+    capabilities,
     selectedResources,
     uploadProgress,
     migrationProgress,
     clipboard,
     collaboration,
+    provider,
+    initProvider,
     initClient,
     checkSupport,
     migrateLegacyFlatNodes,
@@ -96,6 +103,7 @@ export default function FilesPage() {
   const isMobile = useIsMobile();
   const isEmbedded = useIsEmbedded();
   const [folderLayout, setFolderLayout] = useState<FolderLayout>(() => loadFilesSettings().folderLayout);
+  const [selectedProvider, setSelectedProvider] = useState<FileProviderKind>("jmap");
   const hasFetched = useRef(false);
 
   // Sync folderLayout when settings change
@@ -139,7 +147,7 @@ export default function FilesPage() {
     }
   }, [initialCheckDone, isAuthenticated, authLoading]);
 
-  // Initialize JMAP files client. In the Pro shell, all connected accounts
+  // Initialize the default JMAP provider. In the Pro shell, all connected accounts
   // are surfaced as top-level folders at the root, so we *don't* auto-attach
   // to the active account - the user picks one explicitly.
   useEffect(() => {
@@ -162,19 +170,18 @@ export default function FilesPage() {
   });
 
   // Check support and load root after client is initialized
-  const storeClient = useFileStore(s => s.client);
   useEffect(() => {
-    if (storeClient && supportsFiles === null) {
+    if (provider && supportsFiles === null) {
       checkSupport().then(async (supported) => {
-        if (supported) {
+        if (supported && useFileStore.getState().provider === provider) {
           // Upgrade any files created by older builds (flat path-encoded names)
           // into the real FileNode hierarchy before the first listing.
-          await migrateLegacyFlatNodes();
+          if (useFileStore.getState().client) await migrateLegacyFlatNodes();
           navigate(null);
         }
       });
     }
-  }, [storeClient, supportsFiles, checkSupport, migrateLegacyFlatNodes, navigate]);
+  }, [provider, supportsFiles, checkSupport, migrateLegacyFlatNodes, navigate]);
 
   const handleNavigate = useCallback((path: string, resourceId?: string | null) => {
     // Pro shell only: the Account breadcrumb segment signals "go to this
@@ -404,6 +411,35 @@ export default function FilesPage() {
 
   const currentFilesAccountId = useFileStore((s) => s.currentAccountId);
 
+  const attachProvider = useCallback((
+    kind: FileProviderKind,
+    accountId: string | null,
+    jmapClient = accountId ? getClientForAccount(accountId) : client,
+  ) => {
+    if (kind === "jmap") {
+      if (!jmapClient) return;
+      initClient(jmapClient, accountId);
+    } else {
+      const account = accountId ? accounts.find((candidate) => candidate.id === accountId) : null;
+      const accountSlot = accountId
+        ? (typeof account?.cookieSlot === "number" ? account.cookieSlot : null)
+        : undefined;
+      const webdavClient = new WebDAVClient(accountSlot);
+      initProvider(
+        new WebDavFileProvider(webdavClient, {
+          id: accountId ? `webdav-files:${accountId}` : "webdav-files",
+          displayName: "WebDAV",
+        }),
+        { accountId },
+      );
+    }
+    setSelectedProvider(kind);
+  }, [accounts, client, getClientForAccount, initClient, initProvider]);
+
+  const handleSelectProvider = useCallback((kind: FileProviderKind) => {
+    attachProvider(kind, currentFilesAccountId ?? activeAccountId);
+  }, [activeAccountId, attachProvider, currentFilesAccountId]);
+
   const handleShare = useCallback(async (
     id: string,
     principalId: string,
@@ -435,12 +471,8 @@ export default function FilesPage() {
   const handleSelectAccount = useCallback((accountId: string) => {
     const nextClient = getClientForAccount(accountId);
     if (!nextClient) return;
-    const store = useFileStore.getState();
-    store.initClient(nextClient, accountId);
-    // Reset supportsFiles so the existing checkSupport effect re-runs for
-    // the freshly-attached client and triggers the initial navigate(null).
-    useFileStore.setState({ supportsFiles: null });
-  }, [getClientForAccount]);
+    attachProvider("jmap", accountId, nextClient);
+  }, [attachProvider, getClientForAccount]);
 
   if (!isAuthenticated) return null;
 
@@ -494,16 +526,51 @@ export default function FilesPage() {
                     <p className="text-xs text-muted-foreground">{t("disabled_description")}</p>
                   </div>
                 </div>
-              ) : supportsFiles === false ? (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-sm text-muted-foreground">{t("not_available")}</p>
-                </div>
               ) : (
                 <div className="flex flex-col flex-1 min-h-0">
-                  <div className="mx-4 mt-3 mb-1 flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2">
+                  {!isAccountPicker && provider && (
+                    <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
+                      <FileProviderSelector
+                        value={selectedProvider}
+                        onChange={handleSelectProvider}
+                        label={t("title")}
+                        disabled={isLoading}
+                      />
+                      <span className="truncate text-xs text-muted-foreground">
+                        {provider.descriptor.displayName}
+                      </span>
+                    </div>
+                  )}
+                  {supportsFiles === null && provider ? (
+                    <div className="flex flex-1 items-center justify-center" role="status">
+                      <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : supportsFiles === false ? (
+                    <div className="flex flex-1 items-center justify-center px-4">
+                      <div className="flex max-w-md flex-col items-center gap-3 text-center">
+                        <AlertTriangle className="size-8 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">
+                          {errorCode === "permission-denied" || errorCode === "not-authenticated"
+                            ? error
+                            : t("not_available")}
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            useFileStore.setState({ supportsFiles: null });
+                          }}
+                        >
+                          {t("retry")}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                  {(capabilities?.upload || capabilities?.delete) && <div className="mx-4 mt-3 mb-1 flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2">
                     <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
                     <p className="text-xs text-yellow-700 dark:text-yellow-400">{t("stability_warning")}</p>
-                  </div>
+                  </div>}
                 <FileBrowser
                   currentPath={currentPath}
                   resources={resources}
@@ -553,7 +620,10 @@ export default function FilesPage() {
                   accountLabel={currentAccountLabel}
                   collaboration={collaboration}
                   onShare={handleShare}
+                  capabilities={capabilities}
                 />
+                    </>
+                  )}
                 </div>
               )}
             </div>

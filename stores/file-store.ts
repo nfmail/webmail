@@ -3,7 +3,10 @@ import type {
   FileItem,
   FileItemPermissions,
   FileProvider,
+  FileProviderCapabilities,
+  FileProviderErrorCode,
 } from '@/lib/files/provider';
+import { isFileProviderError } from '@/lib/files/provider';
 import type {
   FileCollaborationPermissions,
   FileCollaborationService,
@@ -64,7 +67,9 @@ interface FileState {
   resources: FileResource[];
   isLoading: boolean;
   error: string | null;
+  errorCode: FileProviderErrorCode | null;
   supportsFiles: boolean | null;
+  capabilities: FileProviderCapabilities | null;
   selectedResources: Set<string>;
   uploadProgress: UploadProgress | null;
   /** Progress of the one-time legacy flat-node migration; null when idle. */
@@ -83,6 +88,14 @@ interface FileState {
   sharedRoots: FileResource[];
 
   // Actions
+  initProvider: (
+    provider: FileProvider,
+    options?: {
+      accountId?: string | null;
+      client?: IJMAPClient | null;
+      collaboration?: FileCollaborationService | null;
+    },
+  ) => void;
   initClient: (client: IJMAPClient, accountId?: string | null) => void;
   /** Detach the current client and reset browse state. Used by the Pro shell to return to the cross-account picker. */
   clearClient: () => void;
@@ -274,7 +287,9 @@ export const useFileStore = create<FileState>((set, get) => ({
   resources: [],
   isLoading: false,
   error: null,
+  errorCode: null,
   supportsFiles: null,
+  capabilities: null,
   selectedResources: new Set<string>(),
   uploadProgress: null,
   migrationProgress: null,
@@ -293,17 +308,35 @@ export const useFileStore = create<FileState>((set, get) => ({
     try { return JSON.parse(localStorage.getItem('files-recent-files') || '[]'); } catch { return []; }
   })(),
 
+  initProvider: (provider, options = {}) => {
+    set({
+      provider,
+      client: options.client ?? null,
+      collaboration: options.collaboration ?? null,
+      currentAccountId: options.accountId ?? null,
+      supportsFiles: null,
+      capabilities: null,
+      pathStack: [{ id: null, name: '' }],
+      currentPath: '/',
+      currentParentId: null,
+      resources: [],
+      selectedResources: new Set<string>(),
+      clipboard: null,
+      error: null,
+      errorCode: null,
+      isLoading: false,
+    });
+  },
+
   initClient: (client: IJMAPClient, accountId?: string | null) => {
     const services = createJmapFileServices(client, {
       id: accountId ? `jmap-files:${accountId}` : 'jmap-files',
     });
-    const patch: Partial<FileState> = {
+    get().initProvider(services.provider, {
+      accountId,
       client,
-      provider: services.provider,
       collaboration: services.collaboration,
-    };
-    if (accountId !== undefined) patch.currentAccountId = accountId;
-    set(patch);
+    });
   },
 
   clearClient: () => {
@@ -313,12 +346,14 @@ export const useFileStore = create<FileState>((set, get) => ({
       collaboration: null,
       currentAccountId: null,
       supportsFiles: null,
+      capabilities: null,
       pathStack: [{ id: null, name: '' }],
       currentPath: '/',
       currentParentId: null,
       resources: [],
       selectedResources: new Set<string>(),
       error: null,
+      errorCode: null,
       isLoading: false,
     });
   },
@@ -326,16 +361,28 @@ export const useFileStore = create<FileState>((set, get) => ({
   checkSupport: async () => {
     const { client, provider } = get();
     if (!provider) {
-      set({ supportsFiles: false });
+      set({ supportsFiles: false, capabilities: null });
       return false;
     }
-    const capabilities = await provider.getCapabilities();
-    const supported = capabilities.browse;
-    if (!supported && client) {
-      console.warn('[Files] JMAP FileNode not supported. Available capabilities:', Object.keys(client.getCapabilities()));
+    set({ isLoading: true, error: null, errorCode: null });
+    try {
+      const capabilities = await provider.getCapabilities();
+      const supported = capabilities.browse;
+      if (!supported && client) {
+        console.warn('[Files] JMAP FileNode not supported. Available capabilities:', Object.keys(client.getCapabilities()));
+      }
+      set({ supportsFiles: supported, capabilities, isLoading: false });
+      return supported;
+    } catch (error) {
+      set({
+        supportsFiles: false,
+        capabilities: null,
+        error: error instanceof Error ? error.message : 'Failed to check file provider',
+        errorCode: isFileProviderError(error) ? error.code : 'unknown',
+        isLoading: false,
+      });
+      return false;
     }
-    set({ supportsFiles: supported });
-    return supported;
   },
 
   migrateLegacyFlatNodes: async () => {
@@ -537,7 +584,13 @@ export const useFileStore = create<FileState>((set, get) => ({
     const { provider, collaboration, pathStack } = get();
     if (!provider) return;
 
-    set({ isLoading: true, error: null, currentParentId: parentId, selectedResources: new Set() });
+    set({
+      isLoading: true,
+      error: null,
+      errorCode: null,
+      currentParentId: parentId,
+      selectedResources: new Set(),
+    });
 
     // Update path stack
     let newStack: { id: string | null; name: string }[];
@@ -589,6 +642,7 @@ export const useFileStore = create<FileState>((set, get) => ({
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Failed to list directory',
+        errorCode: isFileProviderError(error) ? error.code : 'unknown',
         isLoading: false,
         resources: [],
       });

@@ -70,6 +70,15 @@ function joinDavPath(parentPath: string, encodedSegment: string): string {
 export class WebDAVClient {
   private proxyUrl = '/api/webdav';
 
+  constructor(private readonly accountSlot?: number | null) {}
+
+  private getAccountHeaders(): Record<string, string> {
+    if (this.accountSlot === undefined) return getActiveAccountSlotHeaders();
+    return this.accountSlot === null
+      ? {}
+      : { 'X-JMAP-Cookie-Slot': String(this.accountSlot) };
+  }
+
   /**
    * Send a WebDAV request through the proxy.
    */
@@ -83,7 +92,7 @@ export class WebDAVClient {
     const headers: Record<string, string> = {
       'X-WebDAV-Method': method,
       'X-WebDAV-Path': canonicalDavPath(path),
-      ...getActiveAccountSlotHeaders(),
+      ...this.getAccountHeaders(),
       ...options?.headers,
     };
 

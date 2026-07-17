@@ -166,4 +166,15 @@ describe('WebDAVClient metadata parsing', () => {
       .rejects.toMatchObject({ name: 'AbortError' });
     expect(mockedFetch).not.toHaveBeenCalled();
   });
+
+  it('can target a selected account slot instead of the globally active account', async () => {
+    mockedFetch.mockResolvedValue(new Response(null, { status: 207 }));
+
+    await expect(new WebDAVClient(7).checkSupport()).resolves.toBe(true);
+    expect(mockedFetch).toHaveBeenCalledWith('/api/webdav', expect.objectContaining({
+      headers: expect.objectContaining({
+        'X-JMAP-Cookie-Slot': '7',
+      }),
+    }));
+  });
 });

@@ -26,6 +26,7 @@ import { ResizeHandle } from "@/components/layout/resize-handle";
 import { Avatar } from "@/components/ui/avatar";
 import { getDroppedFilesAndFolders } from "@/lib/webdav/drop-utils";
 import type { FileResource } from "@/stores/file-store";
+import type { FileProviderCapabilities } from "@/lib/files/provider";
 import { ShareCollectionDialog } from "@/components/settings/share-collection-dialog";
 import type {
   FileCollaborationPermissions,
@@ -108,6 +109,7 @@ interface FileBrowserProps {
     principalId: string,
     permissions: FileCollaborationPermissions | null,
   ) => Promise<void>;
+  capabilities: FileProviderCapabilities | null;
 }
 
 const IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "gif", "svg", "webp", "bmp", "ico", "avif"]);
@@ -384,8 +386,19 @@ export function FileBrowser({
   accountLabel,
   collaboration,
   onShare,
+  capabilities,
 }: FileBrowserProps) {
   const t = useTranslations("files");
+  const canDownload = capabilities?.download === true;
+  const canUpload = capabilities?.upload === true;
+  const canCreateDirectory = capabilities?.createDirectory === true;
+  const canRename = capabilities?.rename === true;
+  const canMove = capabilities?.move === true;
+  const canCopy = capabilities?.copy === true;
+  const canDelete = capabilities?.delete === true;
+  const canPaste = !!clipboard && (
+    clipboard.mode === "cut" ? canMove : canCopy
+  );
   const [showNewFolder, setShowNewFolder] = useState(false);
   const [renameTarget, setRenameTarget] = useState<string | null>(null);
   const [shareTargetId, setShareTargetId] = useState<string | null>(null);
@@ -689,25 +702,26 @@ export function FileBrowser({
         ? `/${resource.name}`
         : `${currentPath}/${resource.name}`;
       onNavigate(newPath, resource.id);
-    } else if (isPreviewable(resource.name)) {
+    } else if (canDownload && isPreviewable(resource.name)) {
       if (isImageFile(resource.name)) {
         onPreviewImage(resource.name);
       } else {
         onPreviewFile(resource.name);
       }
-    } else {
+    } else if (canDownload) {
       onDownload(resource.name);
     }
   };
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
+    if (!canUpload) return;
     e.preventDefault();
     e.stopPropagation();
     // Only show upload overlay for external file drags, not internal resource drags
     if (e.dataTransfer.types.includes("Files")) {
       setIsDraggingOver(true);
     }
-  }, []);
+  }, [canUpload]);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -719,6 +733,7 @@ export function FileBrowser({
     e.preventDefault();
     e.stopPropagation();
     setIsDraggingOver(false);
+    if (!canUpload) return;
 
     setIsUploading(true);
     try {
@@ -733,7 +748,7 @@ export function FileBrowser({
     } finally {
       setIsUploading(false);
     }
-  }, [onUploadFiles, onUploadFolder]);
+  }, [canUpload, onUploadFiles, onUploadFolder]);
 
   const handleFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -853,7 +868,7 @@ export function FileBrowser({
       }
 
       // Ctrl+C / Cmd+C: copy selected
-      if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+      if (canCopy && (e.ctrlKey || e.metaKey) && e.key === 'c') {
         if (selectedResources.size > 0) {
           e.preventDefault();
           onCopy([...selectedResources]);
@@ -862,7 +877,7 @@ export function FileBrowser({
       }
 
       // Ctrl+X / Cmd+X: cut selected
-      if ((e.ctrlKey || e.metaKey) && e.key === 'x') {
+      if (canMove && (e.ctrlKey || e.metaKey) && e.key === 'x') {
         if (selectedResources.size > 0) {
           e.preventDefault();
           onCut([...selectedResources]);
@@ -872,7 +887,7 @@ export function FileBrowser({
 
       // Ctrl+V / Cmd+V: paste
       if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
-        if (clipboard) {
+        if (canPaste) {
           e.preventDefault();
           onPaste();
         }
@@ -887,7 +902,7 @@ export function FileBrowser({
       }
 
       // Delete: delete selected
-      if (e.key === 'Delete') {
+      if (canDelete && e.key === 'Delete') {
         if (selectedResources.size === 1) {
           onDelete([...selectedResources][0]);
         } else if (selectedResources.size > 1) {
@@ -897,7 +912,7 @@ export function FileBrowser({
       }
 
       // F2: rename selected (single)
-      if (e.key === 'F2' && selectedResources.size === 1) {
+      if (canRename && e.key === 'F2' && selectedResources.size === 1) {
         setRenameTarget([...selectedResources][0]);
         return;
       }
@@ -911,7 +926,7 @@ export function FileBrowser({
             ? `/${resource.name}`
             : `${currentPath}/${resource.name}`;
           onNavigate(newPath, resource.id);
-        } else if (resource) {
+        } else if (resource && canDownload) {
           onDownload(resource.name);
         }
         return;
@@ -926,7 +941,7 @@ export function FileBrowser({
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedResources, resources, currentPath, showSearch, showNewFolder, renameTarget, onDelete, onBatchDelete, onSelectAll, onClearSelection, onNavigate, onDownload, onCut, onCopy, onPaste, clipboard, handleNavigateUp]);
+  }, [selectedResources, resources, currentPath, showSearch, showNewFolder, renameTarget, onDelete, onBatchDelete, onSelectAll, onClearSelection, onNavigate, onDownload, onCut, onCopy, onPaste, canCopy, canMove, canPaste, canDelete, canRename, canDownload, handleNavigateUp]);
 
   const allSelected = resources.length > 0 && selectedResources.size === resources.length;
   const someSelected = selectedResources.size > 0 && !allSelected;
@@ -936,9 +951,9 @@ export function FileBrowser({
       ref={containerRef}
       className="flex flex-col flex-1 min-h-0"
       onClick={handleContainerClick}
-      onDragOver={handleDragOver}
+      onDragOver={canUpload ? handleDragOver : undefined}
       onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDrop={canUpload ? handleDrop : undefined}
       tabIndex={-1}
     >
       {/* Toolbar */}
@@ -979,9 +994,9 @@ export function FileBrowser({
 
         {/* Action buttons */}
         <div className="flex items-center gap-1 shrink-0">
-          {selectedResources.size > 1 && (
+          {selectedResources.size > 1 && (canDownload || canDelete) && (
             <>
-              <Button
+              {canDownload && <Button
                 variant="ghost"
                 size="sm"
                 className="h-8"
@@ -989,8 +1004,8 @@ export function FileBrowser({
               >
                 <Download className="w-4 h-4 me-1" />
                 {t("download")} ({[...selectedResources].filter(n => !resources.find(r => r.name === n)?.isDirectory).length})
-              </Button>
-              <Button
+              </Button>}
+              {canDelete && <Button
                 variant="ghost"
                 size="sm"
                 className="h-8 text-destructive hover:text-destructive"
@@ -998,10 +1013,10 @@ export function FileBrowser({
               >
                 <Trash2 className="w-4 h-4 me-1" />
                 {t("delete")} ({selectedResources.size})
-              </Button>
+              </Button>}
             </>
           )}
-          {clipboard && (
+          {canPaste && clipboard && (
             <Button
               variant="ghost"
               size="sm"
@@ -1052,7 +1067,7 @@ export function FileBrowser({
               >
                 <Star className={cn("w-4 h-4", favorites.includes(currentPath) && "fill-current")} />
               </Button>
-              <Button
+              {canUpload && <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
@@ -1061,8 +1076,8 @@ export function FileBrowser({
                 disabled={isUploading}
               >
                 <Upload className="w-4 h-4" />
-              </Button>
-              <Button
+              </Button>}
+              {canUpload && canCreateDirectory && <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
@@ -1071,8 +1086,8 @@ export function FileBrowser({
                 disabled={isUploading}
               >
                 <FolderUp className="w-4 h-4" />
-              </Button>
-              <Button
+              </Button>}
+              {canCreateDirectory && <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
@@ -1080,8 +1095,8 @@ export function FileBrowser({
                 title={t("new_folder")}
               >
                 <FolderPlus className="w-4 h-4" />
-              </Button>
-              <Button
+              </Button>}
+              {canUpload && <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
@@ -1089,7 +1104,7 @@ export function FileBrowser({
                 title={t("new_text_file")}
               >
                 <FilePlus className="w-4 h-4" />
-              </Button>
+              </Button>}
             </>
           )}
           <Button
@@ -1135,21 +1150,21 @@ export function FileBrowser({
       )}
 
       {/* Hidden file input */}
-      <input
+      {canUpload && <input
         ref={fileInputRef}
         type="file"
         multiple
         className="hidden"
         onChange={handleFileInputChange}
-      />
+      />}
       {/* Hidden folder input */}
-      <input
+      {canUpload && canCreateDirectory && <input
         ref={folderInputRef}
         type="file"
         className="hidden"
         onChange={handleFolderInputChange}
         {...({ webkitdirectory: '', directory: '' } as React.InputHTMLAttributes<HTMLInputElement>)}
-      />
+      />}
 
       {/* Error display with retry */}
       {error && (
@@ -1169,7 +1184,7 @@ export function FileBrowser({
       )}
 
       {/* Drag overlay */}
-      {isDraggingOver && (
+      {canUpload && isDraggingOver && (
         <div className="absolute inset-0 z-50 bg-primary/5 border-2 border-dashed border-primary rounded-lg flex items-center justify-center pointer-events-none">
           <div className="text-center">
             <Upload className="w-12 h-12 text-primary mx-auto mb-2" />
@@ -1382,7 +1397,7 @@ export function FileBrowser({
           <div className="flex items-center justify-center h-full">
             <p className="text-sm text-muted-foreground">{t("no_accounts")}</p>
           </div>
-        ) : resources.length === 0 && !searchQuery && currentPath === '/' ? (
+        ) : resources.length === 0 && !searchQuery && currentPath === '/' && canUpload && canCreateDirectory ? (
           <FileUploadArea
             onUpload={async (files: File[]) => {
               setIsUploading(true);
@@ -1403,6 +1418,11 @@ export function FileBrowser({
             onCreateFolder={() => setShowNewFolder(true)}
             onCreateTextFile={() => setShowNewTextFile(true)}
           />
+        ) : resources.length === 0 && !searchQuery ? (
+          <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center">
+            <Folder className="size-10 text-muted-foreground" aria-hidden="true" />
+            <p className="text-sm font-medium">{t("empty_state_title")}</p>
+          </div>
         ) : viewMode === "grid" ? (
           /* ======= GRID VIEW ======= */
           <div className="p-4" role="grid" aria-label={t("file_list")}>
@@ -1414,6 +1434,7 @@ export function FileBrowser({
                 )}
                 onClick={handleNavigateUp}
                 onDragOver={(e) => {
+                  if (!canMove) return;
                   if (e.dataTransfer.types.includes("application/x-file-names")) {
                     e.preventDefault();
                     e.dataTransfer.dropEffect = "move";
@@ -1422,6 +1443,7 @@ export function FileBrowser({
                 }}
                 onDragLeave={() => setDragTarget(null)}
                 onDrop={async (e) => {
+                  if (!canMove) return;
                   e.preventDefault();
                   setDragTarget(null);
                   const raw = e.dataTransfer.getData("application/x-file-names");
@@ -1449,14 +1471,15 @@ export function FileBrowser({
                   <div
                     key={resource.id}
                     data-resource={resource.name}
-                    draggable
+                    draggable={canMove && resource.permissions.move}
                     onDragStart={(e) => {
+                      if (!canMove || !resource.permissions.move) return;
                       const names = selectedResources.has(resource.name) ? [...selectedResources] : [resource.name];
                       e.dataTransfer.setData("application/x-file-names", JSON.stringify(names));
                       e.dataTransfer.effectAllowed = "move";
                     }}
                     onDragOver={(e) => {
-                      if (resource.isDirectory) {
+                      if (canMove && resource.isDirectory) {
                         e.preventDefault();
                         e.dataTransfer.dropEffect = "move";
                         setDragTarget(resource.name);
@@ -1464,6 +1487,7 @@ export function FileBrowser({
                     }}
                     onDragLeave={() => setDragTarget(null)}
                     onDrop={async (e) => {
+                      if (!canMove) return;
                       e.preventDefault();
                       setDragTarget(null);
                       if (!resource.isDirectory) return;
@@ -1559,6 +1583,7 @@ export function FileBrowser({
                   )}
                   onClick={handleNavigateUp}
                   onDragOver={(e) => {
+                    if (!canMove) return;
                     if (e.dataTransfer.types.includes("application/x-file-names")) {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
@@ -1567,6 +1592,7 @@ export function FileBrowser({
                   }}
                   onDragLeave={() => setDragTarget(null)}
                   onDrop={async (e) => {
+                    if (!canMove) return;
                     e.preventDefault();
                     setDragTarget(null);
                     const raw = e.dataTransfer.getData("application/x-file-names");
@@ -1598,14 +1624,15 @@ export function FileBrowser({
                   key={resource.id}
                   data-resource={resource.name}
                   aria-selected={selectedResources.has(resource.name)}
-                  draggable
+                  draggable={canMove && resource.permissions.move}
                   onDragStart={(e) => {
+                    if (!canMove || !resource.permissions.move) return;
                     const names = selectedResources.has(resource.name) ? [...selectedResources] : [resource.name];
                     e.dataTransfer.setData("application/x-file-names", JSON.stringify(names));
                     e.dataTransfer.effectAllowed = "move";
                   }}
                   onDragOver={(e) => {
-                    if (resource.isDirectory) {
+                    if (canMove && resource.isDirectory) {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
                       setDragTarget(resource.name);
@@ -1613,6 +1640,7 @@ export function FileBrowser({
                   }}
                   onDragLeave={() => setDragTarget(null)}
                   onDrop={async (e) => {
+                    if (!canMove) return;
                     e.preventDefault();
                     setDragTarget(null);
                     if (!resource.isDirectory) return;
@@ -1684,7 +1712,7 @@ export function FileBrowser({
             style={{ left: contextMenu.x, top: contextMenu.y }}
             onClick={(e) => e.stopPropagation()}
           >
-            {!resources.find(r => r.name === contextMenu.name)?.isDirectory && isPreviewable(contextMenu.name) && (
+            {canDownload && !resources.find(r => r.name === contextMenu.name)?.isDirectory && isPreviewable(contextMenu.name) && (
               <button
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
                 onClick={() => {
@@ -1700,7 +1728,7 @@ export function FileBrowser({
                 {t("preview")}
               </button>
             )}
-            {!resources.find(r => r.name === contextMenu.name)?.isDirectory && (
+            {canDownload && !resources.find(r => r.name === contextMenu.name)?.isDirectory && (
               <button
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
                 onClick={() => {
@@ -1712,7 +1740,7 @@ export function FileBrowser({
                 {t("download")}
               </button>
             )}
-            <button
+            {canMove && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
               onClick={() => {
                 onCut([contextMenu.name]);
@@ -1721,8 +1749,8 @@ export function FileBrowser({
             >
               <Scissors className="w-4 h-4" />
               {t("cut")}
-            </button>
-            <button
+            </button>}
+            {canCopy && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
               onClick={() => {
                 onCopy([contextMenu.name]);
@@ -1731,8 +1759,8 @@ export function FileBrowser({
             >
               <Copy className="w-4 h-4" />
               {t("copy")}
-            </button>
-            {clipboard && (
+            </button>}
+            {canPaste && clipboard && (
               <button
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
                 onClick={() => {
@@ -1744,7 +1772,7 @@ export function FileBrowser({
                 {t("paste")}
               </button>
             )}
-            {!resources.find(r => r.name === contextMenu.name)?.isDirectory && (
+            {canCopy && !resources.find(r => r.name === contextMenu.name)?.isDirectory && (
               <button
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
                 onClick={() => {
@@ -1780,7 +1808,7 @@ export function FileBrowser({
               <Info className="w-4 h-4" />
               {t("details")}
             </button>
-            <button
+            {canRename && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
               onClick={() => {
                 setRenameTarget(contextMenu.name);
@@ -1789,8 +1817,8 @@ export function FileBrowser({
             >
               <Pencil className="w-4 h-4" />
               {t("rename")}
-            </button>
-            <button
+            </button>}
+            {canDelete && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-destructive transition-colors text-start"
               onClick={() => {
                 onDelete(contextMenu.name);
@@ -1799,7 +1827,7 @@ export function FileBrowser({
             >
               <Trash2 className="w-4 h-4" />
               {t("delete")}
-            </button>
+            </button>}
           </div>
         )}
 
@@ -1812,7 +1840,7 @@ export function FileBrowser({
             style={{ left: emptyContextMenu.x, top: emptyContextMenu.y }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button
+            {canCreateDirectory && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
               onClick={() => {
                 setShowNewFolder(true);
@@ -1821,8 +1849,8 @@ export function FileBrowser({
             >
               <FolderPlus className="w-4 h-4" />
               {t("new_folder")}
-            </button>
-            <button
+            </button>}
+            {canUpload && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
               onClick={() => {
                 setShowNewTextFile(true);
@@ -1831,8 +1859,8 @@ export function FileBrowser({
             >
               <FilePlus className="w-4 h-4" />
               {t("new_text_file")}
-            </button>
-            <button
+            </button>}
+            {canUpload && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
               onClick={() => {
                 fileInputRef.current?.click();
@@ -1841,8 +1869,8 @@ export function FileBrowser({
             >
               <Upload className="w-4 h-4" />
               {t("upload")}
-            </button>
-            <button
+            </button>}
+            {canUpload && canCreateDirectory && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
               onClick={() => {
                 folderInputRef.current?.click();
@@ -1851,8 +1879,8 @@ export function FileBrowser({
             >
               <FolderUp className="w-4 h-4" />
               {t("upload_folder")}
-            </button>
-            {clipboard && (
+            </button>}
+            {canPaste && clipboard && (
               <>
                 <div className="h-px bg-border my-1" />
                 <button
@@ -1973,7 +2001,7 @@ export function FileBrowser({
       </div>
 
       {/* New folder dialog */}
-      {showNewFolder && (
+      {canCreateDirectory && showNewFolder && (
         <NewFolderDialog
           onConfirm={async (name: string) => {
             await onCreateFolder(name);
@@ -1984,7 +2012,7 @@ export function FileBrowser({
       )}
 
       {/* New text file dialog */}
-      {showNewTextFile && (
+      {canUpload && showNewTextFile && (
         <RenameDialog
           currentName="new-file.txt"
           title={t("new_text_file")}
@@ -1998,7 +2026,7 @@ export function FileBrowser({
       )}
 
       {/* Rename dialog */}
-      {renameTarget && (
+      {canRename && renameTarget && (
         <RenameDialog
           currentName={renameTarget}
           onConfirm={async (newName: string) => {

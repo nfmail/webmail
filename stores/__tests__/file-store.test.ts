@@ -1,5 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useFileStore } from '../file-store';
+import {
+  FileProviderError,
+  createFileProviderCapabilities,
+  type FileProvider,
+} from '@/lib/files/provider';
 import type { IJMAPClient } from '@/lib/jmap/client-interface';
 import type { FileNode } from '@/lib/jmap/types';
 
@@ -376,5 +381,96 @@ describe('file-store hierarchy (issue #379)', () => {
 
     await useFileStore.getState().deleteResource('Stuff');
     expect(client._nodes()).toHaveLength(0);
+  });
+});
+
+describe('file-store provider selection', () => {
+  beforeEach(() => {
+    useFileStore.getState().clearClient();
+  });
+
+  function makeReadOnlyProvider(): FileProvider {
+    const capabilities = createFileProviderCapabilities({
+      browse: true,
+      stat: true,
+      download: true,
+    });
+    const unsupported = async () => {
+      throw new FileProviderError('not-supported', 'Unsupported.');
+    };
+    return {
+      descriptor: { id: 'readonly', displayName: 'Read only' },
+      getCapabilities: vi.fn(async () => capabilities),
+      list: vi.fn(async () => ({
+        items: [{
+          id: 'item-1',
+          parentId: null,
+          name: 'report.txt',
+          kind: 'file' as const,
+          mediaType: 'text/plain',
+          size: 6,
+          permissions: {
+            read: true,
+            download: true,
+            addChildren: false,
+            modifyContent: false,
+            rename: false,
+            move: false,
+            copy: false,
+            delete: false,
+          },
+        }],
+        nextCursor: null,
+      })),
+      stat: vi.fn(),
+      download: vi.fn(),
+      upload: vi.fn(unsupported),
+      createDirectory: vi.fn(unsupported),
+      rename: vi.fn(unsupported),
+      move: vi.fn(unsupported),
+      copy: vi.fn(unsupported),
+      delete: vi.fn(unsupported),
+    } as FileProvider;
+  }
+
+  it('attaches any FileProvider and exposes its capabilities to the shared UI path', async () => {
+    const provider = makeReadOnlyProvider();
+
+    useFileStore.getState().initProvider(provider, { accountId: 'account-2' });
+    await expect(useFileStore.getState().checkSupport()).resolves.toBe(true);
+    await useFileStore.getState().navigate(null);
+
+    expect(useFileStore.getState()).toMatchObject({
+      provider,
+      client: null,
+      currentAccountId: 'account-2',
+      supportsFiles: true,
+      errorCode: null,
+    });
+    expect(useFileStore.getState().capabilities).toMatchObject({
+      browse: true,
+      download: true,
+      upload: false,
+      delete: false,
+    });
+    expect(useFileStore.getState().resources.map((item) => item.name))
+      .toEqual(['report.txt']);
+  });
+
+  it('keeps coded provider failures for permission-aware status UI', async () => {
+    const provider = makeReadOnlyProvider();
+    vi.mocked(provider.getCapabilities).mockRejectedValueOnce(
+      new FileProviderError('permission-denied', 'File provider access denied.'),
+    );
+    useFileStore.getState().initProvider(provider);
+
+    await expect(useFileStore.getState().checkSupport()).resolves.toBe(false);
+    expect(useFileStore.getState()).toMatchObject({
+      supportsFiles: false,
+      capabilities: null,
+      errorCode: 'permission-denied',
+      error: 'File provider access denied.',
+      isLoading: false,
+    });
   });
 });

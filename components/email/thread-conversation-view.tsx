@@ -9,6 +9,12 @@ import { transformInlineStyles, transformColorForDarkMode, transformBgColorForDa
 import { useThemeStore } from "@/stores/theme-store";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { formatDate, formatFileSize, cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -612,35 +618,42 @@ function EmailCard({
             );
             return visibleAttachments.length > 0 && (
             <div className="px-4 pb-4">
+              <TooltipProvider delayDuration={300}>
               <div className="flex flex-wrap gap-2">
                 {visibleAttachments.map((attachment, idx) => {
                   const Icon = getFileIcon(attachment.name, attachment.type);
                   const isPreviewable = isFilePreviewable(attachment.name, attachment.type);
                   const opensPreview = isPreviewable && mailAttachmentAction === 'preview';
+                  const actionLabel = opensPreview ? t('files.preview') : t('email_viewer.download');
                   return (
-                    <button
-                      key={idx}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDownloadAttachment?.(attachment.blobId, attachment.name || 'attachment', attachment.type);
-                      }}
-                      title={opensPreview ? t('files.preview') : t('email_viewer.download')}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors text-sm"
-                    >
-                      <Icon className="w-4 h-4 text-muted-foreground" />
-                      <span className="truncate max-w-[150px]">{attachment.name || 'Attachment'}</span>
-                      <span className="text-muted-foreground text-xs">
-                        {formatFileSize(attachment.size)}
-                      </span>
-                      {opensPreview ? (
-                        <Eye className="w-4 h-4 text-muted-foreground" />
-                      ) : (
-                        <Download className="w-4 h-4 text-muted-foreground" />
-                      )}
-                    </button>
+                    <Tooltip key={idx}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDownloadAttachment?.(attachment.blobId, attachment.name || 'attachment', attachment.type);
+                          }}
+                          aria-label={`${actionLabel}: ${attachment.name || 'Attachment'}`}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors text-sm"
+                        >
+                          <Icon className="w-4 h-4 text-muted-foreground" />
+                          <span className="truncate max-w-[150px]">{attachment.name || 'Attachment'}</span>
+                          <span className="text-muted-foreground text-xs">
+                            {formatFileSize(attachment.size)}
+                          </span>
+                          {opensPreview ? (
+                            <Eye className="w-4 h-4 text-muted-foreground" />
+                          ) : (
+                            <Download className="w-4 h-4 text-muted-foreground" />
+                          )}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>{actionLabel}</TooltipContent>
+                    </Tooltip>
                   );
                 })}
               </div>
+              </TooltipProvider>
             </div>
             );
           })()}

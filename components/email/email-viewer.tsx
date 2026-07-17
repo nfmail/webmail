@@ -17,6 +17,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { formatFileSize, cn, buildMailboxTree, MailboxNode, formatDateTime, generateUUID } from "@/lib/utils";
 import { getSecurityStatus, extractListHeaders } from "@/lib/email-headers";
 import { emailToReadView } from "@/lib/plugin-projection";
@@ -389,6 +395,7 @@ export function ContactSidebarPanel({
   };
 
   return (
+    <TooltipProvider delayDuration={300}>
     <div className="w-[320px] shrink-0 border-s border-border bg-background flex flex-col h-full animate-in slide-in-from-right-5 duration-200">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
@@ -470,13 +477,18 @@ export function ContactSidebarPanel({
                     <a href={`mailto:${e.address}`} className="text-sm text-primary hover:underline truncate">
                       {e.address}
                     </a>
-                    <button
-                      onClick={() => handleCopy(e.address)}
-                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-                      title="Copy"
-                    >
-                      <Copy className="w-3 h-3 text-muted-foreground" />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => handleCopy(e.address)}
+                          className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                          aria-label="Copy"
+                        >
+                          <Copy className="w-3 h-3 text-muted-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Copy</TooltipContent>
+                    </Tooltip>
                   </div>
                 ))}
               </SidebarSection>
@@ -490,13 +502,18 @@ export function ContactSidebarPanel({
                     <a href={`tel:${p.number}`} className="text-sm text-primary hover:underline">
                       {p.number}
                     </a>
-                    <button
-                      onClick={() => handleCopy(p.number)}
-                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-                      title="Copy"
-                    >
-                      <Copy className="w-3 h-3 text-muted-foreground" />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => handleCopy(p.number)}
+                          className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                          aria-label="Copy"
+                        >
+                          <Copy className="w-3 h-3 text-muted-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Copy</TooltipContent>
+                    </Tooltip>
                   </div>
                 ))}
               </SidebarSection>
@@ -561,6 +578,7 @@ export function ContactSidebarPanel({
         )}
       </div>
     </div>
+    </TooltipProvider>
   );
 }
 
@@ -1970,17 +1988,22 @@ export function EmailViewer({
 
   // Shared "Download all" chip, shown only when bundling is worthwhile (2+).
   const downloadAllButton = effectiveAttachments.length > 1 ? (
-    <button
-      onClick={(e) => { e.stopPropagation(); handleDownloadAllAttachments(); }}
-      disabled={isDownloadingAll}
-      title={t('download_all')}
-      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md border border-border/50 transition-colors flex-shrink-0 disabled:opacity-60 disabled:cursor-wait"
-    >
-      {isDownloadingAll
-        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-        : <FileArchive className="w-3.5 h-3.5" />}
-      {t('download_all')}
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleDownloadAllAttachments(); }}
+          disabled={isDownloadingAll}
+          aria-label={t('download_all')}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md border border-border/50 transition-colors flex-shrink-0 disabled:opacity-60 disabled:cursor-wait"
+        >
+          {isDownloadingAll
+            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            : <FileArchive className="w-3.5 h-3.5" />}
+          {t('download_all')}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{t('download_all')}</TooltipContent>
+    </Tooltip>
   ) : null;
 
   // Pre-fetch object URLs for image attachments so their actual contents can be
@@ -2750,88 +2773,128 @@ export function EmailViewer({
         )}
         {isScheduled && canCancelScheduled && (
           <>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => onRescheduleScheduled?.(new Date(Date.now() + 1000).toISOString())}
-              className="sm:flex sm:h-8"
-              title={t('send_now')}
-            >
-              <Send className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('send_now')}</span>}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onCancelScheduled} className="sm:flex sm:h-8" title={t('cancel_scheduled_send')}>
-              <X className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('cancel_scheduled_send')}</span>}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                const delayedUntil = promptForRescheduleDelayedUntil();
-                if (delayedUntil) onRescheduleScheduled?.(delayedUntil);
-              }}
-              className="hidden sm:flex sm:h-8"
-              title={t('reschedule_send')}
-            >
-              <CalendarClock className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reschedule_send')}</span>}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onCancelScheduledForEdit} className="hidden sm:flex sm:h-8" title={email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}>
-              <EditIcon className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}</span>}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => onRescheduleScheduled?.(new Date(Date.now() + 1000).toISOString())}
+                  className="sm:flex sm:h-8"
+                  aria-label={t('send_now')}
+                >
+                  <Send className="w-4 h-4" />
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('send_now')}</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('send_now')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={onCancelScheduled} className="sm:flex sm:h-8" aria-label={t('cancel_scheduled_send')}>
+                  <X className="w-4 h-4" />
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('cancel_scheduled_send')}</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('cancel_scheduled_send')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const delayedUntil = promptForRescheduleDelayedUntil();
+                    if (delayedUntil) onRescheduleScheduled?.(delayedUntil);
+                  }}
+                  className="hidden sm:flex sm:h-8"
+                  aria-label={t('reschedule_send')}
+                >
+                  <CalendarClock className="w-4 h-4" />
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reschedule_send')}</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('reschedule_send')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={onCancelScheduledForEdit} className="hidden sm:flex sm:h-8" aria-label={email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}>
+                  <EditIcon className="w-4 h-4" />
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}</TooltipContent>
+            </Tooltip>
           </>
         )}
         {!isScheduled && isDraft && onEditDraft && (
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => onEditDraft()}
-            className="sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-            title={t('tooltips.edit_draft')}
-          >
-            <EditIcon className="w-4 h-4" />
-            <span className="text-sm">{t('edit_draft')}</span>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => onEditDraft()}
+                className="sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
+                aria-label={t('tooltips.edit_draft')}
+              >
+                <EditIcon className="w-4 h-4" />
+                <span className="text-sm">{t('edit_draft')}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('tooltips.edit_draft')}</TooltipContent>
+          </Tooltip>
         )}
         {!isScheduled && !isDraft && (<>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onReply?.()}
-          data-overflow-item
-          data-overflow-priority="1"
-          className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-          title={t('tooltips.reply')}
-        >
-          <Reply className="w-4 h-4" />
-          {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reply')}</span>}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onReplyAll}
-          data-overflow-item
-          data-overflow-priority="2"
-          className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0 sm:px-3"
-          title={t('tooltips.reply_all')}
-        >
-          <ReplyAll className="w-4 h-4" />
-          {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reply_all')}</span>}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onForward}
-          data-overflow-item
-          data-overflow-priority="3"
-          className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-          title={t('tooltips.forward')}
-        >
-          <Forward className="w-4 h-4" />
-          {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('forward')}</span>}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onReply?.()}
+              data-overflow-item
+              data-overflow-priority="1"
+              className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
+              aria-label={t('tooltips.reply')}
+            >
+              <Reply className="w-4 h-4" />
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reply')}</span>}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('tooltips.reply')}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onReplyAll}
+              data-overflow-item
+              data-overflow-priority="2"
+              className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0 sm:px-3"
+              aria-label={t('tooltips.reply_all')}
+            >
+              <ReplyAll className="w-4 h-4" />
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reply_all')}</span>}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('tooltips.reply_all')}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onForward}
+              data-overflow-item
+              data-overflow-priority="3"
+              className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
+              aria-label={t('tooltips.forward')}
+            >
+              <Forward className="w-4 h-4" />
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('forward')}</span>}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('tooltips.forward')}</TooltipContent>
+        </Tooltip>
         </>)}
         <PluginSlot name="toolbar-actions" />
       </div>
@@ -2840,42 +2903,57 @@ export function EmailViewer({
       {!isScheduled && (
       <div className="flex items-center gap-0 sm:gap-0.5">
         {/* Archive */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onArchive}
-          data-overflow-item
-          data-overflow-priority="4"
-          className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-          title={t('tooltips.archive')}
-        >
-          <Archive className="w-4 h-4" />
-          {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('archive')}</span>}
-        </Button>
-        {/* Delete */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onDelete}
-          className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-          title={t('tooltips.delete')}
-        >
-          <Trash2 className="w-4 h-4" />
-          {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('delete')}</span>}
-        </Button>
-        {/* Move to folder */}
-        {moveTree.length > 0 && onMoveToMailbox && (
-          <div ref={moveMenuRef} data-overflow-item data-overflow-priority="5" className="relative">
+        <Tooltip>
+          <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { setMoveMenuOpen(!moveMenuOpen); setMoreMenuOpen(false); setTagMenuOpen(false); }}
+              onClick={onArchive}
+              data-overflow-item
+              data-overflow-priority="4"
               className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-              title={t('move_to')}
+              aria-label={t('tooltips.archive')}
             >
-              <FolderInput className="w-4 h-4" />
-              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('move')}</span>}
+              <Archive className="w-4 h-4" />
+              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('archive')}</span>}
             </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('tooltips.archive')}</TooltipContent>
+        </Tooltip>
+        {/* Delete */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onDelete}
+              className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
+              aria-label={t('tooltips.delete')}
+            >
+              <Trash2 className="w-4 h-4" />
+              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('delete')}</span>}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('tooltips.delete')}</TooltipContent>
+        </Tooltip>
+        {/* Move to folder */}
+        {moveTree.length > 0 && onMoveToMailbox && (
+          <div ref={moveMenuRef} data-overflow-item data-overflow-priority="5" className="relative">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => { setMoveMenuOpen(!moveMenuOpen); setMoreMenuOpen(false); setTagMenuOpen(false); }}
+                  className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
+                  aria-label={t('move_to')}
+                >
+                  <FolderInput className="w-4 h-4" />
+                  {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('move')}</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('move_to')}</TooltipContent>
+            </Tooltip>
             {moveMenuOpen && (
               <div className="absolute end-0 top-full mt-1 py-1 w-48 max-h-72 overflow-y-auto bg-background rounded-lg shadow-lg border border-border z-10">
                 {(() => {
@@ -2918,13 +2996,15 @@ export function EmailViewer({
         <div data-overflow-item data-overflow-priority="6" className="hidden sm:flex items-center">
         <div className="w-px h-5 bg-border mx-0.5" />
         <div ref={tagMenuRef} className="relative">
+          <Tooltip>
+            <TooltipTrigger asChild>
           <button
             onClick={() => { setTagMenuOpen(!tagMenuOpen); setMoreMenuOpen(false); setMoveMenuOpen(false); }}
             className={cn(
               "h-8 rounded hover:bg-muted flex items-center gap-1.5 px-2",
               currentColors.length > 0 && "bg-muted/50"
             )}
-            title={t('set_color')}
+            aria-label={t('set_color')}
           >
             {currentColors.length > 0 ? (
               <>
@@ -2947,6 +3027,9 @@ export function EmailViewer({
               </>
             )}
           </button>
+            </TooltipTrigger>
+            <TooltipContent>{t('set_color')}</TooltipContent>
+          </Tooltip>
           {tagMenuOpen && (
             <div className="absolute end-0 top-full mt-1 py-1 w-40 bg-background rounded-lg shadow-lg border border-border z-10">
               {colorOptions.map((option) => {
@@ -2985,95 +3068,125 @@ export function EmailViewer({
 
         {/* Spam */}
         {spamApplicable && (onMarkAsSpam || onUndoSpam) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={isInJunkFolder ? onUndoSpam : onMarkAsSpam}
-            data-overflow-item
-            data-overflow-priority="7"
-            className={cn(
-              "flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0",
-              isInJunkFolder ? "hover:bg-green-50 dark:hover:bg-green-950/30" : "hover:bg-red-50 dark:hover:bg-red-950/30"
-            )}
-            title={isInJunkFolder ? t('spam.not_spam_title') : t('spam.button_title')}
-          >
-            {isInJunkFolder ? (
-              <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-400" />
-            ) : (
-              <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
-            )}
-            {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isInJunkFolder ? t('not_spam_short') : t('spam_short')}</span>}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={isInJunkFolder ? onUndoSpam : onMarkAsSpam}
+                data-overflow-item
+                data-overflow-priority="7"
+                className={cn(
+                  "flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0",
+                  isInJunkFolder ? "hover:bg-green-50 dark:hover:bg-green-950/30" : "hover:bg-red-50 dark:hover:bg-red-950/30"
+                )}
+                aria-label={isInJunkFolder ? t('spam.not_spam_title') : t('spam.button_title')}
+              >
+                {isInJunkFolder ? (
+                  <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-400" />
+                ) : (
+                  <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
+                )}
+                {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isInJunkFolder ? t('not_spam_short') : t('spam_short')}</span>}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{isInJunkFolder ? t('spam.not_spam_title') : t('spam.button_title')}</TooltipContent>
+          </Tooltip>
         )}
 
         {/* Toggle read state */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onMarkAsRead?.(email.id, isUnread)}
-          data-overflow-item
-          data-overflow-priority="8"
-          className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-          title={isUnread ? t('mark_read') : t('mark_unread')}
-        >
-          {isUnread ? <MailOpen className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
-          {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isUnread ? t('read') : t('unread')}</span>}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onMarkAsRead?.(email.id, isUnread)}
+              data-overflow-item
+              data-overflow-priority="8"
+              className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
+              aria-label={isUnread ? t('mark_read') : t('mark_unread')}
+            >
+              {isUnread ? <MailOpen className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
+              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isUnread ? t('read') : t('unread')}</span>}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{isUnread ? t('mark_read') : t('mark_unread')}</TooltipContent>
+        </Tooltip>
 
         {/* Print - hidden on mobile, overflows to More menu */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handlePrint}
-          data-overflow-item
-          data-overflow-priority="9"
-          className="hidden sm:inline-flex h-8 gap-1.5"
-          title={t('print')}
-        >
-          <Printer className="w-4 h-4" />
-          {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('print')}</span>}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handlePrint}
+              data-overflow-item
+              data-overflow-priority="9"
+              className="hidden sm:inline-flex h-8 gap-1.5"
+              aria-label={t('print')}
+            >
+              <Printer className="w-4 h-4" />
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('print')}</span>}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('print')}</TooltipContent>
+        </Tooltip>
 
         {/* View source - hidden on mobile, overflows to More menu */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setShowSourceModal(true)}
-          data-overflow-item
-          data-overflow-priority="10"
-          className="hidden sm:inline-flex h-8 gap-1.5"
-          title={t('view_source')}
-        >
-          <Code className="w-4 h-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSourceModal(true)}
+              data-overflow-item
+              data-overflow-priority="10"
+              className="hidden sm:inline-flex h-8 gap-1.5"
+              aria-label={t('view_source')}
+            >
+              <Code className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('view_source')}</TooltipContent>
+        </Tooltip>
 
         {/* Dark/light mode toggle for HTML emails */}
         {effectiveEmailContent.isHtml && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setEmailViewDarkOverride(prev => prev === null ? !(resolvedTheme === 'dark') : !prev)}
-          data-overflow-item
-          data-overflow-priority="11"
-          className="hidden sm:inline-flex h-8 gap-1.5"
-          title={isDark ? 'View in light mode' : 'View in dark mode'}
-        >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEmailViewDarkOverride(prev => prev === null ? !(resolvedTheme === 'dark') : !prev)}
+              data-overflow-item
+              data-overflow-priority="11"
+              className="hidden sm:inline-flex h-8 gap-1.5"
+              aria-label={isDark ? 'View in light mode' : 'View in dark mode'}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{isDark ? 'View in light mode' : 'View in dark mode'}</TooltipContent>
+        </Tooltip>
         )}
 
         {/* More menu - click-based */}
         <div ref={moreMenuRef} className="relative">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:w-8 sm:gap-0 sm:py-0 sm:px-0"
-            title={t('more_actions')}
-            onClick={() => { setMoreMenuOpen(!moreMenuOpen); setMoreMenuSub(null); setTagMenuOpen(false); setMoveMenuOpen(false); }}
-          >
-            <MoreVertical className="w-4 h-4 text-muted-foreground" />
-            <span className="text-[10px] leading-tight sm:hidden">{t('more_actions')}</span>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:w-8 sm:gap-0 sm:py-0 sm:px-0"
+                aria-label={t('more_actions')}
+                onClick={() => { setMoreMenuOpen(!moreMenuOpen); setMoreMenuSub(null); setTagMenuOpen(false); setMoveMenuOpen(false); }}
+              >
+                <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                <span className="text-[10px] leading-tight sm:hidden">{t('more_actions')}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('more_actions')}</TooltipContent>
+          </Tooltip>
           {moreMenuOpen && !isMobile && (
             <div className="absolute end-0 top-full mt-1 w-48 bg-background rounded-md shadow-lg border border-border z-10 py-1">
               {/* Star toggle */}
@@ -3300,6 +3413,7 @@ export function EmailViewer({
   );
 
   return (
+    <TooltipProvider delayDuration={300}>
     <div
       data-tour="email-viewer"
       className={cn("flex-1 flex flex-row h-full bg-background overflow-hidden relative", className)}
@@ -3520,16 +3634,21 @@ export function EmailViewer({
                 </h1>
                 {/* Star inline with subject (top toolbar mode) */}
                 {toolbarPosition === 'top' && (
-                  <button
-                    onClick={onToggleStar}
-                    className="flex-shrink-0 p-1 rounded hover:bg-muted transition-colors"
-                    title={isStarred ? t('tooltips.unstar') : t('tooltips.star')}
-                  >
-                    <Star className={cn(
-                      "w-4 h-4 lg:w-5 lg:h-5 transition-colors",
-                      isStarred ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/40"
-                    )} />
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={onToggleStar}
+                        className="flex-shrink-0 p-1 rounded hover:bg-muted transition-colors"
+                        aria-label={isStarred ? t('tooltips.unstar') : t('tooltips.star')}
+                      >
+                        <Star className={cn(
+                          "w-4 h-4 lg:w-5 lg:h-5 transition-colors",
+                          isStarred ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/40"
+                        )} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>{isStarred ? t('tooltips.unstar') : t('tooltips.star')}</TooltipContent>
+                  </Tooltip>
                 )}
                 {/* Color tag dots */}
                 {currentColors.length > 0 && (
@@ -3701,6 +3820,8 @@ export function EmailViewer({
                     return (
                       <DraggableAttachmentChip key={attachment.id} attachment={attachment} client={client} enabled={dragOutActive} downloadName={resolveAttachmentName(attachment)}>
                         {(dragProps) => (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
                       <div
                         className={cn(
                           "bg-muted/60 hover:bg-muted rounded-md border border-border/50 group relative cursor-pointer overflow-hidden",
@@ -3708,7 +3829,7 @@ export function EmailViewer({
                             ? "inline-flex flex-col w-40"
                             : "inline-flex items-center gap-1.5 px-2 py-1",
                         )}
-                        title={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                        aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                         onClick={() => handleEffectiveAttachmentOpen(attachment)}
                         draggable={dragProps.draggable}
                         onPointerEnter={dragProps.onPointerEnter}
@@ -3739,24 +3860,37 @@ export function EmailViewer({
                           "absolute bg-background/95 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 px-1.5 rounded-md",
                           thumbUrl ? "top-1 right-1" : "inset-y-0 right-0 rounded-l-none rounded-r-md",
                         )}>
-                          <button
-                            className="p-1 hover:bg-accent rounded transition-colors"
-                            title={t('download')}
-                            onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
-                          >
-                            <Download className="w-3.5 h-3.5 text-foreground" />
-                          </button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                className="p-1 hover:bg-accent rounded transition-colors"
+                                aria-label={t('download')}
+                                onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
+                              >
+                                <Download className="w-3.5 h-3.5 text-foreground" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t('download')}</TooltipContent>
+                          </Tooltip>
                           {opensPreview && (
-                            <button
-                              className="p-1 hover:bg-accent rounded transition-colors"
-                              title={tFiles('preview')}
-                              onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
-                            >
-                              <Eye className="w-3.5 h-3.5 text-foreground" />
-                            </button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  className="p-1 hover:bg-accent rounded transition-colors"
+                                  aria-label={tFiles('preview')}
+                                  onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
+                                >
+                                  <Eye className="w-3.5 h-3.5 text-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>{tFiles('preview')}</TooltipContent>
+                            </Tooltip>
                           )}
                         </div>
                       </div>
+                        </TooltipTrigger>
+                        <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                      </Tooltip>
                         )}
                       </DraggableAttachmentChip>
                     );
@@ -3782,9 +3916,11 @@ export function EmailViewer({
                           return (
                             <DraggableAttachmentChip key={attachment.id} attachment={attachment} client={client} enabled={dragOutActive} downloadName={resolveAttachmentName(attachment)}>
                               {(dragProps) => (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
                             <div
                               className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-muted/60 group relative cursor-pointer w-full"
-                              title={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                              aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                               onClick={() => { handleEffectiveAttachmentOpen(attachment); setShowAllBesideAttachments(false); }}
                               draggable={dragProps.draggable}
                               onPointerEnter={dragProps.onPointerEnter}
@@ -3799,24 +3935,37 @@ export function EmailViewer({
                                 {formatFileSize(attachment.size)}
                               </span>
                               <div className="absolute inset-y-0 right-0 rounded-r-md bg-background/95 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 px-1.5">
-                                <button
-                                  className="p-1 hover:bg-accent rounded transition-colors"
-                                  title={t('download')}
-                                  onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllBesideAttachments(false); }}
-                                >
-                                  <Download className="w-3.5 h-3.5 text-foreground" />
-                                </button>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      className="p-1 hover:bg-accent rounded transition-colors"
+                                      aria-label={t('download')}
+                                      onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllBesideAttachments(false); }}
+                                    >
+                                      <Download className="w-3.5 h-3.5 text-foreground" />
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>{t('download')}</TooltipContent>
+                                </Tooltip>
                                 {opensPreview && (
-                                  <button
-                                    className="p-1 hover:bg-accent rounded transition-colors"
-                                    title={tFiles('preview')}
-                                    onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllBesideAttachments(false); }}
-                                  >
-                                    <Eye className="w-3.5 h-3.5 text-foreground" />
-                                  </button>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button
+                                        className="p-1 hover:bg-accent rounded transition-colors"
+                                        aria-label={tFiles('preview')}
+                                        onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllBesideAttachments(false); }}
+                                      >
+                                        <Eye className="w-3.5 h-3.5 text-foreground" />
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>{tFiles('preview')}</TooltipContent>
+                                  </Tooltip>
                                 )}
                               </div>
                             </div>
+                              </TooltipTrigger>
+                              <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                            </Tooltip>
                               )}
                             </DraggableAttachmentChip>
                           );
@@ -4475,6 +4624,8 @@ export function EmailViewer({
               return (
                 <DraggableAttachmentChip key={attachment.id} attachment={attachment} client={client} enabled={dragOutActive} downloadName={resolveAttachmentName(attachment)}>
                   {(dragProps) => (
+                <Tooltip>
+                  <TooltipTrigger asChild>
                 <div
                   className={cn(
                     "bg-muted/60 hover:bg-muted rounded-md border border-border/50 group relative cursor-pointer flex-shrink-0 overflow-hidden",
@@ -4482,7 +4633,7 @@ export function EmailViewer({
                       ? "inline-flex flex-col w-44"
                       : "inline-flex items-center gap-1.5 px-2.5 py-1.5",
                   )}
-                  title={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                  aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                   onClick={() => handleEffectiveAttachmentOpen(attachment)}
                   draggable={dragProps.draggable}
                   onPointerEnter={dragProps.onPointerEnter}
@@ -4518,24 +4669,37 @@ export function EmailViewer({
                     "absolute rounded-md bg-background/95 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 px-1.5",
                     thumbUrl ? "top-1 right-1" : "inset-y-0 right-0 rounded-r-md rounded-l-none",
                   )}>
-                    <button
-                      className="p-1 hover:bg-accent rounded transition-colors"
-                      title={t('download')}
-                      onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
-                    >
-                      <Download className="w-4 h-4 text-foreground" />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="p-1 hover:bg-accent rounded transition-colors"
+                          aria-label={t('download')}
+                          onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
+                        >
+                          <Download className="w-4 h-4 text-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t('download')}</TooltipContent>
+                    </Tooltip>
                     {opensPreview && (
-                      <button
-                        className="p-1 hover:bg-accent rounded transition-colors"
-                        title={tFiles('preview')}
-                        onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
-                      >
-                        <Eye className="w-4 h-4 text-foreground" />
-                      </button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className="p-1 hover:bg-accent rounded transition-colors"
+                            aria-label={tFiles('preview')}
+                            onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
+                          >
+                            <Eye className="w-4 h-4 text-foreground" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>{tFiles('preview')}</TooltipContent>
+                      </Tooltip>
                     )}
                   </div>
                 </div>
+                  </TooltipTrigger>
+                  <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                </Tooltip>
                   )}
                 </DraggableAttachmentChip>
               );
@@ -4561,9 +4725,11 @@ export function EmailViewer({
                     return (
                       <DraggableAttachmentChip key={attachment.id} attachment={attachment} client={client} enabled={dragOutActive} downloadName={resolveAttachmentName(attachment)}>
                         {(dragProps) => (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
                       <div
                         className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-muted/60 group relative cursor-pointer w-full"
-                        title={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                        aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                         onClick={() => { handleEffectiveAttachmentOpen(attachment); setShowAllBelowHeaderAttachments(false); }}
                         draggable={dragProps.draggable}
                         onPointerEnter={dragProps.onPointerEnter}
@@ -4578,24 +4744,37 @@ export function EmailViewer({
                           {formatFileSize(attachment.size)}
                         </span>
                         <div className="absolute inset-y-0 right-0 rounded-r-md bg-background/95 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 px-1.5">
-                          <button
-                            className="p-1 hover:bg-accent rounded transition-colors"
-                            title={t('download')}
-                            onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllBelowHeaderAttachments(false); }}
-                          >
-                            <Download className="w-4 h-4 text-foreground" />
-                          </button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                className="p-1 hover:bg-accent rounded transition-colors"
+                                aria-label={t('download')}
+                                onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllBelowHeaderAttachments(false); }}
+                              >
+                                <Download className="w-4 h-4 text-foreground" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t('download')}</TooltipContent>
+                          </Tooltip>
                           {opensPreview && (
-                            <button
-                              className="p-1 hover:bg-accent rounded transition-colors"
-                              title={tFiles('preview')}
-                              onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllBelowHeaderAttachments(false); }}
-                            >
-                              <Eye className="w-4 h-4 text-foreground" />
-                            </button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  className="p-1 hover:bg-accent rounded transition-colors"
+                                  aria-label={tFiles('preview')}
+                                  onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllBelowHeaderAttachments(false); }}
+                                >
+                                  <Eye className="w-4 h-4 text-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>{tFiles('preview')}</TooltipContent>
+                            </Tooltip>
                           )}
                         </div>
                       </div>
+                        </TooltipTrigger>
+                        <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                      </Tooltip>
                         )}
                       </DraggableAttachmentChip>
                     );
@@ -4619,6 +4798,8 @@ export function EmailViewer({
                 return (
                   <DraggableAttachmentChip key={attachment.id} attachment={attachment} client={client} enabled={dragOutActive} downloadName={resolveAttachmentName(attachment)}>
                     {(dragProps) => (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
                   <div
                     className={cn(
                       "bg-muted/60 hover:bg-muted rounded-md border border-border/50 group relative cursor-pointer overflow-hidden",
@@ -4626,7 +4807,7 @@ export function EmailViewer({
                         ? "inline-flex flex-col w-44"
                         : "inline-flex items-center gap-1.5 px-2.5 py-1.5",
                     )}
-                    title={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                    aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                     onClick={() => handleEffectiveAttachmentOpen(attachment)}
                     draggable={dragProps.draggable}
                     onPointerEnter={dragProps.onPointerEnter}
@@ -4657,24 +4838,37 @@ export function EmailViewer({
                       "absolute bg-background/95 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 px-1.5 rounded-md",
                       thumbUrl ? "top-1 right-1" : "inset-y-0 right-0 rounded-l-none rounded-r-md",
                     )}>
-                      <button
-                        className="p-1 hover:bg-accent rounded transition-colors"
-                        title={t('download')}
-                        onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
-                      >
-                        <Download className="w-4 h-4 text-foreground" />
-                      </button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className="p-1 hover:bg-accent rounded transition-colors"
+                            aria-label={t('download')}
+                            onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
+                          >
+                            <Download className="w-4 h-4 text-foreground" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('download')}</TooltipContent>
+                      </Tooltip>
                       {opensPreview && (
-                        <button
-                          className="p-1 hover:bg-accent rounded transition-colors"
-                          title={tFiles('preview')}
-                          onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
-                        >
-                          <Eye className="w-4 h-4 text-foreground" />
-                        </button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className="p-1 hover:bg-accent rounded transition-colors"
+                              aria-label={tFiles('preview')}
+                              onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
+                            >
+                              <Eye className="w-4 h-4 text-foreground" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>{tFiles('preview')}</TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                   </div>
+                    </TooltipTrigger>
+                    <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                  </Tooltip>
                     )}
                   </DraggableAttachmentChip>
                 );
@@ -4699,9 +4893,11 @@ export function EmailViewer({
                       return (
                         <DraggableAttachmentChip key={attachment.id} attachment={attachment} client={client} enabled={dragOutActive} downloadName={resolveAttachmentName(attachment)}>
                           {(dragProps) => (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
                         <div
                           className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-muted/60 group relative cursor-pointer w-full"
-                          title={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                          aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                           onClick={() => { handleEffectiveAttachmentOpen(attachment); setShowAllMobileAttachments(false); }}
                           draggable={dragProps.draggable}
                           onPointerEnter={dragProps.onPointerEnter}
@@ -4716,24 +4912,37 @@ export function EmailViewer({
                             {formatFileSize(attachment.size)}
                           </span>
                           <div className="absolute inset-y-0 right-0 rounded-r-md bg-background/95 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 px-1.5">
-                            <button
-                              className="p-1 hover:bg-accent rounded transition-colors"
-                              title={t('download')}
-                              onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllMobileAttachments(false); }}
-                            >
-                              <Download className="w-3.5 h-3.5 text-foreground" />
-                            </button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  className="p-1 hover:bg-accent rounded transition-colors"
+                                  aria-label={t('download')}
+                                  onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllMobileAttachments(false); }}
+                                >
+                                  <Download className="w-3.5 h-3.5 text-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>{t('download')}</TooltipContent>
+                            </Tooltip>
                             {opensPreview && (
-                              <button
-                                className="p-1 hover:bg-accent rounded transition-colors"
-                                title={tFiles('preview')}
-                                onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllMobileAttachments(false); }}
-                              >
-                                <Eye className="w-3.5 h-3.5 text-foreground" />
-                              </button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    className="p-1 hover:bg-accent rounded transition-colors"
+                                    aria-label={tFiles('preview')}
+                                    onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllMobileAttachments(false); }}
+                                  >
+                                    <Eye className="w-3.5 h-3.5 text-foreground" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>{tFiles('preview')}</TooltipContent>
+                              </Tooltip>
                             )}
                           </div>
                         </div>
+                          </TooltipTrigger>
+                          <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                        </Tooltip>
                           )}
                         </DraggableAttachmentChip>
                       );
@@ -4919,7 +5128,7 @@ export function EmailViewer({
             </DialogHeader>
 
             {/* Modal Content */}
-            <div className="flex-1 overflow-auto p-4 bg-muted/30">
+            <div className="flex-1 overflow-auto p-4 bg-muted/30" tabIndex={0} aria-label={t('view_source')}>
               <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-words bg-background border border-border rounded-lg p-4">
                 {generateEmailSource(email)}
               </pre>
@@ -5084,5 +5293,6 @@ export function EmailViewer({
     )}
 
     </div>
+    </TooltipProvider>
   );
 }

@@ -48,8 +48,6 @@
         "components/error/error-fallbacks.tsx": 7,
         "components/files/file-browser.tsx": 21,
         "components/files/file-preview-modal.tsx": 2,
-        "components/identity/identity-form.tsx": 2,
-        "components/identity/identity-manager-modal.tsx": 3,
         "components/layout/account-switcher.tsx": 3,
         "components/layout/navigation-rail.tsx": 6,
         "components/layout/sidebar-apps-modal.tsx": 8,
@@ -71,7 +69,6 @@
         "components/templates/template-form.tsx": 5,
         "components/templates/template-manager-modal.tsx": 5,
         "components/templates/template-picker.tsx": 2,
-        "components/totp-reauth-dialog.tsx": 2,
         "components/ui/toast.tsx": 2
       }
     },
@@ -132,9 +129,6 @@
         "components/files/folder-tree-sidebar.tsx": 1,
         "components/filters/filter-rule-modal.tsx": 3,
         "components/filters/sieve-editor-modal.tsx": 1,
-        "components/identity/identity-form.tsx": 1,
-        "components/identity/identity-manager-modal.tsx": 2,
-        "components/keyboard-shortcuts-modal.tsx": 2,
         "components/layout/icon-picker.tsx": 1,
         "components/layout/navigation-rail.tsx": 1,
         "components/layout/sidebar-apps-modal.tsx": 2,
@@ -166,8 +160,7 @@
         "components/templates/template-form.tsx": 1,
         "components/templates/template-manager-modal.tsx": 1,
         "components/templates/template-picker.tsx": 2,
-        "components/totp-reauth-dialog.tsx": 1,
-        "components/trusted-senders-modal.tsx": 1,
+        "components/ui/avatar.tsx": 1,
         "components/ui/welcome-banner.tsx": 2
       }
     }

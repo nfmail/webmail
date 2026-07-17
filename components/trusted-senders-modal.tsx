@@ -4,6 +4,12 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { X, ShieldCheck, Search, Trash2, Plus, Loader2 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useContactStore } from "@/stores/contact-store";
 import { useAuthStore } from "@/stores/auth-store";
@@ -16,7 +22,6 @@ interface TrustedSendersModalProps {
 
 export function TrustedSendersModal({ isOpen, onClose }: TrustedSendersModalProps) {
   const t = useTranslations("settings.email_behavior.trusted_senders");
-  const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { trustedSenders, addTrustedSender, removeTrustedSender, trustedSendersAddressBook } = useSettingsStore();
@@ -56,40 +61,6 @@ export function TrustedSendersModal({ isOpen, onClose }: TrustedSendersModalProp
 
   // Show search only when 5+ senders
   const showSearch = activeSenders.length >= 5;
-
-  // Close on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (isAdding) {
-          setIsAdding(false);
-          setNewEmail("");
-          setEmailError("");
-        } else {
-          onClose();
-        }
-      }
-    };
-
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [isOpen, isAdding, onClose]);
-
-  // Close on click outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [isOpen, onClose]);
 
   // Focus input when adding mode is enabled
   useEffect(() => {
@@ -162,36 +133,42 @@ export function TrustedSendersModal({ isOpen, onClose }: TrustedSendersModalProp
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="trusted-senders-title"
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent
+        aria-describedby={undefined}
+        showCloseButton={false}
+        onEscapeKeyDown={(e) => {
+          // While the inline add row is open, Escape backs out of add mode
+          // instead of dismissing the whole dialog.
+          if (isAdding) {
+            e.preventDefault();
+            setIsAdding(false);
+            setNewEmail("");
+            setEmailError("");
+          }
+        }}
         className={cn(
-          "bg-background border border-border rounded-lg shadow-xl",
-          "w-full max-w-md max-h-[60vh] overflow-hidden flex flex-col",
-          "animate-in zoom-in-95 duration-200"
+          "max-w-md max-h-[60vh] gap-0 overflow-hidden p-0",
+          "flex flex-col"
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-primary" />
-            <h2 id="trusted-senders-title" className="text-lg font-semibold text-foreground">
+            <DialogTitle className="text-lg font-semibold text-foreground">
               {t("modal_title")}
-            </h2>
+            </DialogTitle>
           </div>
-          <button
-            onClick={onClose}
-            aria-label={t("close")}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <DialogClose asChild>
+            <button
+              aria-label={t("close")}
+              className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </DialogClose>
         </div>
 
         {/* Search (only when 5+ senders) */}
@@ -271,7 +248,7 @@ export function TrustedSendersModal({ isOpen, onClose }: TrustedSendersModalProp
         {!isLoading && activeSenders.length > 0 && (
           <div className="px-6 py-4 border-t border-border flex-shrink-0">
             {isAdding ? (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <div className="flex gap-2">
                   <input
                     ref={inputRef}
@@ -311,7 +288,7 @@ export function TrustedSendersModal({ isOpen, onClose }: TrustedSendersModalProp
             )}
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,10 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { useTotpReauthStore } from "@/stores/totp-reauth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Shield } from "lucide-react";
 
 /**
@@ -19,20 +25,13 @@ export function TotpReauthDialog() {
   const [code, setCode] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const dialogRef = useFocusTrap({
-    isActive: isOpen,
-    onEscape: cancel,
-    restoreFocus: true,
-  });
-
+  // Clear any previously entered code whenever the dialog is (re)opened so a
+  // stale value never lingers in the field.
   useEffect(() => {
     if (isOpen) {
       setCode("");
-      setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,35 +41,40 @@ export function TotpReauthDialog() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={cancel} />
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Two-factor authentication required"
-        className="relative z-10 w-full max-w-sm mx-4 bg-background rounded-2xl shadow-xl border border-border p-6"
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) cancel(); }}>
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-sm gap-0"
+        onOpenAutoFocus={(e) => {
+          // Focus the code field directly instead of Radix's default target.
+          e.preventDefault();
+          inputRef.current?.focus();
+        }}
       >
-        <div className="flex items-center gap-3 mb-4">
+        <DialogHeader className="flex-row items-center gap-3 text-left">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
             <Shield className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Session Expired</h2>
-            <p className="text-sm text-muted-foreground">Your 2FA code has rotated</p>
+            <DialogTitle className="text-lg font-semibold text-foreground">
+              Session Expired
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Your 2FA code has rotated
+            </DialogDescription>
           </div>
-        </div>
+        </DialogHeader>
 
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-sm text-muted-foreground mt-4 mb-4">
           Enter a fresh authentication code from your authenticator app to continue.
         </p>
 
-        <p className="text-xs text-amber-600 dark:text-amber-400 mb-4 leading-relaxed">
+        <p className="text-xs text-warning mb-4 leading-relaxed">
           To avoid being prompted repeatedly, ask your administrator to enable OAuth authentication
           (either Stalwart&apos;s built-in OAuth or an external identity provider).
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
             ref={inputRef}
             type="text"
@@ -101,7 +105,7 @@ export function TotpReauthDialog() {
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

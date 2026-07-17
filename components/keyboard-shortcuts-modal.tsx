@@ -1,11 +1,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { X, Keyboard } from "lucide-react";
+import { Keyboard } from "lucide-react";
 import { KEYBOARD_SHORTCUTS } from "@/hooks/use-keyboard-shortcuts";
 import { cn } from "@/lib/utils";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { useTour } from "@/components/tour/tour-provider";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface KeyboardShortcutsModalProps {
   isOpen: boolean;
@@ -16,45 +20,18 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
   const t = useTranslations();
   const { startTour } = useTour();
 
-  const modalRef = useFocusTrap({
-    isActive: isOpen,
-    onEscape: onClose,
-    restoreFocus: true,
-  });
-
-  if (!isOpen) return null;
-
   return (
-    <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-50 p-4 animate-in fade-in duration-150"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="shortcuts-dialog-title"
-        className={cn(
-          "bg-background border border-border rounded-lg shadow-xl",
-          "w-full max-w-2xl max-h-[90vh] overflow-hidden",
-          "animate-in zoom-in-95 duration-200"
-        )}
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-2xl max-h-[90vh] gap-0 overflow-hidden p-0"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <div className="flex items-center gap-3">
-            <Keyboard className="w-5 h-5 text-muted-foreground" />
-            <h2 id="shortcuts-dialog-title" className="text-lg font-semibold text-foreground">
-              {t("shortcuts.title")}
-            </h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
-            aria-label={t("common.close")}
-          >
-            <X className="w-5 h-5" />
-          </button>
+        <div className="flex items-center gap-3 border-b border-border px-6 py-4">
+          <Keyboard className="w-5 h-5 text-muted-foreground" />
+          <DialogTitle className="text-lg font-semibold text-foreground">
+            {t("shortcuts.title")}
+          </DialogTitle>
         </div>
 
         {/* Content */}
@@ -65,7 +42,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
                 {t("shortcuts.sections.navigation")}
               </h3>
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {KEYBOARD_SHORTCUTS.navigation.map((shortcut) => (
                   <ShortcutRow
                     key={shortcut.key}
@@ -81,7 +58,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
                 {t("shortcuts.sections.actions")}
               </h3>
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {KEYBOARD_SHORTCUTS.actions.map((shortcut) => (
                   <ShortcutRow
                     key={shortcut.key}
@@ -156,8 +133,8 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
             </p>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

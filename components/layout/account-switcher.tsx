@@ -259,7 +259,7 @@ export function AccountSwitcher({ variant = "rail", className }: AccountSwitcher
                 {isDraggable && (
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 text-muted-foreground/50 opacity-0 transition-opacity group-hover/acct:opacity-100"
+                    className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 text-muted-foreground opacity-0 transition-opacity group-hover/acct:opacity-100"
                   >
                     <GripVertical className="w-4 h-4" />
                   </span>

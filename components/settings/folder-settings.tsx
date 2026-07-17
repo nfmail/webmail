@@ -503,7 +503,7 @@ export function FolderSettings() {
         <div className="flex flex-col gap-0.5">
           {folderTree.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Folder className="w-10 h-10 text-muted-foreground/40 mb-3" />
+              <Folder className="w-10 h-10 text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground">{t('no_folders')}</p>
             </div>
           ) : (

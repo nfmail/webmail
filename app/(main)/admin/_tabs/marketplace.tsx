@@ -193,7 +193,7 @@ export function MarketplaceTab() {
 
       {error && (
         <div className="border border-border rounded-lg p-12 text-center">
-          <Store className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+          <Store className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">{error}</p>
           <p className="text-xs text-muted-foreground mt-1">
             Start the extension directory server on the configured port
@@ -216,7 +216,7 @@ export function MarketplaceTab() {
 
       {!loading && !error && extensions.length === 0 && (
         <div className="border border-border rounded-lg p-12 text-center">
-          <Store className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+          <Store className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">No extensions found</p>
           {query && (
             <p className="text-xs text-muted-foreground mt-1">

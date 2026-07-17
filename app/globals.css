@@ -15,7 +15,7 @@
   --color-secondary: #f8fafc;
   --color-secondary-foreground: #0f172a;
   --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
+  --color-muted-foreground: #52606d;
   --color-accent: #dbeafe;
   --color-accent-foreground: #1e40af;
   --color-destructive: #dc2626;
@@ -93,6 +93,13 @@
      (blue→#2563eb, red→#dc2626, green→#15803d). Yellow/light-blue accents
      keep their hue and pair with a near-black foreground (#171717) instead,
      the standard accessible approach for high-luminance fills.
+     muted-foreground is verified against every tinted surface it can sit on,
+     not just the page background: light #52606d clears >=4.5:1 vs background
+     #fff (6.46), muted #f1f5f9 (5.89), secondary #f8fafc (6.17), accent
+     #dbeafe (5.29) and border #e2e8f0 (5.24); dark #b3b3b3 clears vs
+     background #0a0a0a (9.44), muted/secondary #262626 (7.22) and accent
+     #1e3a8a (4.94). The former #64748b / #a3a3a3 passed the plain background
+     but failed on the tinted accent surface (3.90 / 4.11).
      Exception: --color-chart-* are non-text data-viz fills governed by WCAG
      1.4.11 (3:1 non-text), not 1.4.3, so they are NOT held to 4.5:1 and are
      left at their designed palette values.
@@ -110,7 +117,7 @@
   --color-secondary: #262626;
   --color-secondary-foreground: #fafafa;
   --color-muted: #262626;
-  --color-muted-foreground: #a3a3a3;
+  --color-muted-foreground: #b3b3b3;
   --color-accent: #1e3a8a;
   --color-accent-foreground: #dbeafe;
   --color-destructive: #dc2626;
@@ -256,7 +263,7 @@ body {
   --color-background: #ffffff;
   --color-foreground: #0f172a;
   --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
+  --color-muted-foreground: #52606d;
   --color-border: #e2e8f0;
   --color-card: #ffffff;
   --color-card-foreground: #0f172a;

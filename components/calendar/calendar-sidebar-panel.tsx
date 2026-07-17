@@ -422,7 +422,7 @@ export function CalendarSidebarPanel({
                     <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                   )}
                   <User className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                  <span className="text-xs font-semibold text-foreground/90 truncate">
+                  <span className="text-xs font-semibold text-foreground truncate">
                     {group.label}
                   </span>
                   {isActive && onCreateCalendar && (
@@ -437,7 +437,7 @@ export function CalendarSidebarPanel({
                           onCreateCalendar();
                         }
                       }}
-                      className="ms-auto p-0.5 rounded text-muted-foreground/70 opacity-0 group-hover:opacity-100 hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                      className="ms-auto p-0.5 rounded text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                       title={tMgmt('add_calendar')}
                     >
                       <Plus className="w-3 h-3" />
@@ -448,7 +448,7 @@ export function CalendarSidebarPanel({
                   <div className="mt-1 ps-3">
                     {owned.length > 0 && (
                       <div>
-                        <div className="px-1 mb-1 text-[10px] font-medium text-muted-foreground/80 uppercase tracking-wider">
+                        <div className="px-1 mb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                           {t('my_calendars')}
                         </div>
                         <div className="space-y-0.5">
@@ -458,7 +458,7 @@ export function CalendarSidebarPanel({
                     )}
                     {sharedGroups.map((sg) => (
                       <div key={`${group.key}-shared-${sg.label}`} className="mt-2">
-                        <div className="px-1 mb-1 text-[10px] font-medium text-muted-foreground/80 uppercase tracking-wider flex items-center gap-1">
+                        <div className="px-1 mb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                           <Share2 className="w-3 h-3" />
                           {sg.label}
                         </div>

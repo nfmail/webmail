@@ -9,6 +9,7 @@ import { Users } from "lucide-react";
 import { getParticipantCount } from "@/lib/calendar-participants";
 import { getEventEndDate, getEventStartDate } from "@/lib/calendar-utils";
 import { useSettingsStore } from "@/stores/settings-store";
+import { pickForeground } from "@/lib/color-contrast";
 
 interface EventCardProps {
   event: CalendarEvent;
@@ -75,6 +76,11 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
   const t = useTranslations("calendar");
   const [isBeingDragged, setIsBeingDragged] = useState(false);
   const color = getEventColor(event, calendar);
+  // Event colors come from user/calendar data, so the previous "event color as
+  // text on a translucent tint of itself" rendered many hues below 4.5:1 and
+  // failed the axe color-contrast scan. Paint the card with the solid event
+  // color (theme-independent) and pick white or near-black text for legibility.
+  const foreground = pickForeground(color);
   const startDate = getEventStartDate(event);
   const timeFormat = useSettingsStore((state) => state.timeFormat);
   const showTimeInMonthView = useSettingsStore((state) => state.showTimeInMonthView);
@@ -142,11 +148,11 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
           isCancelled && !isBeingDragged && "opacity-60",
           className
         )}
-        style={{ backgroundColor: `${color}20`, color, ...style }}
+        style={{ backgroundColor: color, color: foreground, ...style }}
       >
         <span
           className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-          style={{ backgroundColor: color }}
+          style={{ backgroundColor: foreground }}
         />
         <span className={cn("truncate", isCancelled && "line-through")}>{event.title || t("events.no_title")}</span>
       </button>
@@ -172,11 +178,11 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
           isCancelled && !isBeingDragged && "opacity-60",
           className
         )}
-        style={{ backgroundColor: `${color}24`, borderLeft: `3px solid ${color}`, color, ...style }}
+        style={{ backgroundColor: color, borderLeft: `3px solid ${color}`, color: foreground, ...style }}
       >
         <div className="flex items-center gap-1 min-w-0">
           {showTimeInMonthView && !event.showWithoutTime && (
-            <span className="flex-shrink-0 opacity-80">{format(startDate, timeFmt)}</span>
+            <span className="flex-shrink-0">{format(startDate, timeFmt)}</span>
           )}
           <span className={cn("truncate font-medium", isCancelled && "line-through")}>{event.title || t("events.no_title")}</span>
         </div>
@@ -201,17 +207,17 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
         isCancelled && !isBeingDragged && "opacity-60",
         className
       )}
-      style={{ backgroundColor: `${color}30`, borderLeft: `3px solid ${color}`, color, ...style }}
+      style={{ backgroundColor: color, borderLeft: `3px solid ${color}`, color: foreground, ...style }}
     >
       <div className={cn("font-medium truncate", isCancelled && "line-through")}>{event.title || t("events.no_title")}</div>
       {!event.showWithoutTime && (
-        <div className="opacity-80 text-[10px]">
+        <div className="text-[10px]">
           {timeString}
         </div>
       )}
       {getParticipantCount(event) > 0 && (
         <div
-          className="flex items-center gap-0.5 opacity-70 text-[10px]"
+          className="flex items-center gap-0.5 text-[10px]"
           title={t("participants.count", { count: getParticipantCount(event) })}
         >
           <Users className="w-3 h-3" />

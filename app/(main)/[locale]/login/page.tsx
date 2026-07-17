@@ -64,7 +64,7 @@ function VersionBadge() {
         : "New version available";
 
   const triggerColor = !banner
-    ? "text-muted-foreground/40"
+    ? "text-muted-foreground"
     : isRed
       ? "text-red-600/80 dark:text-red-400/80 hover:text-red-600 dark:hover:text-red-400"
       : "text-amber-600/80 dark:text-amber-400/80 hover:text-amber-600 dark:hover:text-amber-400";
@@ -84,7 +84,7 @@ function VersionBadge() {
   );
 
   return (
-    <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/50">
+    <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
       <div className="relative inline-flex justify-center">
         {trigger}
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-3 py-2 rounded-md bg-popover text-popover-foreground text-xs shadow-md border border-border opacity-0 peer-hover:opacity-100 hover:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -808,24 +808,24 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="mt-6 flex flex-col items-center gap-2">
             {loginCompanyName && (
-              <p className="text-center text-xs text-muted-foreground/60 font-medium">
+              <p className="text-center text-xs text-muted-foreground font-medium">
                 {loginCompanyName}
               </p>
             )}
             {(loginImprintUrl || loginPrivacyPolicyUrl || loginWebsiteUrl) && (
               <div className="flex items-center gap-3 flex-wrap justify-center">
                 {loginWebsiteUrl && (
-                  <a href={loginWebsiteUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                  <a href={loginWebsiteUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors">
                     {t("website")}
                   </a>
                 )}
                 {loginImprintUrl && (
-                  <a href={loginImprintUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                  <a href={loginImprintUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors">
                     {t("imprint")}
                   </a>
                 )}
                 {loginPrivacyPolicyUrl && (
-                  <a href={loginPrivacyPolicyUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                  <a href={loginPrivacyPolicyUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors">
                     {t("privacy_policy")}
                   </a>
                 )}
@@ -1332,7 +1332,7 @@ export default function LoginPage() {
         {/* Company name & links - below card */}
         <div className="mt-6 flex flex-col items-center gap-2">
           {loginCompanyName && (
-            <p className="text-center text-xs text-muted-foreground/60 font-medium">
+            <p className="text-center text-xs text-muted-foreground font-medium">
               {loginCompanyName}
             </p>
           )}
@@ -1343,7 +1343,7 @@ export default function LoginPage() {
                   href={loginWebsiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                  className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
                 >
                   {t("website")}
                 </a>
@@ -1353,7 +1353,7 @@ export default function LoginPage() {
                   href={loginImprintUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                  className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
                 >
                   {t("imprint")}
                 </a>
@@ -1363,7 +1363,7 @@ export default function LoginPage() {
                   href={loginPrivacyPolicyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                  className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
                 >
                   {t("privacy_policy")}
                 </a>

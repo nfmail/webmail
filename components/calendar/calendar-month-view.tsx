@@ -193,7 +193,7 @@ export function CalendarMonthView({
                         isMobile ? "w-7 h-7 text-xs" : "w-6 h-6 text-xs",
                         today && !selected && "bg-primary text-primary-foreground font-bold",
                         selected && "bg-primary text-primary-foreground font-bold",
-                        !inMonth && !selected && !today && "text-muted-foreground/50",
+                        !inMonth && !selected && !today && "text-muted-foreground",
                         inMonth && !selected && !today && "font-medium"
                       )}
                     >

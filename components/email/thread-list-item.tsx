@@ -249,14 +249,14 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                   )}
                   <span className={cn(
                     'w-32 shrink-0 truncate text-sm lg:w-40',
-                    isUnread ? 'font-semibold text-foreground' : 'font-medium text-foreground/80'
+                    isUnread ? 'font-semibold text-foreground' : 'font-medium text-foreground'
                   )}>
                     {sender?.name || sender?.email || 'Unknown'}
                   </span>
                   <div className="flex min-w-0 flex-1 items-center gap-2 text-sm">
                     <span className={cn(
                       'min-w-0 truncate',
-                      isUnread ? 'font-semibold text-foreground' : 'text-foreground/90'
+                      isUnread ? 'font-semibold text-foreground' : 'text-foreground'
                     )}>
                       {email.subject || '(no subject)'}
                     </span>
@@ -378,7 +378,7 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                   "mb-1 line-clamp-1 text-sm",
                   isUnread
                     ? "font-semibold text-foreground"
-                    : "font-normal text-foreground/90"
+                    : "font-normal text-foreground"
                 )}>
                   {email.subject || "(no subject)"}
                 </div>
@@ -388,7 +388,7 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                     "text-sm leading-relaxed line-clamp-2",
                     isUnread
                       ? "text-muted-foreground"
-                      : "text-muted-foreground/80"
+                      : "text-muted-foreground"
                   )}>
                     {trimmedPreview || t('no_preview_available')}
                   </p>
@@ -703,7 +703,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                     )}
                     <span className={cn(
                       'w-32 shrink-0 truncate text-sm lg:w-44',
-                      hasUnread ? 'font-semibold text-foreground' : 'font-medium text-foreground/80'
+                      hasUnread ? 'font-semibold text-foreground' : 'font-medium text-foreground'
                     )}>
                       {displayNames.join(', ')}
                     </span>
@@ -720,7 +720,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                     <div className="flex min-w-0 flex-1 items-center gap-2 text-sm">
                       <span className={cn(
                         'min-w-0 truncate',
-                        hasUnread ? 'font-semibold text-foreground' : 'text-foreground/90'
+                        hasUnread ? 'font-semibold text-foreground' : 'text-foreground'
                       )}>
                         {latestEmail.subject || '(no subject)'}
                       </span>
@@ -854,7 +854,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                     "mb-1 line-clamp-1 text-sm",
                     hasUnread
                       ? "font-semibold text-foreground"
-                      : "font-normal text-foreground/90"
+                      : "font-normal text-foreground"
                   )}>
                     {latestEmail.subject || "(no subject)"}
                   </div>
@@ -864,7 +864,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                       "text-sm leading-relaxed line-clamp-2",
                       hasUnread
                         ? "text-muted-foreground"
-                        : "text-muted-foreground/80"
+                        : "text-muted-foreground"
                     )}>
                       {trimmedPreview || tEmailViewer('no_preview_available')}
                     </p>

@@ -61,15 +61,15 @@ export function LanguageSettings() {
           <div className="flex flex-col gap-0.5 text-xs text-muted-foreground text-end font-mono">
             <div>
               <span className="opacity-70">{t('date_format.preview_today')} </span>
-              <span className="text-foreground/90">{preview.today}</span>
+              <span className="text-foreground">{preview.today}</span>
             </div>
             <div>
               <span className="opacity-70">{t('date_format.preview_this_week')} </span>
-              <span className="text-foreground/90">{preview.thisWeek}</span>
+              <span className="text-foreground">{preview.thisWeek}</span>
             </div>
             <div>
               <span className="opacity-70">{t('date_format.preview_older')} </span>
-              <span className="text-foreground/90">{preview.older}</span>
+              <span className="text-foreground">{preview.older}</span>
             </div>
           </div>
         </div>

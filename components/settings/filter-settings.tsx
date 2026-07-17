@@ -104,7 +104,7 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
           return (
             <span key={i} className="contents">
               {i > 0 && (
-                <span className="text-[10px] text-muted-foreground/70 italic">{joiner}</span>
+                <span className="text-[10px] text-muted-foreground italic">{joiner}</span>
               )}
               <span className="inline-flex items-baseline gap-1 px-1.5 py-px rounded-sm bg-muted/60 text-foreground">
                 <span className="font-medium text-primary">{field}</span>
@@ -115,7 +115,7 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
                       ? c.value.map((v, k) => (
                           <span key={k}>
                             {k > 0 && (
-                              <span className="text-muted-foreground/70 italic mx-0.5">
+                              <span className="text-muted-foreground italic mx-0.5">
                                 {t("or")}
                               </span>
                             )}
@@ -129,7 +129,7 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
             </span>
           );
         })}
-        <span className="text-[10px] text-muted-foreground/60 italic">({matchLabel})</span>
+        <span className="text-[10px] text-muted-foreground italic">({matchLabel})</span>
       </div>
 
       <div className="flex items-baseline gap-1.5 flex-wrap">
@@ -141,7 +141,7 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
           return (
             <span key={i} className="contents">
               {i > 0 && (
-                <span className="text-muted-foreground/50">›</span>
+                <span className="text-muted-foreground">›</span>
               )}
               <span className="inline-flex items-baseline gap-1 px-1.5 py-px rounded-sm bg-muted/60 text-foreground">
                 <span className="font-medium text-success">{action}</span>

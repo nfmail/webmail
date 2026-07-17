@@ -329,7 +329,7 @@ function AccountRow({
       )}
     >
       <div
-        className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground flex-shrink-0"
+        className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-muted-foreground flex-shrink-0"
         title={labels.dragHandle}
       >
         <GripVertical className="w-4 h-4" />

@@ -202,14 +202,14 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <span className={cn(
                   'w-32 shrink-0 truncate text-sm lg:w-40',
-                  isUnread ? 'font-semibold text-foreground' : 'font-medium text-foreground/80'
+                  isUnread ? 'font-semibold text-foreground' : 'font-medium text-foreground'
                 )}>
                   {sender?.name || sender?.email || 'Unknown'}
                 </span>
                 <div className="flex min-w-0 flex-1 items-center gap-2 text-sm">
                   <span className={cn(
                     'min-w-0 truncate',
-                    isUnread ? 'font-semibold text-foreground' : 'text-foreground/90'
+                    isUnread ? 'font-semibold text-foreground' : 'text-foreground'
                   )}>
                     {email.subject || t('no_subject')}
                   </span>
@@ -311,7 +311,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                 "mb-1 line-clamp-1 text-sm",
                 isUnread
                   ? "font-semibold text-foreground"
-                  : "font-normal text-foreground/90"
+                  : "font-normal text-foreground"
               )}>
                 {email.subject || t('no_subject')}
               </div>
@@ -322,7 +322,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                   "text-sm leading-relaxed line-clamp-2",
                   isUnread
                     ? "text-muted-foreground"
-                    : "text-muted-foreground/80"
+                    : "text-muted-foreground"
                 )}>
                   {trimmedPreview || t('no_preview_available')}
                 </p>

@@ -83,9 +83,9 @@ export function PluginsSettings() {
       {/* Plugin List */}
       {plugins.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Puzzle className="w-12 h-12 text-muted-foreground/30 mb-3" />
+          <Puzzle className="w-12 h-12 text-muted-foreground mb-3" />
           <p className="text-sm text-muted-foreground mb-1">No plugins available</p>
-          <p className="text-xs text-muted-foreground/70">Your administrator has not deployed any plugins</p>
+          <p className="text-xs text-muted-foreground">Your administrator has not deployed any plugins</p>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -167,8 +167,8 @@ function PluginCard({ plugin, isExpanded, isForceEnabled, isManaged, needsApprov
           </div>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-xs text-muted-foreground">{plugin.author}</span>
-            <span className="text-xs text-muted-foreground/50">v{plugin.version}</span>
-            <span className="text-xs text-muted-foreground/50">{plugin.type}</span>
+            <span className="text-xs text-muted-foreground">v{plugin.version}</span>
+            <span className="text-xs text-muted-foreground">{plugin.type}</span>
           </div>
         </div>
 

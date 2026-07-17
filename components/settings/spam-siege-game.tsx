@@ -293,7 +293,7 @@ export function SpamSiegeGame({ onClose }: { onClose: () => void }) {
               <Shield
                 className={cn(
                   "w-10 h-10",
-                  survived ? "text-success" : "text-muted-foreground/40"
+                  survived ? "text-success" : "text-muted-foreground"
                 )}
               />
               <div className="flex flex-col gap-1">

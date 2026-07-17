@@ -381,7 +381,7 @@ export function PluginsTab() {
         </div>
         {plugins.length === 0 ? (
           <div className="p-12 text-center">
-            <Package className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+            <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">No plugins installed</p>
             <p className="text-xs text-muted-foreground mt-1">Upload a plugin ZIP file to get started</p>
           </div>

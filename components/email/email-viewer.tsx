@@ -2723,7 +2723,7 @@ export function EmailViewer({
                 <PlayCircle className="w-4 h-4" />
                 {tWelcome('start_tour')}
               </button>
-              <p className="text-xs text-muted-foreground/60 mt-2">{tDemoWelcome('hint')}</p>
+              <p className="text-xs text-muted-foreground mt-2">{tDemoWelcome('hint')}</p>
             </div>
           </div>
         </div>
@@ -3643,7 +3643,7 @@ export function EmailViewer({
                       >
                         <Star className={cn(
                           "w-4 h-4 lg:w-5 lg:h-5 transition-colors",
-                          isStarred ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/40"
+                          isStarred ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"
                         )} />
                       </button>
                     </TooltipTrigger>
@@ -3675,7 +3675,7 @@ export function EmailViewer({
                 {formatDateTime(email.receivedAt, timeFormat, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
               </span>
               {email.size > 0 && (
-                <div className="text-xs text-muted-foreground/60">
+                <div className="text-xs text-muted-foreground">
                   {formatFileSize(email.size)}
                 </div>
               )}
@@ -3771,7 +3771,7 @@ export function EmailViewer({
                 )}
                 {email.cc && email.cc.length > 0 && (
                   <>
-                    <span className="text-muted-foreground/50">|</span>
+                    <span className="text-muted-foreground">|</span>
                     <span>CC:</span>
                     {renderClickableRecipients(email.cc, currentUserEmail, t, handleViewContactSidebar)}
                     {email.cc.length > 2 && (
@@ -3781,7 +3781,7 @@ export function EmailViewer({
                 )}
                 {email.bcc && email.bcc.length > 0 && (
                   <>
-                    <span className="text-muted-foreground/50">|</span>
+                    <span className="text-muted-foreground">|</span>
                     <span>{t('bcc')}:</span>
                     {renderClickableRecipients(email.bcc, currentUserEmail, t, handleViewContactSidebar)}
                     {email.bcc.length > 2 && (
@@ -4036,7 +4036,7 @@ export function EmailViewer({
                 )}
                 {email.cc && email.cc.length > 0 && (
                   <>
-                    <span className="text-muted-foreground/50">|</span>
+                    <span className="text-muted-foreground">|</span>
                     <span>CC:</span>
                     {renderClickableRecipients(email.cc, currentUserEmail, t, handleViewContactSidebar)}
                     {email.cc.length > 2 && (
@@ -4068,7 +4068,7 @@ export function EmailViewer({
                 {formatDateTime(email.receivedAt, timeFormat, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
               </span>
               {email.size > 0 && (
-                <div className="text-xs text-muted-foreground/60">
+                <div className="text-xs text-muted-foreground">
                   {formatFileSize(email.size)}
                 </div>
               )}
@@ -4154,7 +4154,7 @@ export function EmailViewer({
                 </span>
                 {extra && (
                   <>
-                    <span className="text-muted-foreground/50">·</span>
+                    <span className="text-muted-foreground">·</span>
                     <span className="text-muted-foreground">{extra}</span>
                   </>
                 )}
@@ -4300,7 +4300,7 @@ export function EmailViewer({
                           </span>
                           {email.spamStatus && (
                             <>
-                              <span className="text-muted-foreground/50">·</span>
+                              <span className="text-muted-foreground">·</span>
                               <span className="text-muted-foreground">{email.spamStatus}</span>
                             </>
                           )}
@@ -5147,7 +5147,7 @@ export function EmailViewer({
             disabled={!onNavigatePrev}
             className={cn(
               "flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] transition-colors duration-150",
-              onNavigatePrev ? "text-muted-foreground active:text-foreground" : "text-muted-foreground/30"
+              onNavigatePrev ? "text-muted-foreground active:text-foreground" : "text-muted-foreground"
             )}
             aria-label={t('tooltips.previous')}
           >
@@ -5195,7 +5195,7 @@ export function EmailViewer({
             disabled={!onNavigateNext}
             className={cn(
               "flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] transition-colors duration-150",
-              onNavigateNext ? "text-muted-foreground active:text-foreground" : "text-muted-foreground/30"
+              onNavigateNext ? "text-muted-foreground active:text-foreground" : "text-muted-foreground"
             )}
             aria-label={t('tooltips.next')}
           >

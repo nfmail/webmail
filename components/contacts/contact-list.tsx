@@ -528,9 +528,9 @@ export function ContactList({
             {searchQuery || activeFilters > 0 ? (
               <>
                 {activeFilters > 0 && !searchQuery ? (
-                  <Filter className="w-10 h-10 mb-3 text-muted-foreground/30" />
+                  <Filter className="w-10 h-10 mb-3 text-muted-foreground" />
                 ) : (
-                  <Search className="w-10 h-10 mb-3 text-muted-foreground/30" />
+                  <Search className="w-10 h-10 mb-3 text-muted-foreground" />
                 )}
                 <p className="text-sm font-medium text-foreground">
                   {searchQuery ? t("empty_search") : t("empty_filtered")}
@@ -554,7 +554,7 @@ export function ContactList({
               </>
             ) : (
               <>
-                <BookUser className="w-10 h-10 mb-3 text-muted-foreground/30" />
+                <BookUser className="w-10 h-10 mb-3 text-muted-foreground" />
                 <p className="text-sm font-medium text-foreground">{t("empty_state_title")}</p>
                 <p className="text-xs text-muted-foreground mt-1">{t("empty_state_subtitle")}</p>
                 <Button size="sm" className="mt-3" onClick={onCreateNew}>
@@ -598,7 +598,7 @@ export function ContactList({
               <div>
                 {groupedSections.map(({ letter, items }) => (
                   <section key={letter}>
-                    <div className="sticky top-0 z-10 px-4 py-0.5 bg-background/90 backdrop-blur-sm text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wide">
+                    <div className="sticky top-0 z-10 px-4 py-0.5 bg-background/90 backdrop-blur-sm text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
                       {letter}
                     </div>
                     {items.map(renderItem)}

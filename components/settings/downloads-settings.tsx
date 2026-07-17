@@ -124,7 +124,7 @@ function TemplateEditor({
         </div>
         <FieldDescription>
           <span className="opacity-70">{previewLabel} </span>
-          <span className="font-mono text-foreground/90 break-all">{preview}</span>
+          <span className="font-mono text-foreground break-all">{preview}</span>
         </FieldDescription>
       </Field>
     </div>

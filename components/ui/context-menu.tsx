@@ -73,11 +73,24 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
             sideOffset={0}
             onCloseAutoFocus={(e) => e.preventDefault()}
             className={cn(
-              "z-50 min-w-[200px] overflow-y-auto rounded-md border border-border bg-background py-1 shadow-lg",
-              "max-h-[min(calc(100vh-20px),320px)] focus:outline-none"
+              "z-50 min-w-[200px] overflow-hidden rounded-md border border-border bg-background py-1 shadow-lg",
+              "focus:outline-none"
             )}
           >
-            {children}
+            {/* The scrollable region lives on this inner wrapper (not the menu
+                content itself) so it can carry tabIndex={0}: Radix pins the
+                [role=menu] element at tabindex=-1 for its roving-focus model,
+                which trips axe's scrollable-region-focusable (Safari keyboard
+                access) rule. A focusable group with an accessible name keeps
+                the scroll container reachable by keyboard. */}
+            <div
+              role="group"
+              aria-label="Menu options"
+              tabIndex={0}
+              className="max-h-[min(calc(100vh-20px),320px)] overflow-y-auto focus:outline-none"
+            >
+              {children}
+            </div>
           </DropdownMenuPrimitive.Content>
         </DropdownMenuPrimitive.Portal>
       </DropdownMenuPrimitive.Root>
@@ -124,7 +137,11 @@ export function ContextMenuItem({
         "focus:bg-muted data-[highlighted]:bg-muted",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
         destructive &&
-          "text-destructive focus:bg-destructive/10 data-[highlighted]:bg-destructive/10"
+          // Light: #dc2626 clears 4.5:1 on the white menu surface. Dark: #dc2626
+          // as text on #0a0a0a is only 4.10:1, so use the lighter red-400 which
+          // clears 4.5:1 there. (The solid --color-destructive token stays
+          // #dc2626 because it must keep working as a button *background*.)
+          "text-destructive dark:text-red-400 focus:bg-destructive/10 data-[highlighted]:bg-destructive/10"
       )}
     >
       {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
@@ -170,11 +187,19 @@ export function ContextMenuSubMenu({
         <DropdownMenuPrimitive.SubContent
           sideOffset={2}
           className={cn(
-            "z-50 min-w-[180px] overflow-y-auto rounded-md border border-border bg-background py-1 shadow-lg",
-            "max-h-[min(300px,calc(100vh-40px))]"
+            "z-50 min-w-[180px] overflow-hidden rounded-md border border-border bg-background py-1 shadow-lg"
           )}
         >
-          {children}
+          {/* Scrollable region on a focusable inner group — see ContextMenu
+              content above for why the [role=menu] element can't carry it. */}
+          <div
+            role="group"
+            aria-label="Submenu options"
+            tabIndex={0}
+            className="max-h-[min(300px,calc(100vh-40px))] overflow-y-auto focus:outline-none"
+          >
+            {children}
+          </div>
         </DropdownMenuPrimitive.SubContent>
       </DropdownMenuPrimitive.Portal>
     </DropdownMenuPrimitive.Sub>

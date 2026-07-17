@@ -74,7 +74,7 @@ export function SearchChips({
           <span className="font-medium">{chip.label}</span>
           {chip.value && (
             <>
-              <span className="text-primary/60">:</span>
+              <span className="text-primary">:</span>
               <span className="max-w-24 truncate">{chip.value}</span>
             </>
           )}

@@ -142,10 +142,10 @@ export function AboutDataSettings() {
                 {PRODUCT.name}
               </p>
               <p className="text-xs text-muted-foreground group-hover/about:translate-x-0.5 group-active/about:translate-y-px transition-transform">
-                v{APP_VERSION} <span className="text-muted-foreground/60">({BUILD_COMMIT})</span>
+                v{APP_VERSION} <span className="text-muted-foreground">({BUILD_COMMIT})</span>
                 <VersionUpdateTag />
               </p>
-              <p className="text-[11px] text-muted-foreground/60">
+              <p className="text-[11px] text-muted-foreground">
                 {PRODUCT.license} · based on {PRODUCT.upstream.name} {PRODUCT.upstream.version}
               </p>
             </div>

@@ -363,7 +363,7 @@ export function NavigationRail({
               <div className="relative">
                 <Icon className="w-5 h-5" />
                 {item.badge != null && item.badge > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 flex items-center justify-center min-w-[16px] h-4 text-[10px] font-bold rounded-full bg-red-500 text-white px-1">
+                  <span className="absolute -top-1.5 -right-2.5 flex items-center justify-center min-w-[16px] h-4 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground px-1">
                     {item.badge > 99 ? "99+" : item.badge}
                   </span>
                 )}
@@ -521,7 +521,7 @@ export function NavigationRail({
               {!collapsed && <span className="truncate">{t(item.labelKey)}</span>}
               {item.badge != null && item.badge > 0 && (
                 <span className={cn(
-                  "absolute flex items-center justify-center min-w-[16px] h-4 text-[10px] font-bold rounded-full bg-red-500 text-white px-1",
+                  "absolute flex items-center justify-center min-w-[16px] h-4 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground px-1",
                   collapsed ? "-top-0.5 -right-0.5" : "right-1.5"
                 )}>
                   {item.badge > 99 ? "99+" : item.badge}

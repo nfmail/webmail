@@ -278,7 +278,7 @@ export function SidebarAppsSettings() {
                     : "border-border hover:bg-muted/50"
                 )}
               >
-                <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground flex-shrink-0">
+                <div className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-muted-foreground flex-shrink-0">
                   <GripVertical className="w-4 h-4" />
                 </div>
                 <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0">

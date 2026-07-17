@@ -185,7 +185,7 @@ export function ThreadEmailItem({
               "text-sm truncate flex-1 min-w-0",
               isUnread
                 ? "text-muted-foreground"
-                : "text-muted-foreground/70"
+                : "text-muted-foreground"
             )}>
               {email.preview || t('no_preview_available')}
             </span>

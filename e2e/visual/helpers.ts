@@ -128,7 +128,30 @@ export async function navigate(
       await page.waitForURL(new RegExp(`/${section}(/|$|\\?)`), { timeout: 15_000 });
       break;
     } catch {
-      if (attempt === 2) throw new Error(`navigate: never reached /${section}`);
+      if (attempt === 2) {
+        // Rich failure context: where the anchors are and what actually sits
+        // at their click points — covered anchors are invisible in a plain
+        // timeout message and cost a full CI round-trip to diagnose.
+        const diag = await page
+          .evaluate((sec) => {
+            const anchors = [...document.querySelectorAll(`a[href="/${sec}"]`)];
+            return anchors.map((a) => {
+              const r = a.getBoundingClientRect();
+              const el = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+              const chain: string[] = [];
+              let n: Element | null = el;
+              while (n && chain.length < 3) {
+                chain.push(`${n.tagName}.${String((n as HTMLElement).className).slice(0, 40)}`);
+                n = n.parentElement;
+              }
+              return { rect: `${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.width)}x${Math.round(r.height)}`, covered: chain.join(' < ') };
+            });
+          }, section)
+          .catch(() => 'diag failed');
+        throw new Error(
+          `navigate: never reached /${section} (url=${page.url()}) anchors=${JSON.stringify(diag)}`,
+        );
+      }
     }
   }
   await settle(page, 3000);

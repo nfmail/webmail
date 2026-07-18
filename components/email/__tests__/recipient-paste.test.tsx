@@ -182,9 +182,9 @@ const EMPTY_DATA = {
   draftId: null,
 };
 
-/** next-intl is mocked to return the key, so the To placeholder is "to_placeholder". */
-const toInput = () => screen.getByPlaceholderText('to_placeholder') as HTMLInputElement;
-const ccInput = () => screen.getByPlaceholderText('cc_placeholder') as HTMLInputElement;
+/** i18n is mocked to echo the English text passed to t(), so the To placeholder is "Recipient email addresses". */
+const toInput = () => screen.getByPlaceholderText('Recipient email addresses') as HTMLInputElement;
+const ccInput = () => screen.getByPlaceholderText('Cc recipients') as HTMLInputElement;
 
 const paste = (input: HTMLElement, text: string) =>
   fireEvent.paste(input, { clipboardData: { getData: () => text } });

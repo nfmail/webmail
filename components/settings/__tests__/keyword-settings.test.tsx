@@ -28,30 +28,30 @@ describe('KeywordSettings', () => {
 
   it('renders add keyword button', () => {
     render(<KeywordSettings />);
-    expect(screen.getByText('add_keyword')).toBeInTheDocument();
+    expect(screen.getByText('Add Tag')).toBeInTheDocument();
   });
 
   it('renders reset defaults button', () => {
     render(<KeywordSettings />);
-    expect(screen.getByText('reset_defaults')).toBeInTheDocument();
+    expect(screen.getByText('Reset to Defaults')).toBeInTheDocument();
   });
 
   it('shows add form when add button clicked', () => {
     render(<KeywordSettings />);
-    fireEvent.click(screen.getByText('add_keyword'));
-    expect(screen.getByPlaceholderText('label_placeholder')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Add Tag'));
+    expect(screen.getByPlaceholderText('e.g. Work, Personal, Urgent')).toBeInTheDocument();
     // Cancel and save buttons should appear
-    expect(screen.getByText('cancel')).toBeInTheDocument();
-    expect(screen.getByText('add')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    expect(screen.getByText('Add')).toBeInTheDocument();
   });
 
   it('adds a new keyword through the form', () => {
     render(<KeywordSettings />);
-    fireEvent.click(screen.getByText('add_keyword'));
+    fireEvent.click(screen.getByText('Add Tag'));
 
-    const input = screen.getByPlaceholderText('label_placeholder');
+    const input = screen.getByPlaceholderText('e.g. Work, Personal, Urgent');
     fireEvent.change(input, { target: { value: 'Important' } });
-    fireEvent.click(screen.getByText('add'));
+    fireEvent.click(screen.getByText('Add'));
 
     const keywords = useSettingsStore.getState().emailKeywords;
     expect(keywords).toHaveLength(DEFAULT_KEYWORDS.length + 1);
@@ -61,28 +61,28 @@ describe('KeywordSettings', () => {
 
   it('prevents adding keyword with duplicate id', () => {
     render(<KeywordSettings />);
-    fireEvent.click(screen.getByText('add_keyword'));
+    fireEvent.click(screen.getByText('Add Tag'));
 
-    const input = screen.getByPlaceholderText('label_placeholder');
+    const input = screen.getByPlaceholderText('e.g. Work, Personal, Urgent');
     fireEvent.change(input, { target: { value: 'Red' } });
 
     // Should show duplicate warning
-    expect(screen.getByText('id_exists')).toBeInTheDocument();
+    expect(screen.getByText('This tag ID already exists')).toBeInTheDocument();
   });
 
   it('cancels add form when cancel clicked', () => {
     render(<KeywordSettings />);
-    fireEvent.click(screen.getByText('add_keyword'));
-    expect(screen.getByPlaceholderText('label_placeholder')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Add Tag'));
+    expect(screen.getByPlaceholderText('e.g. Work, Personal, Urgent')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('cancel'));
-    expect(screen.queryByPlaceholderText('label_placeholder')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(screen.queryByPlaceholderText('e.g. Work, Personal, Urgent')).not.toBeInTheDocument();
   });
 
   it('deletes keyword when delete button clicked', () => {
     render(<KeywordSettings />);
-    // Find delete buttons (title="delete")
-    const deleteButtons = screen.getAllByTitle('delete');
+    // Find delete buttons (title="Delete tag")
+    const deleteButtons = screen.getAllByTitle('Delete tag');
     expect(deleteButtons.length).toBe(DEFAULT_KEYWORDS.length);
 
     // Delete the first keyword
@@ -93,22 +93,22 @@ describe('KeywordSettings', () => {
 
   it('shows edit form when edit button clicked', () => {
     render(<KeywordSettings />);
-    const editButtons = screen.getAllByTitle('edit');
+    const editButtons = screen.getAllByTitle('Edit tag');
     fireEvent.click(editButtons[0]); // edit first keyword (Red)
 
     const input = screen.getByDisplayValue('Red');
     expect(input).toBeInTheDocument();
-    expect(screen.getByText('save')).toBeInTheDocument();
+    expect(screen.getByText('Save')).toBeInTheDocument();
   });
 
   it('updates keyword label through edit form', () => {
     render(<KeywordSettings />);
-    const editButtons = screen.getAllByTitle('edit');
+    const editButtons = screen.getAllByTitle('Edit tag');
     fireEvent.click(editButtons[0]); // edit "Red"
 
     const input = screen.getByDisplayValue('Red');
     fireEvent.change(input, { target: { value: 'Crimson' } });
-    fireEvent.click(screen.getByText('save'));
+    fireEvent.click(screen.getByText('Save'));
 
     const kw = useSettingsStore.getState().emailKeywords.find((k) => k.id === 'red');
     expect(kw?.label).toBe('Crimson');
@@ -121,18 +121,18 @@ describe('KeywordSettings', () => {
     expect(useSettingsStore.getState().emailKeywords).toHaveLength(DEFAULT_KEYWORDS.length - 2);
 
     render(<KeywordSettings />);
-    fireEvent.click(screen.getByText('reset_defaults'));
+    fireEvent.click(screen.getByText('Reset to Defaults'));
 
     expect(useSettingsStore.getState().emailKeywords).toEqual(DEFAULT_KEYWORDS);
   });
 
   it('normalizes label to id correctly', () => {
     render(<KeywordSettings />);
-    fireEvent.click(screen.getByText('add_keyword'));
+    fireEvent.click(screen.getByText('Add Tag'));
 
-    const input = screen.getByPlaceholderText('label_placeholder');
+    const input = screen.getByPlaceholderText('e.g. Work, Personal, Urgent');
     fireEvent.change(input, { target: { value: 'My Custom Tag!' } });
-    fireEvent.click(screen.getByText('add'));
+    fireEvent.click(screen.getByText('Add'));
 
     const keywords = useSettingsStore.getState().emailKeywords;
     const added = keywords[keywords.length - 1];

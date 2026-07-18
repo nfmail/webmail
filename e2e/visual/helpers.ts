@@ -98,7 +98,11 @@ export async function navigate(
   page: Page,
   section: 'calendar' | 'contacts' | 'files' | 'settings',
 ): Promise<void> {
-  await page.locator(`a[href="/${section}"]`).first().click();
+  // Two anchors can exist per section (desktop rail + mobile bottom bar);
+  // click the one the current viewport actually shows — the hidden one can
+  // swallow the click without navigating (seen on mobile after a settings
+  // subpage, where the calendar shot captured the settings surface instead).
+  await page.locator(`a[href="/${section}"]:visible`).first().click();
   await settle(page, 3000);
 }
 

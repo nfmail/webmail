@@ -109,6 +109,9 @@ test.describe.serial('visual: authenticated', () => {
 
   test('calendar', async () => {
     await navigate(page, 'calendar');
+    // Guard against a mis-fired navigation shooting the wrong surface: the
+    // "Today" toolbar button only exists on the calendar.
+    await page.getByRole('button', { name: /today/i }).first().waitFor({ timeout: 15_000 });
     // The browser clock and mock fixtures are both pinned to FIXED_NOW, so the
     // whole calendar body (grid, events, today marker) is deterministic and
     // stays under test unmasked.

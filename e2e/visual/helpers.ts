@@ -112,12 +112,14 @@ export async function navigate(
   // right after an overlay closes), so verify the URL actually changed and
   // retry; without this the suite silently screenshots the wrong surface.
   for (let attempt = 0; attempt < 3; attempt++) {
-    // Retries force the click past hit-target interception (a tablet rail
-    // anchor wrapped in a tooltip trigger can fail Playwright's stability
-    // check indefinitely); the URL guard below still proves navigation.
+    // Prefer the LAST visible anchor: when both the desktop rail and the
+    // mobile/tablet bottom bar render, a surface's own side panel (e.g. the
+    // contacts list on tablet) can overlay the rail entry, while the bottom
+    // bar stays clickable. Retries force the click past any remaining
+    // hit-target interception; the URL guard below proves navigation.
     await page
       .locator(`a[href="/${section}"]:visible`)
-      .first()
+      .last()
       .click({ force: attempt > 0, timeout: 10_000 })
       .catch(() => {});
     try {

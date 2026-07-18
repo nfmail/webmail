@@ -161,7 +161,7 @@ interface RecurrenceEditorProps {
 }
 
 export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: RecurrenceEditorProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const locale = useLocale();
 
   const startDay = INDEX_TO_DAY[eventStart.getDay()];
@@ -263,7 +263,7 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
   return (
     <div className="mt-2 rounded-md border border-border bg-muted/20 p-3 flex flex-col gap-3">
       <div className="flex items-center gap-2 text-sm">
-        <span className="shrink-0">{t("recurrence.editor_every")}</span>
+        <span className="shrink-0">{t("Every")}</span>
         <Input
           type="number"
           min={1}
@@ -274,10 +274,10 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
             setIntervalValue(Number.isFinite(n) ? Math.max(1, n) : 1);
           }}
           className="w-16 shrink-0"
-          aria-label={t("recurrence.editor_every")}
+          aria-label={t("Every")}
         />
         <Select value={frequency} onValueChange={(v) => setFrequency(v as EditorFrequency)}>
-          <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.title")}>
+          <SelectTrigger className="flex-1 min-w-0" aria-label={t("Recurrence")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -311,9 +311,9 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
 
       {frequency === "yearly" && (
         <div className="flex items-center gap-2 text-sm">
-          <span className="shrink-0">{capitalize(t("recurrence.editor_in"))}</span>
+          <span className="shrink-0">{capitalize(t("in"))}</span>
           <Select value={String(month)} onValueChange={(v) => setMonth(parseInt(v, 10))}>
-            <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.editor_in")}>
+            <SelectTrigger className="flex-1 min-w-0" aria-label={t("in")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -328,12 +328,12 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
       {(frequency === "monthly" || frequency === "yearly") && (
         <div className="flex items-center gap-2 text-sm">
           <Select value={monthlyMode} onValueChange={(v) => setMonthlyMode(v as MonthlyMode)}>
-            <SelectTrigger className="shrink-0" aria-label={t("recurrence.editor_repeats_on")}>
+            <SelectTrigger className="shrink-0" aria-label={t("Repeats on")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="day">{capitalize(t("recurrence.editor_on_day"))}</SelectItem>
-              <SelectItem value="nth">{capitalize(t("recurrence.editor_on_the"))}</SelectItem>
+              <SelectItem value="day">{capitalize(t("on day"))}</SelectItem>
+              <SelectItem value="nth">{capitalize(t("on the"))}</SelectItem>
             </SelectContent>
           </Select>
           {monthlyMode === "day" ? (
@@ -347,12 +347,12 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
                 setMonthDay(Number.isFinite(n) ? Math.min(31, Math.max(1, n)) : 1);
               }}
               className="w-16 shrink-0"
-              aria-label={t("recurrence.editor_on_day")}
+              aria-label={t("on day")}
             />
           ) : (
             <>
               <Select value={String(nth)} onValueChange={(v) => setNth(parseInt(v, 10))}>
-                <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.editor_on_the")}>
+                <SelectTrigger className="flex-1 min-w-0" aria-label={t("on the")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -362,7 +362,7 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
                 </SelectContent>
               </Select>
               <Select value={nthDay} onValueChange={setNthDay}>
-                <SelectTrigger className="flex-1 min-w-0" aria-label={t("recurrence.editor_on_the")}>
+                <SelectTrigger className="flex-1 min-w-0" aria-label={t("on the")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -377,18 +377,18 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
       )}
 
       <div className="flex items-center gap-2 text-sm">
-        <span className="shrink-0">{t("recurrence.editor_ends")}</span>
+        <span className="shrink-0">{t("Ends")}</span>
         <Select value={endsMode} onValueChange={(v) => setEndsMode(v as EndsMode)}>
           <SelectTrigger
             className={`${endsMode === "never" ? "flex-1" : "shrink-0"} min-w-0`}
-            aria-label={t("recurrence.editor_ends")}
+            aria-label={t("Ends")}
           >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="never">{t("recurrence.editor_never")}</SelectItem>
-            <SelectItem value="on">{t("recurrence.until")}</SelectItem>
-            <SelectItem value="after">{t("recurrence.editor_ends_after")}</SelectItem>
+            <SelectItem value="never">{t("Never")}</SelectItem>
+            <SelectItem value="on">{t("Until")}</SelectItem>
+            <SelectItem value="after">{t("After")}</SelectItem>
           </SelectContent>
         </Select>
         {endsMode === "on" && (
@@ -397,7 +397,7 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
             value={untilDate}
             onChange={(e) => setUntilDate(e.target.value)}
             className={`${selectCls} flex-1 min-w-0`}
-            aria-label={t("recurrence.editor_ends_on")}
+            aria-label={t("On")}
           />
         )}
         {endsMode === "after" && (
@@ -412,9 +412,9 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
                 setCount(Number.isFinite(n) ? Math.max(1, n) : 1);
               }}
               className="w-16 shrink-0"
-              aria-label={t("recurrence.editor_ends_after")}
+              aria-label={t("After")}
             />
-            <span className="text-muted-foreground truncate">{t("recurrence.editor_occurrences")}</span>
+            <span className="text-muted-foreground truncate">{t("occurrences")}</span>
           </>
         )}
       </div>
@@ -425,10 +425,10 @@ export function RecurrenceEditor({ rule, eventStart, onSave, onCancel }: Recurre
         </p>
         <div className="flex gap-2 shrink-0">
           <Button variant="outline" size="sm" onClick={onCancel}>
-            {t("form.cancel")}
+            {t("Cancel")}
           </Button>
           <Button size="sm" onClick={handleSave}>
-            {t("form.save")}
+            {t("Save")}
           </Button>
         </div>
       </div>

@@ -30,7 +30,7 @@ export function SubAddressHelper({
   onSelectTag,
   disabled = false,
 }: SubAddressHelperProps) {
-  const t = useTranslations('identities.sub_address');
+  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const [tag, setTag] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -73,11 +73,11 @@ export function SubAddressHelper({
     // Translate error code to localized message
     let errorMessage: string | null = null;
     if (errorCode === 'EMPTY') {
-      errorMessage = t('validation.empty');
+      errorMessage = t("Tag cannot be empty");
     } else if (errorCode === 'TOO_LONG') {
-      errorMessage = t('validation.too_long', { max: MAX_TAG_LENGTH });
+      errorMessage = t("Tag must be {max} characters or less", { max: MAX_TAG_LENGTH });
     } else if (errorCode === 'INVALID_CHARS') {
-      errorMessage = t('validation.invalid_chars');
+      errorMessage = t("Tag must contain only letters, numbers, and dashes");
     }
 
     setError(errorMessage);
@@ -89,11 +89,11 @@ export function SubAddressHelper({
       // Translate error code to localized message
       let errorMessage: string | null = null;
       if (errorCode === 'EMPTY') {
-        errorMessage = t('validation.empty');
+        errorMessage = t("Tag cannot be empty");
       } else if (errorCode === 'TOO_LONG') {
-        errorMessage = t('validation.too_long', { max: MAX_TAG_LENGTH });
+        errorMessage = t("Tag must be {max} characters or less", { max: MAX_TAG_LENGTH });
       } else if (errorCode === 'INVALID_CHARS') {
-        errorMessage = t('validation.invalid_chars');
+        errorMessage = t("Tag must contain only letters, numbers, and dashes");
       }
       setError(errorMessage);
       return;
@@ -126,7 +126,7 @@ export function SubAddressHelper({
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
         disabled={disabled}
-        title={t('button_tooltip')}
+        title={t("Use sub-address")}
         className="h-8 px-2"
       >
         <Plus className="w-4 h-4 me-1" />
@@ -146,7 +146,7 @@ export function SubAddressHelper({
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-foreground">
-              {t('popover_title')}
+              {t("Add Sub-Address Tag")}
             </h3>
             <button
               onClick={() => setIsOpen(false)}
@@ -162,9 +162,9 @@ export function SubAddressHelper({
               type="text"
               value={tag}
               onChange={(e) => handleTagChange(e.target.value)}
-              placeholder={t('tag_input_placeholder')}
+              placeholder={t("Enter tag (e.g., shopping)")}
               autoFocus
-              aria-label={t('tag_input_placeholder')}
+              aria-label={t("Enter tag (e.g., shopping)")}
               aria-invalid={error ? true : undefined}
               aria-describedby={error ? 'sub-address-tag-error' : undefined}
               onKeyDown={(e) => {
@@ -184,7 +184,7 @@ export function SubAddressHelper({
           {/* Preview */}
           <div className="mb-3 p-2 bg-muted rounded text-sm">
             <div className="text-xs text-muted-foreground mb-1">
-              {t('preview_label')}
+              {t("Preview:")}
             </div>
             <div className="font-mono text-foreground break-all">
               {preview}
@@ -195,7 +195,7 @@ export function SubAddressHelper({
           {subAddress.recentTags.length > 0 && (
             <div className="mb-3">
               <div className="text-xs text-muted-foreground mb-2">
-                {t('recent_tags')}
+                {t("Recent Tags")}
               </div>
               <div className="flex flex-wrap gap-1">
                 {subAddress.recentTags.slice(0, 5).map((recentTag) => (
@@ -215,7 +215,7 @@ export function SubAddressHelper({
           {suggestions.length > 0 && (
             <div className="mb-3">
               <div className="text-xs text-muted-foreground mb-2">
-                {t('suggested_tags')}
+                {t("Suggested")}
               </div>
               <div className="flex flex-wrap gap-1">
                 {suggestions.map((suggestion) => (
@@ -233,7 +233,7 @@ export function SubAddressHelper({
 
           {/* Help Text */}
           <div className="mb-3 text-xs text-muted-foreground">
-            {t('help_text', { delimiter: subAddressDelimiter })}
+            {t("Emails sent to user{delimiter}tag@domain.com will arrive in your inbox", { delimiter: subAddressDelimiter })}
           </div>
 
           {/* Use Address Button */}
@@ -243,7 +243,7 @@ export function SubAddressHelper({
             className="w-full"
             size="sm"
           >
-            {t('use_address')}
+            {t("Use This Address")}
           </Button>
         </div>
       )}

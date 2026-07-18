@@ -51,8 +51,8 @@ function VersionUpdateTag() {
 }
 
 export function AboutDataSettings() {
-  const t = useTranslations('settings.advanced');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const { settingsSyncDisabled, updateSetting, resetToDefaults, exportSettings, importSettings } =
     useSettingsStore();
   const { settingsSyncEnabled } = useConfig();
@@ -161,23 +161,23 @@ export function AboutDataSettings() {
         </div>
       </div>
 
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Advanced")} description={t("Advanced options and developer settings")}>
         {settingsSyncEnabled && (
-          <SettingItem label={t('settings_sync.label')} description={t('settings_sync.description')} htmlFor="settings-sync-toggle">
+          <SettingItem label={t("Settings Sync")} description={t("Sync your settings across browsers and devices")} htmlFor="settings-sync-toggle">
             <ToggleSwitch id="settings-sync-toggle" checked={!settingsSyncDisabled} onChange={(checked) => updateSetting('settingsSyncDisabled', !checked)} />
           </SettingItem>
         )}
 
         {isFeatureEnabled('settingsExportEnabled') && (
-        <SettingItem label={t('export_settings.label')} description={t('export_settings.description')}>
+        <SettingItem label={t("Export Settings")} description={t("Download your settings as JSON")}>
           <Button variant="outline" size="sm" onClick={handleExport}>
-            {t('export_settings.button')}
+            {t("Export")}
           </Button>
         </SettingItem>
         )}
 
         {isFeatureEnabled('settingsExportEnabled') && (
-        <SettingItem label={t('import_settings.label')} description={t('import_settings.description')}>
+        <SettingItem label={t("Import Settings")} description={t("Upload settings from JSON file")}>
           <>
             <input
               ref={fileInputRef}
@@ -187,19 +187,19 @@ export function AboutDataSettings() {
               className="hidden"
             />
             <Button variant="outline" size="sm" onClick={handleImport}>
-              {t('import_settings.button')}
+              {t("Import")}
             </Button>
           </>
         </SettingItem>
         )}
 
-        <SettingItem label={t('reset_settings.label')} description={t('reset_settings.description')}>
+        <SettingItem label={t("Reset Settings")} description={t("Restore all settings to default values")}>
           <Button
             variant={showResetConfirm ? 'destructive' : 'outline'}
             size="sm"
             onClick={handleReset}
           >
-            {showResetConfirm ? tCommon('yes') : t('reset_settings.button')}
+            {showResetConfirm ? tCommon("Yes") : t("Reset to Defaults")}
           </Button>
         </SettingItem>
       </SettingsSection>

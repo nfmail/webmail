@@ -17,7 +17,7 @@ import { toJalali, shouldUseJalaliCalendar, JALALI_MONTHS } from "@/lib/jalali-u
  *              "چهارشنبه, ۹ اردیبهشت ۱۴۰۵"
  */
 export function useFormatEventDate(): (date: Date) => string {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const locale = useLocale();
   const isJalali = shouldUseJalaliCalendar(locale);
 

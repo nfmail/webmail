@@ -443,7 +443,7 @@ export function FileBrowser({
   onShare,
   capabilities,
 }: FileBrowserProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
   const canDownload = capabilities?.download === true;
   const canUpload = capabilities?.upload === true;
   const canCreateDirectory = capabilities?.createDirectory === true;
@@ -599,9 +599,9 @@ export function FileBrowser({
   // Home and the account's filesystem - surfaced as a non-clickable label
   // (clicking the actual account again would be a no-op; Home detaches it).
   const breadcrumbs: { name: string; path: string; isAccount?: boolean }[] = currentPath === '/'
-    ? [{ name: t("breadcrumb_root"), path: '/' }]
+    ? [{ name: t("Home"), path: '/' }]
     : [
-        { name: t("breadcrumb_root"), path: '/' },
+        { name: t("Home"), path: '/' },
         ...currentPath.split('/').filter(Boolean).map((segment, i, arr) => ({
           name: segment,
           path: '/' + arr.slice(0, i + 1).join('/'),
@@ -1013,18 +1013,18 @@ export function FileBrowser({
       tabIndex={-1}
     >
       {/* Toolbar */}
-      <div role="toolbar" aria-label={t("toolbar")} className="flex items-center gap-2 px-4 py-2 border-b border-border bg-background">
+      <div role="toolbar" aria-label={t("File actions")} className="flex items-center gap-2 px-4 py-2 border-b border-border bg-background">
         {isNarrow && folderLayout === "sidebar" && (
           <ToolbarIconButton
             className="-ms-2"
             onClick={() => setNarrowSidebarOpen((v) => !v)}
-            label={t("open_folder_tree")}
+            label={t("Open folder tree")}
           >
             <Menu className="w-4 h-4" />
           </ToolbarIconButton>
         )}
         {/* Breadcrumbs */}
-        <Breadcrumb aria-label={t("breadcrumb_root")} className="flex-1 min-w-0">
+        <Breadcrumb aria-label={t("Home")} className="flex-1 min-w-0">
           <BreadcrumbList className="flex-nowrap gap-1 text-sm overflow-x-auto sm:gap-1">
             {breadcrumbs.map((crumb, i) => (
               <Fragment key={`${i}:${crumb.path}`}>
@@ -1044,7 +1044,7 @@ export function FileBrowser({
                         ? onNavigate('/', '__account_root__')
                         : onNavigate(crumb.path)}
                       onContextMenu={(e) => crumb.isAccount ? undefined : handleBreadcrumbRightClick(e, crumb.path)}
-                      aria-label={i === 0 ? t("breadcrumb_root") : crumb.name}
+                      aria-label={i === 0 ? t("Home") : crumb.name}
                     >
                       {i === 0 ? <Home className="w-4 h-4" /> : crumb.name}
                     </button>
@@ -1066,7 +1066,7 @@ export function FileBrowser({
                 onClick={() => onBatchDownload([...selectedResources].filter(n => !resources.find(r => r.name === n)?.isDirectory))}
               >
                 <Download className="w-4 h-4 me-1" />
-                {t("download")} ({[...selectedResources].filter(n => !resources.find(r => r.name === n)?.isDirectory).length})
+                {t("Download")} ({[...selectedResources].filter(n => !resources.find(r => r.name === n)?.isDirectory).length})
               </Button>}
               {canDelete && <Button
                 variant="ghost"
@@ -1075,7 +1075,7 @@ export function FileBrowser({
                 onClick={() => onBatchDelete([...selectedResources])}
               >
                 <Trash2 className="w-4 h-4 me-1" />
-                {t("delete")} ({selectedResources.size})
+                {t("Delete")} ({selectedResources.size})
               </Button>}
             </>
           )}
@@ -1087,13 +1087,13 @@ export function FileBrowser({
               onClick={onPaste}
             >
               <Clipboard className="w-4 h-4 me-1" />
-              {t("paste")} ({clipboard.names.length})
+              {t("Paste")} ({clipboard.names.length})
             </Button>
           )}
           {!accountPickerMode && (
             <ToolbarIconButton
               onClick={() => setShowSearch(v => !v)}
-              label={t("search_placeholder")}
+              label={t("Search files...")}
             >
               <Search className="w-4 h-4" />
             </ToolbarIconButton>
@@ -1101,7 +1101,7 @@ export function FileBrowser({
           <ToolbarIconButton
             className={cn(viewMode === "grid" && "bg-muted")}
             onClick={() => handleViewModeChange(viewMode === "list" ? "grid" : "list")}
-            label={viewMode === "list" ? t("grid_view") : t("list_view")}
+            label={viewMode === "list" ? t("Grid view") : t("List view")}
           >
             {viewMode === "list" ? <LayoutGrid className="w-4 h-4" /> : <LayoutList className="w-4 h-4" />}
           </ToolbarIconButton>
@@ -1110,40 +1110,40 @@ export function FileBrowser({
               <ToolbarIconButton
                 className={cn(showDetails && "bg-muted")}
                 onClick={onToggleDetails}
-                label={t("details")}
+                label={t("Details")}
               >
                 <Info className="w-4 h-4" />
               </ToolbarIconButton>
               <ToolbarIconButton
                 className={cn(favorites.includes(currentPath) && "text-yellow-500")}
                 onClick={() => onToggleFavorite(currentPath)}
-                label={t("toggle_favorite")}
+                label={t("Toggle favorite")}
               >
                 <Star className={cn("w-4 h-4", favorites.includes(currentPath) && "fill-current")} />
               </ToolbarIconButton>
               {canUpload && <ToolbarIconButton
                 onClick={() => fileInputRef.current?.click()}
-                label={t("upload")}
+                label={t("Upload")}
                 disabled={isUploading}
               >
                 <Upload className="w-4 h-4" />
               </ToolbarIconButton>}
               {canUpload && canCreateDirectory && <ToolbarIconButton
                 onClick={() => folderInputRef.current?.click()}
-                label={t("upload_folder")}
+                label={t("Upload Folder")}
                 disabled={isUploading}
               >
                 <FolderUp className="w-4 h-4" />
               </ToolbarIconButton>}
               {canCreateDirectory && <ToolbarIconButton
                 onClick={() => setShowNewFolder(true)}
-                label={t("new_folder")}
+                label={t("New Folder")}
               >
                 <FolderPlus className="w-4 h-4" />
               </ToolbarIconButton>}
               {canUpload && <ToolbarIconButton
                 onClick={() => setShowNewTextFile(true)}
-                label={t("new_text_file")}
+                label={t("New Text File")}
               >
                 <FilePlus className="w-4 h-4" />
               </ToolbarIconButton>}
@@ -1151,7 +1151,7 @@ export function FileBrowser({
           )}
           <ToolbarIconButton
             onClick={onRefresh}
-            label={t("refresh")}
+            label={t("Refresh")}
             disabled={isLoading}
           >
             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
@@ -1167,10 +1167,10 @@ export function FileBrowser({
             ref={searchInputRef}
             type="search"
             role="searchbox"
-            aria-label={t("search_placeholder")}
+            aria-label={t("Search files...")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t("search_placeholder")}
+            placeholder={t("Search files...")}
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
@@ -1216,7 +1216,7 @@ export function FileBrowser({
             onClick={onRefresh}
           >
             <RefreshCw className="w-3.5 h-3.5 me-1" />
-            {t("retry")}
+            {t("Retry")}
           </Button>
         </div>
       )}
@@ -1226,7 +1226,7 @@ export function FileBrowser({
         <div className="absolute inset-0 z-50 bg-primary/5 border-2 border-dashed border-primary rounded-lg flex items-center justify-center pointer-events-none">
           <div className="text-center">
             <Upload className="w-12 h-12 text-primary mx-auto mb-2" />
-            <p className="text-sm font-medium text-primary">{t("drop_files_here")}</p>
+            <p className="text-sm font-medium text-primary">{t("Drop files or folders here to upload")}</p>
           </div>
         </div>
       )}
@@ -1237,7 +1237,7 @@ export function FileBrowser({
           <div className="flex items-center gap-2 text-sm text-primary mb-1">
             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
             <span className="truncate">
-              {t("uploading")} {uploadProgress.name}
+              {t("Uploading...")} {uploadProgress.name}
               {uploadProgress.totalFiles > 1 && (
                 <span className="text-muted-foreground ms-1">
                   ({uploadProgress.current}/{uploadProgress.totalFiles})
@@ -1252,7 +1252,7 @@ export function FileBrowser({
                 onClick={onCancelUpload}
                 className="text-xs text-destructive hover:text-destructive/80 underline"
               >
-                {t("cancel")}
+                {t("Cancel")}
               </button>
             </span>
           </div>
@@ -1326,7 +1326,7 @@ export function FileBrowser({
               <div className="p-3">
                 <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
                   <Star className="w-3 h-3" />
-                  {t("favorites")}
+                  {t("Favorites")}
                 </h4>
                 <div className="flex flex-col gap-0.5">
                   {favorites.map((fav) => (
@@ -1339,7 +1339,7 @@ export function FileBrowser({
                       )}
                     >
                       <Folder className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                      <span className="truncate">{fav === '/' ? t("breadcrumb_root") : fav.split('/').pop()}</span>
+                      <span className="truncate">{fav === '/' ? t("Home") : fav.split('/').pop()}</span>
                     </button>
                   ))}
                 </div>
@@ -1349,7 +1349,7 @@ export function FileBrowser({
               <div className="p-3 border-t border-border">
                 <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  {t("recent")}
+                  {t("Recent")}
                 </h4>
                 <div className="flex flex-col gap-0.5">
                   {recentFiles.slice(0, 10).map((recent) => (
@@ -1379,11 +1379,11 @@ export function FileBrowser({
                 <th className="text-start px-4 py-2 font-medium text-muted-foreground">
                   <div className="flex items-center gap-3">
                     <div className="w-4 h-4" />
-                    {t("name")}
+                    {t("Name")}
                   </div>
                 </th>
-                <th className="text-start px-4 py-2 font-medium text-muted-foreground hidden md:table-cell w-24">{t("size")}</th>
-                <th className="text-start px-4 py-2 font-medium text-muted-foreground hidden lg:table-cell w-44">{t("modified")}</th>
+                <th className="text-start px-4 py-2 font-medium text-muted-foreground hidden md:table-cell w-24">{t("Size")}</th>
+                <th className="text-start px-4 py-2 font-medium text-muted-foreground hidden lg:table-cell w-44">{t("Modified")}</th>
                 <th className="w-10 px-2 py-2" />
               </tr>
             </thead>
@@ -1429,7 +1429,7 @@ export function FileBrowser({
           </div>
         ) : accountPickerMode ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-muted-foreground">{t("no_accounts")}</p>
+            <p className="text-sm text-muted-foreground">{t("No connected accounts.")}</p>
           </div>
         ) : resources.length === 0 && !searchQuery && currentPath === '/' && canUpload && canCreateDirectory ? (
           <FileUploadArea
@@ -1458,12 +1458,12 @@ export function FileBrowser({
               <EmptyMedia variant="icon">
                 <Folder className="size-6 text-muted-foreground" aria-hidden="true" />
               </EmptyMedia>
-              <EmptyTitle className="text-sm">{t("empty_state_title")}</EmptyTitle>
+              <EmptyTitle className="text-sm">{t("No files yet")}</EmptyTitle>
             </EmptyHeader>
           </Empty>
         ) : viewMode === "grid" ? (
           /* ======= GRID VIEW ======= */
-          <div className="p-4" role="grid" aria-label={t("file_list")}>
+          <div className="p-4" role="grid" aria-label={t("Files and folders")}>
             {currentPath !== '/' && !searchQuery && (
               <div
                 className={cn(
@@ -1495,7 +1495,7 @@ export function FileBrowser({
               </div>
             )}
             {displayResources.length === 0 && searchQuery ? (
-              <p className="px-4 py-8 text-center text-muted-foreground text-sm">{t("no_results")}</p>
+              <p className="px-4 py-8 text-center text-muted-foreground text-sm">{t("No files match your search")}</p>
             ) : (
               <div
                 className="grid grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-2"
@@ -1571,7 +1571,7 @@ export function FileBrowser({
         ) : (
           /* ======= LIST VIEW ======= */
           <table
-            aria-label={t("file_list")}
+            aria-label={t("Files and folders")}
             className="w-full text-sm"
             onContextMenu={(e) => {
               if ((e.target as HTMLElement).closest('tr[data-resource]')) return;
@@ -1592,20 +1592,20 @@ export function FileBrowser({
                       onClick={(e) => e.stopPropagation()}
                     />
                     <button onClick={() => handleSortClick("name")} className="hover:text-foreground transition-colors">
-                      {t("name")}
+                      {t("Name")}
                       <SortIndicator column="name" />
                     </button>
                   </div>
                 </th>
                 <th className="text-start px-4 py-2 font-medium text-muted-foreground hidden md:table-cell w-24">
                   <button onClick={() => handleSortClick("size")} className="hover:text-foreground transition-colors">
-                    {t("size")}
+                    {t("Size")}
                     <SortIndicator column="size" />
                   </button>
                 </th>
                 <th className="text-start px-4 py-2 font-medium text-muted-foreground hidden lg:table-cell w-44">
                   <button onClick={() => handleSortClick("modified")} className="hover:text-foreground transition-colors">
-                    {t("modified")}
+                    {t("Modified")}
                     <SortIndicator column="modified" />
                   </button>
                 </th>
@@ -1654,7 +1654,7 @@ export function FileBrowser({
               {displayResources.length === 0 && searchQuery ? (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground text-sm">
-                    {t("no_results")}
+                    {t("No files match your search")}
                   </td>
                 </tr>
               ) : displayResources.map((resource) => (
@@ -1729,7 +1729,7 @@ export function FileBrowser({
                         e.stopPropagation();
                         handleContextMenu(e, resource.name);
                       }}
-                      aria-label={t("context_menu")}
+                      aria-label={t("Actions")}
                       className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <MoreVertical className="w-4 h-4" />
@@ -1746,7 +1746,7 @@ export function FileBrowser({
           <div
             ref={contextMenuRef}
             role="menu"
-            aria-label={t("context_menu")}
+            aria-label={t("Actions")}
             className="fixed z-50 bg-background border border-border rounded-lg shadow-lg py-1 min-w-[160px]"
             style={{ left: contextMenu.x, top: contextMenu.y }}
             onClick={(e) => e.stopPropagation()}
@@ -1764,7 +1764,7 @@ export function FileBrowser({
                 }}
               >
                 <ImageIcon className="w-4 h-4" />
-                {t("preview")}
+                {t("Preview")}
               </button>
             )}
             {canDownload && !resources.find(r => r.name === contextMenu.name)?.isDirectory && (
@@ -1776,7 +1776,7 @@ export function FileBrowser({
                 }}
               >
                 <Download className="w-4 h-4" />
-                {t("download")}
+                {t("Download")}
               </button>
             )}
             {canMove && <button
@@ -1787,7 +1787,7 @@ export function FileBrowser({
               }}
             >
               <Scissors className="w-4 h-4" />
-              {t("cut")}
+              {t("Cut")}
             </button>}
             {canCopy && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
@@ -1797,7 +1797,7 @@ export function FileBrowser({
               }}
             >
               <Copy className="w-4 h-4" />
-              {t("copy")}
+              {t("Copy")}
             </button>}
             {canPaste && clipboard && (
               <button
@@ -1808,7 +1808,7 @@ export function FileBrowser({
                 }}
               >
                 <Clipboard className="w-4 h-4" />
-                {t("paste")}
+                {t("Paste")}
               </button>
             )}
             {canCopy && !resources.find(r => r.name === contextMenu.name)?.isDirectory && (
@@ -1820,7 +1820,7 @@ export function FileBrowser({
                 }}
               >
                 <CopyPlus className="w-4 h-4" />
-                {t("duplicate")}
+                {t("Duplicate")}
               </button>
             )}
             {canShare(resources.find(r => r.name === contextMenu.name)) && (
@@ -1833,7 +1833,7 @@ export function FileBrowser({
                 }}
               >
                 <Share2 className="w-4 h-4" />
-                {t("share")}
+                {t("Share")}
               </button>
             )}
             <div className="h-px bg-border my-1" />
@@ -1845,7 +1845,7 @@ export function FileBrowser({
               }}
             >
               <Info className="w-4 h-4" />
-              {t("details")}
+              {t("Details")}
             </button>
             {canRename && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
@@ -1855,7 +1855,7 @@ export function FileBrowser({
               }}
             >
               <Pencil className="w-4 h-4" />
-              {t("rename")}
+              {t("Rename")}
             </button>}
             {canDelete && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-destructive transition-colors text-start"
@@ -1865,7 +1865,7 @@ export function FileBrowser({
               }}
             >
               <Trash2 className="w-4 h-4" />
-              {t("delete")}
+              {t("Delete")}
             </button>}
           </div>
         )}
@@ -1874,7 +1874,7 @@ export function FileBrowser({
         {emptyContextMenu && (
           <div
             role="menu"
-            aria-label={t("context_menu")}
+            aria-label={t("Actions")}
             className="fixed z-50 bg-background border border-border rounded-lg shadow-lg py-1 min-w-[160px]"
             style={{ left: emptyContextMenu.x, top: emptyContextMenu.y }}
             onClick={(e) => e.stopPropagation()}
@@ -1887,7 +1887,7 @@ export function FileBrowser({
               }}
             >
               <FolderPlus className="w-4 h-4" />
-              {t("new_folder")}
+              {t("New Folder")}
             </button>}
             {canUpload && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
@@ -1897,7 +1897,7 @@ export function FileBrowser({
               }}
             >
               <FilePlus className="w-4 h-4" />
-              {t("new_text_file")}
+              {t("New Text File")}
             </button>}
             {canUpload && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
@@ -1907,7 +1907,7 @@ export function FileBrowser({
               }}
             >
               <Upload className="w-4 h-4" />
-              {t("upload")}
+              {t("Upload")}
             </button>}
             {canUpload && canCreateDirectory && <button
               className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-start"
@@ -1917,7 +1917,7 @@ export function FileBrowser({
               }}
             >
               <FolderUp className="w-4 h-4" />
-              {t("upload_folder")}
+              {t("Upload Folder")}
             </button>}
             {canPaste && clipboard && (
               <>
@@ -1930,7 +1930,7 @@ export function FileBrowser({
                   }}
                 >
                   <Clipboard className="w-4 h-4" />
-                  {t("paste")}
+                  {t("Paste")}
                 </button>
               </>
             )}
@@ -1943,7 +1943,7 @@ export function FileBrowser({
               }}
             >
               <RefreshCw className="w-4 h-4" />
-              {t("refresh")}
+              {t("Refresh")}
             </button>
           </div>
         )}
@@ -1952,13 +1952,13 @@ export function FileBrowser({
         {breadcrumbDropdown && (
           <div
             role="menu"
-            aria-label={t("breadcrumb_root")}
+            aria-label={t("Home")}
             className="fixed z-50 bg-background border border-border rounded-lg shadow-lg py-1 min-w-[180px] max-h-64 overflow-y-auto"
             style={{ left: breadcrumbDropdown.x, top: breadcrumbDropdown.y }}
             onClick={(e) => e.stopPropagation()}
           >
             {breadcrumbDropdown.folders.length === 0 ? (
-              <p className="px-3 py-2 text-sm text-muted-foreground">{t("no_results")}</p>
+              <p className="px-3 py-2 text-sm text-muted-foreground">{t("No files match your search")}</p>
             ) : (
               breadcrumbDropdown.folders.map((folder) => {
                 const folderPath = breadcrumbDropdown.path === '/'
@@ -1998,9 +1998,9 @@ export function FileBrowser({
 
         {/* Details sidebar */}
         {showDetails && detailResource && (
-          <div role="complementary" aria-label={t("details")} className="w-64 border-s border-border bg-background p-4 overflow-y-auto shrink-0 hidden md:block">
+          <div role="complementary" aria-label={t("Details")} className="w-64 border-s border-border bg-background p-4 overflow-y-auto shrink-0 hidden md:block">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium">{t("details")}</h3>
+              <h3 className="text-sm font-medium">{t("Details")}</h3>
               <button onClick={onToggleDetails} className="text-muted-foreground hover:text-foreground">
                 <X className="w-4 h-4" />
               </button>
@@ -2013,23 +2013,23 @@ export function FileBrowser({
             </div>
             <dl className="flex flex-col gap-3 text-sm">
               <div>
-                <dt className="text-muted-foreground text-xs">{t("type")}</dt>
-                <dd>{detailResource.isDirectory ? t("folder") : (detailResource.contentType || t("file"))}</dd>
+                <dt className="text-muted-foreground text-xs">{t("Type")}</dt>
+                <dd>{detailResource.isDirectory ? t("Folder") : (detailResource.contentType || t("File"))}</dd>
               </div>
               {!detailResource.isDirectory && (
                 <div>
-                  <dt className="text-muted-foreground text-xs">{t("size")}</dt>
+                  <dt className="text-muted-foreground text-xs">{t("Size")}</dt>
                   <dd className="tabular-nums">{formatFileSize(detailResource.contentLength)}</dd>
                 </div>
               )}
               {detailResource.lastModified && (
                 <div>
-                  <dt className="text-muted-foreground text-xs">{t("modified")}</dt>
+                  <dt className="text-muted-foreground text-xs">{t("Modified")}</dt>
                   <dd className="tabular-nums">{formatDate(detailResource.lastModified)}</dd>
                 </div>
               )}
               <div>
-                <dt className="text-muted-foreground text-xs">{t("path")}</dt>
+                <dt className="text-muted-foreground text-xs">{t("Path")}</dt>
                 <dd className="text-xs break-all font-mono">
                   {currentPath === "/" ? `/${detailResource.name}` : `${currentPath}/${detailResource.name}`}
                 </dd>
@@ -2054,8 +2054,8 @@ export function FileBrowser({
       {canUpload && showNewTextFile && (
         <RenameDialog
           currentName="new-file.txt"
-          title={t("new_text_file")}
-          label={t("file_name")}
+          title={t("New Text File")}
+          label={t("File name")}
           onConfirm={async (name: string) => {
             await onCreateTextFile(name);
             setShowNewTextFile(false);

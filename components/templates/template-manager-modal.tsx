@@ -17,8 +17,8 @@ interface TemplateManagerModalProps {
 }
 
 export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalProps) {
-  const t = useTranslations('templates');
-  const tSettings = useTranslations('settings.templates');
+  const t = useTranslations();
+  const tSettings = useTranslations();
 
   const {
     templates,
@@ -84,7 +84,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
           <div className="flex items-center gap-3">
             <FileText className="w-5 h-5 text-muted-foreground" />
             <h2 id="template-manager-title" className="text-lg font-semibold text-foreground">
-              {tSettings('title')}
+              {tSettings("Email Templates")}
             </h2>
           </div>
           <button
@@ -103,7 +103,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t('search_placeholder')}
+                  placeholder={t("Search templates...")}
                   className="ps-9"
                 />
               </div>
@@ -111,14 +111,14 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
                 onClick={() => setIsCreating(true)}
                 size="sm"
               >
-                {tSettings('add')}
+                {tSettings("New Template")}
               </Button>
             </div>
           )}
 
           {isCreating && (
             <div className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
-              <h3 className="text-sm font-semibold mb-4">{tSettings('add')}</h3>
+              <h3 className="text-sm font-semibold mb-4">{tSettings("New Template")}</h3>
               <TemplateForm
                 onSave={handleSave}
                 onCancel={() => setIsCreating(false)}
@@ -128,7 +128,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
 
           {editingId && (
             <div className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
-              <h3 className="text-sm font-semibold mb-4">{tSettings('edit')}</h3>
+              <h3 className="text-sm font-semibold mb-4">{tSettings("Edit Template")}</h3>
               <TemplateForm
                 template={templates.find((t) => t.id === editingId)}
                 onSave={handleSave}
@@ -189,7 +189,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => duplicateTemplate(template.id, t('copy_suffix'))}
+                    onClick={() => duplicateTemplate(template.id, t("(copy)"))}
                     disabled={!!editingId || isCreating}
                     className="h-8 w-8 p-0"
                   >
@@ -203,7 +203,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
                         onClick={() => handleDelete(template.id)}
                         className="h-7 text-xs"
                       >
-                        {tSettings('confirm_delete')}
+                        {tSettings("Delete")}
                       </Button>
                       <Button
                         variant="ghost"
@@ -211,7 +211,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
                         onClick={() => setDeleteConfirmId(null)}
                         className="h-7 text-xs"
                       >
-                        {tSettings('cancel')}
+                        {tSettings("Cancel")}
                       </Button>
                     </div>
                   ) : (
@@ -233,7 +233,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
               <div className="flex flex-col items-center py-8 text-muted-foreground">
                 <FileText className="w-10 h-10 mb-3 opacity-40" />
                 <p className="text-sm">
-                  {searchQuery ? t('no_results') : tSettings('no_templates')}
+                  {searchQuery ? t("No templates found") : tSettings("No templates yet")}
                 </p>
               </div>
             )}

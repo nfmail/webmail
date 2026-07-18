@@ -18,47 +18,47 @@ export function SearchChips({
   onClearAll,
   className,
 }: SearchChipsProps) {
-  const t = useTranslations("advanced_search");
+  const t = useTranslations();
 
   const chips: { key: keyof SearchFilters; label: string; value: string }[] = [];
 
   if (filters.from) {
-    chips.push({ key: "from", label: t("from"), value: filters.from });
+    chips.push({ key: "from", label: t("From"), value: filters.from });
   }
   if (filters.to) {
-    chips.push({ key: "to", label: t("to"), value: filters.to });
+    chips.push({ key: "to", label: t("To"), value: filters.to });
   }
   if (filters.subject) {
-    chips.push({ key: "subject", label: t("subject"), value: filters.subject });
+    chips.push({ key: "subject", label: t("Subject"), value: filters.subject });
   }
   if (filters.body) {
-    chips.push({ key: "body", label: t("body"), value: filters.body });
+    chips.push({ key: "body", label: t("Body"), value: filters.body });
   }
   if (filters.hasAttachment !== null) {
     chips.push({
       key: "hasAttachment",
-      label: t("has_attachment"),
-      value: filters.hasAttachment ? t("yes") : t("no"),
+      label: t("Attachments"),
+      value: filters.hasAttachment ? t("Yes") : t("No"),
     });
   }
   if (filters.dateAfter) {
-    chips.push({ key: "dateAfter", label: t("date_after"), value: filters.dateAfter });
+    chips.push({ key: "dateAfter", label: t("After"), value: filters.dateAfter });
   }
   if (filters.dateBefore) {
-    chips.push({ key: "dateBefore", label: t("date_before"), value: filters.dateBefore });
+    chips.push({ key: "dateBefore", label: t("Before"), value: filters.dateBefore });
   }
   if (filters.isUnread !== null) {
     chips.push({
       key: "isUnread",
-      label: filters.isUnread ? t("unread") : t("read"),
+      label: filters.isUnread ? t("Unread") : t("Read"),
       value: "",
     });
   }
   if (filters.isStarred !== null) {
     chips.push({
       key: "isStarred",
-      label: t("starred"),
-      value: filters.isStarred ? t("yes") : t("no"),
+      label: t("Starred"),
+      value: filters.isStarred ? t("Yes") : t("No"),
     });
   }
 
@@ -93,7 +93,7 @@ export function SearchChips({
           onClick={onClearAll}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          {t("clear_all")}
+          {t("Clear all")}
         </button>
       )}
     </div>

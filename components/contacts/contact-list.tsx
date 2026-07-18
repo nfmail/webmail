@@ -144,7 +144,7 @@ export function ContactList({
   onAddContactToGroup,
   onMenuClick,
 }: ContactListProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
   const locale = useLocale();
   const density = useSettingsStore((state) => state.density);
   const groupByLetter = useSettingsStore((state) => state.groupContactsByLetter);
@@ -282,7 +282,7 @@ export function ContactList({
                 type="button"
                 onClick={onMenuClick}
                 className="flex-shrink-0 p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                aria-label={t("open_categories")}
+                aria-label={t("Open categories")}
               >
                 <Menu className="w-4 h-4" />
               </button>
@@ -306,7 +306,7 @@ export function ContactList({
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
-              title={hasSelection ? (allSelected ? t("bulk.clear") : t("bulk.select_all")) : t("filters.select")}
+              title={hasSelection ? (allSelected ? t("Clear selection") : t("Select all")) : t("Select")}
             >
               {hasSelection ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
             </button>
@@ -314,7 +314,7 @@ export function ContactList({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder={t("search_placeholder")}
+                placeholder={t("Search contacts...")}
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className={cn("ps-9 h-9", searchQuery && "pe-8")}
@@ -324,7 +324,7 @@ export function ContactList({
                   type="button"
                   onClick={() => onSearchChange("")}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={t("clear_search")}
+                  aria-label={t("Clear search")}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -339,8 +339,8 @@ export function ContactList({
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
-              title={t("filters.toggle")}
-              aria-label={t("filters.toggle")}
+              title={t("Filters")}
+              aria-label={t("Filters")}
             >
               <Filter className="w-4 h-4" />
               {!filtersOpen && activeFilters > 0 && (
@@ -358,7 +358,7 @@ export function ContactList({
         <div className="border-b border-border bg-muted/30 animate-in slide-in-from-top-2 fade-in duration-200">
           <div className="px-4 py-3 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">{t("filters.title")}</span>
+              <span className="text-sm font-medium text-foreground">{t("Advanced filters")}</span>
               <div className="flex items-center gap-1">
                 <Button
                   variant="ghost"
@@ -367,14 +367,14 @@ export function ContactList({
                   className="h-7 px-2 text-xs"
                 >
                   <RotateCcw className="w-3 h-3 me-1" />
-                  {t("filters.clear")}
+                  {t("Clear")}
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setFiltersOpen(false)}
                   className="h-7 w-7"
-                  aria-label={t("filters.close")}
+                  aria-label={t("Close")}
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -383,20 +383,20 @@ export function ContactList({
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("filters.organization")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Company")}</label>
                 <Input
                   value={filters.organization}
                   onChange={(e) => setFilters((f) => ({ ...f, organization: e.target.value }))}
-                  placeholder={t("filters.organization_placeholder")}
+                  placeholder={t("e.g. Acme Corp")}
                   className="h-8 text-sm"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("filters.job_title")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Job title")}</label>
                 <Input
                   value={filters.jobTitle}
                   onChange={(e) => setFilters((f) => ({ ...f, jobTitle: e.target.value }))}
-                  placeholder={t("filters.job_title_placeholder")}
+                  placeholder={t("e.g. Designer")}
                   className="h-8 text-sm"
                 />
               </div>
@@ -404,27 +404,27 @@ export function ContactList({
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("filters.location")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Location")}</label>
                 <Input
                   value={filters.location}
                   onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value }))}
-                  placeholder={t("filters.location_placeholder")}
+                  placeholder={t("City or country")}
                   className="h-8 text-sm"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("filters.email_domain")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Email domain")}</label>
                 <Input
                   value={filters.emailDomain}
                   onChange={(e) => setFilters((f) => ({ ...f, emailDomain: e.target.value }))}
-                  placeholder={t("filters.email_domain_placeholder")}
+                  placeholder={t("example.com")}
                   className="h-8 text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">{t("filters.birthday_month")}</label>
+              <label className="text-xs text-muted-foreground mb-1 block">{t("Birthday in")}</label>
               <Select
                 value={filters.birthdayMonth === null ? "any" : String(filters.birthdayMonth)}
                 onValueChange={(value) =>
@@ -434,11 +434,11 @@ export function ContactList({
                   }))
                 }
               >
-                <SelectTrigger size="sm" className="w-full" aria-label={t("filters.birthday_month")}>
+                <SelectTrigger size="sm" className="w-full" aria-label={t("Birthday in")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="any">{t("filters.any_month")}</SelectItem>
+                  <SelectItem value="any">{t("Any month")}</SelectItem>
                   {monthNames.map((name, i) => (
                     <SelectItem key={i} value={String(i + 1)}>{name}</SelectItem>
                   ))}
@@ -449,19 +449,19 @@ export function ContactList({
             <div className="flex items-center gap-2 flex-wrap">
               <ToggleChip
                 icon={<Mail className="w-3.5 h-3.5" />}
-                label={t("filters.has_email")}
+                label={t("Has email")}
                 value={filters.hasEmail}
                 onClick={() => setFilters((f) => ({ ...f, hasEmail: cycleTri(f.hasEmail) }))}
               />
               <ToggleChip
                 icon={<Phone className="w-3.5 h-3.5" />}
-                label={t("filters.has_phone")}
+                label={t("Has phone")}
                 value={filters.hasPhone}
                 onClick={() => setFilters((f) => ({ ...f, hasPhone: cycleTri(f.hasPhone) }))}
               />
               <ToggleChip
                 icon={<ImageIcon className="w-3.5 h-3.5" />}
-                label={t("filters.has_photo")}
+                label={t("Has photo")}
                 value={filters.hasPhoto}
                 onClick={() => setFilters((f) => ({ ...f, hasPhoto: cycleTri(f.hasPhoto) }))}
               />
@@ -482,7 +482,7 @@ export function ContactList({
               }
             }}
             aria-pressed={allSelected}
-            aria-label={allSelected ? t("bulk.clear") : t("bulk.select_all")}
+            aria-label={allSelected ? t("Clear selection") : t("Select all")}
             className="p-1 rounded hover:bg-muted/50 transition-colors"
           >
             {allSelected ? (
@@ -492,16 +492,16 @@ export function ContactList({
             )}
           </button>
           <span className="text-xs font-medium text-foreground">
-            {t("bulk.selected", { count: selectedContactIds.size })}
+            {t("{count, plural, one {1 selected} other {# selected}}", { count: selectedContactIds.size })}
           </span>
           <div className="flex-1" />
           <Button variant="ghost" size="sm" onClick={onBulkAddToGroup} className="h-7 text-xs">
             <Users className="w-3.5 h-3.5 me-1" />
-            {t("bulk.add_to_group")}
+            {t("Add to group")}
           </Button>
           <Button variant="ghost" size="sm" onClick={onBulkExport} className="h-7 text-xs">
             <Download className="w-3.5 h-3.5 me-1" />
-            {t("bulk.export")}
+            {t("Export")}
           </Button>
           <Button
             variant="ghost"
@@ -510,9 +510,9 @@ export function ContactList({
             className="h-7 text-xs text-destructive hover:text-destructive/80"
           >
             <Trash2 className="w-3.5 h-3.5 me-1" />
-            {t("bulk.delete")}
+            {t("Delete")}
           </Button>
-          <Button variant="ghost" size="icon" onClick={onClearSelection} className="h-7 w-7" aria-label={t("bulk.clear")}>
+          <Button variant="ghost" size="icon" onClick={onClearSelection} className="h-7 w-7" aria-label={t("Clear selection")}>
             <X className="w-3.5 h-3.5" />
           </Button>
         </div>
@@ -522,7 +522,7 @@ export function ContactList({
       {/* tabIndex + role/aria-label make the scroll pane keyboard-focusable:
           rows are click-target divs (not focusable), so without this the
           scroll region fails axe scrollable-region-focusable. */}
-      <div className="flex-1 overflow-y-auto" tabIndex={0} role="group" aria-label={t("title")}>
+      <div className="flex-1 overflow-y-auto" tabIndex={0} role="group" aria-label={t("Contacts")}>
         {sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-6 text-center">
             {searchQuery || activeFilters > 0 ? (
@@ -533,21 +533,21 @@ export function ContactList({
                   <Search className="w-10 h-10 mb-3 text-muted-foreground" />
                 )}
                 <p className="text-sm font-medium text-foreground">
-                  {searchQuery ? t("empty_search") : t("empty_filtered")}
+                  {searchQuery ? t("No contacts match your search") : t("No contacts match your filters")}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {searchQuery ? t("empty_search_hint") : t("empty_filtered_hint")}
+                  {searchQuery ? t("Try a different search term") : t("Try adjusting or clearing filters")}
                 </p>
                 <div className="flex gap-2 mt-3">
                   {searchQuery && (
                     <Button variant="outline" size="sm" onClick={() => onSearchChange("")}>
-                      {t("clear_search")}
+                      {t("Clear search")}
                     </Button>
                   )}
                   {activeFilters > 0 && (
                     <Button variant="outline" size="sm" onClick={() => setFilters(EMPTY_FILTERS)}>
                       <RotateCcw className="w-3.5 h-3.5 me-1" />
-                      {t("filters.clear")}
+                      {t("Clear")}
                     </Button>
                   )}
                 </div>
@@ -555,11 +555,11 @@ export function ContactList({
             ) : (
               <>
                 <BookUser className="w-10 h-10 mb-3 text-muted-foreground" />
-                <p className="text-sm font-medium text-foreground">{t("empty_state_title")}</p>
-                <p className="text-xs text-muted-foreground mt-1">{t("empty_state_subtitle")}</p>
+                <p className="text-sm font-medium text-foreground">{t("No contacts yet")}</p>
+                <p className="text-xs text-muted-foreground mt-1">{t("Create your first contact or import from a vCard file")}</p>
                 <Button size="sm" className="mt-3" onClick={onCreateNew}>
                   <UserPlus className="w-4 h-4 me-1.5" />
-                  {t("create_new")}
+                  {t("New Contact")}
                 </Button>
               </>
             )}

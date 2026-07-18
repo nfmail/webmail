@@ -25,7 +25,7 @@ export function ContactGroupList({
   searchQuery,
   className,
 }: ContactGroupListProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
 
   const filtered = useMemo(() => {
     if (!searchQuery) return groups;
@@ -46,7 +46,7 @@ export function ContactGroupList({
       <div className="px-4 py-2 border-b border-border">
         <Button size="sm" variant="outline" onClick={onCreateGroup} className="w-full">
           <Plus className="w-4 h-4 me-1" />
-          {t("groups.create")}
+          {t("New Group")}
         </Button>
       </div>
 
@@ -55,7 +55,7 @@ export function ContactGroupList({
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground px-4">
             <Users className="w-10 h-10 mb-3 opacity-30" />
             <p className="text-sm">
-              {searchQuery ? t("empty_search") : t("groups.empty")}
+              {searchQuery ? t("No contacts match your search") : t("No groups yet")}
             </p>
           </div>
         ) : (
@@ -83,7 +83,7 @@ export function ContactGroupList({
                       {getContactDisplayName(group)}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {t("groups.member_count", { count: memberCount })}
+                      {t("{count, plural, =0 {No members} one {1 member} other {# members}}", { count: memberCount })}
                     </div>
                   </div>
                 </button>

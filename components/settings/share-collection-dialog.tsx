@@ -149,8 +149,8 @@ export function ShareCollectionDialog({
   onShare,
   onClose,
 }: ShareCollectionDialogProps) {
-  const t = useTranslations("sharing");
-  const tCommon = useTranslations("common");
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const [allPrincipals, setAllPrincipals] = useState<SharePrincipal[]>([]);
   const [loadingPrincipals, setLoadingPrincipals] = useState(true);
   const [search, setSearch] = useState("");
@@ -196,9 +196,9 @@ export function ShareCollectionDialog({
     setSavingId(principalId);
     try {
       await onShare(principalId, rights);
-      toast.success(t("share_updated"));
+      toast.success(t("Access updated"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("share_failed"));
+      toast.error(err instanceof Error ? err.message : t("Failed to update sharing"));
     } finally {
       setSavingId(null);
     }
@@ -208,9 +208,9 @@ export function ShareCollectionDialog({
     setSavingId(principalId);
     try {
       await onShare(principalId, null);
-      toast.success(t("share_removed"));
+      toast.success(t("Access removed"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("share_failed"));
+      toast.error(err instanceof Error ? err.message : t("Failed to update sharing"));
     } finally {
       setSavingId(null);
     }
@@ -224,9 +224,9 @@ export function ShareCollectionDialog({
       await onShare(principal.id, rights);
       setShowAdd(false);
       setSearch("");
-      toast.success(t("share_added"));
+      toast.success(t("Access granted"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("share_failed"));
+      toast.error(err instanceof Error ? err.message : t("Failed to update sharing"));
     } finally {
       setSavingId(null);
     }
@@ -257,16 +257,16 @@ export function ShareCollectionDialog({
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5 text-primary" />
             <DialogTitle className="text-lg font-semibold">
-              {t("title", { name: collectionName })}
+              {t("Share \"{name}\"", { name: collectionName })}
             </DialogTitle>
           </div>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogDescription>{t("Grant access to other users or groups on this server. Changes take effect immediately.")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 overflow-y-auto px-6 py-4">
           {sharedEntries.length === 0 && !showAdd && (
             <div className="text-sm text-muted-foreground italic py-4 text-center">
-              {t("no_shares")}
+              {t("Not shared with anyone yet.")}
             </div>
           )}
 
@@ -306,7 +306,7 @@ export function ShareCollectionDialog({
                           <SelectItem key={p} value={p}>{t(`preset.${p}`)}</SelectItem>
                         ))}
                         {preset === "custom" && (
-                          <SelectItem value="custom">{t("preset.custom")}</SelectItem>
+                          <SelectItem value="custom">{t("Custom")}</SelectItem>
                         )}
                       </SelectContent>
                     </Select>
@@ -314,8 +314,8 @@ export function ShareCollectionDialog({
                       onClick={() => handleRemove(principalId)}
                       disabled={savingId === principalId}
                       className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
-                      aria-label={t("remove")}
-                      title={t("remove")}
+                      aria-label={t("Remove access")}
+                      title={t("Remove access")}
                     >
                       {savingId === principalId
                         ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -334,7 +334,7 @@ export function ShareCollectionDialog({
               className="w-full"
             >
               <UserPlus className="w-4 h-4 me-2" />
-              {t("add_person")}
+              {t("Add person or group")}
             </Button>
           )}
 
@@ -344,19 +344,19 @@ export function ShareCollectionDialog({
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={t("search_placeholder")}
+                placeholder={t("Search by name or email…")}
                 autoFocus
               />
               <div className="max-h-48 overflow-y-auto -mx-1">
                 {loadingPrincipals && (
                   <div className="flex items-center justify-center py-4 text-muted-foreground">
                     <Loader2 className="w-4 h-4 animate-spin me-2" />
-                    {t("loading_principals")}
+                    {t("Loading users…")}
                   </div>
                 )}
                 {!loadingPrincipals && filteredPrincipals.length === 0 && (
                   <div className="text-xs text-muted-foreground text-center py-3">
-                    {search.trim() ? t("no_match") : t("no_principals")}
+                    {search.trim() ? t("No matches.") : t("No other users or groups found.")}
                   </div>
                 )}
                 {!loadingPrincipals && filteredPrincipals.map((p) => (
@@ -378,7 +378,7 @@ export function ShareCollectionDialog({
                           {p.name}
                           {p.type === "group" && (
                             <span className="text-[10px] uppercase font-normal text-muted-foreground bg-muted rounded px-1 py-0.5">
-                              {t("group")}
+                              {t("Group")}
                             </span>
                           )}
                         </div>
@@ -393,7 +393,7 @@ export function ShareCollectionDialog({
               </div>
               <div className="flex justify-end pt-1">
                 <Button variant="ghost" size="sm" onClick={() => { setShowAdd(false); setSearch(""); }}>
-                  {tCommon("cancel")}
+                  {tCommon("Cancel")}
                 </Button>
               </div>
             </div>
@@ -401,7 +401,7 @@ export function ShareCollectionDialog({
         </div>
 
         <DialogFooter className="border-t border-border px-6 py-4 sm:justify-end">
-          <Button onClick={onClose}>{tCommon("close")}</Button>
+          <Button onClick={onClose}>{tCommon("Close")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -110,7 +110,7 @@ export function FilterRuleModal({
   onSave,
   onClose,
 }: FilterRuleModalProps) {
-  const t = useTranslations("settings.filters");
+  const t = useTranslations();
   const isEdit = !!rule;
   const emailKeywords = useSettingsStore((state) => state.emailKeywords);
 
@@ -144,7 +144,7 @@ export function FilterRuleModal({
   const handleSave = useCallback(() => {
     const trimmedName = name.trim();
     if (!trimmedName) {
-      toast.error(t("validation_empty_name"));
+      toast.error(t("Rule name is required"));
       return;
     }
 
@@ -166,7 +166,7 @@ export function FilterRuleModal({
         return { ...c, value: parsed };
       });
     if (validConditions.length === 0) {
-      toast.error(t("validation_empty_conditions"));
+      toast.error(t("At least one condition with a value is required"));
       return;
     }
 
@@ -174,7 +174,7 @@ export function FilterRuleModal({
       (a) => !ACTIONS_WITH_VALUE.has(a.type) || a.value?.trim()
     );
     if (validActions.length === 0) {
-      toast.error(t("validation_empty_actions"));
+      toast.error(t("At least one action is required"));
       return;
     }
 
@@ -251,18 +251,18 @@ export function FilterRuleModal({
     <Dialog open onOpenChange={(next) => { if (!next) onClose(); }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEdit ? t("edit_rule") : t("new_rule")}</DialogTitle>
+          <DialogTitle>{isEdit ? t("Edit Rule") : t("New Rule")}</DialogTitle>
         </DialogHeader>
 
         <FieldGroup>
           {/* Rule name */}
           <Field>
-            <FieldLabel htmlFor="filter-rule-name">{t("rule_name")}</FieldLabel>
+            <FieldLabel htmlFor="filter-rule-name">{t("Rule Name")}</FieldLabel>
             <Input
               id="filter-rule-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={t("rule_name_placeholder")}
+              placeholder={t("e.g., Sort newsletters")}
               maxLength={200}
               autoFocus
             />
@@ -270,28 +270,28 @@ export function FilterRuleModal({
 
           {/* Match type */}
           <Field>
-            <FieldLabel>{t("match_type")}</FieldLabel>
+            <FieldLabel>{t("Match type")}</FieldLabel>
             <ToggleGroup
               type="single"
               variant="outline"
               value={matchType}
-              aria-label={t("match_type")}
+              aria-label={t("Match type")}
               // A match type is single-select and cannot be empty; ignore the
               // deselect event Radix emits when the active item is toggled off.
               onValueChange={(next) => next && setMatchType(next as "all" | "any")}
             >
               <ToggleGroupItem value="all" className="text-xs">
-                {t("match_all")}
+                {t("Match ALL conditions")}
               </ToggleGroupItem>
               <ToggleGroupItem value="any" className="text-xs">
-                {t("match_any")}
+                {t("Match ANY condition")}
               </ToggleGroupItem>
             </ToggleGroup>
           </Field>
 
           {/* Conditions */}
           <Field>
-            <FieldLabel>{t("conditions")}</FieldLabel>
+            <FieldLabel>{t("Conditions")}</FieldLabel>
             <div className="flex flex-col gap-2">
               {conditions.map((condition, index) => (
                 <div key={index} className="flex items-center gap-2 flex-wrap">
@@ -301,7 +301,7 @@ export function FilterRuleModal({
                       updateCondition(index, { field: v as FilterConditionField })
                     }
                   >
-                    <SelectTrigger size="sm" className="w-auto" aria-label={t("conditions")}>
+                    <SelectTrigger size="sm" className="w-auto" aria-label={t("Conditions")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -319,7 +319,7 @@ export function FilterRuleModal({
                       onChange={(e) =>
                         updateCondition(index, { headerName: e.target.value })
                       }
-                      placeholder={t("header_name")}
+                      placeholder={t("Header name")}
                       className="w-28"
                     />
                   )}
@@ -330,7 +330,7 @@ export function FilterRuleModal({
                       updateCondition(index, { comparator: v as FilterComparator })
                     }
                   >
-                    <SelectTrigger size="sm" className="w-auto" aria-label={t("comparators.contains")}>
+                    <SelectTrigger size="sm" className="w-auto" aria-label={t("contains")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -378,10 +378,10 @@ export function FilterRuleModal({
                       }}
                       placeholder={
                         condition.field === "size"
-                          ? t("size_placeholder")
+                          ? t("e.g., 1000000")
                           : condition.field === "attachment"
-                            ? t("attachment_type_placeholder")
-                            : t("value_placeholder_multi")
+                            ? t("e.g. pdf, doc, jpg")
+                            : t("Value (multiple separated by commas)")
                       }
                       className="flex-1 min-w-[120px]"
                       type={condition.field === "size" ? "number" : "text"}
@@ -393,7 +393,7 @@ export function FilterRuleModal({
                     onClick={() => removeCondition(index)}
                     disabled={conditions.length <= 1}
                     className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-destructive transition-colors disabled:opacity-30 disabled:pointer-events-none"
-                    aria-label={t("delete_rule")}
+                    aria-label={t("Delete Rule")}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -405,14 +405,14 @@ export function FilterRuleModal({
                 className="flex items-center gap-1 self-start text-sm text-primary hover:underline"
               >
                 <Plus className="w-3.5 h-3.5" />
-                {t("add_condition")}
+                {t("Add Condition")}
               </button>
             </div>
           </Field>
 
           {/* Actions */}
           <Field>
-            <FieldLabel>{t("actions")}</FieldLabel>
+            <FieldLabel>{t("Actions")}</FieldLabel>
             <div className="flex flex-col gap-2">
               {actions.map((action, index) => (
                 <div key={index} className="flex items-center gap-2 flex-wrap">
@@ -422,7 +422,7 @@ export function FilterRuleModal({
                       updateAction(index, { type: v as FilterActionType })
                     }
                   >
-                    <SelectTrigger size="sm" className="w-auto" aria-label={t("actions")}>
+                    <SelectTrigger size="sm" className="w-auto" aria-label={t("Actions")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -442,12 +442,12 @@ export function FilterRuleModal({
                       <SelectTrigger
                         size="sm"
                         className="flex-1 min-w-[140px]"
-                        aria-label={t("move_to_folder")}
+                        aria-label={t("Select folder")}
                       >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={EMPTY_VALUE_SENTINEL}>{t("move_to_folder")}</SelectItem>
+                        <SelectItem value={EMPTY_VALUE_SENTINEL}>{t("Select folder")}</SelectItem>
                         {hierarchicalMailboxes.map((mb) => (
                           <SelectItem key={mb.id} value={mailboxPathMap.get(mb.id) || mb.name}>
                             {" ".repeat(mb.depth * 3)}{mb.name}
@@ -461,7 +461,7 @@ export function FilterRuleModal({
                     <Input
                       value={action.value || ""}
                       onChange={(e) => updateAction(index, { value: e.target.value })}
-                      placeholder={t("forward_placeholder")}
+                      placeholder={t("email@example.com")}
                       type="email"
                       className="flex-1 min-w-[180px]"
                     />
@@ -471,7 +471,7 @@ export function FilterRuleModal({
                     <Input
                       value={action.value || ""}
                       onChange={(e) => updateAction(index, { value: e.target.value })}
-                      placeholder={t("reject_placeholder")}
+                      placeholder={t("Your email has been rejected")}
                       className="flex-1 min-w-[180px]"
                     />
                   )}
@@ -484,12 +484,12 @@ export function FilterRuleModal({
                       <SelectTrigger
                         size="sm"
                         className="flex-1 min-w-[140px]"
-                        aria-label={t("label_placeholder")}
+                        aria-label={t("Select tag")}
                       >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={EMPTY_VALUE_SENTINEL}>{t("label_placeholder")}</SelectItem>
+                        <SelectItem value={EMPTY_VALUE_SENTINEL}>{t("Select tag")}</SelectItem>
                         {emailKeywords.map((kw) => (
                           <SelectItem key={kw.id} value={kw.id}>{kw.label}</SelectItem>
                         ))}
@@ -502,7 +502,7 @@ export function FilterRuleModal({
                     onClick={() => removeAction(index)}
                     disabled={actions.length <= 1}
                     className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-destructive transition-colors disabled:opacity-30 disabled:pointer-events-none"
-                    aria-label={t("delete_rule")}
+                    aria-label={t("Delete Rule")}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -514,7 +514,7 @@ export function FilterRuleModal({
                 className="flex items-center gap-1 self-start text-sm text-primary hover:underline"
               >
                 <Plus className="w-3.5 h-3.5" />
-                {t("add_action")}
+                {t("Add Action")}
               </button>
             </div>
           </Field>
@@ -527,17 +527,17 @@ export function FilterRuleModal({
               onCheckedChange={(checked) => setStopProcessing(checked === true)}
             />
             <FieldLabel htmlFor="stopProcessing" className="font-normal">
-              {t("stop_processing")}
+              {t("Stop processing subsequent rules")}
             </FieldLabel>
           </Field>
         </FieldGroup>
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            {t("cancel")}
+            {t("Cancel")}
           </Button>
           <Button onClick={handleSave} disabled={!name.trim()}>
-            {t("save")}
+            {t("Save Rules")}
           </Button>
         </DialogFooter>
       </DialogContent>

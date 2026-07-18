@@ -31,7 +31,7 @@ function AccountAvatar({ account, size = "sm" }: { account: AccountEntry; size?:
 }
 
 export function AccountSwitcher({ variant = "rail", className }: AccountSwitcherProps) {
-  const t = useTranslations("sidebar");
+  const t = useTranslations();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -278,7 +278,7 @@ export function AccountSwitcher({ variant = "rail", className }: AccountSwitcher
                 role="menuitem"
               >
                 <Plus className="w-4 h-4" />
-                {t("add_account")}
+                {t("Add account")}
               </button>
             </div>
           )}
@@ -292,7 +292,7 @@ export function AccountSwitcher({ variant = "rail", className }: AccountSwitcher
                 role="menuitem"
               >
                 <Star className="w-4 h-4" />
-                {t("set_as_default")}
+                {t("Set as default")}
               </button>
             )}
             <button
@@ -301,7 +301,7 @@ export function AccountSwitcher({ variant = "rail", className }: AccountSwitcher
               role="menuitem"
             >
               <LogOut className="w-4 h-4" />
-              {t("sign_out_of", { account: displayEmail })}
+              {t("Sign out of {account}", { account: displayEmail })}
             </button>
             {accounts.length > 1 && (
               <button
@@ -310,7 +310,7 @@ export function AccountSwitcher({ variant = "rail", className }: AccountSwitcher
                 role="menuitem"
               >
                 <LogOut className="w-4 h-4" />
-                {t("sign_out_all")}
+                {t("Sign out of all accounts")}
               </button>
             )}
           </div>

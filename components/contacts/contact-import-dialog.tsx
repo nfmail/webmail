@@ -20,7 +20,7 @@ export function ContactImportDialog({
   onImport,
   onClose,
 }: ContactImportDialogProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
   const fileRef = useRef<HTMLInputElement>(null);
   const [parsed, setParsed] = useState<ContactCard[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -37,7 +37,7 @@ export function ContactImportDialog({
     setResult(null);
 
     if (file.size > 5 * 1024 * 1024) {
-      setError(t("import.file_too_large"));
+      setError(t("File is too large (max 5 MB)"));
       return;
     }
 
@@ -46,7 +46,7 @@ export function ContactImportDialog({
       const contacts = parseVCard(text);
 
       if (contacts.length === 0) {
-        setError(t("import.no_contacts"));
+        setError(t("No contacts found in file"));
         return;
       }
 
@@ -61,7 +61,7 @@ export function ContactImportDialog({
       setSelected(initialSelected);
     } catch (error) {
       console.error('Failed to parse vCard:', error);
-      setError(t("import.parse_error"));
+      setError(t("Failed to parse vCard file"));
     }
   }, [existingContacts, t]);
 
@@ -93,7 +93,7 @@ export function ContactImportDialog({
       setResult(count);
     } catch (error) {
       console.error('Failed to import contacts:', error);
-      setError(t("import.failed"));
+      setError(t("Import failed"));
     } finally {
       setIsImporting(false);
     }
@@ -102,8 +102,8 @@ export function ContactImportDialog({
   return (
     <div className="flex flex-col h-full">
       <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{t("import.title")}</h2>
-        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8" aria-label={t("import.close")}>
+        <h2 className="text-lg font-semibold">{t("Import Contacts")}</h2>
+        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8" aria-label={t("Close")}>
           <X className="w-4 h-4" />
         </Button>
       </div>
@@ -114,9 +114,9 @@ export function ContactImportDialog({
             <div className="w-12 h-12 rounded-full bg-success/15 flex items-center justify-center mb-4">
               <Check className="w-6 h-6 text-success" />
             </div>
-            <p className="text-sm font-medium">{t("import.success", { count: result })}</p>
+            <p className="text-sm font-medium">{t("{count, plural, one {1 contact imported} other {# contacts imported}}", { count: result })}</p>
             <Button variant="outline" size="sm" onClick={onClose} className="mt-4">
-              {t("import.close")}
+              {t("Close")}
             </Button>
           </div>
         ) : parsed.length === 0 ? (
@@ -140,8 +140,8 @@ export function ContactImportDialog({
               )}
             >
               <Upload className="w-8 h-8" />
-              <p className="text-sm font-medium">{t("import.drop_hint")}</p>
-              <p className="text-xs">{t("import.file_types")}</p>
+              <p className="text-sm font-medium">{t("Click to select a vCard file")}</p>
+              <p className="text-xs">{t(".vcf or .vcard files")}</p>
             </button>
 
             {error && (
@@ -162,14 +162,14 @@ export function ContactImportDialog({
 
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                {t("import.found", { count: parsed.length })}
+                {t("{count, plural, one {1 contact found} other {# contacts found}}", { count: parsed.length })}
               </p>
               <div className="flex gap-2">
                 <Button variant="ghost" size="sm" onClick={selectAll}>
-                  {t("import.select_all")}
+                  {t("Select all")}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={deselectAll}>
-                  {t("import.deselect_all")}
+                  {t("Deselect all")}
                 </Button>
               </div>
             </div>
@@ -206,7 +206,7 @@ export function ContactImportDialog({
                     </div>
                     {isDupe && (
                       <span className="text-xs px-1.5 py-0.5 rounded bg-warning/15 text-warning flex-shrink-0">
-                        {t("import.duplicate")}
+                        {t("Duplicate")}
                       </span>
                     )}
                   </button>
@@ -220,14 +220,14 @@ export function ContactImportDialog({
       {parsed.length > 0 && result === null && (
         <div className="flex items-center justify-between px-6 py-4 border-t border-border">
           <p className="text-sm text-muted-foreground">
-            {t("import.selected", { count: selected.size })}
+            {t("{count, plural, one {1 selected} other {# selected}}", { count: selected.size })}
           </p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose} disabled={isImporting}>
-              {t("form.cancel")}
+              {t("Cancel")}
             </Button>
             <Button onClick={handleImport} disabled={isImporting || selected.size === 0}>
-              {isImporting ? t("import.importing") : t("import.import_button")}
+              {isImporting ? t("Importing...") : t("Import")}
             </Button>
           </div>
         </div>

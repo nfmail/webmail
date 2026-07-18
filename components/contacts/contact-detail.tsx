@@ -115,7 +115,7 @@ function formatDate(dateInput: AnniversaryDate): string {
 }
 
 export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDuplicate, onCompose, isMobile, className }: ContactDetailProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
 
   const cryptoKeys = contact?.cryptoKeys ? Object.values(contact.cryptoKeys) : [];
 
@@ -123,7 +123,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
     return (
       <div className={cn("flex flex-col items-center justify-center h-full text-muted-foreground", className)}>
         <BookUser className="w-16 h-16 mb-4 opacity-20" />
-        <p className="text-sm">{t("detail.no_contact_selected")}</p>
+        <p className="text-sm">{t("Select a contact to view details")}</p>
       </div>
     );
   }
@@ -135,7 +135,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
   const handleExport = () => {
     exportContact(contact);
-    toast.success(t("export.success", { count: 1 }));
+    toast.success(t("{count, plural, one {1 contact exported} other {# contacts exported}}", { count: 1 }));
   };
 
   const handlePrint = () => {
@@ -144,15 +144,15 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
   const moreItems: MoreItem[] = [];
   if (onAddToGroup) {
-    moreItems.push({ icon: Users, label: t("context_menu.add_to_group"), onClick: onAddToGroup });
+    moreItems.push({ icon: Users, label: t("Add to group"), onClick: onAddToGroup });
   }
   if (onDuplicate) {
-    moreItems.push({ icon: Copy, label: t("context_menu.duplicate"), onClick: onDuplicate });
+    moreItems.push({ icon: Copy, label: t("Duplicate"), onClick: onDuplicate });
   }
-  moreItems.push({ icon: Download, label: t("context_menu.export_vcard"), onClick: handleExport });
-  moreItems.push({ icon: Printer, label: t("context_menu.print"), onClick: handlePrint });
+  moreItems.push({ icon: Download, label: t("Export as vCard"), onClick: handleExport });
+  moreItems.push({ icon: Printer, label: t("Print"), onClick: handlePrint });
   moreItems.push({ separator: true });
-  moreItems.push({ icon: Trash2, label: t("context_menu.delete"), onClick: onDelete, destructive: true });
+  moreItems.push({ icon: Trash2, label: t("Delete"), onClick: onDelete, destructive: true });
   const emails = contact.emails ? Object.values(contact.emails) : [];
   const phones = contact.phones ? Object.values(contact.phones) : [];
   const orgs = contact.organizations ? Object.values(contact.organizations) : [];
@@ -202,7 +202,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 className="touch-manipulation"
               >
                 <Send className="w-4 h-4 me-1" />
-                {t("detail.compose_email")}
+                {t("Compose email")}
               </Button>
             )}
             {phone && (
@@ -211,24 +211,24 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 className="inline-flex items-center justify-center rounded-md font-medium h-9 px-3 text-sm border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors touch-manipulation"
               >
                 <Phone className="w-4 h-4 me-1" />
-                {t("context_menu.call")}
+                {t("Call")}
               </a>
             )}
             <Button variant="outline" size="sm" onClick={onEdit} className="touch-manipulation">
               <Pencil className="w-4 h-4 me-1" />
-              {t("form.edit_title")}
+              {t("Edit Contact")}
             </Button>
-            <MoreActionsMenu items={moreItems} label={t("detail.more_actions")} />
+            <MoreActionsMenu items={moreItems} label={t("More actions")} />
           </div>
         </div>
       </div>
 
       <div className={cn("divide-y divide-border/60", isMobile ? "px-4" : "px-6")}>
         {hasContactDetails && (
-          <Section title={t("detail.section_contact")}>
+          <Section title={t("Contact details")}>
             <div className="space-y-3">
               {emails.map((e, i) => (
-                <FieldRow key={`em${i}`} icon={Mail} label={e.label || formatContexts(e.contexts) || t("detail.email_default_label")}>
+                <FieldRow key={`em${i}`} icon={Mail} label={e.label || formatContexts(e.contexts) || t("Email")}>
                   <div className="flex items-center gap-2 group">
                     <a href={`mailto:${e.address}`} className="text-sm text-primary hover:underline break-all">
                       {e.address}
@@ -237,12 +237,12 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                       <a
                         href={`mailto:${e.address}`}
                         className="p-1.5 rounded hover:bg-muted transition-colors touch-manipulation"
-                        title={t("detail.compose_email")}
-                        aria-label={t("detail.compose_email")}
+                        title={t("Compose email")}
+                        aria-label={t("Compose email")}
                       >
                         <Send className="w-3.5 h-3.5 text-muted-foreground" />
                       </a>
-                      <CopyButton value={e.address} label={t("detail.copy_email")} successMsg={t("detail.copied")} failMsg={t("detail.copy_failed")} />
+                      <CopyButton value={e.address} label={t("Copy email")} successMsg={t("Copied to clipboard")} failMsg={t("Failed to copy to clipboard")} />
                     </RowActions>
                   </div>
                 </FieldRow>
@@ -252,13 +252,13 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 const features = formatPhoneFeatures(p.features);
                 const labelParts = [p.label, formatContexts(p.contexts), features].filter(Boolean) as string[];
                 return (
-                  <FieldRow key={`ph${i}`} icon={Phone} label={labelParts.length ? labelParts.join(" · ") : t("detail.phone_default_label")}>
+                  <FieldRow key={`ph${i}`} icon={Phone} label={labelParts.length ? labelParts.join(" · ") : t("Phone")}>
                     <div className="flex items-center gap-2 group">
                       <a href={`tel:${p.number}`} className="text-sm text-primary hover:underline">
                         {p.number}
                       </a>
                       <RowActions>
-                        <CopyButton value={p.number} label={t("detail.copy_phone")} successMsg={t("detail.copied")} failMsg={t("detail.copy_failed")} />
+                        <CopyButton value={p.number} label={t("Copy phone number")} successMsg={t("Copied to clipboard")} failMsg={t("Failed to copy to clipboard")} />
                       </RowActions>
                     </div>
                   </FieldRow>
@@ -279,13 +279,13 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                   lines.push(...parts);
                 }
                 return (
-                  <FieldRow key={`ad${i}`} icon={MapPin} label={formatContexts(a.contexts) || t("detail.address_default_label")}>
+                  <FieldRow key={`ad${i}`} icon={MapPin} label={formatContexts(a.contexts) || t("Address")}>
                     <div className="text-sm space-y-0.5">
                       {lines.map((line, idx) => (
                         <div key={idx}>{line}</div>
                       ))}
                       {a.timeZone && (
-                        <div className="text-xs text-muted-foreground">{t("detail.timezone")}: {a.timeZone}</div>
+                        <div className="text-xs text-muted-foreground">{t("Timezone")}: {a.timeZone}</div>
                       )}
                     </div>
                   </FieldRow>
@@ -296,7 +296,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 <FieldRow
                   key={`os${i}`}
                   icon={Globe}
-                  label={[svc.service, formatContexts(svc.contexts)].filter(Boolean).join(" · ") || t("detail.online_service_default_label")}
+                  label={[svc.service, formatContexts(svc.contexts)].filter(Boolean).join(" · ") || t("Online")}
                 >
                   <div className="flex items-center gap-2 group">
                     {typeof svc.uri === 'string' && svc.uri.startsWith("http") ? (
@@ -307,7 +307,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                       <span className="text-sm break-all">{svc.user || String(svc.uri ?? '')}</span>
                     )}
                     <RowActions>
-                      <CopyButton value={svc.user || svc.uri} label={t("detail.copy_url")} successMsg={t("detail.copied")} failMsg={t("detail.copy_failed")} />
+                      <CopyButton value={svc.user || svc.uri} label={t("Copy URL")} successMsg={t("Copied to clipboard")} failMsg={t("Failed to copy to clipboard")} />
                     </RowActions>
                   </div>
                 </FieldRow>
@@ -317,10 +317,10 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         )}
 
         {hasWork && (
-          <Section title={t("detail.section_work")}>
+          <Section title={t("Work")}>
             <div className="space-y-3">
               {orgs.map((o, i) => (
-                <FieldRow key={`org${i}`} icon={Building} label={t("detail.organization_label")}>
+                <FieldRow key={`org${i}`} icon={Building} label={t("Organization")}>
                   <div className="text-sm">
                     {o.name}
                     {o.units && o.units.length > 0 && (
@@ -333,7 +333,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 <FieldRow
                   key={`tl${i}`}
                   icon={Briefcase}
-                  label={tl.kind === "role" ? t("detail.role_label") : t("detail.title_label")}
+                  label={tl.kind === "role" ? t("Role") : t("Title")}
                 >
                   <div className="text-sm">{tl.name}</div>
                 </FieldRow>
@@ -343,7 +343,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         )}
 
         {hasPersonal && (
-          <Section title={t("detail.section_personal")}>
+          <Section title={t("Personal")}>
             <div className="space-y-3">
               {anniversaries.map((ann, i) => {
                 const years = getCompletedYears(ann.date);
@@ -360,7 +360,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 );
               })}
               {hasGender && (
-                <FieldRow icon={UserCircle} label={t("detail.gender")}>
+                <FieldRow icon={UserCircle} label={t("Gender")}>
                   <div className="text-sm">
                     {contact.speakToAs?.grammaticalGender && (
                       <span>{t(`detail.gender_${contact.speakToAs.grammaticalGender}`, { defaultValue: contact.speakToAs.grammaticalGender })}</span>
@@ -378,7 +378,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 <FieldRow
                   key={`lg${i}`}
                   icon={Languages}
-                  label={formatContexts(lang.contexts) || t("detail.language_label")}
+                  label={formatContexts(lang.contexts) || t("Language")}
                 >
                   <div className="text-sm">{lang.language}</div>
                 </FieldRow>
@@ -397,7 +397,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         )}
 
         {keywords.length > 0 && (
-          <Section title={t("detail.categories")}>
+          <Section title={t("Categories")}>
             <div className="flex flex-wrap gap-1.5">
               {keywords.map((kw, i) => (
                 <span key={i} className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
@@ -409,12 +409,12 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         )}
 
         {relatedTo.length > 0 && (
-          <Section title={t("detail.related_contacts")}>
+          <Section title={t("Related Contacts")}>
             <div className="space-y-2">
               {relatedTo.map(([uri, rel], i) => {
                 const relType = rel.relation ? Object.keys(rel.relation).find(k => rel.relation![k]) : undefined;
                 return (
-                  <FieldRow key={`rel${i}`} icon={Users} label={relType || t("detail.related_default_label")}>
+                  <FieldRow key={`rel${i}`} icon={Users} label={relType || t("Related")}>
                     <div className="text-sm break-all">{uri}</div>
                   </FieldRow>
                 );
@@ -424,7 +424,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         )}
 
         {cryptoKeys.length > 0 && (
-          <Section title={t("detail.crypto_keys")}>
+          <Section title={t("Crypto Keys")}>
             <div className="space-y-3">
               {cryptoKeys.map((key, i) => (
                 <div key={i} className="rounded-md border border-border/60 bg-muted/30 p-3 space-y-1">
@@ -445,24 +445,24 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         )}
 
         {(contact.calendarUri || contact.schedulingUri || contact.freeBusyUri) && (
-          <Section title={t("detail.calendar")}>
+          <Section title={t("Calendar")}>
             <div className="space-y-3">
               {contact.calendarUri && (
-                <FieldRow icon={Calendar} label={t("detail.calendar_uri")}>
+                <FieldRow icon={Calendar} label={t("Calendar URL")}>
                   <a href={contact.calendarUri} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                     {contact.calendarUri}
                   </a>
                 </FieldRow>
               )}
               {contact.schedulingUri && (
-                <FieldRow icon={Calendar} label={t("detail.scheduling_uri")}>
+                <FieldRow icon={Calendar} label={t("Scheduling URL")}>
                   <a href={contact.schedulingUri} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                     {contact.schedulingUri}
                   </a>
                 </FieldRow>
               )}
               {contact.freeBusyUri && (
-                <FieldRow icon={Calendar} label={t("detail.freebusy_uri")}>
+                <FieldRow icon={Calendar} label={t("Free/Busy URL")}>
                   <a href={contact.freeBusyUri} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                     {contact.freeBusyUri}
                   </a>
@@ -473,7 +473,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         )}
 
         {notes.length > 0 && (
-          <Section title={t("detail.notes")}>
+          <Section title={t("Notes")}>
             <div className="flex items-start gap-3">
               <StickyNote className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
               <div className="text-sm space-y-2 flex-1 min-w-0">
@@ -489,8 +489,8 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
         {(contact.created || contact.updated) && (
           <div className="py-4 text-xs text-muted-foreground space-y-1">
-            {contact.created && <div>{t("detail.created")}: {formatDate(contact.created)}</div>}
-            {contact.updated && <div>{t("detail.updated")}: {formatDate(contact.updated)}</div>}
+            {contact.created && <div>{t("Created")}: {formatDate(contact.created)}</div>}
+            {contact.updated && <div>{t("Last updated")}: {formatDate(contact.updated)}</div>}
           </div>
         )}
       </div>

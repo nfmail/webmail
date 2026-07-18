@@ -10,8 +10,8 @@ import { formatDate } from '@/lib/utils';
 import { SettingsSection, SettingItem, Select, RadioGroup } from './settings-section';
 
 export function LanguageSettings() {
-  const t = useTranslations('settings.language_region');
-  const tDays = useTranslations('calendar.days');
+  const t = useTranslations();
+  const tDays = useTranslations();
 
   const { dateFormat, dateLocale, timeFormat, firstDayOfWeek, updateSetting } = useSettingsStore();
 
@@ -41,74 +41,74 @@ export function LanguageSettings() {
   }, [locale, dateFormat, dateLocale, timeFormat]);
 
   return (
-    <SettingsSection title={t('title')} description={t('description')}>
-      <SettingItem label={t('language.label')} description={t('language.description')}>
+    <SettingsSection title={t("Language, Region & Time")} description={t("Language, date format, time format, and other regional preferences")}>
+      <SettingItem label={t("Language")} description={t("Choose your preferred language")}>
         <LanguageSwitcher />
       </SettingItem>
 
-      <SettingItem label={t('date_format.label')} description={t('date_format.description')} htmlFor="date-format-select">
+      <SettingItem label={t("Date Format")} description={t("How dates are shown in the email list")} htmlFor="date-format-select">
         <div className="flex flex-col items-end gap-2">
           <Select
             id="date-format-select"
             value={dateFormat}
             onChange={(value) => updateSetting('dateFormat', value as DateFormat)}
             options={[
-              { value: 'smart', label: t('date_format.smart') },
-              { value: 'relative', label: t('date_format.relative') },
-              { value: 'full', label: t('date_format.full') },
+              { value: 'smart', label: t("Smart (locale-aware)") },
+              { value: 'relative', label: t("Relative (1h ago, 2d ago)") },
+              { value: 'full', label: t("Always full date") },
             ]}
           />
           <div className="flex flex-col gap-0.5 text-xs text-muted-foreground text-end font-mono">
             <div>
-              <span className="opacity-70">{t('date_format.preview_today')} </span>
+              <span className="opacity-70">{t("Today:")} </span>
               <span className="text-foreground">{preview.today}</span>
             </div>
             <div>
-              <span className="opacity-70">{t('date_format.preview_this_week')} </span>
+              <span className="opacity-70">{t("This week:")} </span>
               <span className="text-foreground">{preview.thisWeek}</span>
             </div>
             <div>
-              <span className="opacity-70">{t('date_format.preview_older')} </span>
+              <span className="opacity-70">{t("Older:")} </span>
               <span className="text-foreground">{preview.older}</span>
             </div>
           </div>
         </div>
       </SettingItem>
 
-      <SettingItem label={t('date_locale.label')} description={t('date_locale.description')} htmlFor="date-locale-select">
+      <SettingItem label={t("Date format region")} description={t("How numeric dates are ordered (day, month, year)")} htmlFor="date-locale-select">
         <Select
           id="date-locale-select"
           value={dateLocale}
           onChange={(value) => updateSetting('dateLocale', value as DateLocale)}
           options={[
-            { value: 'auto', label: t('date_locale.auto') },
-            { value: 'iso', label: t('date_locale.iso') },
-            { value: 'en-GB', label: t('date_locale.dmy') },
-            { value: 'en-US', label: t('date_locale.mdy') },
+            { value: 'auto', label: t("Automatic (match language)") },
+            { value: 'iso', label: t("ISO 8601 (YYYY-MM-DD)") },
+            { value: 'en-GB', label: t("Day/Month/Year") },
+            { value: 'en-US', label: t("Month/Day/Year") },
           ]}
         />
       </SettingItem>
 
-      <SettingItem label={t('time_format.label')} description={t('time_format.description')}>
+      <SettingItem label={t("Time Format")} description={t("Choose between 12-hour or 24-hour clock")}>
         <RadioGroup
           value={timeFormat}
           onChange={(value) => updateSetting('timeFormat', value as TimeFormat)}
           options={[
-            { value: '12h', label: t('time_format.12h') },
-            { value: '24h', label: t('time_format.24h') },
+            { value: '12h', label: t("12-hour") },
+            { value: '24h', label: t("24-hour") },
           ]}
         />
       </SettingItem>
 
-      <SettingItem label={t('first_day.label')} description={t('first_day.description')} htmlFor="first-day-of-week-select">
+      <SettingItem label={t("First Day of Week")} description={t("Start week on Sunday or Monday")} htmlFor="first-day-of-week-select">
         <Select
           id="first-day-of-week-select"
           value={firstDayOfWeek.toString()}
           onChange={(value) => updateSetting('firstDayOfWeek', parseInt(value) as FirstDayOfWeek)}
           options={[
-            { value: '1', label: tDays('monday') },
-            { value: '6', label: tDays('saturday') },
-            { value: '0', label: tDays('sunday') },
+            { value: '1', label: tDays("Monday") },
+            { value: '6', label: tDays("Saturday") },
+            { value: '0', label: tDays("Sunday") },
           ]}
         />
       </SettingItem>

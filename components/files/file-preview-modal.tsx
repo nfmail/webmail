@@ -143,7 +143,7 @@ function processInline(text: string): React.ReactNode {
 }
 
 export function FilePreviewModal({ name, onClose, onDownload, getFileContent }: FilePreviewModalProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
   const [content, setContent] = useState<string | null>(null);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -293,8 +293,8 @@ export function FilePreviewModal({ name, onClose, onDownload, getFileContent }: 
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              title={t("open_in_new_tab")}
-              aria-label={t("open_in_new_tab")}
+              title={t("Open in new tab")}
+              aria-label={t("Open in new tab")}
               onClick={() => window.open(objectUrl, "_blank", "noopener,noreferrer")}
             >
               <ExternalLink className="w-4 h-4" />
@@ -317,7 +317,7 @@ export function FilePreviewModal({ name, onClose, onDownload, getFileContent }: 
         )}
 
         {error && (
-          <p className="text-sm text-destructive">{t("preview_error")}</p>
+          <p className="text-sm text-destructive">{t("Failed to load preview")}</p>
         )}
 
         {!loading && !error && (fileType === "text") && content !== null && (

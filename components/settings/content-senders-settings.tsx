@@ -11,7 +11,7 @@ import { useContactStore } from '@/stores/contact-store';
 import { useAuthStore } from '@/stores/auth-store';
 
 export function ContentSendersSettings() {
-  const t = useTranslations('settings.email_behavior');
+  const t = useTranslations();
   const [showTrustedModal, setShowTrustedModal] = useState(false);
   const { isSettingLocked, isSettingHidden, isFeatureEnabled } = usePolicyStore();
 
@@ -34,15 +34,15 @@ export function ContentSendersSettings() {
 
   const getTrustedSendersCount = () => {
     const count = trustedSendersAddressBook ? trustedSenderEmails.length : trustedSenders.length;
-    if (count === 0) return t('trusted_senders.count_zero');
-    if (count === 1) return t('trusted_senders.count_one');
-    return t('trusted_senders.count_other', { count });
+    if (count === 0) return t("None");
+    if (count === 1) return t("1 sender");
+    return t("{count} senders", { count });
   };
 
   return (
-    <SettingsSection title={t('title')} description={t('description')}>
+    <SettingsSection title={t("Email Behavior")} description={t("Configure how emails are handled")}>
       {isFeatureEnabled('externalContentEnabled') && !isSettingHidden('externalContentPolicy') && (
-      <SettingItem label={t('external_content.label')} description={t('external_content.description')} locked={isSettingLocked('externalContentPolicy')} htmlFor="external-content-policy-select">
+      <SettingItem label={t("External Content")} description={t("How to handle images and external content")} locked={isSettingLocked('externalContentPolicy')} htmlFor="external-content-policy-select">
         <Select
           id="external-content-policy-select"
           value={externalContentPolicy}
@@ -50,15 +50,15 @@ export function ContentSendersSettings() {
             updateSetting('externalContentPolicy', value as 'ask' | 'block' | 'allow')
           }
           options={[
-            { value: 'ask', label: t('external_content.ask') },
-            { value: 'block', label: t('external_content.block') },
-            { value: 'allow', label: t('external_content.allow') },
+            { value: 'ask', label: t("Always ask") },
+            { value: 'block', label: t("Always block") },
+            { value: 'allow', label: t("Always allow") },
           ]}
         />
       </SettingItem>
       )}
 
-      <SettingItem label={t('always_light_mode.label')} description={t('always_light_mode.description')} htmlFor="email-always-light-mode-toggle">
+      <SettingItem label={t("Always Show Emails in Light Mode")} description={t("Render email content in light mode even when the app is in dark mode, avoiding dark mode conversion issues")} htmlFor="email-always-light-mode-toggle">
         <ToggleSwitch
           id="email-always-light-mode-toggle"
           checked={emailAlwaysLightMode}
@@ -66,7 +66,7 @@ export function ContentSendersSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('trusted_senders.label')} description={t('trusted_senders.description')}>
+      <SettingItem label={t("Trusted Senders")} description={t("Manage senders whose images load automatically")}>
         <button
           onClick={() => setShowTrustedModal(true)}
           className="flex items-center gap-2 px-3 py-1.5 bg-muted hover:bg-accent rounded-md transition-colors"
@@ -76,7 +76,7 @@ export function ContentSendersSettings() {
         </button>
       </SettingItem>
 
-      <SettingItem label={t('trusted_senders.use_address_book_label')} description={t('trusted_senders.use_address_book_description')} htmlFor="trusted-senders-use-address-book-toggle">
+      <SettingItem label={t("Sync with address book")} description={t("Store trusted senders in a dedicated \"Trusted Senders\" address book so they sync across all your devices")} htmlFor="trusted-senders-use-address-book-toggle">
         <ToggleSwitch
           id="trusted-senders-use-address-book-toggle"
           checked={!!trustedSendersAddressBook}

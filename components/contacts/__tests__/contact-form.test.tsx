@@ -16,7 +16,7 @@ const existingContact: ContactCard = {
 describe('ContactForm', () => {
   it('renders create form with empty fields', () => {
     render(<ContactForm onSave={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText('create_title')).toBeInTheDocument();
+    expect(screen.getByText('New Contact')).toBeInTheDocument();
     const inputs = screen.getAllByRole('textbox');
     const emptyInputs = inputs.filter(i => (i as HTMLInputElement).value === '');
     expect(emptyInputs.length).toBeGreaterThan(0);
@@ -24,7 +24,7 @@ describe('ContactForm', () => {
 
   it('renders edit form with pre-populated data', () => {
     render(<ContactForm contact={existingContact} onSave={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText('edit_title')).toBeInTheDocument();
+    expect(screen.getByText('Edit Contact')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Alice')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Smith')).toBeInTheDocument();
   });
@@ -32,33 +32,33 @@ describe('ContactForm', () => {
   it('calls onCancel when cancel button is clicked', () => {
     const onCancel = vi.fn();
     render(<ContactForm onSave={vi.fn()} onCancel={onCancel} />);
-    fireEvent.click(screen.getByText('cancel'));
+    fireEvent.click(screen.getByText('Cancel'));
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
   it('shows error on submit with empty name', async () => {
     const onSave = vi.fn();
     render(<ContactForm onSave={onSave} onCancel={vi.fn()} />);
-    fireEvent.submit(screen.getByText('save').closest('form')!);
+    fireEvent.submit(screen.getByText('Save').closest('form')!);
     await waitFor(() => {
-      expect(screen.getByText('name_required')).toBeInTheDocument();
+      expect(screen.getByText('At least a first name or last name is required')).toBeInTheDocument();
     });
     expect(onSave).not.toHaveBeenCalled();
   });
 
   it('adds email entry when add button is clicked', () => {
     render(<ContactForm onSave={vi.fn()} onCancel={vi.fn()} />);
-    const emailInputsBefore = screen.getAllByPlaceholderText('email_placeholder');
-    fireEvent.click(screen.getByText('add_email'));
-    const emailInputsAfter = screen.getAllByPlaceholderText('email_placeholder');
+    const emailInputsBefore = screen.getAllByPlaceholderText('email@example.com');
+    fireEvent.click(screen.getByText('Add email'));
+    const emailInputsAfter = screen.getAllByPlaceholderText('email@example.com');
     expect(emailInputsAfter.length).toBe(emailInputsBefore.length + 1);
   });
 
   it('adds phone entry when add button is clicked', () => {
     render(<ContactForm onSave={vi.fn()} onCancel={vi.fn()} />);
-    const phoneBefore = screen.queryAllByPlaceholderText('phone_placeholder');
-    fireEvent.click(screen.getByText('add_phone'));
-    const phoneAfter = screen.getAllByPlaceholderText('phone_placeholder');
+    const phoneBefore = screen.queryAllByPlaceholderText('+1 234 567 890');
+    fireEvent.click(screen.getByText('Add phone'));
+    const phoneAfter = screen.getAllByPlaceholderText('+1 234 567 890');
     expect(phoneAfter.length).toBe(phoneBefore.length + 1);
   });
 
@@ -72,8 +72,8 @@ describe('ContactForm', () => {
     };
     render(<ContactForm contact={contactWithPhoto} onSave={onSave} onCancel={vi.fn()} />);
 
-    fireEvent.click(screen.getByText('remove_photo'));
-    fireEvent.submit(screen.getByText('save').closest('form')!);
+    fireEvent.click(screen.getByText('Remove photo'));
+    fireEvent.submit(screen.getByText('Save').closest('form')!);
 
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledOnce();
@@ -91,7 +91,7 @@ describe('ContactForm', () => {
     const givenNameInput = screen.getByPlaceholderText('given_name');
     fireEvent.change(givenNameInput, { target: { value: 'Jane' } });
 
-    fireEvent.submit(screen.getByText('save').closest('form')!);
+    fireEvent.submit(screen.getByText('Save').closest('form')!);
 
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledOnce();

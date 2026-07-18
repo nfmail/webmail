@@ -258,7 +258,7 @@ export default function ProHome() {
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground mx-auto"></div>
-          <p className="mt-4 text-sm text-muted-foreground">{t("common.loading")}</p>
+          <p className="mt-4 text-sm text-muted-foreground">{t("Loading...")}</p>
         </div>
       </div>
     );
@@ -319,7 +319,7 @@ export default function ProHome() {
         {/* Page-level heading for assistive tech (axe page-has-heading-one).
             Reflects the active tab's title in the Pro workspace. */}
         <h1 className="sr-only">
-          {tabs.find((tab) => tab.id === activeMainTabId)?.title ?? t("sidebar.mail")}
+          {tabs.find((tab) => tab.id === activeMainTabId)?.title ?? t("Mail")}
         </h1>
         <div className="flex flex-1 overflow-hidden">
           {/* Leftmost Navigation Rail - identical to the standard layout */}

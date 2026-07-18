@@ -81,7 +81,7 @@ export function CalendarEditForm({
   onCancel: () => void;
   isLoading: boolean;
 }) {
-  const t = useTranslations('calendar.management');
+  const t = useTranslations();
   const [name, setName] = useState(initial?.name || '');
   const [color, setColor] = useState(initial?.color || '#3b82f6');
 
@@ -91,7 +91,7 @@ export function CalendarEditForm({
     <div className="flex flex-col gap-3 p-3 rounded-md border border-primary/30 bg-accent/30">
       <FieldGroup>
         <Field>
-          <FieldLabel htmlFor="calendar-name">{t('name')}</FieldLabel>
+          <FieldLabel htmlFor="calendar-name">{t("Name")}</FieldLabel>
           <Input
             id="calendar-name"
             type="text"
@@ -101,14 +101,14 @@ export function CalendarEditForm({
               if (e.key === 'Enter' && isValid) onSave({ name: name.trim(), color });
               if (e.key === 'Escape') onCancel();
             }}
-            placeholder={t('name_placeholder')}
+            placeholder={t("Calendar name")}
             autoFocus
             disabled={isLoading}
           />
         </Field>
 
         <Field>
-          <FieldLabel>{t('color')}</FieldLabel>
+          <FieldLabel>{t("Color")}</FieldLabel>
           <CalendarColorPicker value={color} onChange={setColor} allowCustom />
         </Field>
       </FieldGroup>
@@ -119,14 +119,14 @@ export function CalendarEditForm({
           disabled={isLoading || !isValid}
           className="px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
         >
-          {initial ? t('save') : t('create')}
+          {initial ? t("Save") : t("Create")}
         </button>
         <button
           onClick={onCancel}
           disabled={isLoading}
           className="px-3 py-1.5 text-xs bg-muted text-foreground rounded-md hover:bg-accent"
         >
-          {t('cancel')}
+          {t("Cancel")}
         </button>
       </div>
     </div>
@@ -136,7 +136,7 @@ export function CalendarEditForm({
 export { CalendarColorPicker, CALENDAR_COLORS };
 
 export function CalendarManagementSettings() {
-  const t = useTranslations('calendar.management');
+  const t = useTranslations();
   const { client, serverUrl, username } = useAuthStore();
   const managedAccountId = useManagedAccountStore((s) => s.managedAccountId);
   const { calendars, updateCalendar, shareCalendar, createCalendar, removeCalendar, clearCalendarEvents, fetchCalendars, icalSubscriptions: allSubs, removeICalSubscription, refreshICalSubscription, isSubscriptionCalendar } = useCalendarStore();
@@ -163,8 +163,8 @@ export function CalendarManagementSettings() {
   const [editingSubscription, setEditingSubscription] = useState<typeof icalSubscriptions[0] | null>(null);
   const [deletingSubId, setDeletingSubId] = useState<string | null>(null);
   const [refreshingSubId, setRefreshingSubId] = useState<string | null>(null);
-  const tImport = useTranslations('calendar.import');
-  const tSub = useTranslations('calendar.subscription');
+  const tImport = useTranslations();
+  const tSub = useTranslations();
   const timeFormat = useSettingsStore((s) => s.timeFormat);
   const sharedCalendarColors = useSettingsStore((s) => s.sharedCalendarColors);
   const setSharedCalendarColor = useSettingsStore((s) => s.setSharedCalendarColor);
@@ -239,9 +239,9 @@ export function CalendarManagementSettings() {
     setRefreshingSubId(subId);
     try {
       await refreshICalSubscription(client, subId);
-      toast.success(tSub('refresh_success'));
+      toast.success(tSub("Subscription refreshed"));
     } catch {
-      toast.error(tSub('refresh_error'));
+      toast.error(tSub("Failed to refresh subscription"));
     } finally {
       setRefreshingSubId(null);
     }
@@ -253,9 +253,9 @@ export function CalendarManagementSettings() {
     try {
       await removeICalSubscription(client, subId);
       setDeletingSubId(null);
-      toast.success(tSub('deleted'));
+      toast.success(tSub("Subscription removed"));
     } catch {
-      toast.error(tSub('delete_error'));
+      toast.error(tSub("Failed to remove subscription"));
     } finally {
       setIsLoading(false);
     }
@@ -291,9 +291,9 @@ export function CalendarManagementSettings() {
         isSubscribed: true,
       });
       setIsCreating(false);
-      toast.success(t('calendar_created'));
+      toast.success(t("Calendar created"));
     } catch {
-      toast.error(t('error_create'));
+      toast.error(t("Failed to create calendar"));
     } finally {
       setIsLoading(false);
     }
@@ -305,9 +305,9 @@ export function CalendarManagementSettings() {
     try {
       await updateCalendar(client, calendarId, { name: data.name, color: data.color });
       setEditingId(null);
-      toast.success(t('calendar_updated'));
+      toast.success(t("Calendar updated"));
     } catch {
-      toast.error(t('error_update'));
+      toast.error(t("Failed to update calendar"));
     } finally {
       setIsLoading(false);
     }
@@ -320,15 +320,15 @@ export function CalendarManagementSettings() {
     const cal = calendars.find((c) => c.id === calendarId);
     if (cal?.isShared) {
       setSharedCalendarColor(sharedCalendarColorKey(cal), color);
-      toast.success(t('color_updated'));
+      toast.success(t("Calendar color updated"));
       setColorPickerId(null);
       return;
     }
     try {
       await updateCalendar(client, calendarId, { color });
-      toast.success(t('color_updated'));
+      toast.success(t("Calendar color updated"));
     } catch {
-      toast.error(t('error_update'));
+      toast.error(t("Failed to update calendar"));
     }
     setColorPickerId(null);
   };
@@ -339,9 +339,9 @@ export function CalendarManagementSettings() {
     try {
       await removeCalendar(client, calendarId);
       setDeletingId(null);
-      toast.success(t('calendar_deleted'));
+      toast.success(t("Calendar deleted"));
     } catch {
-      toast.error(t('error_delete'));
+      toast.error(t("Failed to delete calendar"));
     } finally {
       setIsLoading(false);
     }
@@ -353,9 +353,9 @@ export function CalendarManagementSettings() {
     try {
       const count = await clearCalendarEvents(client, calendarId);
       setClearingId(null);
-      toast.success(t('events_cleared', { count }));
+      toast.success(t("{count} events cleared", { count }));
     } catch {
-      toast.error(t('error_clear'));
+      toast.error(t("Failed to clear calendar events"));
     } finally {
       setIsLoading(false);
     }
@@ -372,7 +372,7 @@ export function CalendarManagementSettings() {
   const handleCopyUrl = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
-      toast.success(t('url_copied'));
+      toast.success(t("CalDAV URL copied to clipboard"));
     } catch {
       // Fallback for non-HTTPS contexts
       const textArea = document.createElement('textarea');
@@ -383,12 +383,12 @@ export function CalendarManagementSettings() {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      toast.success(t('url_copied'));
+      toast.success(t("CalDAV URL copied to clipboard"));
     }
   };
 
   return (
-    <SettingsSection title={t('title')} description={t('description')}>
+    <SettingsSection title={t("Calendar Management")} description={t("Create, rename, and customize your calendars. Right-click a calendar in the sidebar to quickly change its color.")}>
       <div className="flex flex-col gap-2">
         {calendars
           .filter(cal => !isSubscriptionCalendar(cal.id))
@@ -413,20 +413,20 @@ export function CalendarManagementSettings() {
               <div key={cal.id} className="flex items-center gap-3 py-2.5 px-3 bg-destructive/5 rounded-md border border-destructive/20">
                 <Trash2 className="w-4 h-4 text-destructive flex-shrink-0" />
                 <p className="text-sm text-foreground flex-1">
-                  {t('confirm_delete', { name: cal.name })}
+                  {t("Delete \"{name}\"? All events in this calendar will be removed.", { name: cal.name })}
                 </p>
                 <button
                   onClick={() => handleDelete(cal.id)}
                   disabled={isLoading}
                   className="px-3 py-1 text-xs font-medium bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 disabled:opacity-50"
                 >
-                  {t('delete')}
+                  {t("Delete")}
                 </button>
                 <button
                   onClick={() => setDeletingId(null)}
                   className="px-3 py-1 text-xs bg-muted text-foreground rounded-md hover:bg-accent"
                 >
-                  {t('cancel')}
+                  {t("Cancel")}
                 </button>
               </div>
             );
@@ -437,20 +437,20 @@ export function CalendarManagementSettings() {
               <div key={cal.id} className="flex items-center gap-3 py-2.5 px-3 bg-warning/5 rounded-md border border-warning/20">
                 <Eraser className="w-4 h-4 text-warning flex-shrink-0" />
                 <p className="text-sm text-foreground flex-1">
-                  {t('confirm_clear', { name: cal.name })}
+                  {t("Clear all events from \"{name}\"? This cannot be undone.", { name: cal.name })}
                 </p>
                 <button
                   onClick={() => handleClear(cal.id)}
                   disabled={isLoading}
                   className="px-3 py-1 text-xs font-medium bg-warning text-warning-foreground rounded-md hover:bg-warning/90 disabled:opacity-50"
                 >
-                  {t('clear_events')}
+                  {t("Clear events")}
                 </button>
                 <button
                   onClick={() => setClearingId(null)}
                   className="px-3 py-1 text-xs bg-muted text-foreground rounded-md hover:bg-accent"
                 >
-                  {t('cancel')}
+                  {t("Cancel")}
                 </button>
               </div>
             );
@@ -468,7 +468,7 @@ export function CalendarManagementSettings() {
                   onClick={() => setColorPickerId(colorPickerId === cal.id ? null : cal.id)}
                   className="w-5 h-5 rounded-full shrink-0 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   style={{ backgroundColor: color }}
-                  title={t('change_color')}
+                  title={t("Change color")}
                 />
 
                 {/* Inline color picker popover */}
@@ -506,7 +506,7 @@ export function CalendarManagementSettings() {
                           handleCopyUrl(caldavUrl);
                         }}
                         className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-                        title={t('copy_url')}
+                        title={t("Copy CalDAV URL")}
                       >
                         <Copy className="w-3 h-3" />
                       </button>
@@ -517,7 +517,7 @@ export function CalendarManagementSettings() {
 
               {cal.isDefault && (
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                  {t('default')}
+                  {t("Default")}
                 </span>
               )}
 
@@ -527,7 +527,7 @@ export function CalendarManagementSettings() {
                 return (
                   <span
                     className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
-                    title={t('share')}
+                    title={t("Share calendar")}
                   >
                     <Users className="w-3 h-3" />
                     {shareCount}
@@ -540,7 +540,7 @@ export function CalendarManagementSettings() {
                   type="button"
                   onClick={() => setEditingId(cal.id)}
                   className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                  title={t('edit')}
+                  title={t("Edit")}
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
@@ -549,7 +549,7 @@ export function CalendarManagementSettings() {
                     type="button"
                     onClick={() => setSharingId(cal.id)}
                     className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                    title={t('share')}
+                    title={t("Share calendar")}
                   >
                     <Users className="w-3.5 h-3.5" />
                   </button>
@@ -558,7 +558,7 @@ export function CalendarManagementSettings() {
                   type="button"
                   onClick={() => setClearingId(cal.id)}
                   className="p-1.5 rounded-md hover:bg-warning/10 text-muted-foreground hover:text-warning transition-colors"
-                  title={t('clear_events')}
+                  title={t("Clear events")}
                 >
                   <Eraser className="w-3.5 h-3.5" />
                 </button>
@@ -567,7 +567,7 @@ export function CalendarManagementSettings() {
                     type="button"
                     onClick={() => setDeletingId(cal.id)}
                     className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                    title={t('delete')}
+                    title={t("Delete")}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -591,7 +591,7 @@ export function CalendarManagementSettings() {
               className="flex items-center gap-2 flex-1 py-2.5 px-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md border border-dashed border-border transition-colors"
             >
               <Plus className="w-4 h-4" />
-              {t('add_calendar')}
+              {t("Add calendar")}
             </button>
             <button
               type="button"
@@ -599,7 +599,7 @@ export function CalendarManagementSettings() {
               className="flex items-center gap-2 py-2.5 px-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md border border-dashed border-border transition-colors"
             >
               <Upload className="w-4 h-4" />
-              {tImport('title')}
+              {tImport("Import Calendar")}
             </button>
             <button
               type="button"
@@ -607,7 +607,7 @@ export function CalendarManagementSettings() {
               className="flex items-center gap-2 py-2.5 px-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md border border-dashed border-border transition-colors"
             >
               <Globe className="w-4 h-4" />
-              {tSub('title')}
+              {tSub("iCal Subscription")}
             </button>
           </div>
         )}
@@ -618,7 +618,7 @@ export function CalendarManagementSettings() {
         <div className="mt-6 flex flex-col gap-2">
           <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
             <Globe className="w-4 h-4 text-muted-foreground" />
-            {tSub('section_title')}
+            {tSub("iCal Subscriptions")}
           </h4>
           {icalSubscriptions.map((sub) => {
             if (deletingSubId === sub.id) {
@@ -626,20 +626,20 @@ export function CalendarManagementSettings() {
                 <div key={sub.id} className="flex items-center gap-3 py-2.5 px-3 bg-destructive/5 rounded-md border border-destructive/20">
                   <Trash2 className="w-4 h-4 text-destructive flex-shrink-0" />
                   <p className="text-sm text-foreground flex-1">
-                    {tSub('confirm_delete', { name: sub.name })}
+                    {tSub("Unsubscribe from \"{name}\"? The calendar and all its events will be removed.", { name: sub.name })}
                   </p>
                   <button
                     onClick={() => handleDeleteSubscription(sub.id)}
                     disabled={isLoading}
                     className="px-3 py-1 text-xs font-medium bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 disabled:opacity-50"
                   >
-                    {t('delete')}
+                    {t("Delete")}
                   </button>
                   <button
                     onClick={() => setDeletingSubId(null)}
                     className="px-3 py-1 text-xs bg-muted text-foreground rounded-md hover:bg-accent"
                   >
-                    {t('cancel')}
+                    {t("Cancel")}
                   </button>
                 </div>
               );
@@ -667,7 +667,7 @@ export function CalendarManagementSettings() {
                   })()}
                   {sub.lastRefreshed && (
                     <span className="text-xs text-muted-foreground">
-                      {tSub('last_refreshed', { time: formatDateTime(sub.lastRefreshed, timeFormat, { month: 'short', day: 'numeric', year: 'numeric' }) })}
+                      {tSub("Last updated: {time}", { time: formatDateTime(sub.lastRefreshed, timeFormat, { month: 'short', day: 'numeric', year: 'numeric' }) })}
                     </span>
                   )}
                 </div>
@@ -676,7 +676,7 @@ export function CalendarManagementSettings() {
                     type="button"
                     onClick={() => setEditingSubscription(sub)}
                     className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                    title={tSub('edit')}
+                    title={tSub("Edit")}
                   >
                     <Pencil className="w-3.5 h-3.5" />
                   </button>
@@ -685,7 +685,7 @@ export function CalendarManagementSettings() {
                     onClick={() => handleRefreshSubscription(sub.id)}
                     disabled={refreshingSubId === sub.id}
                     className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
-                    title={tSub('refresh')}
+                    title={tSub("Refresh now")}
                   >
                     <RefreshCw className={cn("w-3.5 h-3.5", refreshingSubId === sub.id && "animate-spin")} />
                   </button>
@@ -693,7 +693,7 @@ export function CalendarManagementSettings() {
                     type="button"
                     onClick={() => setDeletingSubId(sub.id)}
                     className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                    title={tSub('unsubscribe')}
+                    title={tSub("Unsubscribe")}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

@@ -4,8 +4,8 @@ import { ConfirmDialog } from '../confirm-dialog';
 
 /**
  * Characterization tests for ConfirmDialog. next-intl is mocked globally in
- * vitest.setup.ts so translation keys pass through verbatim ("confirm" /
- * "cancel"), which is what the default button labels resolve to here.
+ * vitest.setup.ts so translation keys pass through verbatim ("Confirm" /
+ * "Cancel"), which is what the default button labels resolve to here.
  */
 describe('ConfirmDialog (characterization)', () => {
   const baseProps = {

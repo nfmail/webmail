@@ -107,7 +107,7 @@ export function MailboxContextMenu({
   onImportEmail,
   onRefresh,
 }: MailboxContextMenuProps) {
-  const t = useTranslations("mailbox_context_menu");
+  const t = useTranslations();
 
   const handleAction = (action: () => void) => {
     action();
@@ -121,20 +121,20 @@ export function MailboxContextMenu({
       <ContextMenu ref={menuRef} isOpen={isOpen} position={position} onClose={onClose}>
         <ContextMenuItem
           icon={CheckCheck}
-          label={t("mark_all_folders_read")}
+          label={t("Mark all folders as read")}
           onClick={() => handleAction(onMarkAllFoldersRead!)}
           disabled={!onMarkAllFoldersRead}
         />
         <ContextMenuSeparator />
         <ContextMenuItem
           icon={FolderPlus}
-          label={t("new_folder")}
+          label={t("New folder...")}
           onClick={() => handleAction(onCreateFolder!)}
           disabled={!onCreateFolder}
         />
         <ContextMenuItem
           icon={RefreshCw}
-          label={t("refresh")}
+          label={t("Refresh")}
           onClick={() => handleAction(onRefresh!)}
           disabled={!onRefresh}
         />
@@ -164,14 +164,14 @@ export function MailboxContextMenu({
 
       <ContextMenuItem
         icon={MailOpen}
-        label={t("mark_folder_read")}
+        label={t("Mark folder as read")}
         onClick={() => handleAction(() => onMarkFolderRead?.(mailbox.id))}
         disabled={!onMarkFolderRead || !canSetSeen}
       />
       {target.hasChildren && (
         <ContextMenuItem
           icon={Mails}
-          label={t("mark_folder_tree_read")}
+          label={t("Mark folder & subfolders as read")}
           onClick={() => handleAction(() => onMarkFolderTreeRead?.(mailbox.id))}
           disabled={!onMarkFolderTreeRead || !canSetSeen}
         />
@@ -181,13 +181,13 @@ export function MailboxContextMenu({
 
       <ContextMenuItem
         icon={FolderPlus}
-        label={t("new_subfolder")}
+        label={t("New subfolder...")}
         onClick={() => handleAction(() => onCreateSubfolder?.(mailbox.id))}
         disabled={!onCreateSubfolder || !canCreateChild}
       />
       <ContextMenuItem
         icon={Pencil}
-        label={t("rename")}
+        label={t("Rename...")}
         onClick={() => handleAction(() => onRenameFolder?.(mailbox.id))}
         disabled={!onRenameFolder || !canRename}
       />
@@ -196,7 +196,7 @@ export function MailboxContextMenu({
 
       <ContextMenuItem
         icon={Upload}
-        label={t("import_email")}
+        label={t("Import .eml or .zip...")}
         onClick={() => handleAction(() => onImportEmail?.(mailbox.id))}
         disabled={!onImportEmail || !canAddItems}
       />
@@ -205,14 +205,14 @@ export function MailboxContextMenu({
 
       <ContextMenuItem
         icon={FolderX}
-        label={isTrashOrJunk ? t("empty_folder") : t("empty_folder_generic")}
+        label={isTrashOrJunk ? t("Empty folder") : t("Empty folder")}
         onClick={() => handleAction(() => onEmptyFolder?.(mailbox.id))}
         disabled={!onEmptyFolder || mailbox.totalEmails === 0 || !canRemoveItems}
         destructive
       />
       <ContextMenuItem
         icon={Trash2}
-        label={t("delete_folder")}
+        label={t("Delete folder")}
         onClick={() => handleAction(() => onDeleteFolder?.(mailbox.id))}
         disabled={!onDeleteFolder || !canDelete}
         destructive
@@ -222,7 +222,7 @@ export function MailboxContextMenu({
 
       <ContextMenuItem
         icon={RefreshCw}
-        label={t("refresh")}
+        label={t("Refresh")}
         onClick={() => handleAction(onRefresh!)}
         disabled={!onRefresh}
       />

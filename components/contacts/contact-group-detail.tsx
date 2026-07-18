@@ -32,7 +32,7 @@ export function ContactGroupDetail({
   isMobile,
   className,
 }: ContactGroupDetailProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
   const groupName = getContactDisplayName(group);
   const hasEmailMembers = members.some((m) => getContactPrimaryEmail(m).trim());
 
@@ -47,20 +47,20 @@ export function ContactGroupDetail({
             <div>
               <h2 className={cn("font-semibold", isMobile ? "text-lg" : "text-xl")}>{groupName}</h2>
               <p className="text-sm text-muted-foreground">
-                {t("groups.member_count", { count: members.length })}
+                {t("{count, plural, =0 {No members} one {1 member} other {# members}}", { count: members.length })}
               </p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={onEdit} className="touch-manipulation">
               <Pencil className="w-4 h-4 me-1" />
-              {t("form.edit_title")}
+              {t("Edit Contact")}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={onDelete}
-              aria-label={t("groups.delete_confirm_title")}
+              aria-label={t("Delete group")}
               className="text-destructive hover:text-destructive hover:bg-destructive/10 touch-manipulation"
             >
               <Trash2 className="w-4 h-4" />
@@ -70,7 +70,7 @@ export function ContactGroupDetail({
         {onComposeGroup && hasEmailMembers && (
           <div className="flex flex-wrap items-center gap-2 mt-4">
             <Mail className="w-4 h-4 text-muted-foreground" aria-hidden />
-            <span className="text-sm text-muted-foreground">{t("groups.send_email")}</span>
+            <span className="text-sm text-muted-foreground">{t("Send email to group")}</span>
             <div className="inline-flex gap-1">
               {(["to", "cc", "bcc"] as const).map((field) => (
                 <Button
@@ -90,11 +90,11 @@ export function ContactGroupDetail({
 
       <div className="px-6 py-4">
         <h3 className="text-sm font-medium text-muted-foreground mb-3">
-          {t("groups.members_label")}
+          {t("Members")}
         </h3>
         {members.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            {t("groups.no_members")}
+            {t("No members in this group")}
           </p>
         ) : (
           <div className="space-y-1">

@@ -26,7 +26,7 @@ export interface ParticipantInputHandle {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const ParticipantInput = forwardRef<ParticipantInputHandle, ParticipantInputProps>(function ParticipantInput({ participants, onAdd, onRemove, disabled }, ref) {
-  const t = useTranslations("calendar.participants");
+  const t = useTranslations();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Participant[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -122,7 +122,7 @@ export const ParticipantInput = forwardRef<ParticipantInputHandle, ParticipantIn
           onKeyDown={handleKeyDown}
           onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
           onBlur={handleBlur}
-          placeholder={t("email_placeholder")}
+          placeholder={t("Add email address or search contacts")}
           disabled={disabled}
           role="combobox"
           aria-expanded={showSuggestions}
@@ -178,7 +178,7 @@ export const ParticipantInput = forwardRef<ParticipantInputHandle, ParticipantIn
                     setTimeout(() => inputRef.current?.focus(), 0);
                   }}
                   className="truncate hover:underline focus:outline-none focus:underline cursor-text"
-                  aria-label={`${t("edit")} ${p.name || p.email}`}
+                  aria-label={`${t("Edit")} ${p.name || p.email}`}
                 >
                   {p.name || p.email}
                 </button>
@@ -190,7 +190,7 @@ export const ParticipantInput = forwardRef<ParticipantInputHandle, ParticipantIn
                   type="button"
                   onClick={() => onRemove(p.email)}
                   className="flex-shrink-0 p-0.5 rounded-full hover:bg-muted-foreground/20 transition-colors min-w-[20px] min-h-[20px] flex items-center justify-center"
-                  aria-label={`${t("remove")} ${p.name || p.email}`}
+                  aria-label={`${t("Remove")} ${p.name || p.email}`}
                 >
                   <X className="w-3 h-3" />
                 </button>

@@ -362,7 +362,7 @@ interface CalendarInvitationBannerProps {
 type BannerState = 'loading' | 'parsed' | 'rsvp-sent' | 'imported' | 'error';
 
 export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProps) {
-  const t = useTranslations('email_viewer.calendar_invitation');
+  const t = useTranslations();
   const format = useFormatter();
   const router = useRouter();
   const client = useAuthStore((s) => s.client);
@@ -504,7 +504,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
   const trustMessage = trustAssessment ? getTrustMessage(t, trustAssessment) : null;
   const participationLabel = getParticipationLabel(t, currentRsvp);
   const actorSummary = parsedEvent ? getInvitationActorSummary(parsedEvent, method) : null;
-  const actorName = actorSummary?.name || actorSummary?.email || t('actor_unknown');
+  const actorName = actorSummary?.name || actorSummary?.email || t("Someone");
   const actorStatus = getParticipationLabel(t, actorSummary?.participationStatus ?? null);
   const actorMessage = actorSummary ? getActorMessage(t, method, actorName, actorStatus) : null;
   // For REQUEST method, allow RSVP even if we can't find the user in participants:
@@ -563,13 +563,13 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
       if (eventForRsvp && existingEventParticipant) {
         await rsvpEvent(client, eventForRsvp.id, existingEventParticipant.id, status, replyToForRsvp);
         setRsvpStatus(status);
-        setActionNotice(t('rsvp_sent'));
+        setActionNotice(t("Response sent"));
         setState('parsed');
       } else if (eventForRsvp && canFallbackToParsedParticipant && myParticipant) {
         const repairedParticipants = buildParticipantsForRsvp(parsedEvent, myParticipant.id, status);
 
         if (!repairedParticipants) {
-          setActionError(t('action_failed'));
+          setActionError(t("Could not complete that calendar action."));
         } else {
           await updateEvent(client, eventForRsvp.id, {
             participants: repairedParticipants,
@@ -581,11 +581,11 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
               : {}),
           }, true);
           setRsvpStatus(status);
-          setActionNotice(t('rsvp_sent'));
+          setActionNotice(t("Response sent"));
           setState('parsed');
         }
       } else if (eventForRsvp) {
-        setActionError(t('action_failed'));
+        setActionError(t("Could not complete that calendar action."));
       } else if (calId) {
         const imported = await importEvents(client, [parsedEvent], calId);
         if (imported > 0) {
@@ -597,20 +597,20 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
           if (newEvent && participant) {
             await rsvpEvent(client, newEvent.id, participant.id, status, replyToForRsvp);
             setRsvpStatus(status);
-            setActionNotice(t('rsvp_sent'));
+            setActionNotice(t("Response sent"));
           } else {
-            setActionNotice(t('added'));
+            setActionNotice(t("Added to calendar"));
           }
           setState('parsed');
         } else {
-          setActionError(t('action_failed'));
+          setActionError(t("Could not complete that calendar action."));
         }
       } else {
-        setActionError(t('action_failed'));
+        setActionError(t("Could not complete that calendar action."));
       }
     } catch (err) {
       console.error('[CalendarInvitation] RSVP failed:', err);
-      setActionError(t('action_failed'));
+      setActionError(t("Could not complete that calendar action."));
     } finally {
       setIsProcessing(false);
     }
@@ -636,7 +636,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
   const handleImport = async (calendarId?: string) => {
     const calId = calendarId || selectedCalendarId || calendars.find((c) => c.isDefault)?.id || calendars[0]?.id;
     if (!client || !parsedEvent || !calId || isProcessing) {
-      if (!calId) setActionError(t('action_failed'));
+      if (!calId) setActionError(t("Could not complete that calendar action."));
       return;
     }
     setActionNotice(null);
@@ -645,13 +645,13 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
     try {
       const count = await importEvents(client, [parsedEvent], calId);
       if (count > 0) {
-        setActionNotice(t('added'));
+        setActionNotice(t("Added to calendar"));
         setState('parsed');
       } else {
-        setActionError(t('action_failed'));
+        setActionError(t("Could not complete that calendar action."));
       }
     } catch {
-      setActionError(t('action_failed'));
+      setActionError(t("Could not complete that calendar action."));
     } finally {
       setIsProcessing(false);
     }
@@ -703,11 +703,11 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
 
     try {
       await updateEvent(client, existingEvent.id, proposalPatch, true);
-      setActionNotice(t('proposal_applied'));
+      setActionNotice(t("Proposed changes applied."));
       setState('parsed');
       setRsvpStatus(null);
     } catch {
-      setActionError(t('action_failed'));
+      setActionError(t("Could not complete that calendar action."));
     } finally {
       setIsProcessing(false);
     }
@@ -721,7 +721,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          <span>{t('loading')}</span>
+          <span>{t("Loading event details…")}</span>
         </div>
       </div>
     );
@@ -733,7 +733,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
         <div className="w-10 h-10 rounded-full bg-destructive/15 text-destructive flex items-center justify-center flex-shrink-0 shadow-sm">
           <AlertCircle className="w-5 h-5" />
         </div>
-        <span className="text-sm text-destructive">{t('parse_error')}</span>
+        <span className="text-sm text-destructive">{t("Could not read invitation")}</span>
       </div>
     );
   }
@@ -806,7 +806,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {parsedEvent?.sequence != null && parsedEvent.sequence > 0 && (
               <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground whitespace-nowrap">
-                {t('event_updated', { sequence: parsedEvent.sequence })}
+                {t("Update #{sequence}", { sequence: parsedEvent.sequence })}
               </span>
             )}
             <button
@@ -819,7 +819,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-0.5 transition-colors"
             >
               {isCollapsed ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
-              {isCollapsed ? t('expand') : t('collapse')}
+              {isCollapsed ? t("Show details") : t("Hide details")}
             </button>
           </div>
         </div>
@@ -843,7 +843,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
               </span>
             )}
             {summary.attendeeCount > 0 && (
-              <span className="text-muted-foreground">{t('attendees', { count: summary.attendeeCount })}</span>
+              <span className="text-muted-foreground">{t("{count, plural, one {# attendee} other {# attendees}}", { count: summary.attendeeCount })}</span>
             )}
           </div>
         )}
@@ -852,7 +852,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
         {showDetails && summary?.organizer && (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground min-w-0">
             <Users className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="flex-shrink-0">{t('organizer_label')}</span>
+            <span className="flex-shrink-0">{t("Organized by")}</span>
             {summary.organizerEmail ? (
               <RecipientPopover
                 name={summary.organizer}
@@ -880,12 +880,12 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
             )}
             {existingEvent && (
               <span className="rounded-full bg-success/15 px-2 py-0.5 text-[11px] font-medium text-success">
-                {t('already_in_calendar')}
+                {t("Already in your calendar")}
               </span>
             )}
             {userIsOrganizer && (
               <span className="rounded-full bg-info/15 px-2 py-0.5 text-[11px] font-medium text-info">
-                {t('organizer_role')}
+                {t("You organize this event")}
               </span>
             )}
             {participationLabel && myParticipant && (
@@ -893,7 +893,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
                 'rounded-full px-2 py-0.5 text-[11px] font-medium',
                 getParticipationTone(currentRsvp),
               )}>
-                {t('your_response', { status: participationLabel })}
+                {t("Your response: {status}", { status: participationLabel })}
               </span>
             )}
             {actionNotice && (
@@ -910,7 +910,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
             {bannerInfo && <p className="leading-relaxed">{bannerInfo}</p>}
             {actorMessage && <p>{actorMessage}</p>}
             {actorSummary?.participationComment && (
-              <p className="italic">{t('actor_note', { comment: actorSummary.participationComment })}</p>
+              <p className="italic">{t("Note: {comment}", { comment: actorSummary.participationComment })}</p>
             )}
           </div>
         )}
@@ -931,12 +931,12 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
         {/* Proposed changes */}
         {showDetails && proposedChanges.length > 0 && (
           <div className="rounded-md border border-border bg-muted/30 px-3 py-2.5 text-xs">
-            <div className="font-medium text-foreground mb-1.5">{t('proposed_changes')}</div>
+            <div className="font-medium text-foreground mb-1.5">{t("Proposed changes")}</div>
             <div className="space-y-1.5">
               {proposedChanges.map((change) => (
                 <div key={change.label}>
                   <span className="font-medium text-foreground">{change.label}: </span>
-                  <span className="text-muted-foreground">{t('change_from_to', { before: change.before, after: change.after })}</span>
+                  <span className="text-muted-foreground">{t("{before} -> {after}", { before: change.before, after: change.after })}</span>
                 </div>
               ))}
             </div>
@@ -968,7 +968,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
                 )}
               >
                 <Check className="w-3.5 h-3.5" />
-                {t('accept')}
+                {t("Accept")}
               </button>
               <button
                 onClick={() => handleRsvp('tentative')}
@@ -982,7 +982,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
                 )}
               >
                 <HelpCircle className="w-3.5 h-3.5" />
-                {t('maybe')}
+                {t("Maybe")}
               </button>
               <button
                 onClick={() => handleRsvp('declined')}
@@ -996,7 +996,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
                 )}
               >
                 <X className="w-3.5 h-3.5" />
-                {t('decline')}
+                {t("Decline")}
               </button>
               <div className="w-px h-5 bg-border mx-1" />
             </>
@@ -1017,7 +1017,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
                   className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md border border-border hover:bg-muted transition-colors min-h-[36px] disabled:opacity-50"
                 >
                   <CalendarCheck className="w-3.5 h-3.5" />
-                  {t('add_to_calendar')}
+                  {t("Add to calendar")}
                   {calendars.length > 1 && <ChevronDown className="w-3 h-3" />}
                 </button>
               </PopoverAnchor>
@@ -1029,7 +1029,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
                   className="w-52 rounded-lg p-1"
                 >
                   <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                    {t('select_calendar')}
+                    {t("Select calendar")}
                   </div>
                   {calendars.map((cal) => (
                     <button
@@ -1059,7 +1059,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md border border-border hover:bg-muted transition-colors min-h-[36px] disabled:opacity-50"
             >
               <CalendarCheck className="w-3.5 h-3.5" />
-              {t('apply_proposal')}
+              {t("Apply proposed changes")}
             </button>
           )}
 
@@ -1075,7 +1075,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
           )}
 
           {!supportsCalendar && (
-            <span className="text-xs text-muted-foreground italic">{t('no_calendar')}</span>
+            <span className="text-xs text-muted-foreground italic">{t("Calendar not available")}</span>
           )}
 
           {isProcessing && (

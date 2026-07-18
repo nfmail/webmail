@@ -375,8 +375,8 @@ export function ContactSidebarPanel({
   onAddToContacts?: (email: string, name?: string) => void;
   onEditContact?: () => void;
 }) {
-  const t = useTranslations('email_viewer');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const name = contact ? getContactDisplayName(contact) : senderName || null;
   const primaryEmail = contact ? getContactPrimaryEmail(contact) : email;
   const emails = contact?.emails ? Object.values(contact.emails) : [];
@@ -388,9 +388,9 @@ export function ContactSidebarPanel({
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success(t('contact_sidebar.copied'));
+      toast.success(t("Copied!"));
     } catch {
-      toast.error(t('contact_sidebar.copy_failed'));
+      toast.error(t("Failed to copy"));
     }
   };
 
@@ -399,11 +399,11 @@ export function ContactSidebarPanel({
     <div className="w-[320px] shrink-0 border-s border-border bg-background flex flex-col h-full animate-in slide-in-from-right-5 duration-200">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-        <h3 className="text-sm font-semibold text-foreground truncate">{t('contact_sidebar.title')}</h3>
+        <h3 className="text-sm font-semibold text-foreground truncate">{t("Contact")}</h3>
         <button
           onClick={onClose}
           className="p-1 rounded hover:bg-muted transition-colors"
-          aria-label={t('contact_sidebar.close')}
+          aria-label={t("Close sidebar")}
         >
           <PanelRightClose className="w-4 h-4 text-muted-foreground" />
         </button>
@@ -441,27 +441,27 @@ export function ContactSidebarPanel({
           <a
             href={`mailto:${primaryEmail}`}
             className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-md hover:bg-muted transition-colors border border-border"
-            title={t('contact_sidebar.action_email_title')}
+            title={t("Send email")}
           >
             <Send className="w-3.5 h-3.5" />
-            {t('contact_sidebar.action_email')}
+            {t("Email")}
           </a>
           <button
             onClick={() => handleCopy(primaryEmail)}
             className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-md hover:bg-muted transition-colors border border-border"
-            title={t('contact_sidebar.action_copy_title')}
+            title={t("Copy email")}
           >
             <Copy className="w-3.5 h-3.5" />
-            {t('contact_sidebar.action_copy')}
+            {t("Copy")}
           </button>
           {contact && onEditContact && (
             <button
               onClick={onEditContact}
               className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-md hover:bg-muted transition-colors border border-border"
-              title={t('contact_sidebar.action_edit_title')}
+              title={t("Edit contact")}
             >
               <EditIcon className="w-3.5 h-3.5" />
-              {tCommon('edit')}
+              {tCommon("Edit")}
             </button>
           )}
         </div>
@@ -471,7 +471,7 @@ export function ContactSidebarPanel({
           <div className="px-4 pb-4 space-y-4">
             {/* Emails */}
             {emails.length > 0 && (
-              <SidebarSection icon={Mail} title={t('contact_sidebar.section_emails')}>
+              <SidebarSection icon={Mail} title={t("Emails")}>
                 {emails.map((e, i) => (
                   <div key={i} className="flex items-center gap-2 group">
                     <a href={`mailto:${e.address}`} className="text-sm text-primary hover:underline truncate">
@@ -496,7 +496,7 @@ export function ContactSidebarPanel({
 
             {/* Phones */}
             {phones.length > 0 && (
-              <SidebarSection icon={Phone} title={t('contact_sidebar.section_phones')}>
+              <SidebarSection icon={Phone} title={t("Phones")}>
                 {phones.map((p, i) => (
                   <div key={i} className="flex items-center gap-2 group">
                     <a href={`tel:${p.number}`} className="text-sm text-primary hover:underline">
@@ -521,7 +521,7 @@ export function ContactSidebarPanel({
 
             {/* Organizations */}
             {orgs.length > 1 && (
-              <SidebarSection icon={Building} title={t('contact_sidebar.section_organizations')}>
+              <SidebarSection icon={Building} title={t("Organizations")}>
                 {orgs.map((o, i) => (
                   <div key={i} className="text-sm">
                     {o.name}
@@ -535,7 +535,7 @@ export function ContactSidebarPanel({
 
             {/* Addresses */}
             {addresses.length > 0 && (
-              <SidebarSection icon={MapPin} title={t('contact_sidebar.section_addresses')}>
+              <SidebarSection icon={MapPin} title={t("Addresses")}>
                 {addresses.map((a, i) => (
                   <div key={i} className="text-sm text-muted-foreground">
                     {a.full || a.fullAddress
@@ -550,7 +550,7 @@ export function ContactSidebarPanel({
 
             {/* Notes */}
             {notes.length > 0 && (
-              <SidebarSection icon={StickyNote} title={t('contact_sidebar.section_notes')}>
+              <SidebarSection icon={StickyNote} title={t("Notes")}>
                 {notes.map((n, i) => (
                   <p key={i} className="text-sm text-muted-foreground whitespace-pre-wrap">{n.note}</p>
                 ))}
@@ -563,7 +563,7 @@ export function ContactSidebarPanel({
         {!contact && (
           <div className="px-4 pb-4 text-center space-y-3">
             <p className="text-xs text-muted-foreground">
-              {t('contact_sidebar.not_in_contacts')}
+              {t("Not in your contacts")}
             </p>
             {onAddToContacts && (
               <button
@@ -571,7 +571,7 @@ export function ContactSidebarPanel({
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 px-3 py-2 rounded-md hover:bg-muted transition-colors border border-border"
               >
                 <Mail className="w-3.5 h-3.5" />
-                {t('contact_sidebar.add_to_contacts')}
+                {t("Add to contacts")}
               </button>
             )}
           </div>
@@ -669,13 +669,13 @@ export function EmailViewer({
   selectedMailbox = "",
   className,
 }: EmailViewerProps) {
-  const t = useTranslations('email_viewer');
-  const tComposer = useTranslations('email_composer');
-  const tNotifications = useTranslations('notifications');
-  const tCommon = useTranslations('common');
-  const tFiles = useTranslations('files');
-  const tDemoWelcome = useTranslations('demo_welcome');
-  const tWelcome = useTranslations('welcome');
+  const t = useTranslations();
+  const tComposer = useTranslations();
+  const tNotifications = useTranslations();
+  const tCommon = useTranslations();
+  const tFiles = useTranslations();
+  const tDemoWelcome = useTranslations();
+  const tWelcome = useTranslations();
   const externalContentPolicy = useSettingsStore((state) => state.externalContentPolicy);
   const mailAttachmentAction = useSettingsStore((state) => state.mailAttachmentAction);
   const attachmentPosition = useSettingsStore((state) => state.attachmentPosition);
@@ -762,24 +762,24 @@ export function EmailViewer({
     await sendClient.sendEmail(fields.to, fields.subject ?? '', fields.body ?? '', undefined, undefined, fromIdentity?.id, fromIdentity?.email, undefined, fromIdentity?.name);
   };
   const promptForRescheduleDelayedUntil = useCallback((): string | null => {
-    const value = window.prompt(t('reschedule_prompt'));
+    const value = window.prompt(t("Enter a new date/time, e.g. 2026-05-04T15:30"));
     if (!value) return null;
     const time = new Date(value).getTime();
     if (!Number.isFinite(time)) {
-      toast.error(tComposer('schedule_send_invalid'));
+      toast.error(tComposer("Enter a valid date and time."));
       return null;
     }
     if (time <= Date.now()) {
-      toast.error(tComposer('schedule_send_future'));
+      toast.error(tComposer("Choose a future date and time."));
       return null;
     }
     if (!client?.hasDelayedSend()) {
-      toast.error(tComposer('schedule_send_unsupported'));
+      toast.error(tComposer("Scheduled send is not supported for this account."));
       return null;
     }
     const maxDelayedSend = client.getMaxDelayedSend();
     if (maxDelayedSend > 0 && time > Date.now() + maxDelayedSend * 1000) {
-      toast.error(tComposer('schedule_send_too_late'));
+      toast.error(tComposer("This time is later than the server allows."));
       return null;
     }
     return new Date(time).toISOString();
@@ -1586,7 +1586,7 @@ export function EmailViewer({
       const source = generateEmailSource(email);
       await navigator.clipboard.writeText(source);
       // Could add a toast notification here
-      console.log(tNotifications('source_copied'));
+      console.log(tNotifications("Source copied to clipboard"));
     } catch (err) {
       console.error('Failed to copy source:', err);
     }
@@ -1737,7 +1737,7 @@ export function EmailViewer({
     }
 
     return {
-      html: `<p style="color: var(--color-muted-foreground); font-style: italic;">${t('no_body_content')}</p>`,
+      html: `<p style="color: var(--color-muted-foreground); font-style: italic;">${t("(No body content available)")}</p>`,
       isHtml: false,
       hasStyleTag: false,
       externalBlocked: false,
@@ -1993,16 +1993,16 @@ export function EmailViewer({
         <button
           onClick={(e) => { e.stopPropagation(); handleDownloadAllAttachments(); }}
           disabled={isDownloadingAll}
-          aria-label={t('download_all')}
+          aria-label={t("Download all")}
           className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md border border-border/50 transition-colors flex-shrink-0 disabled:opacity-60 disabled:cursor-wait"
         >
           {isDownloadingAll
             ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
             : <FileArchive className="w-3.5 h-3.5" />}
-          {t('download_all')}
+          {t("Download all")}
         </button>
       </TooltipTrigger>
-      <TooltipContent>{t('download_all')}</TooltipContent>
+      <TooltipContent>{t("Download all")}</TooltipContent>
     </Tooltip>
   ) : null;
 
@@ -2411,7 +2411,7 @@ export function EmailViewer({
     try {
       await client.downloadBlob(email.blobId, emailExportFilename(email, emailFilenameOptions), 'message/rfc822');
     } catch {
-      toast.error(tNotifications('export_email_error'));
+      toast.error(tNotifications("Failed to export email"));
       return;
     }
     const action = useSettingsStore.getState().postExportAction;
@@ -2433,7 +2433,7 @@ export function EmailViewer({
       const mailbox = mailboxes.find(mb => mb.id === selectedMailbox);
       const mailboxId = mailbox?.originalId || selectedMailbox;
       if (!mailboxId) {
-        toast.error(tNotifications('import_email_error'));
+        toast.error(tNotifications("Failed to import email"));
         return;
       }
 
@@ -2441,7 +2441,7 @@ export function EmailViewer({
       try {
         emails = await expandImportableEmails(files);
       } catch {
-        toast.error(tNotifications('import_email_error'));
+        toast.error(tNotifications("Failed to import email"));
         return;
       }
 
@@ -2457,11 +2457,11 @@ export function EmailViewer({
       }
 
       if (imported > 0) {
-        toast.success(tNotifications('import_email_success'));
+        toast.success(tNotifications("Email imported successfully"));
         await fetchEmails(client);
       }
       if (failed > 0 || emails.length === 0) {
-        toast.error(tNotifications('import_email_error'));
+        toast.error(tNotifications("Failed to import email"));
       }
     };
     input.click();
@@ -2476,10 +2476,10 @@ export function EmailViewer({
       r.name ? `${escapeHtml(r.name)} &lt;${escapeHtml(r.email)}&gt;` : escapeHtml(r.email);
     const toList = email.to?.map(formatRecipient).join(', ') || '';
     const ccList = email.cc?.map(formatRecipient).join(', ') || '';
-    const subjectText = email.subject || t('no_subject');
+    const subjectText = email.subject || t("(No Subject)");
     const senderText = printSender?.name
       ? `${printSender.name} <${printSender.email}>`
-      : printSender?.email || t('unknown_sender');
+      : printSender?.email || t("Unknown");
     // The body was sanitized with EMAIL_IFRAME_SANITIZE_CONFIG which permits
     // <style>. The print window has no iframe isolation, so re-sanitize with
     // the stricter config that forbids <style> before injecting into the DOM.
@@ -2505,10 +2505,10 @@ export function EmailViewer({
 <div class="header">
   <div class="subject">${escapeHtml(subjectText)}</div>
   <div class="meta">
-    <div><strong>${escapeHtml(t('from'))}:</strong> ${escapeHtml(senderText)}</div>
-    ${toList ? `<div><strong>${escapeHtml(t('to'))}:</strong> ${toList}</div>` : ''}
+    <div><strong>${escapeHtml(t("From"))}:</strong> ${escapeHtml(senderText)}</div>
+    ${toList ? `<div><strong>${escapeHtml(t("To"))}:</strong> ${toList}</div>` : ''}
     ${ccList ? `<div><strong>CC:</strong> ${ccList}</div>` : ''}
-    ${date ? `<div><strong>${escapeHtml(t('date'))}:</strong> ${escapeHtml(date)}</div>` : ''}
+    ${date ? `<div><strong>${escapeHtml(t("Date"))}:</strong> ${escapeHtml(date)}</div>` : ''}
   </div>
 </div>
 <div class="body">${printableBody}</div>
@@ -2595,15 +2595,15 @@ export function EmailViewer({
         originalSubject: email.subject,
         originalRecipient: receiptIdentity.email,
         automatic,
-        subject: t('read_receipt.mdn_subject', { subject: email.subject || '' }),
-        humanText: t('read_receipt.mdn_body', { recipient: receiptIdentity.email }),
+        subject: t("Read: {subject}", { subject: email.subject || '' }),
+        humanText: t("This is a return receipt for the message you sent to {recipient}.\n\nNote: This receipt only acknowledges that the message was displayed on the recipient''s computer. There is no guarantee that the recipient has read or understood the message contents.", { recipient: receiptIdentity.email }),
       });
       await client.setKeyword(email.id, '$mdnsent');
     } catch (err) {
       // Surface the failure instead of silently resetting the banner so we can
       // see which step (upload / import / submission) failed.
       console.error('Read-receipt (MDN) send failed:', err);
-      toast.error(t('read_receipt.send_failed'), {
+      toast.error(t("Read receipt could not be sent"), {
         message: err instanceof Error ? err.message : String(err),
       });
       throw err;
@@ -2696,24 +2696,24 @@ export function EmailViewer({
               className="h-12 mx-auto mb-6"
             />
             <h3 className="text-xl font-semibold text-foreground mb-3">{PRODUCT.name}</h3>
-            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{tDemoWelcome('description')}</p>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{tDemoWelcome("Explore a fully-featured webmail client - right in your browser. All data stays on your device, so feel free to test everything.")}</p>
             <div className="flex flex-col gap-3 items-center">
               <div className="grid grid-cols-2 gap-3 text-start text-sm text-muted-foreground w-full">
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-primary shrink-0" />
-                  <span>{tDemoWelcome('feature_email')}</span>
+                  <span>{tDemoWelcome("Read & compose email")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-primary shrink-0" />
-                  <span>{tDemoWelcome('feature_organize')}</span>
+                  <span>{tDemoWelcome("Tags, stars & folders")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Keyboard className="w-4 h-4 text-primary shrink-0" />
-                  <span>{tDemoWelcome('feature_shortcuts')}</span>
+                  <span>{tDemoWelcome("Keyboard shortcuts")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-primary shrink-0" />
-                  <span>{tDemoWelcome('feature_privacy')}</span>
+                  <span>{tDemoWelcome("100% private demo")}</span>
                 </div>
               </div>
               <button
@@ -2721,9 +2721,9 @@ export function EmailViewer({
                 className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
               >
                 <PlayCircle className="w-4 h-4" />
-                {tWelcome('start_tour')}
+                {tWelcome("Start Tour")}
               </button>
-              <p className="text-xs text-muted-foreground mt-2">{tDemoWelcome('hint')}</p>
+              <p className="text-xs text-muted-foreground mt-2">{tDemoWelcome("Click any email on the left to get started, or take the tour below.")}</p>
             </div>
           </div>
         </div>
@@ -2736,12 +2736,12 @@ export function EmailViewer({
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-background shadow-lg flex items-center justify-center">
               <Mail className="w-10 h-10 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">{t('no_conversation_selected')}</h3>
-            <p className="text-muted-foreground">{t('no_conversation_description')}</p>
+            <h3 className="text-xl font-semibold text-foreground mb-2">{t("No conversation selected")}</h3>
+            <p className="text-muted-foreground">{t("Choose a conversation from the list to read it here")}</p>
             {onCompose && (
-              <Button onClick={onCompose} className="mt-6" title={t('compose_hint')}>
+              <Button onClick={onCompose} className="mt-6" title={t("Compose new message")}>
                 <PenSquare className="w-4 h-4 me-2" />
-                {t('compose')}
+                {t("Compose")}
               </Button>
             )}
           </div>
@@ -2766,7 +2766,7 @@ export function EmailViewer({
             size="icon"
             onClick={onBack}
             className="h-9 w-9 flex-shrink-0 -ms-1"
-            aria-label={t('back_to_list')}
+            aria-label={t("Back to list")}
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
@@ -2780,22 +2780,22 @@ export function EmailViewer({
                   size="sm"
                   onClick={() => onRescheduleScheduled?.(new Date(Date.now() + 1000).toISOString())}
                   className="sm:flex sm:h-8"
-                  aria-label={t('send_now')}
+                  aria-label={t("Send now")}
                 >
                   <Send className="w-4 h-4" />
-                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('send_now')}</span>}
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t("Send now")}</span>}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('send_now')}</TooltipContent>
+              <TooltipContent>{t("Send now")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="sm" onClick={onCancelScheduled} className="sm:flex sm:h-8" aria-label={t('cancel_scheduled_send')}>
+                <Button variant="ghost" size="sm" onClick={onCancelScheduled} className="sm:flex sm:h-8" aria-label={t("Cancel send")}>
                   <X className="w-4 h-4" />
-                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('cancel_scheduled_send')}</span>}
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t("Cancel send")}</span>}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('cancel_scheduled_send')}</TooltipContent>
+              <TooltipContent>{t("Cancel send")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -2807,22 +2807,22 @@ export function EmailViewer({
                     if (delayedUntil) onRescheduleScheduled?.(delayedUntil);
                   }}
                   className="hidden sm:flex sm:h-8"
-                  aria-label={t('reschedule_send')}
+                  aria-label={t("Reschedule")}
                 >
                   <CalendarClock className="w-4 h-4" />
-                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reschedule_send')}</span>}
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{t("Reschedule")}</span>}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('reschedule_send')}</TooltipContent>
+              <TooltipContent>{t("Reschedule")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="sm" onClick={onCancelScheduledForEdit} className="hidden sm:flex sm:h-8" aria-label={email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}>
+                <Button variant="ghost" size="sm" onClick={onCancelScheduledForEdit} className="hidden sm:flex sm:h-8" aria-label={email.isSmimeScheduled ? t("Cancel and compose again") : t("Cancel and edit")}>
                   <EditIcon className="w-4 h-4" />
-                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}</span>}
+                  {showToolbarLabels && <span className="hidden sm:inline text-sm">{email.isSmimeScheduled ? t("Cancel and compose again") : t("Cancel and edit")}</span>}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}</TooltipContent>
+              <TooltipContent>{email.isSmimeScheduled ? t("Cancel and compose again") : t("Cancel and edit")}</TooltipContent>
             </Tooltip>
           </>
         )}
@@ -2834,13 +2834,13 @@ export function EmailViewer({
                 size="sm"
                 onClick={() => onEditDraft()}
                 className="sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-                aria-label={t('tooltips.edit_draft')}
+                aria-label={t("Edit draft")}
               >
                 <EditIcon className="w-4 h-4" />
-                <span className="text-sm">{t('edit_draft')}</span>
+                <span className="text-sm">{t("Edit")}</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{t('tooltips.edit_draft')}</TooltipContent>
+            <TooltipContent>{t("Edit draft")}</TooltipContent>
           </Tooltip>
         )}
         {!isScheduled && !isDraft && (<>
@@ -2853,13 +2853,13 @@ export function EmailViewer({
               data-overflow-item
               data-overflow-priority="1"
               className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-              aria-label={t('tooltips.reply')}
+              aria-label={t("Reply (r)")}
             >
               <Reply className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reply')}</span>}
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t("Reply")}</span>}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{t('tooltips.reply')}</TooltipContent>
+          <TooltipContent>{t("Reply (r)")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -2870,13 +2870,13 @@ export function EmailViewer({
               data-overflow-item
               data-overflow-priority="2"
               className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0 sm:px-3"
-              aria-label={t('tooltips.reply_all')}
+              aria-label={t("Reply All (a)")}
             >
               <ReplyAll className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('reply_all')}</span>}
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t("Reply All")}</span>}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{t('tooltips.reply_all')}</TooltipContent>
+          <TooltipContent>{t("Reply All (a)")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -2887,13 +2887,13 @@ export function EmailViewer({
               data-overflow-item
               data-overflow-priority="3"
               className="hidden sm:flex sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-              aria-label={t('tooltips.forward')}
+              aria-label={t("Forward (f)")}
             >
               <Forward className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('forward')}</span>}
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t("Forward")}</span>}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{t('tooltips.forward')}</TooltipContent>
+          <TooltipContent>{t("Forward (f)")}</TooltipContent>
         </Tooltip>
         </>)}
         <PluginSlot name="toolbar-actions" />
@@ -2912,13 +2912,13 @@ export function EmailViewer({
               data-overflow-item
               data-overflow-priority="4"
               className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-              aria-label={t('tooltips.archive')}
+              aria-label={t("Archive (e)")}
             >
               <Archive className="w-4 h-4" />
-              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('archive')}</span>}
+              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t("Archive")}</span>}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{t('tooltips.archive')}</TooltipContent>
+          <TooltipContent>{t("Archive (e)")}</TooltipContent>
         </Tooltip>
         {/* Delete */}
         <Tooltip>
@@ -2928,13 +2928,13 @@ export function EmailViewer({
               size="sm"
               onClick={onDelete}
               className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-              aria-label={t('tooltips.delete')}
+              aria-label={t("Delete (# or Del)")}
             >
               <Trash2 className="w-4 h-4" />
-              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('delete')}</span>}
+              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t("Delete")}</span>}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{t('tooltips.delete')}</TooltipContent>
+          <TooltipContent>{t("Delete (# or Del)")}</TooltipContent>
         </Tooltip>
         {/* Move to folder */}
         {moveTree.length > 0 && onMoveToMailbox && (
@@ -2946,13 +2946,13 @@ export function EmailViewer({
                   size="sm"
                   onClick={() => { setMoveMenuOpen(!moveMenuOpen); setMoreMenuOpen(false); setTagMenuOpen(false); }}
                   className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-                  aria-label={t('move_to')}
+                  aria-label={t("Move to...")}
                 >
                   <FolderInput className="w-4 h-4" />
-                  {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t('move')}</span>}
+                  {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{t("Move")}</span>}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('move_to')}</TooltipContent>
+              <TooltipContent>{t("Move to...")}</TooltipContent>
             </Tooltip>
             {moveMenuOpen && (
               <div className="absolute end-0 top-full mt-1 py-1 w-48 max-h-72 overflow-y-auto bg-background rounded-lg shadow-lg border border-border z-10">
@@ -3004,7 +3004,7 @@ export function EmailViewer({
               "h-8 rounded hover:bg-muted flex items-center gap-1.5 px-2",
               currentColors.length > 0 && "bg-muted/50"
             )}
-            aria-label={t('set_color')}
+            aria-label={t("Set tag")}
           >
             {currentColors.length > 0 ? (
               <>
@@ -3023,12 +3023,12 @@ export function EmailViewer({
             ) : (
               <>
                 <Tag className="w-4 h-4 text-muted-foreground" />
-                {showToolbarLabels && <span className="text-xs text-muted-foreground">{t('tag')}</span>}
+                {showToolbarLabels && <span className="text-xs text-muted-foreground">{t("Tag")}</span>}
               </>
             )}
           </button>
             </TooltipTrigger>
-            <TooltipContent>{t('set_color')}</TooltipContent>
+            <TooltipContent>{t("Set tag")}</TooltipContent>
           </Tooltip>
           {tagMenuOpen && (
             <div className="absolute end-0 top-full mt-1 py-1 w-40 bg-background rounded-lg shadow-lg border border-border z-10">
@@ -3057,7 +3057,7 @@ export function EmailViewer({
                     className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted flex items-center gap-2 text-muted-foreground"
                   >
                     <X className="w-3 h-3 flex-shrink-0" />
-                    <span>{t('remove_color')}</span>
+                    <span>{t("Remove tag")}</span>
                   </button>
                 </>
               )}
@@ -3080,17 +3080,17 @@ export function EmailViewer({
                   "flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0",
                   isInJunkFolder ? "hover:bg-green-50 dark:hover:bg-green-950/30" : "hover:bg-red-50 dark:hover:bg-red-950/30"
                 )}
-                aria-label={isInJunkFolder ? t('spam.not_spam_title') : t('spam.button_title')}
+                aria-label={isInJunkFolder ? t("Mark as legitimate") : t("Report spam")}
               >
                 {isInJunkFolder ? (
                   <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-400" />
                 ) : (
                   <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
                 )}
-                {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isInJunkFolder ? t('not_spam_short') : t('spam_short')}</span>}
+                {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isInJunkFolder ? t("Not spam") : t("Spam")}</span>}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{isInJunkFolder ? t('spam.not_spam_title') : t('spam.button_title')}</TooltipContent>
+            <TooltipContent>{isInJunkFolder ? t("Mark as legitimate") : t("Report spam")}</TooltipContent>
           </Tooltip>
         )}
 
@@ -3104,13 +3104,13 @@ export function EmailViewer({
               data-overflow-item
               data-overflow-priority="8"
               className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0"
-              aria-label={isUnread ? t('mark_read') : t('mark_unread')}
+              aria-label={isUnread ? t("Mark as read") : t("Mark as unread")}
             >
               {isUnread ? <MailOpen className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
-              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isUnread ? t('read') : t('unread')}</span>}
+              {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isUnread ? t("Read") : t("Unread")}</span>}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{isUnread ? t('mark_read') : t('mark_unread')}</TooltipContent>
+          <TooltipContent>{isUnread ? t("Mark as read") : t("Mark as unread")}</TooltipContent>
         </Tooltip>
 
         {/* Print - hidden on mobile, overflows to More menu */}
@@ -3123,13 +3123,13 @@ export function EmailViewer({
               data-overflow-item
               data-overflow-priority="9"
               className="hidden sm:inline-flex h-8 gap-1.5"
-              aria-label={t('print')}
+              aria-label={t("Print")}
             >
               <Printer className="w-4 h-4" />
-              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t('print')}</span>}
+              {showToolbarLabels && <span className="hidden sm:inline text-sm">{t("Print")}</span>}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{t('print')}</TooltipContent>
+          <TooltipContent>{t("Print")}</TooltipContent>
         </Tooltip>
 
         {/* View source - hidden on mobile, overflows to More menu */}
@@ -3142,12 +3142,12 @@ export function EmailViewer({
               data-overflow-item
               data-overflow-priority="10"
               className="hidden sm:inline-flex h-8 gap-1.5"
-              aria-label={t('view_source')}
+              aria-label={t("View source")}
             >
               <Code className="w-4 h-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>{t('view_source')}</TooltipContent>
+          <TooltipContent>{t("View source")}</TooltipContent>
         </Tooltip>
 
         {/* Dark/light mode toggle for HTML emails */}
@@ -3178,14 +3178,14 @@ export function EmailViewer({
                 variant="ghost"
                 size="sm"
                 className="flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:w-8 sm:gap-0 sm:py-0 sm:px-0"
-                aria-label={t('more_actions')}
+                aria-label={t("More actions")}
                 onClick={() => { setMoreMenuOpen(!moreMenuOpen); setMoreMenuSub(null); setTagMenuOpen(false); setMoveMenuOpen(false); }}
               >
                 <MoreVertical className="w-4 h-4 text-muted-foreground" />
-                <span className="text-[10px] leading-tight sm:hidden">{t('more_actions')}</span>
+                <span className="text-[10px] leading-tight sm:hidden">{t("More actions")}</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{t('more_actions')}</TooltipContent>
+            <TooltipContent>{t("More actions")}</TooltipContent>
           </Tooltip>
           {moreMenuOpen && !isMobile && (
             <div className="absolute end-0 top-full mt-1 w-48 bg-background rounded-md shadow-lg border border-border z-10 py-1">
@@ -3195,7 +3195,7 @@ export function EmailViewer({
                 className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2"
               >
                 <Star className={cn("w-4 h-4", isStarred && "fill-yellow-400 text-yellow-400")} />
-                {isStarred ? t('tooltips.unstar') : t('tooltips.star')}
+                {isStarred ? t("Unstar (s)") : t("Star (s)")}
               </button>
               {/* Overflow: reply */}
               <button
@@ -3203,7 +3203,7 @@ export function EmailViewer({
                 className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(1) ? "" : "sm:hidden")}
               >
                 <Reply className="w-4 h-4" />
-                {t('reply')}
+                {t("Reply")}
               </button>
               {/* Overflow: reply all */}
               <button
@@ -3211,7 +3211,7 @@ export function EmailViewer({
                 className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(2) ? "" : "sm:hidden")}
               >
                 <ReplyAll className="w-4 h-4" />
-                {t('reply_all')}
+                {t("Reply All")}
               </button>
               {/* Overflow: forward */}
               <button
@@ -3219,7 +3219,7 @@ export function EmailViewer({
                 className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(3) ? "" : "sm:hidden")}
               >
                 <Forward className="w-4 h-4" />
-                {t('forward')}
+                {t("Forward")}
               </button>
               {/* Overflow: archive */}
               <button
@@ -3227,7 +3227,7 @@ export function EmailViewer({
                 className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(4) ? "" : "sm:hidden")}
               >
                 <Archive className="w-4 h-4" />
-                {t('archive')}
+                {t("Archive")}
               </button>
               {/* Overflow: move to folder - submenu */}
               {moveTree.length > 0 && onMoveToMailbox && (
@@ -3240,7 +3240,7 @@ export function EmailViewer({
                     className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2"
                   >
                     <FolderInput className="w-4 h-4" />
-                    <span className="flex-1">{t('move_to')}</span>
+                    <span className="flex-1">{t("Move to...")}</span>
                     <ChevronRight className="w-3 h-3 text-muted-foreground" />
                   </button>
                   {moreMenuSub === 'move' && (
@@ -3292,7 +3292,7 @@ export function EmailViewer({
                     className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2"
                   >
                     <Tag className="w-4 h-4" />
-                    <span className="flex-1">{t('tag')}</span>
+                    <span className="flex-1">{t("Tag")}</span>
                     <ChevronRight className="w-3 h-3 text-muted-foreground" />
                   </button>
                   {moreMenuSub === 'tag' && (
@@ -3322,7 +3322,7 @@ export function EmailViewer({
                             className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted flex items-center gap-2 text-muted-foreground"
                           >
                             <X className="w-3 h-3 flex-shrink-0" />
-                            <span>{t('remove_color')}</span>
+                            <span>{t("Remove tag")}</span>
                           </button>
                         </>
                       )}
@@ -3341,7 +3341,7 @@ export function EmailViewer({
                   ) : (
                     <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
                   )}
-                  {isInJunkFolder ? t('spam.not_spam_title') : t('spam.button_title')}
+                  {isInJunkFolder ? t("Mark as legitimate") : t("Report spam")}
                 </button>
               )}
               {/* Overflow: toggle read */}
@@ -3350,7 +3350,7 @@ export function EmailViewer({
                 className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(8) ? "" : "sm:hidden")}
               >
                 {isUnread ? <MailOpen className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
-                {isUnread ? t('mark_read') : t('mark_unread')}
+                {isUnread ? t("Mark as read") : t("Mark as unread")}
               </button>
               {/* Overflow: print */}
               <button
@@ -3358,7 +3358,7 @@ export function EmailViewer({
                 className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(9) ? "" : "sm:hidden")}
               >
                 <Printer className="w-4 h-4" />
-                {t('print')}
+                {t("Print")}
               </button>
               {/* Overflow: view source */}
               <button
@@ -3366,7 +3366,7 @@ export function EmailViewer({
                 className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(10) ? "" : "sm:hidden")}
               >
                 <Code className="w-4 h-4" />
-                {t('view_source')}
+                {t("View source")}
               </button>
               {/* Overflow: dark/light mode toggle */}
               {effectiveEmailContent.isHtml && (
@@ -3385,7 +3385,7 @@ export function EmailViewer({
                 className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
-                {t('export_email')}
+                {t("Export as .eml")}
               </button>
               {/* Import email */}
               <button
@@ -3393,7 +3393,7 @@ export function EmailViewer({
                 className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2"
               >
                 <Upload className="w-4 h-4" />
-                {t('import_email')}
+                {t("Import .eml or .zip")}
               </button>
               {onShowShortcuts && (
                 <button
@@ -3401,7 +3401,7 @@ export function EmailViewer({
                   className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2"
                 >
                   <Keyboard className="w-4 h-4" />
-                  {t('keyboard_shortcuts')}
+                  {t("Keyboard shortcuts (?)")}
                 </button>
               )}
             </div>
@@ -3439,10 +3439,10 @@ export function EmailViewer({
               className="flex items-center gap-1 -ms-2 px-2 py-1 rounded hover:bg-muted text-sm font-semibold text-foreground"
             >
               <ChevronLeft className="w-5 h-5" />
-              {moreMenuSub === 'move' ? t('move_to') : t('tag')}
+              {moreMenuSub === 'move' ? t("Move to...") : t("Tag")}
             </button>
           ) : (
-            <span className="text-sm font-semibold text-foreground">{t('more_actions')}</span>
+            <span className="text-sm font-semibold text-foreground">{t("More actions")}</span>
           )}
           <Button variant="ghost" size="icon" onClick={() => { setMoreMenuOpen(false); setMoreMenuSub(null); }} className="h-9 w-9">
             <X className="w-5 h-5" />
@@ -3457,7 +3457,7 @@ export function EmailViewer({
                 className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
               >
                 <Star className={cn("w-5 h-5", isStarred && "fill-yellow-400 text-yellow-400")} />
-                {isStarred ? t('tooltips.unstar') : t('tooltips.star')}
+                {isStarred ? t("Unstar (s)") : t("Star (s)")}
               </button>
               {/* Tag (opens sub-view) */}
               {colorOptions.length > 0 && (
@@ -3466,7 +3466,7 @@ export function EmailViewer({
                   className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
                 >
                   <Tag className="w-5 h-5" />
-                  <span className="flex-1">{t('tag')}</span>
+                  <span className="flex-1">{t("Tag")}</span>
                   {currentColors.length > 0 && (
                     <div className="flex -space-x-1 me-1">
                       {currentColors.slice(0, 3).map((c) => {
@@ -3483,14 +3483,14 @@ export function EmailViewer({
                 className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
               >
                 <Printer className="w-5 h-5" />
-                {t('print')}
+                {t("Print")}
               </button>
               <button
                 onClick={() => { setShowSourceModal(true); setMoreMenuOpen(false); }}
                 className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
               >
                 <Code className="w-5 h-5" />
-                {t('view_source')}
+                {t("View source")}
               </button>
               {effectiveEmailContent.isHtml && (
                 <button
@@ -3507,14 +3507,14 @@ export function EmailViewer({
                 className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
               >
                 <Download className="w-5 h-5" />
-                {t('export_email')}
+                {t("Export as .eml")}
               </button>
               <button
                 onClick={() => { handleImportEmail(); setMoreMenuOpen(false); }}
                 className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
               >
                 <Upload className="w-5 h-5" />
-                {t('import_email')}
+                {t("Import .eml or .zip")}
               </button>
               {onShowShortcuts && (
                 <button
@@ -3522,7 +3522,7 @@ export function EmailViewer({
                   className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
                 >
                   <Keyboard className="w-5 h-5" />
-                  {t('keyboard_shortcuts')}
+                  {t("Keyboard shortcuts (?)")}
                 </button>
               )}
             </>
@@ -3584,7 +3584,7 @@ export function EmailViewer({
                   className="w-full px-4 py-2.5 min-h-[44px] text-sm text-start hover:bg-muted flex items-center gap-3 text-muted-foreground"
                 >
                   <X className="w-4 h-4 flex-shrink-0" />
-                  <span>{t('remove_color')}</span>
+                  <span>{t("Remove tag")}</span>
                 </button>
               )}
             </>
@@ -3622,7 +3622,7 @@ export function EmailViewer({
                 size="icon"
                 onClick={onBack}
                 className="h-11 w-11 lg:h-10 lg:w-10 flex-shrink-0 -ms-2"
-                aria-label={t('back_to_list')}
+                aria-label={t("Back to list")}
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
@@ -3630,7 +3630,7 @@ export function EmailViewer({
             <div className="flex-1 min-w-0">
               <div className="flex items-start gap-2">
                 <h1 className="text-lg lg:text-xl font-bold text-foreground tracking-tight break-words min-w-0">
-                  {email.subject || t('no_subject')}
+                  {email.subject || t("(No Subject)")}
                 </h1>
                 {/* Star inline with subject (top toolbar mode) */}
                 {toolbarPosition === 'top' && (
@@ -3639,7 +3639,7 @@ export function EmailViewer({
                       <button
                         onClick={onToggleStar}
                         className="flex-shrink-0 p-1 rounded hover:bg-muted transition-colors"
-                        aria-label={isStarred ? t('tooltips.unstar') : t('tooltips.star')}
+                        aria-label={isStarred ? t("Unstar (s)") : t("Star (s)")}
                       >
                         <Star className={cn(
                           "w-4 h-4 lg:w-5 lg:h-5 transition-colors",
@@ -3647,7 +3647,7 @@ export function EmailViewer({
                         )} />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent>{isStarred ? t('tooltips.unstar') : t('tooltips.star')}</TooltipContent>
+                    <TooltipContent>{isStarred ? t("Unstar (s)") : t("Star (s)")}</TooltipContent>
                   </Tooltip>
                 )}
                 {/* Color tag dots */}
@@ -3664,7 +3664,7 @@ export function EmailViewer({
                 )}
                 {isImportant && (
                   <span className="px-1.5 lg:px-2 py-0.5 bg-warning/15 text-warning rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 self-center">
-                    {t('important')}
+                    {t("Important")}
                   </span>
                 )}
               </div>
@@ -3729,7 +3729,7 @@ export function EmailViewer({
                         className="font-semibold text-start"
                       />
                     ) : (
-                      <span className="font-semibold text-foreground">{t('unknown_sender')}</span>
+                      <span className="font-semibold text-foreground">{t("Unknown")}</span>
                     )}
                     <EmailIdentityBadge email={email} identities={identities} />
                     {shouldShowUnsubBanner && listHeaders?.listUnsubscribe && (
@@ -3757,14 +3757,14 @@ export function EmailViewer({
               <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
                 {email.to && email.to.length > 0 && (
                   <>
-                    <span>{t('recipient_to_prefix')}</span>
+                    <span>{t("To:")}</span>
                     {renderClickableRecipients(email.to, currentUserEmail, t, handleViewContactSidebar)}
                     {email.to.length > 2 && (
                       <button
                         onClick={() => setShowFullHeaders(!showFullHeaders)}
                         className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
                       >
-                        {t('more_count', { count: email.to.length - 2 })}
+                        {t("+{count} more", { count: email.to.length - 2 })}
                       </button>
                     )}
                   </>
@@ -3782,7 +3782,7 @@ export function EmailViewer({
                 {email.bcc && email.bcc.length > 0 && (
                   <>
                     <span className="text-muted-foreground">|</span>
-                    <span>{t('bcc')}:</span>
+                    <span>{t("BCC")}:</span>
                     {renderClickableRecipients(email.bcc, currentUserEmail, t, handleViewContactSidebar)}
                     {email.bcc.length > 2 && (
                       <span className="text-muted-foreground">+{email.bcc.length - 2}</span>
@@ -3796,12 +3796,12 @@ export function EmailViewer({
                   {showFullHeaders ? (
                     <>
                       <ChevronUp className="w-3 h-3" />
-                      {t('hide_details')}
+                      {t("Hide details")}
                     </>
                   ) : (
                     <>
                       <ChevronDown className="w-3 h-3" />
-                      {t('show_details')}
+                      {t("Show details")}
                     </>
                   )}
                 </button>
@@ -3829,7 +3829,7 @@ export function EmailViewer({
                             ? "inline-flex flex-col w-40"
                             : "inline-flex items-center gap-1.5 px-2 py-1",
                         )}
-                        aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                        aria-label={`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                         onClick={() => handleEffectiveAttachmentOpen(attachment)}
                         draggable={dragProps.draggable}
                         onPointerEnter={dragProps.onPointerEnter}
@@ -3864,32 +3864,32 @@ export function EmailViewer({
                             <TooltipTrigger asChild>
                               <button
                                 className="p-1 hover:bg-accent rounded transition-colors"
-                                aria-label={t('download')}
+                                aria-label={t("Download")}
                                 onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
                               >
                                 <Download className="w-3.5 h-3.5 text-foreground" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>{t('download')}</TooltipContent>
+                            <TooltipContent>{t("Download")}</TooltipContent>
                           </Tooltip>
                           {opensPreview && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <button
                                   className="p-1 hover:bg-accent rounded transition-colors"
-                                  aria-label={tFiles('preview')}
+                                  aria-label={tFiles("Preview")}
                                   onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
                                 >
                                   <Eye className="w-3.5 h-3.5 text-foreground" />
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent>{tFiles('preview')}</TooltipContent>
+                              <TooltipContent>{tFiles("Preview")}</TooltipContent>
                             </Tooltip>
                           )}
                         </div>
                       </div>
                         </TooltipTrigger>
-                        <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                        <TooltipContent>{`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
                       </Tooltip>
                         )}
                       </DraggableAttachmentChip>
@@ -3900,7 +3900,7 @@ export function EmailViewer({
                       onClick={() => setShowAllBesideAttachments(!showAllBesideAttachments)}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-0.5"
                     >
-                      +{effectiveAttachments.length - 2} {t('more')}
+                      +{effectiveAttachments.length - 2} {t("more")}
                     </button>
                   )}
                   {downloadAllButton}
@@ -3920,7 +3920,7 @@ export function EmailViewer({
                               <TooltipTrigger asChild>
                             <div
                               className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-muted/60 group relative cursor-pointer w-full"
-                              aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                              aria-label={`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                               onClick={() => { handleEffectiveAttachmentOpen(attachment); setShowAllBesideAttachments(false); }}
                               draggable={dragProps.draggable}
                               onPointerEnter={dragProps.onPointerEnter}
@@ -3939,32 +3939,32 @@ export function EmailViewer({
                                   <TooltipTrigger asChild>
                                     <button
                                       className="p-1 hover:bg-accent rounded transition-colors"
-                                      aria-label={t('download')}
+                                      aria-label={t("Download")}
                                       onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllBesideAttachments(false); }}
                                     >
                                       <Download className="w-3.5 h-3.5 text-foreground" />
                                     </button>
                                   </TooltipTrigger>
-                                  <TooltipContent>{t('download')}</TooltipContent>
+                                  <TooltipContent>{t("Download")}</TooltipContent>
                                 </Tooltip>
                                 {opensPreview && (
                                   <Tooltip>
                                     <TooltipTrigger asChild>
                                       <button
                                         className="p-1 hover:bg-accent rounded transition-colors"
-                                        aria-label={tFiles('preview')}
+                                        aria-label={tFiles("Preview")}
                                         onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllBesideAttachments(false); }}
                                       >
                                         <Eye className="w-3.5 h-3.5 text-foreground" />
                                       </button>
                                     </TooltipTrigger>
-                                    <TooltipContent>{tFiles('preview')}</TooltipContent>
+                                    <TooltipContent>{tFiles("Preview")}</TooltipContent>
                                   </Tooltip>
                                 )}
                               </div>
                             </div>
                               </TooltipTrigger>
-                              <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                              <TooltipContent>{`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
                             </Tooltip>
                               )}
                             </DraggableAttachmentChip>
@@ -4005,7 +4005,7 @@ export function EmailViewer({
                     className="text-sm font-semibold text-start"
                   />
                 ) : (
-                  <span className="text-sm font-semibold text-foreground">{t('unknown_sender')}</span>
+                  <span className="text-sm font-semibold text-foreground">{t("Unknown")}</span>
                 )}
                 <EmailIdentityBadge email={email} identities={identities} />
                 {shouldShowUnsubBanner && listHeaders?.listUnsubscribe && (
@@ -4030,7 +4030,7 @@ export function EmailViewer({
               <div className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground flex-wrap">
                 {email.to && email.to.length > 0 && (
                   <>
-                    <span>→ {t('recipient_to_prefix')}</span>
+                    <span>→ {t("To:")}</span>
                     {renderClickableRecipients(email.to, currentUserEmail, t, handleViewContactSidebar)}
                   </>
                 )}
@@ -4051,12 +4051,12 @@ export function EmailViewer({
                   {showFullHeaders ? (
                     <>
                       <ChevronUp className="w-3 h-3" />
-                      {t('hide_details')}
+                      {t("Hide details")}
                     </>
                   ) : (
                     <>
                       <ChevronDown className="w-3 h-3" />
-                      {t('show_details')}
+                      {t("Show details")}
                     </>
                   )}
                 </button>
@@ -4081,13 +4081,13 @@ export function EmailViewer({
           const translateAuthResult = (result?: string) => {
             const r = (result || '').toLowerCase();
             switch (r) {
-              case 'pass': return t('authentication.result.pass');
-              case 'fail': return t('authentication.result.fail');
-              case 'softfail': return t('authentication.result.softfail');
-              case 'neutral': return t('authentication.result.neutral');
-              case 'permerror': return t('authentication.result.permerror');
-              case 'temperror': return t('authentication.result.temperror');
-              case 'none': return t('authentication.result.none');
+              case 'pass': return t("Pass");
+              case 'fail': return t("Fail");
+              case 'softfail': return t("Soft fail");
+              case 'neutral': return t("Neutral");
+              case 'permerror': return t("Permanent error");
+              case 'temperror': return t("Temporary error");
+              case 'none': return t("None");
               default: return result || '';
             }
           };
@@ -4100,10 +4100,10 @@ export function EmailViewer({
             const minutes = Math.floor(diff / 60000);
             const hours = Math.floor(minutes / 60);
             const days = Math.floor(hours / 24);
-            const dayUnit = days > 1 ? t('time.days') : t('time.day');
-            const hourUnit = (hours % 24) > 1 ? t('time.hours') : t('time.hour');
-            const minuteUnit = (minutes % 60) > 1 ? t('time.minutes') : t('time.minute');
-            const minuteUnitSingle = minutes > 1 ? t('time.minutes') : t('time.minute');
+            const dayUnit = days > 1 ? t("days") : t("day");
+            const hourUnit = (hours % 24) > 1 ? t("hours") : t("hour");
+            const minuteUnit = (minutes % 60) > 1 ? t("minutes") : t("minute");
+            const minuteUnitSingle = minutes > 1 ? t("minutes") : t("minute");
             if (days > 0) return `${days} ${dayUnit} ${hours % 24} ${hourUnit}`;
             if (hours > 0) return `${hours} ${hourUnit} ${minutes % 60} ${minuteUnit}`;
             return `${minutes} ${minuteUnitSingle}`;
@@ -4186,9 +4186,9 @@ export function EmailViewer({
             <div className="bg-background border-b border-border px-4 lg:px-6" style={{ paddingBlock: 'var(--density-header-py)' }}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5">
                 <section className="min-w-0">
-                  <SectionHeader>{t('details.recipients_routing')}</SectionHeader>
+                  <SectionHeader>{t("Recipients & routing")}</SectionHeader>
                   <dl className="grid grid-cols-[7rem_1fr] gap-x-4 gap-y-1.5">
-                    <Row label={t('from')}>
+                    <Row label={t("From")}>
                       <div className="flex flex-wrap items-center gap-1">
                         <RecipientPopover
                           name={sender?.name}
@@ -4200,7 +4200,7 @@ export function EmailViewer({
                       </div>
                     </Row>
                     {replyToDifferent && (
-                      <Row label={t('reply_to_label').replace(':', '')}>
+                      <Row label={t("Reply-To:").replace(':', '')}>
                         <div className="flex flex-wrap items-center gap-1">
                           {email.replyTo!.map((r, i) => (
                             <RecipientPopover key={r.email + i} name={r.name} email={r.email} onViewContact={handleViewContactSidebar} className="text-sm" />
@@ -4209,33 +4209,33 @@ export function EmailViewer({
                       </Row>
                     )}
                     {email.to && email.to.length > 0 && (
-                      <Row label={t('to')}>
+                      <Row label={t("To")}>
                         <div className="flex flex-wrap items-center gap-1">
                           {renderClickableRecipients(email.to, currentUserEmail, t, handleViewContactSidebar, 100)}
                         </div>
                       </Row>
                     )}
                     {email.cc && email.cc.length > 0 && (
-                      <Row label={t('cc')}>
+                      <Row label={t("CC")}>
                         <div className="flex flex-wrap items-center gap-1">
                           {renderClickableRecipients(email.cc, currentUserEmail, t, handleViewContactSidebar, 100)}
                         </div>
                       </Row>
                     )}
                     {email.bcc && email.bcc.length > 0 && (
-                      <Row label={t('bcc')}>
+                      <Row label={t("BCC")}>
                         <div className="flex flex-wrap items-center gap-1">
                           {renderClickableRecipients(email.bcc, currentUserEmail, t, handleViewContactSidebar, 100)}
                         </div>
                       </Row>
                     )}
                     {email.sentAt && (
-                      <Row label={t('details.sent')}>{fullDate(email.sentAt)}</Row>
+                      <Row label={t("Sent")}>{fullDate(email.sentAt)}</Row>
                     )}
-                    <Row label={t('details.received')}>
+                    <Row label={t("Received")}>
                       {fullDate(email.receivedAt)}
                       {deliveryDeltaMs > 60000 && (
-                        <span className="text-muted-foreground"> · {formatDelta(deliveryDeltaMs)} {t('details.delivery_time').toLowerCase()}</span>
+                        <span className="text-muted-foreground"> · {formatDelta(deliveryDeltaMs)} {t("Delivery time").toLowerCase()}</span>
                       )}
                     </Row>
                   </dl>
@@ -4244,7 +4244,7 @@ export function EmailViewer({
 
                 {hasAuthSection && (
                   <section className="min-w-0">
-                    <SectionHeader>{t('details.authentication_security')}</SectionHeader>
+                    <SectionHeader>{t("Authentication & security")}</SectionHeader>
                     <div className="flex flex-wrap gap-1.5">
                       {auth?.spf && (() => {
                         // When multiple identities (HELO + MAIL FROM) were
@@ -4263,18 +4263,18 @@ export function EmailViewer({
                             name="SPF"
                             result={auth.spf.result}
                             extra={auth.spf.domain}
-                            tooltip={breakdown ? `${t('authentication.tooltip_spf')}\n\n${breakdown}` : t('authentication.tooltip_spf')}
+                            tooltip={breakdown ? `${t("Sender Policy Framework: Verifies that the sending server is authorized to send email on behalf of the domain")}\n\n${breakdown}` : t("Sender Policy Framework: Verifies that the sending server is authorized to send email on behalf of the domain")}
                           />
                         );
                       })()}
                       {auth?.dkim && (
-                        <AuthChip name="DKIM" result={auth.dkim.result} extra={auth.dkim.domain} tooltip={t('authentication.tooltip_dkim')} />
+                        <AuthChip name="DKIM" result={auth.dkim.result} extra={auth.dkim.domain} tooltip={t("DomainKeys Identified Mail: Confirms the email was not altered in transit using a cryptographic signature")} />
                       )}
                       {auth?.dmarc && (
-                        <AuthChip name="DMARC" result={auth.dmarc.result} extra={auth.dmarc.policy ? `${t('authentication.policy').toLowerCase()}: ${auth.dmarc.policy}` : undefined} tooltip={t('authentication.tooltip_dmarc')} />
+                        <AuthChip name="DMARC" result={auth.dmarc.result} extra={auth.dmarc.policy ? `${t("Policy").toLowerCase()}: ${auth.dmarc.policy}` : undefined} tooltip={t("Domain-based Message Authentication, Reporting & Conformance: Ensures SPF and DKIM align with the sender's domain and sets a policy for failures")} />
                       )}
                       {auth?.iprev && (
-                        <AuthChip name={t('details.iprev')} result={auth.iprev.result} extra={auth.iprev.ip} />
+                        <AuthChip name={t("Reverse DNS")} result={auth.iprev.result} extra={auth.iprev.ip} />
                       )}
                       {email.spamScore !== undefined && (
                         <span className={cn(
@@ -4289,7 +4289,7 @@ export function EmailViewer({
                             email.spamScore > 2 ? "text-amber-700 dark:text-amber-400" :
                             "text-green-700 dark:text-green-400",
                           )} />
-                          <span className="font-medium text-foreground">{t('authentication.spam_score')}</span>
+                          <span className="font-medium text-foreground">{t("Spam Score")}</span>
                           <span className={cn(
                             "text-[10px] uppercase tracking-wider",
                             email.spamScore > 5 ? "text-red-700 dark:text-red-400" :
@@ -4331,20 +4331,20 @@ export function EmailViewer({
 
                 {hasIdentifiers && (
                   <section className="min-w-0">
-                    <SectionHeader>{t('details.identifiers_threading')}</SectionHeader>
+                    <SectionHeader>{t("Identifiers & threading")}</SectionHeader>
                     <dl className="grid grid-cols-[7rem_1fr] gap-x-4 gap-y-1.5">
                       {email.messageId && (
-                        <Row label={t('headers.message_id')} mono>{email.messageId}</Row>
+                        <Row label={t("Message ID")} mono>{email.messageId}</Row>
                       )}
                       {email.inReplyTo && email.inReplyTo.length > 0 && (
-                        <Row label={t('details.in_reply_to')} mono>
+                        <Row label={t("In-Reply-To")} mono>
                           <div className="space-y-0.5">
                             {email.inReplyTo.map((id, i) => <div key={i} className="break-all">{id}</div>)}
                           </div>
                         </Row>
                       )}
                       {email.references && email.references.length > 0 && (
-                        <Row label={t('details.references')}>
+                        <Row label={t("References")}>
                           <details className="group">
                             <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors list-none flex items-center gap-1">
                               <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
@@ -4357,7 +4357,7 @@ export function EmailViewer({
                         </Row>
                       )}
                       {email.threadId && (
-                        <Row label={t('details.thread_id')} mono>{email.threadId}</Row>
+                        <Row label={t("Thread ID")} mono>{email.threadId}</Row>
                       )}
                     </dl>
                     <CategorySlot category="identifiers_threading" />
@@ -4365,27 +4365,27 @@ export function EmailViewer({
                 )}
 
                 <section className="min-w-0">
-                  <SectionHeader>{t('details.message_properties')}</SectionHeader>
+                  <SectionHeader>{t("Message properties")}</SectionHeader>
                   <dl className="grid grid-cols-[7rem_1fr] gap-x-4 gap-y-1.5">
                     {email.subject !== undefined && (
-                      <Row label={t('subject')}>{email.subject || <span className="italic text-muted-foreground">{t('details.no_subject')}</span>}</Row>
+                      <Row label={t("Subject")}>{email.subject || <span className="italic text-muted-foreground">{t("(no subject)")}</span>}</Row>
                     )}
-                    <Row label={t('details.size')}>
+                    <Row label={t("Size")}>
                       {formatFileSize(email.size)}
                       {topMimeType && (
                         <span className="text-muted-foreground"> · <span className="font-mono text-xs">{topMimeType}</span></span>
                       )}
                     </Row>
                     {effectiveAttachments.length > 0 && (
-                      <Row label={t('attachments')}>
-                        {t('details.attachments_summary', {
+                      <Row label={t("Attachments")}>
+                        {t("{count} files · {size}", {
                           count: effectiveAttachments.length,
                           size: formatFileSize(totalAttachmentSize),
                         })}
                       </Row>
                     )}
                     {email.accountLabel && (
-                      <Row label={t('details.account')}>{email.accountLabel}</Row>
+                      <Row label={t("Account")}>{email.accountLabel}</Row>
                     )}
                   </dl>
                   <CategorySlot category="message_properties" />
@@ -4393,13 +4393,13 @@ export function EmailViewer({
 
                 {hasListInfo && (
                   <section className="lg:col-span-2 min-w-0">
-                    <SectionHeader>{t('details.mailing_list')}</SectionHeader>
+                    <SectionHeader>{t("Mailing list")}</SectionHeader>
                     <dl className="grid grid-cols-[7rem_1fr] gap-x-4 gap-y-1.5">
                       {listHeaders?.listId && (
-                        <Row label={t('details.list_id')} mono>{listHeaders.listId}</Row>
+                        <Row label={t("List ID")} mono>{listHeaders.listId}</Row>
                       )}
                       {listHeaders?.listUnsubscribe?.preferred && (
-                        <Row label={t('details.list_unsubscribe')}>
+                        <Row label={t("Unsubscribe")}>
                           <span className="break-all">
                             {listHeaders.listUnsubscribe.preferred === 'http'
                               ? listHeaders.listUnsubscribe.http
@@ -4408,10 +4408,10 @@ export function EmailViewer({
                         </Row>
                       )}
                       {listHeaders?.listHelp && (
-                        <Row label={t('details.list_help')}><span className="break-all">{listHeaders.listHelp}</span></Row>
+                        <Row label={t("List help")}><span className="break-all">{listHeaders.listHelp}</span></Row>
                       )}
                       {listHeaders?.listPost && (
-                        <Row label={t('details.list_post')}><span className="break-all">{listHeaders.listPost}</span></Row>
+                        <Row label={t("List post")}><span className="break-all">{listHeaders.listPost}</span></Row>
                       )}
                     </dl>
                     <CategorySlot category="mailing_list" />
@@ -4440,14 +4440,14 @@ export function EmailViewer({
               <div className="flex items-center gap-2 text-primary">
                 <CalendarClock className="w-4 h-4" />
                 <span className="text-sm font-medium">
-                  {t('scheduled_banner', { date: email.scheduledSendAt ? formatDateTime(email.scheduledSendAt, timeFormat) : '' })}
+                  {t("Scheduled to send at {date}", { date: email.scheduledSendAt ? formatDateTime(email.scheduledSendAt, timeFormat) : '' })}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 {canCancelScheduled && (
                   <>
-                    <Button size="sm" variant="default" onClick={() => onRescheduleScheduled?.(new Date(Date.now() + 1000).toISOString())}>{t('send_now')}</Button>
-                    <Button size="sm" variant="outline" onClick={onCancelScheduled}>{t('cancel_scheduled_send')}</Button>
+                    <Button size="sm" variant="default" onClick={() => onRescheduleScheduled?.(new Date(Date.now() + 1000).toISOString())}>{t("Send now")}</Button>
+                    <Button size="sm" variant="outline" onClick={onCancelScheduled}>{t("Cancel send")}</Button>
                     <Button
                       size="sm"
                       variant="outline"
@@ -4456,10 +4456,10 @@ export function EmailViewer({
                         if (delayedUntil) onRescheduleScheduled?.(delayedUntil);
                       }}
                     >
-                      {t('reschedule_send')}
+                      {t("Reschedule")}
                     </Button>
                     <Button size="sm" variant="outline" onClick={onCancelScheduledForEdit}>
-                      {email.isSmimeScheduled ? t('cancel_and_compose_again') : t('cancel_and_edit')}
+                      {email.isSmimeScheduled ? t("Cancel and compose again") : t("Cancel and edit")}
                     </Button>
                   </>
                 )}
@@ -4474,7 +4474,7 @@ export function EmailViewer({
             <div className="px-6 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2 text-warning">
                 <File className="w-4 h-4" />
-                <span className="text-sm font-medium">{t('draft_banner')}</span>
+                <span className="text-sm font-medium">{t("This message is a draft")}</span>
               </div>
               {onEditDraft && (
                 <Button
@@ -4484,7 +4484,7 @@ export function EmailViewer({
                   className="gap-1.5"
                 >
                   <EditIcon className="w-3.5 h-3.5" />
-                  {t('edit_draft')}
+                  {t("Edit")}
                 </Button>
               )}
             </div>
@@ -4510,7 +4510,7 @@ export function EmailViewer({
                           External Content
                         </div>
                         <div className="text-sm font-medium text-foreground break-words">
-                          {t('external_content_warning')}
+                          {t("Images and external content have been blocked")}
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
@@ -4520,7 +4520,7 @@ export function EmailViewer({
                             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md border border-border hover:bg-muted transition-colors min-h-[36px]"
                           >
                             <Image className="w-3.5 h-3.5" />
-                            {t('load_external_content')}
+                            {t("Load images")}
                           </button>
                         )}
                         {email.from?.[0]?.email && (
@@ -4539,7 +4539,7 @@ export function EmailViewer({
                             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md border border-border hover:bg-muted transition-colors min-h-[36px]"
                           >
                             <ShieldCheck className="w-3.5 h-3.5" />
-                            {t('trust_sender')}
+                            {t("Always trust this sender")}
                           </button>
                         )}
                       </div>
@@ -4633,7 +4633,7 @@ export function EmailViewer({
                       ? "inline-flex flex-col w-44"
                       : "inline-flex items-center gap-1.5 px-2.5 py-1.5",
                   )}
-                  aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                  aria-label={`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                   onClick={() => handleEffectiveAttachmentOpen(attachment)}
                   draggable={dragProps.draggable}
                   onPointerEnter={dragProps.onPointerEnter}
@@ -4673,32 +4673,32 @@ export function EmailViewer({
                       <TooltipTrigger asChild>
                         <button
                           className="p-1 hover:bg-accent rounded transition-colors"
-                          aria-label={t('download')}
+                          aria-label={t("Download")}
                           onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
                         >
                           <Download className="w-4 h-4 text-foreground" />
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent>{t('download')}</TooltipContent>
+                      <TooltipContent>{t("Download")}</TooltipContent>
                     </Tooltip>
                     {opensPreview && (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
                             className="p-1 hover:bg-accent rounded transition-colors"
-                            aria-label={tFiles('preview')}
+                            aria-label={tFiles("Preview")}
                             onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
                           >
                             <Eye className="w-4 h-4 text-foreground" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent>{tFiles('preview')}</TooltipContent>
+                        <TooltipContent>{tFiles("Preview")}</TooltipContent>
                       </Tooltip>
                     )}
                   </div>
                 </div>
                   </TooltipTrigger>
-                  <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                  <TooltipContent>{`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
                 </Tooltip>
                   )}
                 </DraggableAttachmentChip>
@@ -4709,7 +4709,7 @@ export function EmailViewer({
                 onClick={() => setShowAllBelowHeaderAttachments(!showAllBelowHeaderAttachments)}
                 className="inline-flex items-center px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md border border-border/50 transition-colors flex-shrink-0"
               >
-                +{effectiveAttachments.length - visibleBelowHeaderCount} {t('attachments').toLowerCase()}
+                +{effectiveAttachments.length - visibleBelowHeaderCount} {t("Attachments").toLowerCase()}
               </button>
             )}
           </div>
@@ -4729,7 +4729,7 @@ export function EmailViewer({
                         <TooltipTrigger asChild>
                       <div
                         className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-muted/60 group relative cursor-pointer w-full"
-                        aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                        aria-label={`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                         onClick={() => { handleEffectiveAttachmentOpen(attachment); setShowAllBelowHeaderAttachments(false); }}
                         draggable={dragProps.draggable}
                         onPointerEnter={dragProps.onPointerEnter}
@@ -4748,32 +4748,32 @@ export function EmailViewer({
                             <TooltipTrigger asChild>
                               <button
                                 className="p-1 hover:bg-accent rounded transition-colors"
-                                aria-label={t('download')}
+                                aria-label={t("Download")}
                                 onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllBelowHeaderAttachments(false); }}
                               >
                                 <Download className="w-4 h-4 text-foreground" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>{t('download')}</TooltipContent>
+                            <TooltipContent>{t("Download")}</TooltipContent>
                           </Tooltip>
                           {opensPreview && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <button
                                   className="p-1 hover:bg-accent rounded transition-colors"
-                                  aria-label={tFiles('preview')}
+                                  aria-label={tFiles("Preview")}
                                   onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllBelowHeaderAttachments(false); }}
                                 >
                                   <Eye className="w-4 h-4 text-foreground" />
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent>{tFiles('preview')}</TooltipContent>
+                              <TooltipContent>{tFiles("Preview")}</TooltipContent>
                             </Tooltip>
                           )}
                         </div>
                       </div>
                         </TooltipTrigger>
-                        <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                        <TooltipContent>{`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
                       </Tooltip>
                         )}
                       </DraggableAttachmentChip>
@@ -4807,7 +4807,7 @@ export function EmailViewer({
                         ? "inline-flex flex-col w-44"
                         : "inline-flex items-center gap-1.5 px-2.5 py-1.5",
                     )}
-                    aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                    aria-label={`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                     onClick={() => handleEffectiveAttachmentOpen(attachment)}
                     draggable={dragProps.draggable}
                     onPointerEnter={dragProps.onPointerEnter}
@@ -4842,32 +4842,32 @@ export function EmailViewer({
                         <TooltipTrigger asChild>
                           <button
                             className="p-1 hover:bg-accent rounded transition-colors"
-                            aria-label={t('download')}
+                            aria-label={t("Download")}
                             onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); }}
                           >
                             <Download className="w-4 h-4 text-foreground" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent>{t('download')}</TooltipContent>
+                        <TooltipContent>{t("Download")}</TooltipContent>
                       </Tooltip>
                       {opensPreview && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button
                               className="p-1 hover:bg-accent rounded transition-colors"
-                              aria-label={tFiles('preview')}
+                              aria-label={tFiles("Preview")}
                               onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); }}
                             >
                               <Eye className="w-4 h-4 text-foreground" />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent>{tFiles('preview')}</TooltipContent>
+                          <TooltipContent>{tFiles("Preview")}</TooltipContent>
                         </Tooltip>
                       )}
                     </div>
                   </div>
                     </TooltipTrigger>
-                    <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                    <TooltipContent>{`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
                   </Tooltip>
                     )}
                   </DraggableAttachmentChip>
@@ -4878,7 +4878,7 @@ export function EmailViewer({
                   onClick={() => setShowAllMobileAttachments(!showAllMobileAttachments)}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-0.5"
                 >
-                  +{effectiveAttachments.length - 2} {t('more')}
+                  +{effectiveAttachments.length - 2} {t("more")}
                 </button>
               )}
               {downloadAllButton}
@@ -4897,7 +4897,7 @@ export function EmailViewer({
                           <TooltipTrigger asChild>
                         <div
                           className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-muted/60 group relative cursor-pointer w-full"
-                          aria-label={`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
+                          aria-label={`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}
                           onClick={() => { handleEffectiveAttachmentOpen(attachment); setShowAllMobileAttachments(false); }}
                           draggable={dragProps.draggable}
                           onPointerEnter={dragProps.onPointerEnter}
@@ -4916,32 +4916,32 @@ export function EmailViewer({
                               <TooltipTrigger asChild>
                                 <button
                                   className="p-1 hover:bg-accent rounded transition-colors"
-                                  aria-label={t('download')}
+                                  aria-label={t("Download")}
                                   onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentDownload(attachment); setShowAllMobileAttachments(false); }}
                                 >
                                   <Download className="w-3.5 h-3.5 text-foreground" />
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent>{t('download')}</TooltipContent>
+                              <TooltipContent>{t("Download")}</TooltipContent>
                             </Tooltip>
                             {opensPreview && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <button
                                     className="p-1 hover:bg-accent rounded transition-colors"
-                                    aria-label={tFiles('preview')}
+                                    aria-label={tFiles("Preview")}
                                     onClick={(e) => { e.stopPropagation(); handleEffectiveAttachmentOpen(attachment); setShowAllMobileAttachments(false); }}
                                   >
                                     <Eye className="w-3.5 h-3.5 text-foreground" />
                                   </button>
                                 </TooltipTrigger>
-                                <TooltipContent>{tFiles('preview')}</TooltipContent>
+                                <TooltipContent>{tFiles("Preview")}</TooltipContent>
                               </Tooltip>
                             )}
                           </div>
                         </div>
                           </TooltipTrigger>
-                          <TooltipContent>{`${opensPreview ? tFiles('preview') : t('download')} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
+                          <TooltipContent>{`${opensPreview ? tFiles("Preview") : t("Download")} ${getAttachmentDisplayName(attachment.name, attachment.type)}`}</TooltipContent>
                         </Tooltip>
                           )}
                         </DraggableAttachmentChip>
@@ -5025,7 +5025,7 @@ export function EmailViewer({
                         void handleSendQuickReply();
                       }
                     }}
-                    placeholder={t('quick_reply_placeholder')}
+                    placeholder={t("Write a quick reply...")}
                     className={cn(
                       "w-full px-3 py-2 text-sm border border-border bg-background text-foreground rounded-lg",
                       "hover:border-accent focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all",
@@ -5039,7 +5039,7 @@ export function EmailViewer({
                   {(isQuickReplyFocused || quickReplyText) && (
                     <div className="flex items-center justify-between gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
                       <div className="text-xs text-muted-foreground">
-                        {t('characters_count', { count: quickReplyText.length })}
+                        {t("{count} characters", { count: quickReplyText.length })}
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
@@ -5051,7 +5051,7 @@ export function EmailViewer({
                           }}
                           disabled={isSendingQuickReply}
                         >
-                          {tCommon('cancel')}
+                          {tCommon("Cancel")}
                         </Button>
                         <Button
                           variant="ghost"
@@ -5065,7 +5065,7 @@ export function EmailViewer({
                           className="text-muted-foreground"
                         >
                           <MoreVertical className="w-4 h-4 me-1" />
-                          {t('more_options')}
+                          {t("More options")}
                         </Button>
                         <Button
                           size="sm"
@@ -5075,12 +5075,12 @@ export function EmailViewer({
                           {isSendingQuickReply ? (
                             <>
                               <Loader2 className="w-4 h-4 me-1 animate-spin" />
-                              {t('sending')}
+                              {t("Sending...")}
                             </>
                           ) : (
                             <>
                               <Reply className="w-4 h-4 me-1" />
-                              {t('send')}
+                              {t("Send")}
                             </>
                           )}
                         </Button>
@@ -5104,7 +5104,7 @@ export function EmailViewer({
             <DialogHeader className="flex-row items-center justify-between gap-2 border-b border-border p-4 text-start">
               <div className="flex items-center gap-2">
                 <Code className="w-5 h-5 text-primary" />
-                <DialogTitle>{t('email_source')}</DialogTitle>
+                <DialogTitle>{t("Email Source")}</DialogTitle>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -5114,7 +5114,7 @@ export function EmailViewer({
                   className="flex items-center gap-1.5"
                 >
                   <Copy className="w-4 h-4" />
-                  {t('copy_source')}
+                  {t("Copy to clipboard")}
                 </Button>
                 <Button
                   variant="ghost"
@@ -5128,7 +5128,7 @@ export function EmailViewer({
             </DialogHeader>
 
             {/* Modal Content */}
-            <div className="flex-1 overflow-auto p-4 bg-muted/30" tabIndex={0} aria-label={t('view_source')}>
+            <div className="flex-1 overflow-auto p-4 bg-muted/30" tabIndex={0} aria-label={t("View source")}>
               <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-words bg-background border border-border rounded-lg p-4">
                 {generateEmailSource(email)}
               </pre>
@@ -5149,45 +5149,45 @@ export function EmailViewer({
               "flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] transition-colors duration-150",
               onNavigatePrev ? "text-muted-foreground active:text-foreground" : "text-muted-foreground"
             )}
-            aria-label={t('tooltips.previous')}
+            aria-label={t("Previous email")}
           >
             <ChevronLeft className="w-5 h-5" />
-            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t('previous')}</span>
+            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Prev")}</span>
           </button>
           {isDraft && onEditDraft ? (
             <button
               onClick={() => onEditDraft()}
               className="flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] text-primary active:text-primary/80 transition-colors duration-150"
-              aria-label={t('tooltips.edit_draft')}
+              aria-label={t("Edit draft")}
             >
               <EditIcon className="w-5 h-5" />
-              <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t('edit_draft')}</span>
+              <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Edit")}</span>
             </button>
           ) : (
           <>
           <button
             onClick={() => onReply?.()}
             className="flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] text-muted-foreground active:text-foreground transition-colors duration-150"
-            aria-label={t('tooltips.reply')}
+            aria-label={t("Reply (r)")}
           >
             <Reply className="w-5 h-5" />
-            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t('reply')}</span>
+            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Reply")}</span>
           </button>
           <button
             onClick={onReplyAll}
             className="flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] text-muted-foreground active:text-foreground transition-colors duration-150"
-            aria-label={t('tooltips.reply_all')}
+            aria-label={t("Reply All (a)")}
           >
             <ReplyAll className="w-5 h-5" />
-            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t('reply_all')}</span>
+            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Reply All")}</span>
           </button>
           <button
             onClick={onForward}
             className="flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] text-muted-foreground active:text-foreground transition-colors duration-150"
-            aria-label={t('tooltips.forward')}
+            aria-label={t("Forward (f)")}
           >
             <Forward className="w-5 h-5" />
-            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t('forward')}</span>
+            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Forward")}</span>
           </button>
           </>)}
           <button
@@ -5197,10 +5197,10 @@ export function EmailViewer({
               "flex flex-col items-center justify-center gap-1 py-2 px-1 min-h-[44px] grow shrink-0 basis-[64px] transition-colors duration-150",
               onNavigateNext ? "text-muted-foreground active:text-foreground" : "text-muted-foreground"
             )}
-            aria-label={t('tooltips.next')}
+            aria-label={t("Next email")}
           >
             <ChevronRight className="w-5 h-5" />
-            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t('next')}</span>
+            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Next")}</span>
           </button>
         </div>
       </nav>

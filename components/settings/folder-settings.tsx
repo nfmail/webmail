@@ -103,7 +103,7 @@ function IconPicker({ currentIcon, onSelect, onClose }: {
 }
 
 export function FolderSettings() {
-  const t = useTranslations('settings.folders');
+  const t = useTranslations();
   const { client } = useAuthStore();
   const { mailboxes, fetchMailboxes, createMailbox, renameMailbox, deleteMailbox, setMailboxRole } = useEmailStore();
   const { folderIcons, setFolderIcon } = useSettingsStore();
@@ -182,9 +182,9 @@ export function FolderSettings() {
       setNewFolderName('');
       setIsCreating(false);
       setCreatingParentId(null);
-      toast.success(t('folder_created'));
+      toast.success(t("Folder created"));
     } catch {
-      toast.error(t('error_create'));
+      toast.error(t("Failed to create folder"));
     } finally {
       setIsLoading(false);
     }
@@ -197,9 +197,9 @@ export function FolderSettings() {
       await renameMailbox(client, mailboxId, editingName.trim());
       setEditingId(null);
       setEditingName('');
-      toast.success(t('folder_renamed'));
+      toast.success(t("Folder renamed"));
     } catch {
-      toast.error(t('error_rename'));
+      toast.error(t("Failed to rename folder"));
     } finally {
       setIsLoading(false);
     }
@@ -211,18 +211,18 @@ export function FolderSettings() {
     try {
       await deleteMailbox(client, mailboxId);
       setDeletingId(null);
-      toast.success(t('folder_deleted'));
+      toast.success(t("Folder deleted"));
     } catch (err: unknown) {
       const jmapType = (err as Error & { jmapType?: string })?.jmapType;
       switch (jmapType) {
         case 'mailboxHasChild':
-          toast.error(t('error_delete_has_children'));
+          toast.error(t("Cannot delete folder: it still contains subfolders. Delete or move them first."));
           break;
         case 'mailboxHasEmail':
-          toast.error(t('error_delete_has_email'));
+          toast.error(t("Cannot delete folder: it still contains emails. Move or delete them first."));
           break;
         default:
-          toast.error(t('error_delete'));
+          toast.error(t("Failed to delete folder"));
       }
     } finally {
       setIsLoading(false);
@@ -241,9 +241,9 @@ export function FolderSettings() {
       } else {
         await setMailboxRole(client, mailboxId, role);
       }
-      toast.success(t('role_updated'));
+      toast.success(t("Folder role updated"));
     } catch {
-      toast.error(t('error_role'));
+      toast.error(t("Failed to update folder role"));
     } finally {
       setIsLoading(false);
     }
@@ -271,7 +271,7 @@ export function FolderSettings() {
         <div className="flex-1 flex flex-col gap-1">
           {parentName && (
             <span className="text-xs text-muted-foreground">
-              {t('subfolder_of', { name: parentName })}
+              {t("Inside {name}", { name: parentName })}
             </span>
           )}
           <input
@@ -286,8 +286,8 @@ export function FolderSettings() {
                 setCreatingParentId(null);
               }
             }}
-            placeholder={parentId ? t('subfolder_name') : t('new_folder_name')}
-            aria-label={parentId ? t('subfolder_name') : t('new_folder_name')}
+            placeholder={parentId ? t("Subfolder name") : t("Folder name")}
+            aria-label={parentId ? t("Subfolder name") : t("Folder name")}
             className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             autoFocus
             disabled={isLoading}
@@ -298,7 +298,7 @@ export function FolderSettings() {
           disabled={isLoading || !newFolderName.trim()}
           className="px-3 py-1 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
         >
-          {t('create')}
+          {t("Create")}
         </button>
         <button
           onClick={() => {
@@ -308,7 +308,7 @@ export function FolderSettings() {
           }}
           className="px-3 py-1 text-xs bg-muted text-foreground rounded-md hover:bg-accent"
         >
-          {t('cancel')}
+          {t("Cancel")}
         </button>
       </div>
     );
@@ -334,7 +334,7 @@ export function FolderSettings() {
               if (e.key === 'Enter') handleRename(mb.id);
               if (e.key === 'Escape') cancelEdit();
             }}
-            aria-label={t('rename')}
+            aria-label={t("Rename")}
             className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             autoFocus
             disabled={isLoading}
@@ -343,14 +343,14 @@ export function FolderSettings() {
             onClick={() => handleRename(mb.id)}
             disabled={isLoading || !editingName.trim()}
             className="p-1.5 text-primary hover:bg-accent rounded-md disabled:opacity-50"
-            title={t('rename')}
+            title={t("Rename")}
           >
             <Check className="w-4 h-4" />
           </button>
           <button
             onClick={cancelEdit}
             className="p-1.5 text-muted-foreground hover:bg-accent rounded-md"
-            title={t('cancel')}
+            title={t("Cancel")}
           >
             <X className="w-4 h-4" />
           </button>
@@ -365,20 +365,20 @@ export function FolderSettings() {
         <div className="flex items-center gap-3 py-2.5 px-3 bg-destructive/5 rounded-md border border-destructive/20" style={{ marginLeft: depth * 16 }}>
           <Trash2 className="w-4 h-4 text-destructive flex-shrink-0" />
           <p className="text-sm text-foreground flex-1">
-            {t('confirm_delete', { name: mb.name })}
+            {t("Are you sure you want to delete \"{name}\"? Emails in this folder will be moved to Trash.", { name: mb.name })}
           </p>
           <button
             onClick={() => handleDelete(mb.id)}
             disabled={isLoading}
             className="px-3 py-1 text-xs font-medium bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 disabled:opacity-50"
           >
-            {t('delete')}
+            {t("Delete")}
           </button>
           <button
             onClick={() => setDeletingId(null)}
             className="px-3 py-1 text-xs bg-muted text-foreground rounded-md hover:bg-accent"
           >
-            {t('cancel')}
+            {t("Cancel")}
           </button>
         </div>
         </div>
@@ -416,7 +416,7 @@ export function FolderSettings() {
                       ? "bg-accent"
                       : "hover:bg-accent"
                   )}
-                  title={t('change_icon')}
+                  title={t("Change icon")}
                 >
                   <Icon className={cn(
                     "w-4 h-4",
@@ -459,7 +459,7 @@ export function FolderSettings() {
               <button
                 onClick={() => startCreateSubfolder(mb.id)}
                 className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                title={t('create_subfolder')}
+                title={t("Create Subfolder")}
               >
                 <FolderPlus className="w-3.5 h-3.5" />
               </button>
@@ -468,7 +468,7 @@ export function FolderSettings() {
               <button
                 onClick={() => startEdit(mb)}
                 className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                title={t('rename')}
+                title={t("Rename")}
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
@@ -477,7 +477,7 @@ export function FolderSettings() {
               <button
                 onClick={() => setDeletingId(mb.id)}
                 className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors"
-                title={t('delete')}
+                title={t("Delete")}
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -499,12 +499,12 @@ export function FolderSettings() {
   return (
     <div className="flex flex-col gap-8">
       {/* Folder List - primary section */}
-      <SettingsSection title={t('folder_list')} description={t('folder_list_description')}>
+      <SettingsSection title={t("Your Folders")} description={t("Click a folder icon to customize it")}>
         <div className="flex flex-col gap-0.5">
           {folderTree.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <Folder className="w-10 h-10 text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground">{t('no_folders')}</p>
+              <p className="text-sm text-muted-foreground">{t("No custom folders")}</p>
             </div>
           ) : (
             folderTree.map(node => renderFolderNode(node))
@@ -519,13 +519,13 @@ export function FolderSettings() {
             className="flex items-center gap-2 mt-3 px-3 py-2 text-sm text-primary hover:bg-primary/5 rounded-md transition-colors w-full border border-dashed border-primary/30 hover:border-primary/50"
           >
             <Plus className="w-4 h-4" />
-            {t('create_folder')}
+            {t("Create Folder")}
           </button>
         )}
       </SettingsSection>
 
       {/* Standard Folder Roles - advanced section */}
-      <SettingsSection title={t('standard_roles')} description={t('standard_roles_description')}>
+      <SettingsSection title={t("Standard Folder Roles")} description={t("Assign which folders are used for standard mailbox roles like Inbox, Sent, Trash, etc.")}>
         {STANDARD_ROLES.map((role) => {
           // Disambiguate duplicate folder names by appending parent path
           const nameCounts = new Map<string, number>();
@@ -543,7 +543,7 @@ export function FolderSettings() {
                 value={getRoleMailboxId(role)}
                 onChange={(value) => handleRoleChange(role, value)}
                 options={[
-                  { value: '', label: t('role_none') },
+                  { value: '', label: t("None") },
                   ...ownMailboxes.map(mb => ({
                     value: mb.id,
                     label: (nameCounts.get(mb.name) || 0) > 1

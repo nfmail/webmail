@@ -73,7 +73,7 @@ function createEventDragPreview(title: string, timeRange: string, color: string)
 }
 
 export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onMouseLeave, onContextMenu, isSelected, draggable: isDraggable, continuesAfter = false, className, style }: EventCardProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const [isBeingDragged, setIsBeingDragged] = useState(false);
   const color = getEventColor(event, calendar);
   // Event colors come from user/calendar data, so the previous "event color as
@@ -97,7 +97,7 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
   // iTIP CANCEL marks the attendee's copy with status "cancelled" instead of
   // deleting it (#572) - render it struck through and dimmed.
   const isCancelled = event.status === "cancelled";
-  const ariaLabel = `${event.title || t("events.no_title")}, ${timeString}${calendarName ? `, ${calendarName}` : ""}${isCancelled ? `, ${t("detail.cancelled")}` : ""}`;
+  const ariaLabel = `${event.title || t("(No title)")}, ${timeString}${calendarName ? `, ${calendarName}` : ""}${isCancelled ? `, ${t("Cancelled")}` : ""}`;
 
   const handleDragStart = useCallback((e: DragEvent) => {
     e.stopPropagation();
@@ -109,7 +109,7 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
       duration: event.duration,
       durationMinutes,
     }));
-    const displayTitle = event.title || t("events.no_title");
+    const displayTitle = event.title || t("(No title)");
     e.dataTransfer.setData("text/plain", displayTitle);
     const preview = createEventDragPreview(displayTitle, timeString, color);
     e.dataTransfer.setDragImage(preview, 0, 0);
@@ -154,7 +154,7 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
           className="w-1.5 h-1.5 rounded-full flex-shrink-0"
           style={{ backgroundColor: foreground }}
         />
-        <span className={cn("truncate", isCancelled && "line-through")}>{event.title || t("events.no_title")}</span>
+        <span className={cn("truncate", isCancelled && "line-through")}>{event.title || t("(No title)")}</span>
       </button>
     );
   }
@@ -184,7 +184,7 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
           {showTimeInMonthView && !event.showWithoutTime && (
             <span className="flex-shrink-0">{format(startDate, timeFmt)}</span>
           )}
-          <span className={cn("truncate font-medium", isCancelled && "line-through")}>{event.title || t("events.no_title")}</span>
+          <span className={cn("truncate font-medium", isCancelled && "line-through")}>{event.title || t("(No title)")}</span>
         </div>
       </button>
     );
@@ -209,7 +209,7 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
       )}
       style={{ backgroundColor: color, borderLeft: `3px solid ${color}`, color: foreground, ...style }}
     >
-      <div className={cn("font-medium truncate", isCancelled && "line-through")}>{event.title || t("events.no_title")}</div>
+      <div className={cn("font-medium truncate", isCancelled && "line-through")}>{event.title || t("(No title)")}</div>
       {!event.showWithoutTime && (
         <div className="text-[10px]">
           {timeString}
@@ -218,7 +218,7 @@ export function EventCard({ event, calendar, variant, onClick, onMouseEnter, onM
       {getParticipantCount(event) > 0 && (
         <div
           className="flex items-center gap-0.5 text-[10px]"
-          title={t("participants.count", { count: getParticipantCount(event) })}
+          title={t("{count, plural, one {# participant} other {# participants}}", { count: getParticipantCount(event) })}
         >
           <Users className="w-3 h-3" />
           <span>{getParticipantCount(event)}</span>

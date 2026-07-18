@@ -117,8 +117,8 @@ function MailLayoutPreview({
 }
 
 export function LayoutSettings() {
-  const t = useTranslations('settings.appearance');
-  const tEmail = useTranslations('settings.email_behavior');
+  const t = useTranslations();
+  const tEmail = useTranslations();
   const { toolbarPosition, showToolbarLabels, hideAccountSwitcher, showRailAccountList, enableUnifiedMailbox, includeGroupInUnified, enableAllMailView, allMailFolderIds, enableCrossUnreadView, enableCrossStarredView, enableCrossAllView, colorfulSidebarIcons, tintListRowsByTag, showFolderTotalCount, mailLayout, proInterface, updateSetting } = useSettingsStore();
   const { isSettingLocked, isSettingHidden, isFeatureEnabled } = usePolicyStore();
   const accounts = useAccountStore(s => s.accounts);
@@ -157,22 +157,22 @@ export function LayoutSettings() {
   // logged in (otherwise it's unambiguous).
   const activeAccount = accounts.find(a => a.id === activeAccountId);
   const allMailAccountHint = accounts.length > 1 && activeAccount
-    ? t('all_mail.account_hint', { account: activeAccount.displayName || activeAccount.email })
+    ? t("Applies to {account}.", { account: activeAccount.displayName || activeAccount.email })
     : null;
 
   return (
-    <SettingsSection title={t('title')} description={t('description')}>
+    <SettingsSection title={t("Appearance")} description={t("Customize the look and feel of your webmail")}>
       {!isSettingHidden('mailLayout') && (
-      <SettingItem label={tEmail('mail_layout.label')} description={tEmail('mail_layout.description')} locked={isSettingLocked('mailLayout')}>
+      <SettingItem label={tEmail("Mail Layout")} description={tEmail("Choose between the classic split reading pane, a Gmail-style focused reading flow, or a Zimbra-style bottom reading pane.")} locked={isSettingLocked('mailLayout')}>
         <div className="w-[22rem] max-w-full">
           <RadioGroup
             value={mailLayout}
             onChange={(value) => updateSetting('mailLayout', value as MailLayout)}
-            aria-label={tEmail('mail_layout.label')}
+            aria-label={tEmail("Mail Layout")}
             options={[
-              { value: 'split', label: tEmail('mail_layout.split') },
-              { value: 'focus', label: tEmail('mail_layout.focus') },
-              { value: 'horizontal', label: tEmail('mail_layout.horizontal') },
+              { value: 'split', label: tEmail("Split pane") },
+              { value: 'focus', label: tEmail("Focused list") },
+              { value: 'horizontal', label: tEmail("Reading pane at bottom") },
             ]}
           />
           <MailLayoutPreview value={mailLayout} t={tEmail} />
@@ -180,19 +180,19 @@ export function LayoutSettings() {
       </SettingItem>
       )}
 
-      <SettingItem label={t('toolbar_position.label')} description={t('toolbar_position.description')}>
+      <SettingItem label={t("Toolbar Position")} description={t("Where to show email action buttons (Reply, Archive, Delete, etc.)")}>
         <RadioGroup
           value={toolbarPosition}
           onChange={(value) => updateSetting('toolbarPosition', value as ToolbarPosition)}
-          aria-label={t('toolbar_position.label')}
+          aria-label={t("Toolbar Position")}
           options={[
-            { value: 'top', label: t('toolbar_position.top') },
-            { value: 'below-subject', label: t('toolbar_position.below_subject') },
+            { value: 'top', label: t("Top") },
+            { value: 'below-subject', label: t("Below subject") },
           ]}
         />
       </SettingItem>
 
-      <SettingItem label={t('toolbar_labels.label')} description={t('toolbar_labels.description')} htmlFor="layout-toolbar-labels">
+      <SettingItem label={t("Show Toolbar Labels")} description={t("Display text labels next to toolbar icons. Disable to save space once you are familiar with the icons.")} htmlFor="layout-toolbar-labels">
         <ToggleSwitch
           id="layout-toolbar-labels"
           checked={showToolbarLabels}
@@ -200,7 +200,7 @@ export function LayoutSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('hide_account_switcher.label')} description={t('hide_account_switcher.description')} htmlFor="layout-hide-account-switcher">
+      <SettingItem label={t("Hide Sidebar Account Switcher")} description={t("Hide the account selector at the top of the folder sidebar. You can still switch accounts from the bottom navigation rail.")} htmlFor="layout-hide-account-switcher">
         <ToggleSwitch
           id="layout-hide-account-switcher"
           checked={hideAccountSwitcher}
@@ -208,7 +208,7 @@ export function LayoutSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('show_rail_account_list.label')} description={t('show_rail_account_list.description')} htmlFor="layout-show-rail-account-list">
+      <SettingItem label={t("Show Account Avatars on Navigation Rail")} description={t("Display individual account circles at the bottom of the navigation rail for quick switching, with a sign-out button below.")} htmlFor="layout-show-rail-account-list">
         <ToggleSwitch
           id="layout-show-rail-account-list"
           checked={showRailAccountList}
@@ -216,7 +216,7 @@ export function LayoutSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('colorful_sidebar_icons.label')} description={t('colorful_sidebar_icons.description')} htmlFor="layout-colorful-sidebar-icons">
+      <SettingItem label={t("Colorful Sidebar Icons")} description={t("Tint folder and tag icons by type (blue Inbox, red Junk, green Sent, etc.). Disable for a monochrome sidebar.")} htmlFor="layout-colorful-sidebar-icons">
         <ToggleSwitch
           id="layout-colorful-sidebar-icons"
           checked={colorfulSidebarIcons}
@@ -224,7 +224,7 @@ export function LayoutSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('tint_list_rows.label')} description={t('tint_list_rows.description')} htmlFor="layout-tint-list-rows">
+      <SettingItem label={t("Tint List Rows by Tag Color")} description={t("Shade each message row with its first tag color. Disable to keep rows plain; tag dots and chips still show the color.")} htmlFor="layout-tint-list-rows">
         <ToggleSwitch
           id="layout-tint-list-rows"
           checked={tintListRowsByTag}
@@ -232,7 +232,7 @@ export function LayoutSettings() {
         />
       </SettingItem>
 
-      <SettingItem label={t('show_folder_total_count.label')} description={t('show_folder_total_count.description')} htmlFor="layout-show-folder-total-count">
+      <SettingItem label={t("Show Total Message Count")} description={t("Show the total message count next to folders and tags, alongside the unread count. Disable to show only unread counts.")} htmlFor="layout-show-folder-total-count">
         <ToggleSwitch
           id="layout-show-folder-total-count"
           checked={showFolderTotalCount}
@@ -242,8 +242,8 @@ export function LayoutSettings() {
 
       {(accounts.length > 1 || hasGroupInboxes) && !isSettingHidden('enableUnifiedMailbox') && (
         <SettingItem
-          label={t('unified_mailbox.label')}
-          description={t('unified_mailbox.description')}
+          label={t("Unified Mailbox")}
+          description={t("Show combined folders (Inbox, Sent, etc.) across all connected accounts")}
           locked={isSettingLocked('enableUnifiedMailbox')}
           htmlFor="layout-unified-mailbox"
         >
@@ -258,8 +258,8 @@ export function LayoutSettings() {
       {enableUnifiedMailbox && hasGroupInboxes && !isSettingHidden('includeGroupInUnified') && (
         <div className="ms-4 border-s-2 border-border ps-4 -mt-2">
           <SettingItem
-            label={t('unified_mailbox.include_group.label')}
-            description={t('unified_mailbox.include_group.description')}
+            label={t("Include group inboxes")}
+            description={t("Also merge shared/group inboxes into the unified view.")}
             locked={isSettingLocked('includeGroupInUnified')}
             htmlFor="layout-include-group-in-unified"
           >
@@ -296,8 +296,8 @@ export function LayoutSettings() {
 
       {allMailViewAllowed && !isSettingHidden('enableAllMailView') && (
         <SettingItem
-          label={t('all_mail.label')}
-          description={t('all_mail.description')}
+          label={t("All Mail")}
+          description={t("Show an \"All Mail\" entry above your folders that merges messages from across this account's folders into one list.")}
           locked={isSettingLocked('enableAllMailView')}
           htmlFor="layout-all-mail-view"
         >
@@ -312,14 +312,14 @@ export function LayoutSettings() {
       {allMailViewAllowed && enableAllMailView && (
         <div className="ms-4 border-s-2 border-border ps-4 -mt-2 flex flex-col gap-2">
           <div>
-            <div className="text-sm font-medium text-foreground">{t('all_mail.folders_label')}</div>
-            <div className="text-xs text-muted-foreground">{t('all_mail.folders_description')}</div>
+            <div className="text-sm font-medium text-foreground">{t("Folders in All Mail")}</div>
+            <div className="text-xs text-muted-foreground">{t("Choose which folders are merged into the All Mail view.")}</div>
             {allMailAccountHint && (
               <div className="text-xs italic text-muted-foreground mt-0.5">{allMailAccountHint}</div>
             )}
           </div>
           {ownMailboxes.length === 0 ? (
-            <p className="text-xs text-muted-foreground">{t('all_mail.no_folders')}</p>
+            <p className="text-xs text-muted-foreground">{t("No folders available.")}</p>
           ) : (
             <div className="flex flex-col gap-0.5">
               {ownMailboxes.map((mb) => {
@@ -343,7 +343,7 @@ export function LayoutSettings() {
         </div>
       )}
 
-      <SettingItem label={t('pro_interface.label')} description={t('pro_interface.description')} htmlFor="layout-pro-interface">
+      <SettingItem label={t("Pro Interface (Experimental)")} description={t("Desktop-only power-user layout with multi-tab message browsing and cross-account workflows. The standard interface is unaffected; you can switch back at any time.")} htmlFor="layout-pro-interface">
         <ToggleSwitch
           id="layout-pro-interface"
           checked={proInterface}

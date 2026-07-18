@@ -44,7 +44,7 @@ export function PromptDialog({
   confirmText,
   cancelText,
 }: PromptDialogProps) {
-  const t = useTranslations("confirm_dialog");
+  const t = useTranslations();
   const [value, setValue] = useState(defaultValue);
 
   const handleOpenChange = (open: boolean) => {
@@ -72,8 +72,8 @@ export function PromptDialog({
       document.removeEventListener("mousedown", handleBackdropMouseDown);
   }, [isOpen, onClose]);
 
-  const resolvedConfirmText = confirmText || t("confirm");
-  const resolvedCancelText = cancelText || t("cancel");
+  const resolvedConfirmText = confirmText || t("Confirm");
+  const resolvedCancelText = cancelText || t("Cancel");
   const trimmed = value.trim();
   const canSubmit = trimmed.length > 0;
 

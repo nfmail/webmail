@@ -18,7 +18,7 @@ export function PWAInstallPrompt() {
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const { appName, faviconUrl, appLogoLightUrl, appLogoDarkUrl } = useConfig();
-  const t = useTranslations("pwa_install");
+  const t = useTranslations();
 
   useEffect(() => {
     if (localStorage.getItem(DISMISSED_KEY)) return;
@@ -86,17 +86,17 @@ export function PWAInstallPrompt() {
           )}
           <div>
             <h3 className="font-semibold text-sm text-neutral-900 dark:text-white">
-              {t("title", { appName })}
+              {t("Install {appName}", { appName })}
             </h3>
             <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-              {t("description")}
+              {t("Install our app for quick access and offline support.")}
             </p>
           </div>
         </div>
         <button
           onClick={handleDismiss}
           className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
-          aria-label={t("dismiss_aria")}
+          aria-label={t("Dismiss install prompt")}
         >
           <X className="w-4 h-4" />
         </button>
@@ -107,20 +107,20 @@ export function PWAInstallPrompt() {
             onClick={handleDismiss}
             className="flex-1 px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
           >
-            {t("not_now")}
+            {t("Not now")}
           </button>
           <button
             onClick={handleInstall}
             className="flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
           >
-            {t("install")}
+            {t("Install")}
           </button>
         </div>
         <button
           onClick={handleDismissForever}
           className="w-full text-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors text-center"
         >
-          {t("dont_remind")}
+          {t("Don't remind me again")}
         </button>
       </div>
     </div>

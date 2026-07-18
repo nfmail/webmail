@@ -31,7 +31,7 @@ type PushStatus =
   | { kind: 'error'; message: string };
 
 export function NotificationSettings() {
-  const t = useTranslations('settings.notifications');
+  const t = useTranslations();
   const {
     emailNotificationsEnabled,
     emailNotificationSound,
@@ -113,9 +113,9 @@ export function NotificationSettings() {
   const handleDisablePush = async () => {
     if (!client) return;
     const confirmed = await confirmDialog({
-      title: t('push.confirm_disable_title'),
-      message: t('push.confirm_disable_message'),
-      confirmText: t('push.disable'),
+      title: t("Disable background notifications?"),
+      message: t("This device will stop receiving alerts when the site is closed."),
+      confirmText: t("Disable"),
       variant: 'destructive',
     });
     if (!confirmed) return;
@@ -138,21 +138,21 @@ export function NotificationSettings() {
 
   return (
     <div className="flex flex-col gap-8">
-      <SettingsSection title={t('push.title')} description={t('push.description')}>
+      <SettingsSection title={t("Background Notifications")} description={t("Receive system notifications for new mail when this site is closed. Delivered via the Bulwark push relay; the relay never sees mail content.")}>
         <div className="rounded-md border border-border bg-card p-4">
           <FieldGroup>
             <Field>
               <div className="flex items-center justify-between gap-3">
                 <FieldLabel htmlFor="push-relay-url">
-                  {t('push.relay_label')}
+                  {t("Push relay")}
                   {pushRelayLocked && (
-                    <Lock className="w-3 h-3 text-muted-foreground" aria-label={t('push.relay_locked')} />
+                    <Lock className="w-3 h-3 text-muted-foreground" aria-label={t("Set by administrator")} />
                   )}
                 </FieldLabel>
                 <PushStatusBadge status={pushStatus} t={t} />
               </div>
               <FieldDescription>
-                {pushRelayLocked ? t('push.relay_locked_desc') : t('push.relay_desc')}
+                {pushRelayLocked ? t("The push relay URL has been set by your administrator and cannot be changed.") : t("Defaults to the hosted Bulwark relay. Change only if you self-host.")}
               </FieldDescription>
               <Input
                 id="push-relay-url"
@@ -162,7 +162,7 @@ export function NotificationSettings() {
                 spellCheck={false}
                 value={relayUrl}
                 onChange={(e) => setRelayUrl(e.target.value)}
-                placeholder={t('push.relay_placeholder')}
+                placeholder={t("https://notifications.relay.example.com")}
                 disabled={busy || pushStatus.kind === 'unsupported' || pushRelayLocked}
                 readOnly={pushRelayLocked}
               />
@@ -171,26 +171,26 @@ export function NotificationSettings() {
                   onClick={handleEnablePush}
                   disabled={busy || pushStatus.kind === 'unsupported' || !isValidRelay || !client}
                 >
-                  {pushStatus.kind === 'enabled' ? t('push.reenable') : t('push.enable')}
+                  {pushStatus.kind === 'enabled' ? t("Re-register") : t("Enable")}
                 </Button>
                 {pushStatus.kind === 'enabled' && (
                   <Button variant="outline" onClick={handleDisablePush} disabled={busy}>
-                    {t('push.disable')}
+                    {t("Disable")}
                   </Button>
                 )}
               </div>
               {pushStatus.kind === 'unsupported' && (
-                <FieldDescription>{t('push.ios_hint')}</FieldDescription>
+                <FieldDescription>{t("On iOS, install the site to your home screen first - Safari only delivers Web Push to installed PWAs.")}</FieldDescription>
               )}
             </Field>
           </FieldGroup>
         </div>
       </SettingsSection>
 
-      <SettingsSection title={t('sound_selection.title')} description={t('sound_selection.description')}>
+      <SettingsSection title={t("Notification Sound")} description={t("Choose which sound to play for notifications")}>
         <SettingItem
-          label={t('sound_selection.choose')}
-          description={t('sound_selection.choose_desc')}
+          label={t("Sound")}
+          description={t("Select a notification tone and click the speaker icon to preview it")}
           htmlFor="notification-sound-select"
         >
           <div className="flex items-center gap-2">
@@ -199,7 +199,7 @@ export function NotificationSettings() {
               size="icon"
               className="h-8 w-8"
               onClick={() => playNotificationSound(notificationSoundChoice)}
-              title={t('test_sound')}
+              title={t("Test notification sound")}
             >
               <Volume2 className="w-4 h-4" />
             </Button>
@@ -217,11 +217,11 @@ export function NotificationSettings() {
         </SettingItem>
       </SettingsSection>
 
-      <SettingsSection title={t('email.title')} description={t('email.description')}>
+      <SettingsSection title={t("Email Notifications")} description={t("Configure notifications for incoming emails")}>
         {!isSettingHidden('emailNotificationsEnabled') && (
         <SettingItem
-          label={t('email.enabled')}
-          description={t('email.enabled_desc')}
+          label={t("Email notifications")}
+          description={t("Show notifications when new emails arrive")}
           locked={isSettingLocked('emailNotificationsEnabled')}
           htmlFor="email-notifications-enabled"
         >
@@ -234,8 +234,8 @@ export function NotificationSettings() {
         )}
 
         <SettingItem
-          label={t('email.sound')}
-          description={t('email.sound_desc')}
+          label={t("Notification sound")}
+          description={t("Play an audio alert when new emails arrive")}
           htmlFor="email-notification-sound"
         >
           <ToggleSwitch
@@ -247,11 +247,11 @@ export function NotificationSettings() {
         </SettingItem>
       </SettingsSection>
 
-      <SettingsSection title={t('calendar.title')} description={t('calendar.description')}>
+      <SettingsSection title={t("Calendar Notifications")} description={t("Configure notifications for calendar events")}>
         {!isSettingHidden('calendarNotificationsEnabled') && (
         <SettingItem
-          label={t('calendar.enabled')}
-          description={t('calendar.enabled_desc')}
+          label={t("Event notifications")}
+          description={t("Show alerts for upcoming calendar events")}
           locked={isSettingLocked('calendarNotificationsEnabled')}
           htmlFor="calendar-notifications-enabled"
         >
@@ -264,8 +264,8 @@ export function NotificationSettings() {
         )}
 
         <SettingItem
-          label={t('calendar.sound')}
-          description={t('calendar.sound_desc')}
+          label={t("Notification sound")}
+          description={t("Play an audio alert for calendar reminders")}
           htmlFor="calendar-notification-sound"
         >
           <ToggleSwitch
@@ -277,8 +277,8 @@ export function NotificationSettings() {
         </SettingItem>
 
         <SettingItem
-          label={t('calendar.invitation_parsing')}
-          description={t('calendar.invitation_parsing_desc')}
+          label={t("Parse email invitations")}
+          description={t("Detect calendar invitations in email attachments and show calendar actions")}
           htmlFor="calendar-invitation-parsing"
         >
           <ToggleSwitch
@@ -305,18 +305,18 @@ function PushStatusBadge({
     return (
       <span className="inline-flex items-center gap-1 text-xs text-success">
         <CheckCircle2 className="w-3.5 h-3.5" />
-        {t('push.status_active')}
+        {t("Active on this device")}
       </span>
     );
   }
   if (status.kind === 'busy') {
-    return <span className="text-xs text-muted-foreground">{t('push.status_busy')}</span>;
+    return <span className="text-xs text-muted-foreground">{t("Working…")}</span>;
   }
   if (status.kind === 'unsupported') {
     return (
       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
         <XCircle className="w-3.5 h-3.5" />
-        {t('push.status_unsupported')}
+        {t("This browser does not support Web Push")}
       </span>
     );
   }
@@ -328,5 +328,5 @@ function PushStatusBadge({
       </span>
     );
   }
-  return <span className="text-xs text-muted-foreground">{t('push.status_inactive')}</span>;
+  return <span className="text-xs text-muted-foreground">{t("Not enabled on this device")}</span>;
 }

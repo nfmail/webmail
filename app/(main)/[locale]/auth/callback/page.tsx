@@ -14,7 +14,7 @@ function OAuthCallbackInner() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
-  const t = useTranslations("login");
+  const t = useTranslations();
   const { loginWithOAuth, loginWithServerSso } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
 
@@ -211,7 +211,7 @@ function OAuthCallbackInner() {
             <AlertCircle className="w-10 h-10 text-red-500" />
           </div>
           <h1 className="text-xl font-medium text-foreground mb-2">
-            {t("oauth_error.title")}
+            {t("Authentication Failed")}
           </h1>
           <p className="text-muted-foreground text-sm mb-6">
             {t(`oauth_error.${error}`)}
@@ -220,7 +220,7 @@ function OAuthCallbackInner() {
             variant="outline"
             onClick={() => router.push(toRouterPath(`${getPathPrefix(params.locale as string)}/${params.locale}/login`))}
           >
-            {t("oauth_error.back_to_login")}
+            {t("Back to login")}
           </Button>
         </div>
       </div>
@@ -231,7 +231,7 @@ function OAuthCallbackInner() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
       <div className="w-full max-w-sm mx-auto px-4 text-center" role="status">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-muted-foreground text-sm">{t("oauth_completing")}</p>
+        <p className="text-muted-foreground text-sm">{t("Completing sign in...")}</p>
       </div>
     </div>
   );

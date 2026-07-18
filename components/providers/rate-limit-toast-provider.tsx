@@ -9,7 +9,7 @@ type RateLimitBlockedDetail = {
 };
 
 export function RateLimitToastProvider({ children }: { children: React.ReactNode }) {
-  const tCommon = useTranslations('common');
+  const tCommon = useTranslations();
 
   useEffect(() => {
     const onRateLimitBlocked = (event: Event) => {
@@ -17,8 +17,8 @@ export function RateLimitToastProvider({ children }: { children: React.ReactNode
       const seconds = Math.max(1, Math.ceil((detail?.retryAfterMs ?? 0) / 1000));
 
       toast.warning(
-        tCommon('rate_limited_action_title'),
-        tCommon('rate_limited_action_detail', { seconds }),
+        tCommon("Request paused to avoid lockout."),
+        tCommon("Bulwark is waiting for the server cooldown to end before sending more authenticated requests. Try again in {seconds}s.", { seconds }),
       );
     };
 

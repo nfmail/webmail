@@ -11,7 +11,7 @@ import { useSettingsStore } from "@/stores/settings-store";
 const ONBOARDING_KEY = "onboarding_completed";
 
 export function WelcomeBanner() {
-  const t = useTranslations("welcome");
+  const t = useTranslations();
   const router = useRouter();
   const { startTour } = useTour();
   const onboardingCompleted = useSettingsStore((s) => s.onboardingCompleted);
@@ -70,7 +70,7 @@ export function WelcomeBanner() {
   return (
     <div
       role="complementary"
-      aria-label={t("title")}
+      aria-label={t("Welcome to your mailbox")}
       className={`border-b border-border bg-accent/30 transition-all duration-300 ease-out ${
         dismissed ? "opacity-0 scale-y-0 max-h-0 pointer-events-none" : "opacity-100 scale-y-100 max-h-96"
       }`}
@@ -86,20 +86,20 @@ export function WelcomeBanner() {
             </div>
             <div className="space-y-1.5">
               <h3 className="text-sm font-medium text-foreground">
-                {t("title")}
+                {t("Welcome to your mailbox")}
               </h3>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>{t("tip_compose")}</li>
-                <li>{t("tip_shortcuts")}</li>
-                <li>{t("tip_sidebar")}</li>
-                <li>{t("tip_settings")}</li>
+                <li>{t("Press c to compose a new email")}</li>
+                <li>{t("Press ? to see all keyboard shortcuts")}</li>
+                <li>{t("Find Calendar, Contacts and Settings in the sidebar menu")}</li>
+                <li>{t("Customize your experience in Settings")}</li>
               </ul>
             </div>
           </div>
           <button
             onClick={dismiss}
             className="flex-shrink-0 p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
-            aria-label={t("dismiss")}
+            aria-label={t("Dismiss")}
           >
             <X className="w-4 h-4" />
           </button>
@@ -112,7 +112,7 @@ export function WelcomeBanner() {
             className="text-xs h-7"
           >
             <PlayCircle className="w-3.5 h-3.5 me-1" />
-            {t("start_tour")}
+            {t("Start Tour")}
           </Button>
           <Button
             variant="outline"
@@ -121,7 +121,7 @@ export function WelcomeBanner() {
             className="text-xs h-7"
           >
             <Settings className="w-3.5 h-3.5 me-1" />
-            {t("settings")}
+            {t("Settings")}
           </Button>
           <Button
             variant="default"
@@ -129,7 +129,7 @@ export function WelcomeBanner() {
             onClick={dismiss}
             className="text-xs h-7"
           >
-            {t("got_it")}
+            {t("Got it")}
           </Button>
         </div>
       </div>

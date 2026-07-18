@@ -85,7 +85,7 @@ function groupEventsByDate(events: CalendarEvent[]): Map<string, CalendarEvent[]
 }
 
 export function ContactActivity({ contact }: ContactActivityProps) {
-  const t = useTranslations("contacts.activity");
+  const t = useTranslations();
   const format = useFormatter();
   const router = useRouter();
   const client = useAuthStore((s) => s.client);
@@ -193,7 +193,7 @@ export function ContactActivity({ contact }: ContactActivityProps) {
   };
 
   const formatEventTime = (event: CalendarEvent) => {
-    if (event.showWithoutTime) return t("all_day");
+    if (event.showWithoutTime) return t("All day");
     const d = new Date(event.start);
     if (isNaN(d.getTime())) return "";
     return format.dateTime(d, { hour: "numeric", minute: "2-digit" });
@@ -213,13 +213,13 @@ export function ContactActivity({ contact }: ContactActivityProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8">
-      <Section title={t("recent_emails")}>
+      <Section title={t("Recent Emails")}>
         {emailsLoading ? (
           <LoadingRow />
         ) : emailsError ? (
-          <p className="text-sm text-muted-foreground">{t("load_failed")}</p>
+          <p className="text-sm text-muted-foreground">{t("Failed to load")}</p>
         ) : !emails || emails.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("no_emails")}</p>
+          <p className="text-sm text-muted-foreground">{t("No recent emails")}</p>
         ) : (
           <div className="-mx-2">
             {emails.map((email) => {
@@ -235,14 +235,14 @@ export function ContactActivity({ contact }: ContactActivityProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="text-sm font-medium truncate">
-                        {sender.name || t("unknown_sender")}
+                        {sender.name || t("Unknown sender")}
                       </span>
                       <span className="text-xs text-muted-foreground flex-shrink-0">
                         {formatEmailDate(email.receivedAt)}
                       </span>
                     </div>
                     <div className="text-sm truncate">
-                      {email.subject || t("no_subject")}
+                      {email.subject || t("(No subject)")}
                     </div>
                     {email.preview && (
                       <p className="text-xs text-muted-foreground truncate mt-0.5">
@@ -257,13 +257,13 @@ export function ContactActivity({ contact }: ContactActivityProps) {
         )}
       </Section>
 
-      <Section title={t("upcoming_events")}>
+      <Section title={t("Upcoming Events")}>
         {eventsLoading ? (
           <LoadingRow />
         ) : eventsError ? (
-          <p className="text-sm text-muted-foreground">{t("load_failed")}</p>
+          <p className="text-sm text-muted-foreground">{t("Failed to load")}</p>
         ) : !events || events.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("no_events")}</p>
+          <p className="text-sm text-muted-foreground">{t("No upcoming events")}</p>
         ) : (
           <div className="space-y-4">
             {eventGroups.map(([dateKey, group]) => (
@@ -283,7 +283,7 @@ export function ContactActivity({ contact }: ContactActivityProps) {
                         {formatEventTime(event)}
                       </span>
                       <span className="text-sm truncate flex-1 min-w-0">
-                        {event.title || t("no_title")}
+                        {event.title || t("(No title)")}
                       </span>
                     </button>
                   ))}

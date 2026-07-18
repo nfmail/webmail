@@ -32,7 +32,7 @@ import { AlertTriangle, Loader2 } from "lucide-react";
 
 export default function FilesPage() {
   const router = useRouter();
-  const t = useTranslations("files");
+  const t = useTranslations();
   const filesEnabled = usePolicyStore((s) => s.isFeatureEnabled('filesEnabled'));
   const { isAuthenticated, logout, checkAuth, isLoading: authLoading, client } = useAuthStore();
   const activeAccountId = useAuthStore((s) => s.activeAccountId);
@@ -202,10 +202,10 @@ export default function FilesPage() {
   const handleCreateFolder = useCallback(async (name: string) => {
     try {
       await createDirectory(name);
-      toast.success(t("create_folder_success"));
+      toast.success(t("Folder created"));
     } catch (err) {
       console.error("Failed to create folder:", err);
-      toast.error(t("create_folder_error"));
+      toast.error(t("Failed to create folder"));
     }
   }, [createDirectory, t]);
 
@@ -216,16 +216,16 @@ export default function FilesPage() {
       const oversized = files.filter(f => f.size > maxSizeUpload);
       files = files.filter(f => f.size <= maxSizeUpload);
       if (oversized.length > 0) {
-        toast.error(t("file_too_large", { name: oversized[0].name, max: formatFileSize(maxSizeUpload) }));
+        toast.error(t("\"{name}\" exceeds the maximum file size ({max})", { name: oversized[0].name, max: formatFileSize(maxSizeUpload) }));
       }
     }
     if (files.length === 0) return;
     try {
       await uploadFiles(files);
-      toast.success(t("upload_success", { count: files.length }));
+      toast.success(t("{count, plural, one {1 file uploaded} other {# files uploaded}}", { count: files.length }));
     } catch (err) {
       console.error("Failed to upload files:", err);
-      toast.error(t("upload_error"));
+      toast.error(t("Failed to upload file"));
     }
   }, [uploadFiles, t, maxSizeUpload]);
 
@@ -234,74 +234,74 @@ export default function FilesPage() {
       const oversized = files.filter(f => f.size > maxSizeUpload);
       files = files.filter(f => f.size <= maxSizeUpload);
       if (oversized.length > 0) {
-        toast.error(t("file_too_large", { name: oversized[0].name, max: formatFileSize(maxSizeUpload) }));
+        toast.error(t("\"{name}\" exceeds the maximum file size ({max})", { name: oversized[0].name, max: formatFileSize(maxSizeUpload) }));
       }
     }
     if (files.length === 0) return;
     try {
       await uploadFolder(files);
-      toast.success(t("upload_success", { count: files.length }));
+      toast.success(t("{count, plural, one {1 file uploaded} other {# files uploaded}}", { count: files.length }));
     } catch (err) {
       console.error("Failed to upload folder:", err);
-      toast.error(t("upload_error"));
+      toast.error(t("Failed to upload file"));
     }
   }, [uploadFolder, t, maxSizeUpload]);
 
   const handleDelete = useCallback(async (name: string) => {
     const confirmed = await confirmDialog({
-      title: t("delete_confirm_title"),
-      message: t("delete_confirm_message", { name }),
-      confirmText: t("delete"),
+      title: t("Delete resource"),
+      message: t("Are you sure you want to delete \"{name}\"? This cannot be undone.", { name }),
+      confirmText: t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
 
     try {
       await deleteResource(name);
-      toast.success(t("delete_success"));
+      toast.success(t("Deleted successfully"));
     } catch (err) {
       console.error("Failed to delete:", err);
-      toast.error(t("delete_error"));
+      toast.error(t("Failed to delete"));
     }
   }, [deleteResource, confirmDialog, t]);
 
   const handleBatchDelete = useCallback(async (names: string[]) => {
     const confirmed = await confirmDialog({
-      title: t("delete_confirm_title"),
-      message: t("batch_delete_confirm_message", { count: names.length }),
-      confirmText: t("delete"),
+      title: t("Delete resource"),
+      message: t("Are you sure you want to delete {count, plural, one {1 item} other {# items}}? This cannot be undone.", { count: names.length }),
+      confirmText: t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
 
     try {
       await deleteResources(names);
-      toast.success(t("batch_delete_success", { count: names.length }));
+      toast.success(t("{count, plural, one {1 item deleted} other {# items deleted}}", { count: names.length }));
     } catch (err) {
       console.error("Failed to batch delete:", err);
-      toast.error(t("delete_error"));
+      toast.error(t("Failed to delete"));
     }
   }, [deleteResources, confirmDialog, t]);
 
   const handleUndo = useCallback(async () => {
     try {
       await undoLastAction();
-      toast.success(t("undo_success"));
+      toast.success(t("Action undone"));
     } catch (err) {
       console.error("Failed to undo:", err);
-      toast.error(t("undo_error"));
+      toast.error(t("Failed to undo"));
     }
   }, [undoLastAction, t]);
 
   const handleRename = useCallback(async (oldName: string, newName: string) => {
     try {
       await renameResource(oldName, newName);
-      toast.success(t("rename_success"), {
-        action: { label: t("undo"), onClick: handleUndo },
+      toast.success(t("Renamed successfully"), {
+        action: { label: t("Undo"), onClick: handleUndo },
       });
     } catch (err) {
       console.error("Failed to rename:", err);
-      toast.error(t("rename_error"));
+      toast.error(t("Failed to rename"));
     }
   }, [renameResource, t, handleUndo]);
 
@@ -316,7 +316,7 @@ export default function FilesPage() {
       addRecentFile(name, findResourceId(name));
     } catch (err) {
       console.error("Failed to download:", err);
-      toast.error(t("download_error"));
+      toast.error(t("Failed to download"));
     }
   }, [downloadResource, addRecentFile, findResourceId, t]);
 
@@ -325,63 +325,63 @@ export default function FilesPage() {
       await downloadResources(names);
     } catch (err) {
       console.error("Failed to batch download:", err);
-      toast.error(t("download_error"));
+      toast.error(t("Failed to download"));
     }
   }, [downloadResources, t]);
 
   const handleCreateTextFile = useCallback(async (name: string) => {
     try {
       await createTextFile(name);
-      toast.success(t("create_file_success"));
+      toast.success(t("File created"));
     } catch (err) {
       console.error("Failed to create file:", err);
-      toast.error(t("create_file_error"));
+      toast.error(t("Failed to create file"));
     }
   }, [createTextFile, t]);
 
   const handleDuplicate = useCallback(async (name: string) => {
     try {
       await duplicateResource(name);
-      toast.success(t("duplicate_success"));
+      toast.success(t("Duplicated successfully"));
     } catch (err) {
       console.error("Failed to duplicate:", err);
-      toast.error(t("duplicate_error"));
+      toast.error(t("Failed to duplicate"));
     }
   }, [duplicateResource, t]);
 
   const handleMoveToFolder = useCallback(async (names: string[], targetFolder: string) => {
     try {
       await moveToFolder(names, targetFolder);
-      toast.success(t("move_success", { count: names.length }), {
-        action: { label: t("undo"), onClick: handleUndo },
+      toast.success(t("{count, plural, one {1 item moved} other {# items moved}}", { count: names.length }), {
+        action: { label: t("Undo"), onClick: handleUndo },
       });
     } catch (err) {
       console.error("Failed to move:", err);
-      toast.error(t("move_error"));
+      toast.error(t("Failed to move"));
     }
   }, [moveToFolder, t, handleUndo]);
 
   const handleMoveToParent = useCallback(async (names: string[]) => {
     try {
       await moveToParent(names);
-      toast.success(t("move_success", { count: names.length }), {
-        action: { label: t("undo"), onClick: handleUndo },
+      toast.success(t("{count, plural, one {1 item moved} other {# items moved}}", { count: names.length }), {
+        action: { label: t("Undo"), onClick: handleUndo },
       });
     } catch (err) {
       console.error("Failed to move:", err);
-      toast.error(t("move_error"));
+      toast.error(t("Failed to move"));
     }
   }, [moveToParent, t, handleUndo]);
 
   const handlePaste = useCallback(async () => {
     try {
       await pasteResources();
-      toast.success(t("paste_success"), {
-        action: lastAction ? { label: t("undo"), onClick: handleUndo } : undefined,
+      toast.success(t("Pasted successfully"), {
+        action: lastAction ? { label: t("Undo"), onClick: handleUndo } : undefined,
       });
     } catch (err) {
       console.error("Failed to paste:", err);
-      toast.error(t("paste_error"));
+      toast.error(t("Failed to paste"));
     }
   }, [pasteResources, t, lastAction, handleUndo]);
 
@@ -445,7 +445,7 @@ export default function FilesPage() {
   return (
     <div className={cn("flex flex-col bg-background overflow-hidden pt-[env(safe-area-inset-top)]", isEmbedded ? "h-full" : "h-dvh")}>
       {/* Page-level heading for assistive tech (axe page-has-heading-one). */}
-      <h1 className="sr-only">{t("title")}</h1>
+      <h1 className="sr-only">{t("Files")}</h1>
       <AppTopBannerSlot />
       <div className="flex flex-1 min-h-0 overflow-hidden">
       {!isMobile && !isEmbedded && (
@@ -479,7 +479,7 @@ export default function FilesPage() {
                     className="justify-start"
                   >
                     <ArrowLeft className="w-4 h-4 me-2" />
-                    {t("title")}
+                    {t("Files")}
                   </Button>
                 </div>
               </div>
@@ -490,8 +490,8 @@ export default function FilesPage() {
                 <div className="flex items-center justify-center h-full">
                   <div className="max-w-lg text-center space-y-3 px-4">
                     <AlertTriangle className="w-10 h-10 text-yellow-500 mx-auto" />
-                    <p className="text-sm font-medium">{t("disabled_title")}</p>
-                    <p className="text-xs text-muted-foreground">{t("disabled_description")}</p>
+                    <p className="text-sm font-medium">{t("Files feature is disabled by your administrator")}</p>
+                    <p className="text-xs text-muted-foreground">{t("Large file uploads via WebDAV can cause Stalwart/RocksDB instability, including out-of-memory crashes and unrecoverable disk usage. Deleted files may not be immediately purged from blob storage. This feature is not recommended for production environments.")}</p>
                   </div>
                 </div>
               ) : (
@@ -507,7 +507,7 @@ export default function FilesPage() {
                         <p className="text-sm text-muted-foreground">
                           {errorCode === "permission-denied" || errorCode === "not-authenticated"
                             ? error
-                            : t("not_available")}
+                            : t("File storage is not available on this server")}
                         </p>
                         <Button
                           variant="outline"
@@ -516,7 +516,7 @@ export default function FilesPage() {
                             useFileStore.setState({ supportsFiles: null });
                           }}
                         >
-                          {t("retry")}
+                          {t("Retry")}
                         </Button>
                       </div>
                     </div>
@@ -524,7 +524,7 @@ export default function FilesPage() {
                     <>
                   {(capabilities?.upload || capabilities?.delete) && <div className="mx-4 mt-3 mb-1 flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2">
                     <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
-                    <p className="text-xs text-yellow-700 dark:text-yellow-400">{t("stability_warning")}</p>
+                    <p className="text-xs text-yellow-700 dark:text-yellow-400">{t("Large file uploads can cause server instability. Deleted files may not be immediately purged from storage. Use with caution.")}</p>
                   </div>}
                 <FileBrowser
                   currentPath={currentPath}
@@ -623,8 +623,8 @@ export default function FilesPage() {
             <div className="flex items-center gap-3">
               <Loader2 className="w-5 h-5 text-primary animate-spin shrink-0" />
               <div>
-                <p className="text-sm font-medium">{t("migration_title")}</p>
-                <p className="text-xs text-muted-foreground">{t("migration_description")}</p>
+                <p className="text-sm font-medium">{t("Updating your files…")}</p>
+                <p className="text-xs text-muted-foreground">{t("Organising folders and files into their proper structure. This happens only once.")}</p>
               </div>
             </div>
             <div className="mt-4 h-1.5 bg-primary/20 rounded-full overflow-hidden">

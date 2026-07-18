@@ -18,7 +18,7 @@ interface NewFolderDialogProps {
 }
 
 export function NewFolderDialog({ onConfirm, onCancel }: NewFolderDialogProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,21 +39,21 @@ export function NewFolderDialog({ onConfirm, onCancel }: NewFolderDialogProps) {
     <Dialog open onOpenChange={(open) => { if (!open) onCancel(); }}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{t("new_folder")}</DialogTitle>
+          <DialogTitle>{t("New Folder")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={t("new_folder_name")}
+            placeholder={t("Folder name")}
           />
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-              {t("cancel")}
+              {t("Cancel")}
             </Button>
             <Button type="submit" disabled={!name.trim() || isSubmitting}>
-              {t("create")}
+              {t("Create")}
             </Button>
           </DialogFooter>
         </form>

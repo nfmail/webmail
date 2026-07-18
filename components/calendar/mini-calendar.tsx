@@ -33,7 +33,7 @@ export function MiniCalendar({
   firstDayOfWeek = 1,
   showWeekNumbers = false,
 }: MiniCalendarProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const {
     weekStartsOn,
     dayHeaderKeys,
@@ -125,14 +125,14 @@ export function MiniCalendar({
         <button
           onClick={handlePrev}
           className="p-1 rounded hover:bg-muted transition-colors"
-          aria-label={t("nav_prev")}
+          aria-label={t("Previous")}
         >
           <ChevronLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <button
           onClick={handleHeaderClick}
           disabled={pickerView === "years"}
-          title={pickerView !== "years" ? t("mini_calendar_change") : undefined}
+          title={pickerView !== "years" ? t("Click to change month") : undefined}
           className={cn(
             "text-sm font-medium px-2 py-1 rounded-md transition-colors inline-flex items-center gap-1",
             pickerView !== "years" && "hover:bg-muted cursor-pointer",
@@ -147,7 +147,7 @@ export function MiniCalendar({
         <button
           onClick={handleNext}
           className="p-1 rounded hover:bg-muted transition-colors"
-          aria-label={t("nav_next")}
+          aria-label={t("Next")}
         >
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </button>

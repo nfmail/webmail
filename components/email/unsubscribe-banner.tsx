@@ -127,7 +127,7 @@ export function UnsubscribeBanner({
           onClick={onDismiss}
           className="text-xs text-red-500 dark:text-red-400 hover:underline bg-transparent p-0 min-h-0"
         >
-          {t('email_viewer.unsubscribe_banner.error')}
+          {t("Unable to unsubscribe")}
         </button>
       </span>
     );
@@ -141,7 +141,7 @@ export function UnsubscribeBanner({
           onClick={() => setShowConfirm(true)}
           className="text-xs text-blue-600 dark:text-blue-400 hover:underline bg-transparent p-0 min-h-0 leading-normal"
         >
-          {t('email_viewer.unsubscribe_banner.button')}
+          {t("Unsubscribe")}
         </button>
         {/* Desktop popover */}
         {showConfirm && isDesktop && (
@@ -150,7 +150,7 @@ export function UnsubscribeBanner({
             className="absolute top-full left-0 mt-1 z-50 bg-background border border-border rounded-lg shadow-lg p-3 min-w-[220px]"
           >
             <p className="text-sm text-foreground mb-2">
-              {t('email_viewer.unsubscribe_banner.confirm_title')}
+              {t("Unsubscribe from this sender?")}
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -159,13 +159,13 @@ export function UnsubscribeBanner({
                 className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {processing && <Loader2 className="w-3 h-3 animate-spin" />}
-                {t('email_viewer.unsubscribe_banner.confirm_button')}
+                {t("Confirm")}
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
                 className="text-xs px-3 py-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors"
               >
-                {t('email_viewer.unsubscribe_banner.cancel')}
+                {t("Cancel")}
               </button>
             </div>
           </div>
@@ -180,13 +180,13 @@ export function UnsubscribeBanner({
             setShowConfirm(false);
             handleUnsubscribe();
           }}
-          title={t('email_viewer.unsubscribe_banner.confirm_title')}
+          title={t("Unsubscribe from this sender?")}
           message={t(unsubMethod === 'http'
             ? 'email_viewer.unsubscribe_banner.confirm_message_http'
             : 'email_viewer.unsubscribe_banner.confirm_message_mailto'
           )}
-          confirmText={t('email_viewer.unsubscribe_banner.confirm_button')}
-          cancelText={t('email_viewer.unsubscribe_banner.cancel')}
+          confirmText={t("Confirm")}
+          cancelText={t("Cancel")}
           variant="destructive"
         />
       )}

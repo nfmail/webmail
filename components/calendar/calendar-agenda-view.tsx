@@ -37,7 +37,7 @@ export function CalendarAgendaView({
   onContextMenuEvent,
   timeFormat = "24h",
 }: CalendarAgendaViewProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const intlFormatter = useFormatter();
 
   const calendarMap = useMemo(() => {
@@ -108,8 +108,8 @@ export function CalendarAgendaView({
   }, [selectedDate, scrollToToday]);
 
   const formatDateHeader = (date: Date): string => {
-    if (isToday(date)) return t("events.today_header");
-    if (isTomorrow(date)) return t("events.tomorrow_header");
+    if (isToday(date)) return t("Today");
+    if (isTomorrow(date)) return t("Tomorrow");
     return intlFormatter.dateTime(date, { weekday: "long", month: "long", day: "numeric" });
   };
 
@@ -138,7 +138,7 @@ export function CalendarAgendaView({
 
           {group.events.length === 0 ? (
             <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-              {t("events.no_events")}
+              {t("No events")}
             </div>
           ) : (
           <div className="divide-y divide-border">
@@ -171,7 +171,7 @@ export function CalendarAgendaView({
                   <div className="flex flex-col items-center pt-0.5 min-w-[60px]">
                     {ev.showWithoutTime ? (
                       <span className="text-xs font-medium text-muted-foreground">
-                        {t("events.all_day")}
+                        {t("All day")}
                       </span>
                     ) : (
                       <>
@@ -188,7 +188,7 @@ export function CalendarAgendaView({
 
                   <div className="flex-1 min-w-0">
                     <div className={cn("text-sm font-medium truncate", isCancelled && "line-through")}>
-                      {ev.title || t("events.no_title")}
+                      {ev.title || t("(No title)")}
                     </div>
                     {locationName && (
                       <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">

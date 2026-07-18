@@ -44,7 +44,7 @@ export function ConfirmDialog({
   cancelText,
   variant = "default",
 }: ConfirmDialogProps) {
-  const t = useTranslations("confirm_dialog");
+  const t = useTranslations();
 
   const handleOpenChange = (open: boolean) => {
     if (!open) onClose();
@@ -67,8 +67,8 @@ export function ConfirmDialog({
       document.removeEventListener("mousedown", handleBackdropMouseDown);
   }, [isOpen, onClose]);
 
-  const resolvedConfirmText = confirmText || t("confirm");
-  const resolvedCancelText = cancelText || t("cancel");
+  const resolvedConfirmText = confirmText || t("Confirm");
+  const resolvedCancelText = cancelText || t("Cancel");
   const isDestructive = variant === "destructive";
 
   return (

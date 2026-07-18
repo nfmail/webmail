@@ -17,7 +17,7 @@ export default function LocaleError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useTranslations("errors");
+  const t = useTranslations();
   const router = useRouter();
 
   useEffect(() => {
@@ -31,19 +31,19 @@ export default function LocaleError({
           <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
         </div>
         <h2 className="text-xl font-semibold text-foreground mb-2">
-          {t("page_error_title")}
+          {t("Something went wrong")}
         </h2>
         <p className="text-muted-foreground mb-6">
-          {t("page_error_description")}
+          {t("We encountered an unexpected error. Please try again or return to the home page.")}
         </p>
         <div className="flex gap-3 justify-center">
           <Button variant="outline" onClick={() => router.push('/')}>
             <Home className="w-4 h-4 me-2" />
-            {t("go_home")}
+            {t("Go to inbox")}
           </Button>
           <Button onClick={reset}>
             <RefreshCw className="w-4 h-4 me-2" />
-            {t("try_again")}
+            {t("Try again")}
           </Button>
         </div>
       </div>

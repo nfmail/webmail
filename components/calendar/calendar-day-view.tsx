@@ -48,7 +48,7 @@ export function CalendarDayView({
   tasks,
   onToggleTaskComplete,
 }: CalendarDayViewProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const intlFormatter = useFormatter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const dayKey = format(selectedDate, "yyyy-MM-dd");
@@ -116,10 +116,10 @@ export function CalendarDayView({
     calendars,
     onCreateRange: onCreateAtTime,
     errorMessages: {
-      resize: t("notifications.event_resize_error"),
-      move: t("notifications.event_move_error"),
-      created: t("notifications.event_created"),
-      error: t("notifications.event_error"),
+      resize: t("Failed to resize event"),
+      move: t("Failed to move event"),
+      created: t("Event created"),
+      error: t("Failed to save event"),
     },
     isMobile,
   });
@@ -155,7 +155,7 @@ export function CalendarDayView({
         >
           {allDayEvents.length > 0 && (
             <>
-              <div className="text-[10px] text-muted-foreground mb-1">{t("events.all_day")}</div>
+              <div className="text-[10px] text-muted-foreground mb-1">{t("All day")}</div>
               <div className="flex flex-col gap-1">
                 {allDayEvents.map((ev) => {
                   const calId = getPrimaryCalendarId(ev);
@@ -177,7 +177,7 @@ export function CalendarDayView({
           )}
           {dayTasks.length > 0 && (
             <>
-              <div className={cn("text-[10px] text-muted-foreground mb-1", allDayEvents.length > 0 && "mt-2")}>{t("tasks.label")}</div>
+              <div className={cn("text-[10px] text-muted-foreground mb-1", allDayEvents.length > 0 && "mt-2")}>{t("Tasks")}</div>
               <div className="flex flex-col gap-0.5">
                 {dayTasks.map((task) => {
                   const isCompleted = task.progress === "completed";
@@ -201,7 +201,7 @@ export function CalendarDayView({
                         {isCompleted && <Check className="h-2.5 w-2.5" />}
                       </button>
                       <span className={cn("truncate", isCompleted && "line-through text-muted-foreground")}>
-                        {task.title || t("tasks.no_title")}
+                        {task.title || t("(No title)")}
                       </span>
                     </div>
                   );
@@ -282,7 +282,7 @@ export function CalendarDayView({
                   <div
                     data-resize-handle
                     className="absolute top-0 left-1 right-1 h-3 cursor-n-resize z-20 flex items-start justify-center opacity-0 group-hover/event:opacity-100 transition-opacity"
-                    aria-label={t("events.resize")}
+                    aria-label={t("Resize event")}
                     onPointerDown={(e) => handleResizePointerDown(ev.id, "top", startMinutes, durMin, e)}
                     onPointerMove={handleResizePointerMove}
                     onPointerUp={handleResizePointerUp}
@@ -292,7 +292,7 @@ export function CalendarDayView({
                   <div
                     data-resize-handle
                     className="absolute bottom-0 left-1 right-1 h-3 cursor-s-resize z-20 flex items-end justify-center opacity-0 group-hover/event:opacity-100 transition-opacity"
-                    aria-label={t("events.resize")}
+                    aria-label={t("Resize event")}
                     onPointerDown={(e) => handleResizePointerDown(ev.id, "bottom", startMinutes, durMin, e)}
                     onPointerMove={handleResizePointerMove}
                     onPointerUp={handleResizePointerUp}

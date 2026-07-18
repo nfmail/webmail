@@ -72,7 +72,7 @@ export function TaskListView({
   selectedTaskId,
   onQuickCreate,
 }: TaskListViewProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const timeFormat = useSettingsStore((s) => s.timeFormat);
   const [quickAddTitle, setQuickAddTitle] = useState("");
 
@@ -146,7 +146,7 @@ export function TaskListView({
                     setQuickAddTitle("");
                   }
                 }}
-                placeholder={t("tasks.quick_add_placeholder")}
+                placeholder={t("Add a task...")}
                 className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               />
             </div>
@@ -154,7 +154,7 @@ export function TaskListView({
         )}
         <div className="flex flex-col items-center justify-center flex-1 text-muted-foreground py-12">
           <ListTodo className="h-12 w-12 mb-3 opacity-30" />
-          <p className="text-sm">{t("tasks.no_tasks")}</p>
+          <p className="text-sm">{t("No tasks")}</p>
         </div>
       </div>
     );
@@ -176,7 +176,7 @@ export function TaskListView({
                   setQuickAddTitle("");
                 }
               }}
-              placeholder={t("tasks.quick_add_placeholder")}
+              placeholder={t("Add a task...")}
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
           </div>
@@ -207,7 +207,7 @@ export function TaskListView({
                     ? "bg-success border-success text-success-foreground"
                     : "border-muted-foreground/40 hover:border-primary"
                 )}
-                aria-label={isCompleted ? t("tasks.mark_incomplete") : t("tasks.mark_complete")}
+                aria-label={isCompleted ? t("Mark as incomplete") : t("Mark as complete")}
               >
                 {isCompleted && <Check className="h-3 w-3" />}
               </button>
@@ -219,7 +219,7 @@ export function TaskListView({
                     "text-sm font-medium truncate",
                     isCompleted && "line-through text-muted-foreground"
                   )}>
-                    {task.title || t("tasks.no_title")}
+                    {task.title || t("(No title)")}
                   </span>
                   {priorityIcon}
                 </div>

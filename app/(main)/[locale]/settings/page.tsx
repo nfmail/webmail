@@ -363,8 +363,8 @@ function readPersistedTab(): SettingsTabId {
 
 export default function SettingsPage() {
   const router = useRouter();
-  const t = useTranslations('settings');
-  const tSidebar = useTranslations('sidebar');
+  const t = useTranslations();
+  const tSidebar = useTranslations();
   const { client, isAuthenticated, logout, checkAuth, isLoading: authLoading } = useAuthStore();
   const { showAppsModal, inlineApp, loadedApps, handleManageApps, handleInlineApp, closeInlineApp, closeAppsModal } = useSidebarApps();
   const isEmbedded = useIsEmbedded();
@@ -610,36 +610,36 @@ export default function SettingsPage() {
 
   const tabs: TabDef[] = [
     // General
-    { id: 'account', label: t('tabs.account'), icon: tabIcons.account, group: 'general' },
-    { id: 'language', label: t('tabs.language'), icon: tabIcons.language, group: 'general' },
-    { id: 'notifications', label: t('tabs.notifications'), icon: tabIcons.notifications, group: 'general' },
-    { id: 'protocol_handlers', label: t('tabs.protocol_handlers'), icon: tabIcons.protocol_handlers, group: 'general' },
+    { id: 'account', label: t("Account"), icon: tabIcons.account, group: 'general' },
+    { id: 'language', label: t("Language, Region & Time"), icon: tabIcons.language, group: 'general' },
+    { id: 'notifications', label: t("Notifications"), icon: tabIcons.notifications, group: 'general' },
+    { id: 'protocol_handlers', label: t("Default apps"), icon: tabIcons.protocol_handlers, group: 'general' },
 
     // Appearance
-    { id: 'appearance', label: t('tabs.appearance'), icon: tabIcons.appearance, group: 'appearance' },
-    { id: 'layout', label: t('tabs.layout'), icon: tabIcons.layout, group: 'appearance' },
+    { id: 'appearance', label: t("Appearance"), icon: tabIcons.appearance, group: 'appearance' },
+    { id: 'layout', label: t("Layout"), icon: tabIcons.layout, group: 'appearance' },
     ...(isFeatureEnabled('themesEnabled') ? [{ id: 'themes' as Tab, label: 'Themes', icon: tabIcons.themes, group: 'appearance' as TabGroup }] : []),
 
     // Mail
-    { id: 'reading', label: t('tabs.reading'), icon: tabIcons.reading, group: 'mail' },
-    { id: 'composing', label: t('tabs.composing'), icon: tabIcons.composing, group: 'mail' },
-    { id: 'downloads', label: t('tabs.downloads'), icon: tabIcons.downloads, group: 'mail' },
-    { id: 'identities', label: t('tabs.identities'), icon: tabIcons.identities, group: 'mail' },
-    ...(supportsVacation ? [{ id: 'vacation' as Tab, label: t('tabs.vacation'), icon: tabIcons.vacation, group: 'mail' as TabGroup }] : []),
-    ...(supportsSieve ? [{ id: 'filters' as Tab, label: t('tabs.filters'), icon: tabIcons.filters, group: 'mail' as TabGroup }] : []),
-    ...(isFeatureEnabled('templatesEnabled') ? [{ id: 'templates' as Tab, label: t('tabs.templates'), icon: tabIcons.templates, group: 'mail' as TabGroup }] : []),
-    { id: 'folders', label: t('tabs.folders'), icon: tabIcons.folders, group: 'mail' },
-    ...(isFeatureEnabled('customKeywordsEnabled') ? [{ id: 'keywords' as Tab, label: t('tabs.keywords'), icon: tabIcons.keywords, group: 'mail' as TabGroup }] : []),
+    { id: 'reading', label: t("Reading"), icon: tabIcons.reading, group: 'mail' },
+    { id: 'composing', label: t("Composing"), icon: tabIcons.composing, group: 'mail' },
+    { id: 'downloads', label: t("Downloads"), icon: tabIcons.downloads, group: 'mail' },
+    { id: 'identities', label: t("Identities"), icon: tabIcons.identities, group: 'mail' },
+    ...(supportsVacation ? [{ id: 'vacation' as Tab, label: t("Vacation Responder"), icon: tabIcons.vacation, group: 'mail' as TabGroup }] : []),
+    ...(supportsSieve ? [{ id: 'filters' as Tab, label: t("Filters"), icon: tabIcons.filters, group: 'mail' as TabGroup }] : []),
+    ...(isFeatureEnabled('templatesEnabled') ? [{ id: 'templates' as Tab, label: t("Templates"), icon: tabIcons.templates, group: 'mail' as TabGroup }] : []),
+    { id: 'folders', label: t("Folders"), icon: tabIcons.folders, group: 'mail' },
+    ...(isFeatureEnabled('customKeywordsEnabled') ? [{ id: 'keywords' as Tab, label: t("Tags"), icon: tabIcons.keywords, group: 'mail' as TabGroup }] : []),
 
     // Privacy & Security
-    ...(stalwartFeaturesEnabled ? [{ id: 'security' as Tab, label: t('tabs.security'), icon: tabIcons.security, group: 'privacy' as TabGroup }] : []),
-    { id: 'content_senders', label: t('tabs.content_senders'), icon: tabIcons.content_senders, group: 'privacy' },
+    ...(stalwartFeaturesEnabled ? [{ id: 'security' as Tab, label: t("Security"), icon: tabIcons.security, group: 'privacy' as TabGroup }] : []),
+    { id: 'content_senders', label: t("Content & Senders"), icon: tabIcons.content_senders, group: 'privacy' },
 
     // Apps
-    ...(supportsCalendar && isFeatureEnabled('calendarEnabled') ? [{ id: 'calendar' as Tab, label: t('tabs.calendar'), icon: tabIcons.calendar, group: 'apps' as TabGroup }] : []),
-    ...(isFeatureEnabled('contactsEnabled') ? [{ id: 'contacts' as Tab, label: t('tabs.contacts'), icon: tabIcons.contacts, group: 'apps' as TabGroup }] : []),
-    ...(supportsFiles && isFeatureEnabled('filesEnabled') ? [{ id: 'files' as Tab, label: t('tabs.files'), icon: tabIcons.files, group: 'apps' as TabGroup }] : []),
-    ...(isFeatureEnabled('sidebarAppsEnabled') ? [{ id: 'sidebar_apps' as Tab, label: t('tabs.sidebar_apps'), icon: tabIcons.sidebar_apps, group: 'apps' as TabGroup }] : []),
+    ...(supportsCalendar && isFeatureEnabled('calendarEnabled') ? [{ id: 'calendar' as Tab, label: t("Calendar"), icon: tabIcons.calendar, group: 'apps' as TabGroup }] : []),
+    ...(isFeatureEnabled('contactsEnabled') ? [{ id: 'contacts' as Tab, label: t("Contacts"), icon: tabIcons.contacts, group: 'apps' as TabGroup }] : []),
+    ...(supportsFiles && isFeatureEnabled('filesEnabled') ? [{ id: 'files' as Tab, label: t("Files"), icon: tabIcons.files, group: 'apps' as TabGroup }] : []),
+    ...(isFeatureEnabled('sidebarAppsEnabled') ? [{ id: 'sidebar_apps' as Tab, label: t("Sidebar Apps"), icon: tabIcons.sidebar_apps, group: 'apps' as TabGroup }] : []),
     // Plugin-contributed settings pages: one entry per active plugin that
     // offers a `settings-section` slot (e.g. S/MIME key & certificate manager).
     ...pluginSettingsOffers.map((offer): TabDef => ({
@@ -650,9 +650,9 @@ export default function SettingsPage() {
     })),
 
     // Advanced
-    { id: 'about_data', label: t('tabs.about_data'), icon: tabIcons.about_data, group: 'advanced' },
+    { id: 'about_data', label: t("About & Data"), icon: tabIcons.about_data, group: 'advanced' },
     ...(isFeatureEnabled('pluginsEnabled') ? [{ id: 'plugins' as Tab, label: 'Plugins', icon: tabIcons.plugins, group: 'advanced' as TabGroup }] : []),
-    ...(isFeatureEnabled('debugModeEnabled') ? [{ id: 'debug' as Tab, label: t('tabs.debug'), icon: tabIcons.debug, group: 'advanced' as TabGroup }] : []),
+    ...(isFeatureEnabled('debugModeEnabled') ? [{ id: 'debug' as Tab, label: t("Debug"), icon: tabIcons.debug, group: 'advanced' as TabGroup }] : []),
   ];
 
   // In scoped (shared-account) mode, restrict to the account-relevant tabs the
@@ -739,9 +739,9 @@ export default function SettingsPage() {
           className="flex items-center gap-2 w-full mb-4 px-3 py-2 rounded-md border border-border bg-muted/40 hover:bg-muted text-start transition-colors"
         >
           <ArrowLeft className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <span className="text-sm text-muted-foreground">{t('scoped.back')}</span>
+          <span className="text-sm text-muted-foreground">{t("Back to my account")}</span>
           <span className="ms-auto text-sm font-medium truncate">
-            {t('scoped.managing', { name: managedAccount.name })}
+            {t("Managing: {name}", { name: managedAccount.name })}
           </span>
         </button>
       )}
@@ -838,7 +838,7 @@ export default function SettingsPage() {
           </Button>
           <div className="flex items-center gap-2">
             <SettingsIcon className="w-5 h-5 text-muted-foreground" />
-            <h1 className="font-semibold text-lg">{t('title')}</h1>
+            <h1 className="font-semibold text-lg">{t("Settings")}</h1>
           </div>
         </div>
 
@@ -850,16 +850,16 @@ export default function SettingsPage() {
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('search_placeholder')}
+                placeholder={t("Search settings")}
                 className="ps-9 pe-9 h-10"
-                aria-label={t('search_placeholder')}
+                aria-label={t("Search settings")}
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:bg-muted"
-                  aria-label={t('search_clear')}
+                  aria-label={t("Clear search")}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -869,7 +869,7 @@ export default function SettingsPage() {
           <div className="py-2">
             {filteredGroupedTabs.length === 0 && (
               <div className="px-5 py-6 text-sm text-muted-foreground text-center">
-                {t('search_no_results')}
+                {t("No matching settings")}
               </div>
             )}
             {filteredGroupedTabs.map((group, groupIndex) => (
@@ -917,7 +917,7 @@ export default function SettingsPage() {
               className="w-full flex items-center gap-3 py-2.5 text-sm text-destructive hover:bg-muted rounded-md px-2 transition-colors duration-150"
             >
               <LogOut className="w-4 h-4" />
-              <span>{tSidebar('sign_out')}</span>
+              <span>{tSidebar("Sign out")}</span>
             </button>
           </div>
         </div>
@@ -977,7 +977,7 @@ export default function SettingsPage() {
               className="w-full justify-start"
             >
               <ArrowLeft className="w-4 h-4 me-2" />
-              {t('back_to_mail')}
+              {t("Back to Mail")}
             </Button>
           </div>
         )}
@@ -990,16 +990,16 @@ export default function SettingsPage() {
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('search_placeholder')}
+                placeholder={t("Search settings")}
                 className="ps-8 pe-8 h-9 text-sm"
-                aria-label={t('search_placeholder')}
+                aria-label={t("Search settings")}
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
                   className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded-md text-muted-foreground hover:bg-muted"
-                  aria-label={t('search_clear')}
+                  aria-label={t("Clear search")}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -1009,7 +1009,7 @@ export default function SettingsPage() {
           <div className="px-2 space-y-0.5">
             {filteredGroupedTabs.length === 0 && (
               <div className="px-3 py-6 text-sm text-muted-foreground text-center">
-                {t('search_no_results')}
+                {t("No matching settings")}
               </div>
             )}
             {filteredGroupedTabs.map((group, groupIndex) => (

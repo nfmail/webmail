@@ -10,7 +10,7 @@ interface QuickEventInputProps {
 }
 
 export function QuickEventInput({ top, onSubmit, onCancel }: QuickEventInputProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const [title, setTitle] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const submittedRef = useRef(false);
@@ -51,8 +51,8 @@ export function QuickEventInput({ top, onSubmit, onCancel }: QuickEventInputProp
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
-        placeholder={t("quick_create.placeholder")}
-        aria-label={t("quick_create.aria_label")}
+        placeholder={t("New event title")}
+        aria-label={t("Quick create event")}
         maxLength={500}
         className="w-full px-2 py-1 text-xs rounded border border-primary bg-primary/10 text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
       />

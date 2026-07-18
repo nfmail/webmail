@@ -79,7 +79,7 @@ export function ErrorBoundary({
   onError,
   onReset,
 }: ErrorBoundaryProps) {
-  const t = useTranslations("errors");
+  const t = useTranslations();
 
   return (
     <ErrorBoundaryCore

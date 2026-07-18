@@ -44,10 +44,10 @@ describe('ContactsSidebar — compose to group', () => {
   it('shows a "Send email to group" submenu in the group context menu', () => {
     renderSidebar();
     fireEvent.contextMenu(screen.getByText('Team'));
-    expect(screen.getByText('groups.send_email')).toBeInTheDocument();
+    expect(screen.getByText('Send email to group')).toBeInTheDocument();
     // and the existing Edit/Delete entries still render
-    expect(screen.getByText('groups.edit')).toBeInTheDocument();
-    expect(screen.getByText('form.delete')).toBeInTheDocument();
+    expect(screen.getByText('Edit Group')).toBeInTheDocument();
+    expect(screen.getByText('Delete')).toBeInTheDocument();
   });
 
   it('calls onComposeGroup(groupId, field) when a To/Cc/Bcc item is clicked', () => {
@@ -55,7 +55,7 @@ describe('ContactsSidebar — compose to group', () => {
     fireEvent.contextMenu(screen.getByText('Team'));
 
     // Open the submenu then click "Cc".
-    fireEvent.click(screen.getByRole('menuitem', { name: 'groups.send_email' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Send email to group' }));
 
     fireEvent.click(screen.getByText('groups.send_email_cc'));
     expect(onComposeGroup).toHaveBeenCalledWith('g1', 'cc');

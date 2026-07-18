@@ -147,9 +147,9 @@ export function EmailContextMenu({
   onCancelScheduledForEdit,
   onRescheduleScheduled,
 }: EmailContextMenuProps) {
-  const t = useTranslations("context_menu");
-  const tSidebar = useTranslations("sidebar");
-  const _tColor = useTranslations("email_viewer.color_tag");
+  const t = useTranslations();
+  const tSidebar = useTranslations();
+  const _tColor = useTranslations();
   const emailKeywords = useSettingsStore((state) => state.emailKeywords);
   const isUnread = !email.keywords?.$seen;
   const isStarred = email.keywords?.$flagged;
@@ -212,7 +212,7 @@ export function EmailContextMenu({
       {/* Batch header */}
       {showBatchActions && (
         <ContextMenuHeader>
-          {t("items_selected", { count: selectedCount })}
+          {t("{count} emails selected", { count: selectedCount })}
         </ContextMenuHeader>
       )}
 
@@ -220,19 +220,19 @@ export function EmailContextMenu({
         <>
           <ContextMenuItem
             icon={CalendarClock}
-            label={t("reschedule_send")}
+            label={t("Reschedule")}
             onClick={() => handleAction(onRescheduleScheduled!)}
             disabled={!onRescheduleScheduled}
           />
           <ContextMenuItem
             icon={XCircle}
-            label={t("cancel_scheduled_send")}
+            label={t("Cancel send")}
             onClick={() => handleAction(onCancelScheduled!)}
             disabled={!onCancelScheduled}
           />
           <ContextMenuItem
             icon={EditIcon}
-            label={email.isSmimeScheduled ? t("cancel_and_compose_again") : t("cancel_and_edit")}
+            label={email.isSmimeScheduled ? t("Cancel and compose again") : t("Cancel and edit")}
             onClick={() => handleAction(onCancelScheduledForEdit!)}
             disabled={!onCancelScheduledForEdit}
           />
@@ -249,7 +249,7 @@ export function EmailContextMenu({
         <>
           <ContextMenuItem
             icon={EditIcon}
-            label={t("edit_draft")}
+            label={t("Edit Draft")}
             onClick={() => handleAction(onEditDraft)}
           />
           <ContextMenuSeparator />
@@ -261,19 +261,19 @@ export function EmailContextMenu({
         <>
           <ContextMenuItem
             icon={Reply}
-            label={t("reply")}
+            label={t("Reply")}
             onClick={() => handleAction(onReply!)}
             disabled={!onReply}
           />
           <ContextMenuItem
             icon={ReplyAll}
-            label={t("reply_all")}
+            label={t("Reply All")}
             onClick={() => handleAction(onReplyAll!)}
             disabled={!onReplyAll}
           />
           <ContextMenuItem
             icon={Forward}
-            label={t("forward")}
+            label={t("Forward")}
             onClick={() => handleAction(onForward!)}
             disabled={!onForward}
           />
@@ -284,7 +284,7 @@ export function EmailContextMenu({
       {/* Archive */}
       <ContextMenuItem
         icon={Archive}
-        label={t("archive")}
+        label={t("Archive")}
         onClick={() =>
           handleAction(showBatchActions ? onBatchArchive! : onArchive!)
         }
@@ -294,7 +294,7 @@ export function EmailContextMenu({
       {/* Delete */}
       <ContextMenuItem
         icon={Trash2}
-        label={t("delete")}
+        label={t("Delete")}
         onClick={() =>
           handleAction(showBatchActions ? onBatchDelete! : onDelete!)
         }
@@ -306,7 +306,7 @@ export function EmailContextMenu({
 
       {/* Move to submenu */}
       {moveTree.length > 0 && (
-        <ContextMenuSubMenu icon={FolderInput} label={t("move_to")}>
+        <ContextMenuSubMenu icon={FolderInput} label={t("Move to...")}>
           {(() => {
             const renderNodes = (nodes: MailboxNode[]) => {
               return nodes.map((node) => {
@@ -351,7 +351,7 @@ export function EmailContextMenu({
       {!showBatchActions && (
         <ContextMenuItem
           icon={Star}
-          label={isStarred ? t("unstar") : t("star")}
+          label={isStarred ? t("Unstar") : t("Star")}
           onClick={() => handleAction(onToggleStar!)}
           disabled={!onToggleStar}
         />
@@ -361,14 +361,14 @@ export function EmailContextMenu({
       {!showBatchActions && onTogglePinned && (
         <ContextMenuItem
           icon={isPinned ? PinOff : Pin}
-          label={isPinned ? t("unpin") : t("pin")}
+          label={isPinned ? t("Unpin") : t("Pin")}
           onClick={() => handleAction(onTogglePinned)}
         />
       )}
 
       {/* Set tag submenu - only for single email */}
       {!showBatchActions && (
-        <ContextMenuSubMenu icon={Tag} label={t("color_tag")}>
+        <ContextMenuSubMenu icon={Tag} label={t("Tag")}>
           {colorOptions.map((option) => {
             const isActive = currentColors.includes(option.value);
             return (
@@ -394,7 +394,7 @@ export function EmailContextMenu({
               <ContextMenuSeparator />
               <ContextMenuItem
                 icon={X}
-                label={t("remove_color")}
+                label={t("Remove tag")}
                 onClick={() => handleAction(() => onSetColorTag?.(null))}
               />
             </>
@@ -409,7 +409,7 @@ export function EmailContextMenu({
 
           <ContextMenuItem
             icon={isInJunkFolder ? ShieldCheck : ShieldAlert}
-            label={isInJunkFolder ? t("not_spam") : t("mark_as_spam")}
+            label={isInJunkFolder ? t("Not spam") : t("Report spam")}
             onClick={() =>
               handleAction(
                 showBatchActions
@@ -428,7 +428,7 @@ export function EmailContextMenu({
       {/* Mark as read/unread */}
       <ContextMenuItem
         icon={isUnread ? MailOpen : Mail}
-        label={isUnread ? t("mark_read") : t("mark_unread")}
+        label={isUnread ? t("Mark as Read") : t("Mark as Unread")}
         onClick={() =>
           handleAction(() =>
             showBatchActions

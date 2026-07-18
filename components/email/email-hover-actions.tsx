@@ -85,7 +85,7 @@ export function EmailHoverActions({
   const hoverActions = useSettingsStore((state) => state.hoverActions);
   const hoverActionsMode = useSettingsStore((state) => state.hoverActionsMode);
   const hoverActionsCorner = useSettingsStore((state) => state.hoverActionsCorner);
-  const t = useTranslations("settings.email_behavior.hover_actions");
+  const t = useTranslations();
   const isMobile = useIsMobile();
 
   const isUnread = !email.keywords?.$seen;
@@ -136,7 +136,7 @@ export function EmailHoverActions({
         : isNotSpam
           ? ShieldCheck
           : Icon;
-    const title = isNotSpam ? t("not_spam") : t(config.titleKey);
+    const title = isNotSpam ? t("Not Spam") : t(config.titleKey);
     const className = isNotSpam
       ? "hover:text-green-600 dark:hover:text-green-400"
       : config.className;

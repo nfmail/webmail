@@ -67,7 +67,7 @@ interface ProtocolLaunchHandlerProviderProps {
 }
 
 export function ProtocolLaunchHandlerProvider({ children }: ProtocolLaunchHandlerProviderProps) {
-  const t = useTranslations("protocol_handlers");
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -81,8 +81,8 @@ export function ProtocolLaunchHandlerProvider({ children }: ProtocolLaunchHandle
     }, () => ({
       path: pathname,
       standalone: isStandaloneDisplayMode(),
-      focusNotificationTitle: t("focus_notification_title"),
-      focusNotificationBody: t("focus_notification_body"),
+      focusNotificationTitle: t("Open Bulwark"),
+      focusNotificationBody: t("The link was opened in Bulwark. Click to bring the window to the front."),
     }));
   }, [pathname, router, t]);
 

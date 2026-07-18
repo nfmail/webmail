@@ -144,7 +144,7 @@ export function ThreadConversationView({
       <div className="flex-1 flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">{t("threads.loading")}</p>
+          <p className="text-sm text-muted-foreground">{t("Loading conversation...")}</p>
         </div>
       </div>
     );
@@ -162,10 +162,10 @@ export function ThreadConversationView({
         </button>
         <div className="flex-1 min-w-0">
           <h1 className="font-semibold text-foreground break-words">
-            {thread.latestEmail.subject || t("email_viewer.no_subject")}
+            {thread.latestEmail.subject || t("(No Subject)")}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {t("threads.messages_other", { count: emails.length })}
+            {t("{count} messages", { count: emails.length })}
           </p>
         </div>
       </div>
@@ -533,7 +533,7 @@ function EmailCard({
           </div>
           {!isExpanded && density !== 'extra-compact' && (
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              {email.preview || t('email_viewer.no_preview_available')}
+              {email.preview || t("No preview available")}
             </p>
           )}
         </div>
@@ -553,7 +553,7 @@ function EmailCard({
           {hasBlockedContent && !allowExternal && (
             <div className="px-4 py-2 bg-muted/50 flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                {t("email_viewer.external_content_warning")}
+                {t("Images and external content have been blocked")}
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -564,7 +564,7 @@ function EmailCard({
                     onAllowExternal();
                   }}
                 >
-                  {t("email_viewer.load_external_content")}
+                  {t("Load images")}
                 </Button>
                 {onTrustSender && (
                   <Button
@@ -575,7 +575,7 @@ function EmailCard({
                       onTrustSender();
                     }}
                   >
-                    {t("email_viewer.trust_sender")}
+                    {t("Always trust this sender")}
                   </Button>
                 )}
               </div>
@@ -624,7 +624,7 @@ function EmailCard({
                   const Icon = getFileIcon(attachment.name, attachment.type);
                   const isPreviewable = isFilePreviewable(attachment.name, attachment.type);
                   const opensPreview = isPreviewable && mailAttachmentAction === 'preview';
-                  const actionLabel = opensPreview ? t('files.preview') : t('email_viewer.download');
+                  const actionLabel = opensPreview ? t("Preview") : t("Download");
                   return (
                     <Tooltip key={idx}>
                       <TooltipTrigger asChild>
@@ -671,7 +671,7 @@ function EmailCard({
                 className="flex-1"
               >
                 <Reply className="w-4 h-4 me-2" />
-                {t("email_viewer.reply")}
+                {t("Reply")}
               </Button>
             )}
             {onReplyAll && (
@@ -685,7 +685,7 @@ function EmailCard({
                 className="flex-1"
               >
                 <ReplyAll className="w-4 h-4 me-2" />
-                {t("email_viewer.reply_all")}
+                {t("Reply All")}
               </Button>
             )}
             {onForward && (
@@ -699,7 +699,7 @@ function EmailCard({
                 className="flex-1"
               >
                 <Forward className="w-4 h-4 me-2" />
-                {t("email_viewer.forward")}
+                {t("Forward")}
               </Button>
             )}
           </div>

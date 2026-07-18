@@ -61,7 +61,7 @@ function KeywordRow({
   isDragOver: boolean;
   isDragging: boolean;
 }) {
-  const t = useTranslations("settings.keywords");
+  const t = useTranslations();
   const palette = KEYWORD_PALETTE[keyword.color];
 
   return (
@@ -86,7 +86,7 @@ function KeywordRow({
           type="button"
           onClick={onEdit}
           className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-          title={t("edit")}
+          title={t("Edit tag")}
         >
           <Pencil className="w-3.5 h-3.5" />
         </button>
@@ -94,7 +94,7 @@ function KeywordRow({
           type="button"
           onClick={onDelete}
           className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-          title={t("delete")}
+          title={t("Delete tag")}
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
@@ -114,7 +114,7 @@ function KeywordEditForm({
   onSave: (keyword: KeywordDefinition) => void;
   onCancel: () => void;
 }) {
-  const t = useTranslations("settings.keywords");
+  const t = useTranslations();
   const [label, setLabel] = useState(initial?.label || "");
   const [color, setColor] = useState(initial?.color || "blue");
   const isEditing = !!initial;
@@ -139,14 +139,14 @@ function KeywordEditForm({
       <FieldGroup>
         <Field data-invalid={isDuplicate ? true : undefined}>
           <FieldLabel htmlFor="keyword-edit-label" className="text-xs">
-            {t("label_field")}
+            {t("Display Name")}
           </FieldLabel>
           <Input
             id="keyword-edit-label"
             type="text"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            placeholder={t("label_placeholder")}
+            placeholder={t("e.g. Work, Personal, Urgent")}
             autoFocus
             maxLength={30}
             onKeyDown={(e) => e.key === "Enter" && handleSave()}
@@ -155,23 +155,23 @@ function KeywordEditForm({
           />
           {isDuplicate && (
             <FieldError id="keyword-edit-label-error" aria-live="polite">
-              {t("id_exists")}
+              {t("This tag ID already exists")}
             </FieldError>
           )}
         </Field>
         <Field>
-          <FieldLabel className="text-xs">{t("color_field")}</FieldLabel>
+          <FieldLabel className="text-xs">{t("Color")}</FieldLabel>
           <KeywordColorPicker value={color} onChange={setColor} />
         </Field>
       </FieldGroup>
       <div className="flex items-center gap-2 justify-end pt-3">
         <Button type="button" variant="outline" size="sm" onClick={onCancel}>
           <X className="w-3.5 h-3.5" />
-          {t("cancel")}
+          {t("Cancel")}
         </Button>
         <Button type="button" size="sm" onClick={handleSave} disabled={!isValid}>
           <Check className="w-3.5 h-3.5" />
-          {isEditing ? t("save") : t("add")}
+          {isEditing ? t("Save") : t("Add")}
         </Button>
       </div>
     </div>
@@ -179,7 +179,7 @@ function KeywordEditForm({
 }
 
 export function KeywordSettings() {
-  const t = useTranslations("settings.keywords");
+  const t = useTranslations();
   const { emailKeywords, addKeyword, updateKeyword, renameKeyword, removeKeyword, reorderKeywords } =
     useSettingsStore();
   const { client } = useAuthStore();
@@ -242,7 +242,7 @@ export function KeywordSettings() {
       } catch (error) {
         console.error("Failed to migrate keyword:", error);
         const toastModule = await import('sonner');
-        toastModule.toast.error(t("migration_error"));
+        toastModule.toast.error(t("Failed to update tag on existing emails"));
         setIsMigrating(false);
         return;
       }
@@ -263,12 +263,12 @@ export function KeywordSettings() {
   };
 
   return (
-    <SettingsSection title={t("title")} description={t("description")}>
+    <SettingsSection title={t("Email Tags")} description={t("Define tags to organize your emails with colors. These are stored as JMAP keywords on the server.")}>
       <div className="flex flex-col gap-2">
         {isMigrating && (
           <div className="flex items-center gap-2 p-2 text-xs text-muted-foreground bg-accent/50 rounded-md">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            {t("migrating")}
+            {t("Updating tag on existing emails…")}
           </div>
         )}
         {emailKeywords.map((keyword, index) =>
@@ -318,11 +318,11 @@ export function KeywordSettings() {
               }}
             >
               <Plus className="w-3.5 h-3.5" />
-              {t("add_keyword")}
+              {t("Add Tag")}
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={handleResetDefaults}>
               <RotateCcw className="w-3.5 h-3.5" />
-              {t("reset_defaults")}
+              {t("Reset to Defaults")}
             </Button>
           </div>
         )}

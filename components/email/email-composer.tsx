@@ -278,9 +278,9 @@ export function EmailComposer({
   composeFromAccountEmail,
   replyTo
 }: EmailComposerProps) {
-  const t = useTranslations('email_composer');
-  const tCommon = useTranslations('common');
-  const tQuote = useTranslations('quote_header');
+  const t = useTranslations();
+  const tCommon = useTranslations();
+  const tQuote = useTranslations();
   const timeFormat = useSettingsStore((state) => state.timeFormat);
   const plainTextMode = useSettingsStore((state) => state.plainTextMode);
   const subAddressDelimiter = useSettingsStore((state) => state.subAddressDelimiter);
@@ -359,9 +359,9 @@ export function EmailComposer({
   const getInitialSubject = () => {
     if (!replyTo?.subject) return "";
     if (mode === 'forward') {
-      return buildForwardSubject(replyTo.subject, t('prefix.forward'));
+      return buildForwardSubject(replyTo.subject, t("Fwd:"));
     } else if (mode === 'reply' || mode === 'replyAll') {
-      return buildReplySubject(replyTo.subject, t('prefix.reply'));
+      return buildReplySubject(replyTo.subject, t("Re:"));
     }
     return "";
   };
@@ -387,8 +387,8 @@ export function EmailComposer({
       const fromStrFull = from
         ? (from.name && from.email && from.name !== from.email
             ? `${from.name} <${from.email}>`
-            : (from.email || from.name || tCommon('unknown')))
-        : tCommon('unknown');
+            : (from.email || from.name || tCommon("Unknown")))
+        : tCommon("Unknown");
 
       const originalText = replyTo.body || (replyTo.htmlBody ? htmlToPlainText(replyTo.htmlBody) : '');
       const quotedText = originalText.split('\n').map(line => `> ${line}`).join('\n');
@@ -409,9 +409,9 @@ export function EmailComposer({
       }
 
       if (mode === 'forward') {
-        return `${prefix}${signatureBlock}\n\n${tQuote('forwarded_separator')}\n${tQuote('from_label')}: ${fromStrFull}\n${tQuote('date_label')}: ${date}\n${tQuote('subject_label')}: ${replyTo.subject || ''}\n\n${originalText}`;
+        return `${prefix}${signatureBlock}\n\n${tQuote("---------- Forwarded message ----------")}\n${tQuote("From")}: ${fromStrFull}\n${tQuote("Date")}: ${date}\n${tQuote("Subject")}: ${replyTo.subject || ''}\n\n${originalText}`;
       } else if (mode === 'reply' || mode === 'replyAll') {
-        return `${prefix}${signatureBlock}\n\n${tQuote('reply_line', { date, from: fromStrFull })}\n${quotedText}`;
+        return `${prefix}${signatureBlock}\n\n${tQuote("On {date}, {from} wrote:", { date, from: fromStrFull })}\n${quotedText}`;
       }
       return prefix;
     }
@@ -437,8 +437,8 @@ export function EmailComposer({
     const fromStrFull = from
       ? (from.name && from.email && from.name !== from.email
           ? `${from.name} <${from.email}>`
-          : (from.email || from.name || tCommon('unknown')))
-      : tCommon('unknown');
+          : (from.email || from.name || tCommon("Unknown")))
+      : tCommon("Unknown");
 
     const signatureBlock = buildEmbeddedSignatureHtml(initialSignatureIdentity, {
       embed: shouldEmbedSignatureAboveQuote,
@@ -471,8 +471,8 @@ export function EmailComposer({
       // HTML-escape user-controlled values: an unescaped sender "Name <email>"
       // has its "<email>" eaten as a bogus HTML tag by the rich-text editor (#482).
       const quoteHeader = mode === 'forward'
-        ? `${tQuote('forwarded_separator')}<br>${tQuote('from_label')}: ${escapeHtml(fromStrFull)}<br>${tQuote('date_label')}: ${escapeHtml(date)}<br>${tQuote('subject_label')}: ${escapeHtml(replyTo.subject || '')}<br><br>`
-        : `${tQuote('reply_line', { date: escapeHtml(date), from: escapeHtml(fromStrFull) })}<br>`;
+        ? `${tQuote("---------- Forwarded message ----------")}<br>${tQuote("From")}: ${escapeHtml(fromStrFull)}<br>${tQuote("Date")}: ${escapeHtml(date)}<br>${tQuote("Subject")}: ${escapeHtml(replyTo.subject || '')}<br><br>`
+        : `${tQuote("On {date}, {from} wrote:", { date: escapeHtml(date), from: escapeHtml(fromStrFull) })}<br>`;
       // Embed the original as a QuotedHtml island (verbatim, schema-free) so
       // its layout survives the editor round-trip. Sanitize first to strip
       // scripts/styles/head; cid rewrite afterwards so data-cid markers
@@ -486,9 +486,9 @@ export function EmailComposer({
     if (replyTo.body) {
       const escapedOriginal = replyTo.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
       if (mode === 'forward') {
-        return `${prefix}${signatureBlock}<br><br>${tQuote('forwarded_separator')}<br>${tQuote('from_label')}: ${escapeHtml(fromStrFull)}<br>${tQuote('date_label')}: ${escapeHtml(date)}<br>${tQuote('subject_label')}: ${escapeHtml(replyTo.subject || '')}<br><br>${escapedOriginal}`;
+        return `${prefix}${signatureBlock}<br><br>${tQuote("---------- Forwarded message ----------")}<br>${tQuote("From")}: ${escapeHtml(fromStrFull)}<br>${tQuote("Date")}: ${escapeHtml(date)}<br>${tQuote("Subject")}: ${escapeHtml(replyTo.subject || '')}<br><br>${escapedOriginal}`;
       } else if (mode === 'reply' || mode === 'replyAll') {
-        return `${prefix}${signatureBlock}<br><br>${tQuote('reply_line', { date: escapeHtml(date), from: escapeHtml(fromStrFull) })}<br><blockquote style="margin:0 0 0 0.8ex;border-left:2px solid #ccc;padding-left:1ex">${escapedOriginal}</blockquote>`;
+        return `${prefix}${signatureBlock}<br><br>${tQuote("On {date}, {from} wrote:", { date: escapeHtml(date), from: escapeHtml(fromStrFull) })}<br><blockquote style="margin:0 0 0 0.8ex;border-left:2px solid #ccc;padding-left:1ex">${escapedOriginal}</blockquote>`;
       }
     }
     return prefix;
@@ -1164,7 +1164,7 @@ export function EmailComposer({
       } catch (error) {
         if (controller?.signal.aborted) continue;
         debug.error(`Failed to upload ${file.name}:`, error);
-        toast.error(t('upload_failed', { filename: file.name }));
+        toast.error(t("Failed to upload {filename}", { filename: file.name }));
 
         setAttachments(prev =>
           prev.map(att =>
@@ -1205,7 +1205,7 @@ export function EmailComposer({
       return { src: dataUrl, cid };
     } catch (error) {
       debug.error(`Failed to upload inline image ${file.name}:`, error);
-      toast.error(t('upload_failed', { filename: file.name }));
+      toast.error(t("Failed to upload {filename}", { filename: file.name }));
       return null;
     }
   }, [client, t]);
@@ -1378,7 +1378,7 @@ export function EmailComposer({
       const previousDraftId = draftIdRef.current;
       let savedDraft : AlmostSavedDraft = { 
        to: toAddresses,
-        subject: subject || t('no_subject'),
+        subject: subject || t("(No Subject)"),
         body: plainTextMode ? body : htmlToPlainText(body),
         cc: ccAddresses,
         bcc: bccAddresses,
@@ -1509,23 +1509,23 @@ export function EmailComposer({
   const canSend = toAddresses.length > 0 && !!subject && hasContent;
 
   const getSendTooltip = (): string | undefined => {
-    if (isWaitingForUploads) return t('validation.attachments_uploading');
+    if (isWaitingForUploads) return t("Attachments are still uploading — sending as soon as they finish");
     if (canSend) return undefined;
-    if (toAddresses.length === 0) return t('validation.recipient_required');
-    if (!subject) return t('validation.subject_required');
-    if (!hasContent) return t('validation.body_required');
+    if (toAddresses.length === 0) return t("Add a recipient to send");
+    if (!subject) return t("Add a subject");
+    if (!hasContent) return t("Write a message or attach a file");
     return undefined;
   };
 
   const validateScheduleValue = (value: string): string | null => {
-    if (!value) return t('schedule_send_required');
+    if (!value) return t("Choose a date and time.");
     const time = new Date(value).getTime();
-    if (!Number.isFinite(time)) return t('schedule_send_invalid');
-    if (time <= Date.now()) return t('schedule_send_future');
+    if (!Number.isFinite(time)) return t("Enter a valid date and time.");
+    if (time <= Date.now()) return t("Choose a future date and time.");
     if (composerClient) {
       const maxDelayedSend = composerClient.getMaxDelayedSend();
       if (maxDelayedSend > 0 && time > Date.now() + maxDelayedSend * 1000) {
-        return t('schedule_send_too_late');
+        return t("This time is later than the server allows.");
       }
     }
     return null;
@@ -1537,9 +1537,9 @@ export function EmailComposer({
     if (composerClient?.hasDelayedSend()) {
       return new Date(Date.now() + sendDelaySeconds * 1000).toISOString();
     }
-    const confirmed = window.confirm(t('send_delay_unsupported_confirm'));
+    const confirmed = window.confirm(t("This account does not support send delay. Send immediately instead?"));
     if (!confirmed) {
-      throw new Error(t('send_delay_unsupported'));
+      throw new Error(t("Send delay is not supported for this account."));
     }
     return undefined;
   };
@@ -1627,7 +1627,7 @@ export function EmailComposer({
         // An upload broke while we were waiting - the user may not be
         // looking at the composer, so auto-sending would silently drop
         // the failed attachment. Abort and let them decide.
-        toast.error(t('validation.attachment_upload_failed'));
+        toast.error(t("Not sent — an attachment failed to upload. Remove it and try again."));
         return;
       }
     }
@@ -1659,7 +1659,7 @@ export function EmailComposer({
         // the reminder even when the user typed no keyword and added nothing (#570).
         const bodyText = extractUserAuthoredText(body, {
           plainTextMode,
-          forwardedSeparator: tQuote('forwarded_separator'),
+          forwardedSeparator: tQuote("---------- Forwarded message ----------"),
         });
         const searchText = `${subject} ${bodyText}`.toLowerCase();
         const matched = attachmentReminderKeywords.find(kw => searchText.includes(kw.toLowerCase()));
@@ -1900,7 +1900,7 @@ export function EmailComposer({
       stateRef.current = { to: '', cc: '', bcc: '', subject: '', body: '', showCc: false, showBcc: false, selectedIdentityId: null, subAddressTag: '', draftId: null, fromOverrideEnabled: false, fromOverrideEmail: '', fromOverrideName: '' };
     } catch (err) {
       debug.error('Failed to send email:', err);
-      toast.error(err instanceof Error ? err.message : t('send_failed'));
+      toast.error(err instanceof Error ? err.message : t("Failed to send email"));
     } finally {
       isSendingRef.current = false;
       setIsSending(false);
@@ -1909,7 +1909,7 @@ export function EmailComposer({
 
   const handleScheduleSend = () => {
     if (!composerClient?.hasDelayedSend()) {
-      setScheduleError(t('schedule_send_unsupported'));
+      setScheduleError(t("Scheduled send is not supported for this account."));
       return;
     }
     const error = validateScheduleValue(scheduleValue);
@@ -2061,34 +2061,34 @@ export function EmailComposer({
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 border-2 border-dashed border-primary rounded-lg pointer-events-none">
           <div className="flex flex-col items-center gap-2 text-primary">
             <Paperclip className="w-8 h-8" />
-            <span className="text-sm font-medium">{t('drop_files')}</span>
+            <span className="text-sm font-medium">{t("Drop files to attach")}</span>
           </div>
         </div>
       )}
       {/* Header - mobile: clean bar with close/send, desktop: title bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={handleClose} aria-label={tCommon('close')} className="h-9 w-9 md:h-8 md:w-8">
+          <Button variant="ghost" size="icon" onClick={handleClose} aria-label={tCommon("Close")} className="h-9 w-9 md:h-8 md:w-8">
             <X className="w-5 h-5 md:w-4 md:h-4" />
           </Button>
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-base">{t('new_message')}</h3>
+            <h3 className="font-semibold text-base">{t("New Message")}</h3>
             {saveStatus === 'saving' && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Save className="w-3 h-3 animate-pulse" />
-                <span className="hidden md:inline">{t('saving')}</span>
+                <span className="hidden md:inline">{t("Saving...")}</span>
               </div>
             )}
             {saveStatus === 'saved' && (
               <div className="flex items-center gap-1 text-xs text-green-600">
                 <Check className="w-3 h-3" />
-                <span className="hidden md:inline">{t('draft_saved')}</span>
+                <span className="hidden md:inline">{t("Draft saved")}</span>
               </div>
             )}
             {saveStatus === 'error' && (
               <div className="flex items-center gap-1 text-xs text-red-600">
                 <X className="w-3 h-3" />
-                <span className="hidden md:inline">{t('save_failed')}</span>
+                <span className="hidden md:inline">{t("Failed to save")}</span>
               </div>
             )}
           </div>
@@ -2102,7 +2102,7 @@ export function EmailComposer({
           className="md:hidden h-9 px-4"
         >
           <Send className="w-4 h-4 me-1.5" />
-          {t('send')}
+          {t("Send")}
         </Button>
       </div>
 
@@ -2111,24 +2111,24 @@ export function EmailComposer({
         <div className="space-y-0 border-b">
           {/* From field */}
           <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50">
-            <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t('from')}:</span>
+            <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t("From")}:</span>
             <div className="flex-1 flex items-center gap-1 min-w-0">
               {fromOverrideEnabled ? (
                 <div className="flex-1 flex items-center gap-1 min-w-0">
                   <Input
                     value={fromOverrideName}
                     onChange={(e) => setFromOverrideName(e.target.value)}
-                    placeholder={t('from_override.name_placeholder')}
+                    placeholder={t("Name")}
                     className="h-7 text-sm w-32 md:w-40 shrink-0"
-                    aria-label={t('from_override.name_label')}
+                    aria-label={t("From name")}
                   />
                   <Input
                     value={fromOverrideEmail}
                     onChange={(e) => setFromOverrideEmail(e.target.value)}
-                    placeholder={t('from_override.email_placeholder')}
+                    placeholder={t("alias@example.com")}
                     type="email"
                     className="h-7 text-sm flex-1 min-w-0 font-mono"
-                    aria-label={t('from_override.email_label')}
+                    aria-label={t("From email address")}
                   />
                 </div>
               ) : identities.length > 1 ? (
@@ -2196,8 +2196,8 @@ export function EmailComposer({
                   size="sm"
                   onClick={() => setSubAddressTag('')}
                   className="h-6 px-2 text-xs"
-                  title={t('remove_sub_address')}
-                  aria-label={t('remove_sub_address')}
+                  title={t("Remove sub-address")}
+                  aria-label={t("Remove sub-address")}
                 >
                   <X className="w-3 h-3" />
                 </Button>
@@ -2220,16 +2220,16 @@ export function EmailComposer({
                   }
                 }}
                 className="h-6 px-2 text-xs shrink-0"
-                title={t('from_override.toggle_tooltip')}
+                title={t("Edit the From name and address freely. Mail is still sent through your identity - only the visible From header changes.")}
               >
-                {fromOverrideEnabled ? t('from_override.toggle_on') : t('from_override.toggle_off')}
+                {fromOverrideEnabled ? t("Cancel override") : t("Override")}
               </Button>
             </div>
           </div>
 
           {/* To field */}
           <div className={cn("flex items-center gap-2 px-4 py-2.5 border-b border-border/50 relative", shakeField === 'to' && "animate-shake")}>
-            <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t('to')}:</span>
+            <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t("To")}:</span>
             <RecipientChipInput
               chips={to}
               onChipsChange={(next) => {
@@ -2239,7 +2239,7 @@ export function EmailComposer({
               inputText={toInput}
               onInputChange={setToInput}
               inputRef={toInputRef}
-              placeholder={t('to_placeholder')}
+              placeholder={t("Recipient email addresses")}
               field="to"
               onAutocomplete={handleAutocomplete}
               onAutoKeyDown={handleAutoKeyDown}
@@ -2254,7 +2254,7 @@ export function EmailComposer({
               isSearchingServer={isSearchingServer}
               serverSearchQuery={autoQuery}
               validationError={validationErrors.to}
-              validationMessage={t('validation.recipient_required')}
+              validationMessage={t("Add a recipient to send")}
               onTab={focusSubject}
               onMoveChip={handleMoveChip}
             />
@@ -2313,14 +2313,14 @@ export function EmailComposer({
           {/* Cc field */}
           {showCc && (
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 relative">
-              <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t('cc_label')}</span>
+              <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t("Cc:")}</span>
               <RecipientChipInput
                 chips={cc}
                 onChipsChange={setCc}
                 inputText={ccInput}
                 onInputChange={setCcInput}
                 inputRef={ccInputRef}
-                placeholder={t('cc_placeholder')}
+                placeholder={t("Cc recipients")}
                 field="cc"
                 onAutocomplete={handleAutocomplete}
                 onAutoKeyDown={handleAutoKeyDown}
@@ -2342,14 +2342,14 @@ export function EmailComposer({
           {/* Bcc field */}
           {showBcc && (
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 relative">
-              <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t('bcc_label')}</span>
+              <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t("Bcc:")}</span>
               <RecipientChipInput
                 chips={bcc}
                 onChipsChange={setBcc}
                 inputText={bccInput}
                 onInputChange={setBccInput}
                 inputRef={bccInputRef}
-                placeholder={t('bcc_placeholder')}
+                placeholder={t("Bcc recipients")}
                 field="bcc"
                 onAutocomplete={handleAutocomplete}
                 onAutoKeyDown={handleAutoKeyDown}
@@ -2370,11 +2370,11 @@ export function EmailComposer({
 
           {/* Subject field */}
           <div className="flex items-center gap-2 px-4 py-2.5">
-            <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t('subject_label')}</span>
+            <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t("Subject:")}</span>
             <Input
               ref={subjectInputRef}
               type="text"
-              placeholder={t('subject_placeholder')}
+              placeholder={t("Subject")}
               value={subject}
               onChange={(e) => {
                 setSubject(e.target.value);
@@ -2404,7 +2404,7 @@ export function EmailComposer({
               setBody(e.target.value);
               if (validationErrors.body) setValidationErrors(prev => ({ ...prev, body: false }));
             }}
-            placeholder={t('body_placeholder')}
+            placeholder={t("Write your message...")}
             className={cn(
               "w-full min-h-[300px] px-4 py-3 text-sm text-foreground bg-transparent resize-y focus:outline-none font-mono",
               validationErrors.body && "ring-2 ring-red-500 dark:ring-red-400 rounded"
@@ -2421,7 +2421,7 @@ export function EmailComposer({
                 if (validationErrors.body) setValidationErrors(prev => ({ ...prev, body: false }));
               }}
               onImageUpload={handleImageUpload}
-              placeholder={t('body_placeholder')}
+              placeholder={t("Write your message...")}
               hasError={validationErrors.body}
               onEditorReady={(ed) => { editorRef.current = ed; }}
             />
@@ -2501,8 +2501,8 @@ export function EmailComposer({
                     <button
                       onClick={() => removeAttachment(index)}
                       className="ms-1 hover:text-red-500 min-w-[20px] min-h-[20px] flex items-center justify-center"
-                      title={att.uploading ? t('upload_cancel') : undefined}
-                      aria-label={att.uploading ? t('upload_cancel') : `${tCommon('delete')} ${att.name}`}
+                      title={att.uploading ? t("Cancel upload") : undefined}
+                      aria-label={att.uploading ? t("Cancel upload") : `${tCommon("Delete")} ${att.name}`}
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -2515,7 +2515,7 @@ export function EmailComposer({
                   onClick={() => setShowAllAttachments(prev => !prev)}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm bg-muted text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showAllAttachments ? t('show_less') : `+${attachments.length - 3}`}
+                  {showAllAttachments ? t("Show less") : `+${attachments.length - 3}`}
                 </button>
               )}
             </div>
@@ -2542,12 +2542,12 @@ export function EmailComposer({
                   size="icon"
                   onClick={() => fileInputRef.current?.click()}
                   className="h-9 w-9"
-                  aria-label={t('attach')}
+                  aria-label={t("Attach")}
                 >
                   <Paperclip className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('attach')}</TooltipContent>
+              <TooltipContent>{t("Attach")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -2557,12 +2557,12 @@ export function EmailComposer({
                   disabled={!jmapAttachmentSource}
                   onClick={() => setShowJmapFilePicker(true)}
                   className="h-9 w-9"
-                  aria-label={t('attach_from_jmap_files')}
+                  aria-label={t("Attach from JMAP Files")}
                 >
                   <Database className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('attach_from_jmap_files')}</TooltipContent>
+              <TooltipContent>{t("Attach from JMAP Files")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -2570,13 +2570,13 @@ export function EmailComposer({
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowTemplatePicker(true)}
-                  aria-label={t('use_template')}
+                  aria-label={t("Template")}
                   className="h-9 w-9"
                 >
                   <FileText className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('use_template')}</TooltipContent>
+              <TooltipContent>{t("Template")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -2584,13 +2584,13 @@ export function EmailComposer({
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowSaveAsTemplate(true)}
-                  aria-label={t('save_as_template')}
+                  aria-label={t("Save as Template")}
                   className="h-9 w-9"
                 >
                   <BookmarkPlus className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('save_as_template')}</TooltipContent>
+              <TooltipContent>{t("Save as Template")}</TooltipContent>
             </Tooltip>
             {/* Sign/encrypt controls are contributed by crypto plugins via the
                 composer-toolbar slot (rendered below). */}
@@ -2606,13 +2606,13 @@ export function EmailComposer({
                     "h-9 w-9",
                     requestReadReceipt && "bg-green-600 text-white hover:bg-green-600 hover:text-white dark:bg-green-600 dark:hover:bg-green-600"
                   )}
-                  aria-label={requestReadReceipt ? t('read_receipt_on') : t('read_receipt_off')}
+                  aria-label={requestReadReceipt ? t("Read receipt requested (click to disable)") : t("Request a read receipt")}
                   aria-pressed={requestReadReceipt}
                 >
                   <MailCheck className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{requestReadReceipt ? t('read_receipt_on') : t('read_receipt_off')}</TooltipContent>
+              <TooltipContent>{requestReadReceipt ? t("Read receipt requested (click to disable)") : t("Request a read receipt")}</TooltipContent>
             </Tooltip>
             <PluginSlot name="composer-toolbar" />
           </div>
@@ -2624,7 +2624,7 @@ export function EmailComposer({
               onClick={handleClose}
               className="text-sm text-muted-foreground hover:text-red-500 transition-colors px-2 py-1"
             >
-              {t('discard')}
+              {t("Discard")}
             </button>
             {composerClient?.hasDelayedSend() ? (
               <div ref={sendMenuRef} className="relative hidden md:inline-flex">
@@ -2636,7 +2636,7 @@ export function EmailComposer({
                       className="rounded-e-none border-e border-primary-foreground/20"
                     >
                       <Send className="w-4 h-4 me-2" />
-                      {t('send')}
+                      {t("Send")}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>{getSendTooltip()}</TooltipContent>
@@ -2647,7 +2647,7 @@ export function EmailComposer({
                       type="button"
                       onClick={() => setShowSendMenu((open) => !open)}
                       disabled={!canSend || isSending}
-                      aria-label={t('schedule_send')}
+                      aria-label={t("Schedule send")}
                       className="rounded-s-none px-2"
                       aria-haspopup="menu"
                       aria-expanded={showSendMenu}
@@ -2655,7 +2655,7 @@ export function EmailComposer({
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>{t('schedule_send')}</TooltipContent>
+                  <TooltipContent>{t("Schedule send")}</TooltipContent>
                 </Tooltip>
                 {showSendMenu && (
                   <div
@@ -2669,7 +2669,7 @@ export function EmailComposer({
                       className="flex w-full items-center gap-2 rounded-sm px-3 py-2 text-start text-sm hover:bg-accent hover:text-accent-foreground"
                     >
                       <CalendarClock className="w-4 h-4" />
-                      {t('schedule_send')}
+                      {t("Schedule send")}
                     </button>
                   </div>
                 )}
@@ -2683,7 +2683,7 @@ export function EmailComposer({
                     className="hidden md:inline-flex"
                   >
                     <Send className="w-4 h-4 me-2" />
-                    {t('send')}
+                    {t("Send")}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>{getSendTooltip()}</TooltipContent>
@@ -2711,7 +2711,7 @@ export function EmailComposer({
       <Dialog open={showSaveAsTemplate} onOpenChange={(open) => { if (!open) setShowSaveAsTemplate(false); }}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t('save_as_template')}</DialogTitle>
+            <DialogTitle>{t("Save as Template")}</DialogTitle>
           </DialogHeader>
           <TemplateForm
             initialData={{
@@ -2733,8 +2733,8 @@ export function EmailComposer({
       <Dialog open={showScheduleDialog} onOpenChange={(open) => { if (!open) setShowScheduleDialog(false); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('schedule_send')}</DialogTitle>
-            <DialogDescription>{t('schedule_send_description')}</DialogDescription>
+            <DialogTitle>{t("Schedule send")}</DialogTitle>
+            <DialogDescription>{t("Choose when the server should release this message.")}</DialogDescription>
           </DialogHeader>
           <Input
             type="datetime-local"
@@ -2747,8 +2747,8 @@ export function EmailComposer({
           />
           {scheduleError && <p className="text-sm text-destructive">{scheduleError}</p>}
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setShowScheduleDialog(false)}>{tCommon('cancel')}</Button>
-            <Button onClick={handleScheduleSend} disabled={!canSend || isSending}>{t('schedule_send')}</Button>
+            <Button variant="ghost" onClick={() => setShowScheduleDialog(false)}>{tCommon("Cancel")}</Button>
+            <Button onClick={handleScheduleSend} disabled={!canSend || isSending}>{t("Schedule send")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2761,28 +2761,28 @@ export function EmailComposer({
           handleSend(true, attachmentWarningDelayedUntil);
           setAttachmentWarningDelayedUntil(undefined);
         }}
-        title={t('forgot_attachment.title')}
-        message={t('forgot_attachment.message', { keyword: attachmentWarningKeyword })}
-        confirmText={t('forgot_attachment.send_anyway')}
-        cancelText={t('forgot_attachment.back')}
+        title={t("Did you forget an attachment?")}
+        message={t("Your message mentions \"{keyword}\" but no file is attached. Send anyway?", { keyword: attachmentWarningKeyword })}
+        confirmText={t("Send anyway")}
+        cancelText={t("Back to editing")}
       />
 
       <Dialog open={showCloseDialog} onOpenChange={(open) => { if (!open) setShowCloseDialog(false); }}>
         <DialogContent className="max-w-md" showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>{t('close_draft_title')}</DialogTitle>
-            <DialogDescription>{t('close_draft_message')}</DialogDescription>
+            <DialogTitle>{t("Save or discard draft?")}</DialogTitle>
+            <DialogDescription>{t("You have unsaved changes. Would you like to save this as a draft or discard it?")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCloseDialog(false)}>
-              {t('cancel')}
+              {t("Cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDiscardAndClose}>
-              {t('discard')}
+              {t("Discard")}
             </Button>
             <Button onClick={handleSaveDraftAndClose}>
               <Save className="w-4 h-4 me-2" />
-              {t('save_draft')}
+              {t("Save Draft")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -2813,7 +2813,7 @@ const AutocompleteDropdown = React.forwardRef<HTMLDivElement, {
   onSearchServer?: () => void;
   isSearchingServer?: boolean;
 }>(function AutocompleteDropdown({ id, results, selectedIndex, onSelect, onSearchServer, isSearchingServer }, ref) {
-  const t = useTranslations('email_composer');
+  const t = useTranslations();
   return (
     <div ref={ref} id={id} role="listbox" className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border rounded-md shadow-lg max-h-48 overflow-y-auto">
       {results.map((r, i) => (
@@ -2856,7 +2856,7 @@ const AutocompleteDropdown = React.forwardRef<HTMLDivElement, {
             ? <Loader2 className="w-4 h-4 shrink-0 animate-spin" />
             : <Search className="w-4 h-4 shrink-0" />}
           <span className="truncate">
-            {isSearchingServer ? t('autocomplete_searching') : t('autocomplete_search_server')}
+            {isSearchingServer ? t("Searching...") : t("Search the server")}
           </span>
         </button>
       )}
@@ -2913,8 +2913,8 @@ function RecipientChipInput({
   onTab?: () => void;
   onMoveChip: (recipient: Recipient, fromField: 'to' | 'cc' | 'bcc', toField: 'to' | 'cc' | 'bcc') => void;
 }) {
-  const t = useTranslations('email_composer');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const { contextMenu, openContextMenu, closeContextMenu, menuRef } = useContextMenu<{ index: number; recipient: Recipient }>();
   const [editingChip, setEditingChip] = useState<{ index: number; editType: 'email' | 'name' } | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -3161,7 +3161,7 @@ function RecipientChipInput({
                     handleSaveEdit(editValue);
                   }}
                   className="flex-1 min-w-[80px] border-0 outline-none h-5 text-sm bg-transparent text-foreground placeholder:text-muted-foreground"
-                  placeholder={editingChip?.editType === 'email' ? t('recipient_email_placeholder') : t('recipient_name_placeholder')}
+                  placeholder={editingChip?.editType === 'email' ? t("Email address") : t("Display name")}
                   data-bwignore="true"
                 />
               ) : (
@@ -3241,10 +3241,10 @@ function RecipientChipInput({
               {formatChipDisplay(contextMenu.data.recipient)}
             </div>
             <ContextMenuSeparator />
-            <ContextMenuItem label={t('recipient_edit_email')} onClick={handleEditEmail} />
-            <ContextMenuItem label={t('recipient_edit_name')} onClick={handleEditName} />
+            <ContextMenuItem label={t("Edit email address")} onClick={handleEditEmail} />
+            <ContextMenuItem label={t("Edit display name")} onClick={handleEditName} />
             <ContextMenuSeparator />
-            <ContextMenuItem label={tCommon('delete')} onClick={() => {
+            <ContextMenuItem label={tCommon("Delete")} onClick={() => {
               if (contextMenu.data) {
                 handleChipRemove(contextMenu.data.index, { stopPropagation: () => {} } as React.MouseEvent);
               }

@@ -70,7 +70,7 @@ export function ContactContextMenu({
   onBatchAddToGroup,
   onBatchDelete,
 }: ContactContextMenuProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
   const email = getContactPrimaryEmail(contact);
   const phone = getContactPrimaryPhone(contact);
   const showBatchActions = isMultiSelect && selectedCount > 1;
@@ -94,15 +94,15 @@ export function ContactContextMenu({
     if (!value) return;
     try {
       await navigator.clipboard.writeText(value);
-      toast.success(t("detail.copied"));
+      toast.success(t("Copied to clipboard"));
     } catch {
-      toast.error(t("detail.copy_failed"));
+      toast.error(t("Failed to copy to clipboard"));
     }
   };
 
   const handleExport = () => {
     exportContact(contact);
-    toast.success(t("export.success", { count: 1 }));
+    toast.success(t("{count, plural, one {1 contact exported} other {# contacts exported}}", { count: 1 }));
   };
 
   const handlePrint = () => {
@@ -113,24 +113,24 @@ export function ContactContextMenu({
     return (
       <ContextMenu ref={menuRef} isOpen={isOpen} position={position} onClose={onClose}>
         <ContextMenuHeader>
-          {t("bulk.selected", { count: selectedCount })}
+          {t("{count, plural, one {1 selected} other {# selected}}", { count: selectedCount })}
         </ContextMenuHeader>
         <ContextMenuItem
           icon={Users}
-          label={t("bulk.add_to_group")}
+          label={t("Add to group")}
           onClick={handle(() => onBatchAddToGroup?.())}
           disabled={!onBatchAddToGroup}
         />
         <ContextMenuItem
           icon={Download}
-          label={t("bulk.export")}
+          label={t("Export")}
           onClick={handle(() => onBatchExport?.())}
           disabled={!onBatchExport}
         />
         <ContextMenuSeparator />
         <ContextMenuItem
           icon={Trash2}
-          label={t("bulk.delete")}
+          label={t("Delete")}
           onClick={handle(() => onBatchDelete?.())}
           disabled={!onBatchDelete}
           destructive
@@ -141,64 +141,64 @@ export function ContactContextMenu({
 
   return (
     <ContextMenu ref={menuRef} isOpen={isOpen} position={position} onClose={onClose}>
-      <ContextMenuItem icon={Eye} label={t("context_menu.open")} onClick={handle(onOpen)} />
-      <ContextMenuItem icon={Pencil} label={t("context_menu.edit")} onClick={handle(onEdit)} />
+      <ContextMenuItem icon={Eye} label={t("Open")} onClick={handle(onOpen)} />
+      <ContextMenuItem icon={Pencil} label={t("Edit")} onClick={handle(onEdit)} />
       {(email || phone) && <ContextMenuSeparator />}
       {email && (
         <ContextMenuItem
           icon={Mail}
-          label={t("context_menu.send_email")}
+          label={t("Send email")}
           onClick={handle(handleSendEmail)}
         />
       )}
       {phone && (
         <ContextMenuItem
           icon={Phone}
-          label={t("context_menu.call")}
+          label={t("Call")}
           onClick={handle(handleCall)}
         />
       )}
       {email && (
         <ContextMenuItem
           icon={ClipboardCopy}
-          label={t("detail.copy_email")}
+          label={t("Copy email")}
           onClick={handle(() => handleCopy(email))}
         />
       )}
       {phone && (
         <ContextMenuItem
           icon={ClipboardCopy}
-          label={t("detail.copy_phone")}
+          label={t("Copy phone number")}
           onClick={handle(() => handleCopy(phone))}
         />
       )}
       <ContextMenuSeparator />
       <ContextMenuItem
         icon={Users}
-        label={t("context_menu.add_to_group")}
+        label={t("Add to group")}
         onClick={handle(onAddToGroup)}
       />
       {onDuplicate && (
         <ContextMenuItem
           icon={Copy}
-          label={t("context_menu.duplicate")}
+          label={t("Duplicate")}
           onClick={handle(onDuplicate)}
         />
       )}
       <ContextMenuItem
         icon={Download}
-        label={t("context_menu.export_vcard")}
+        label={t("Export as vCard")}
         onClick={handle(handleExport)}
       />
       <ContextMenuItem
         icon={Printer}
-        label={t("context_menu.print")}
+        label={t("Print")}
         onClick={handle(handlePrint)}
       />
       <ContextMenuSeparator />
       <ContextMenuItem
         icon={Trash2}
-        label={t("context_menu.delete")}
+        label={t("Delete")}
         onClick={handle(onDelete)}
         destructive
       />

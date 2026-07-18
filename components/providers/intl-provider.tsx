@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { I18nProviderContext, makeI18n } from '@/i18n/client';
 import { getLocaleDirection } from '@/i18n/direction';
 import { detectBrowserLocale } from '@/i18n/detect-locale';
+import { isSupportedLocale } from '@/i18n/routing';
 import { useLocaleStore } from '@/stores/locale-store';
 
 interface IntlProviderProps {
@@ -26,11 +27,14 @@ export function IntlProvider({ locale: initialLocale, children }: IntlProviderPr
   // means "follow the browser" (English default); a specific code forces it
   // and is never overridden by detection.
   useEffect(() => {
-    setActiveLocale(
-      !currentLocale || currentLocale === 'auto'
-        ? detectBrowserLocale(initialLocale)
-        : currentLocale
-    );
+    // A stored choice for a locale we no longer ship (e.g. 'de' from before
+    // the locale reduction) behaves like 'auto' instead of rendering with a
+    // silent English fallback while the picker shows a stale value.
+    const explicit =
+      currentLocale && currentLocale !== 'auto' && isSupportedLocale(currentLocale)
+        ? currentLocale
+        : null;
+    setActiveLocale(explicit ?? detectBrowserLocale(initialLocale));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLocale]);
 

@@ -3,31 +3,44 @@ import fs from 'fs';
 import path from 'path';
 import { describe, expect, it } from 'vitest';
 
+/**
+ * Guards for the Lingui .po catalogs (locales/<locale>/messages.po):
+ *
+ *  1. Catalog parity — en (source) and every translation catalog cover the
+ *     same explicit-ID set.
+ *  2. Missing-key scan — every static `t("key")` call site in the source tree
+ *     (resolved through its `useTranslations("<ns>")` namespace) exists in
+ *     the en catalog. Dynamic template-literal keys are out of scope here;
+ *     they fall back to the raw ID at runtime and are exercised by their own
+ *     component tests.
+ */
+
 const rootDir = path.resolve(__dirname, '../..');
 const localesDir = path.join(rootDir, 'locales');
 const referenceLocale = 'en';
 
-function getLeafKeys(obj: Record<string, unknown>, prefix = ''): string[] {
-  const keys: string[] = [];
-  for (const key of Object.keys(obj)) {
-    const fullKey = prefix ? `${prefix}.${key}` : key;
-    const value = obj[key];
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      keys.push(...getLeafKeys(value as Record<string, unknown>, fullKey));
-    } else {
-      keys.push(fullKey);
+/** Parse the msgid set from a gettext .po file (handles multi-line strings). */
+function loadCatalogIds(locale: string): Set<string> {
+  const filePath = path.join(localesDir, locale, 'messages.po');
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const ids = new Set<string>();
+  const lines = content.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/^msgid "(.*)"$/);
+    if (!match) continue;
+    let id = match[1];
+    // Multi-line msgid: subsequent bare string lines continue the value.
+    while (i + 1 < lines.length && /^"(.*)"$/.test(lines[i + 1])) {
+      id += lines[++i].slice(1, -1);
     }
+    const unescaped = id
+      .replaceAll('\\n', '\n')
+      .replaceAll('\\t', '\t')
+      .replaceAll('\\"', '"')
+      .replaceAll('\\\\', '\\');
+    if (unescaped !== '') ids.add(unescaped);
   }
-  return keys.sort();
-}
-
-function loadLocale(locale: string): Record<string, unknown> {
-  const filePath = path.join(localesDir, locale, 'common.json');
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-}
-
-function resolveKey(obj: Record<string, unknown>, key: string): unknown {
-  return key.split('.').reduce<unknown>((o, p) => (o && typeof o === 'object' ? (o as Record<string, unknown>)[p] : undefined), obj);
+  return ids;
 }
 
 // Collect source files recursively
@@ -108,40 +121,37 @@ const locales = fs
   .readdirSync(localesDir)
   .filter((entry) => fs.statSync(path.join(localesDir, entry)).isDirectory());
 
-const referenceData = loadLocale(referenceLocale);
-const referenceKeys = getLeafKeys(referenceData);
+const referenceIds = loadCatalogIds(referenceLocale);
 
-describe('translations completeness', () => {
-  it('reference locale (en) should have keys', () => {
-    expect(referenceKeys.length).toBeGreaterThan(0);
+describe('translation catalogs', () => {
+  it('reference locale (en) should have message IDs', () => {
+    expect(referenceIds.size).toBeGreaterThan(0);
   });
 
   const otherLocales = locales.filter((l) => l !== referenceLocale);
 
-  it.each(otherLocales)('%s should have all keys from en', (locale) => {
-    const localeKeys = new Set(getLeafKeys(loadLocale(locale)));
-    const missing = referenceKeys.filter((key) => !localeKeys.has(key));
+  it.each(otherLocales)('%s should cover every ID from en', (locale) => {
+    const localeIds = loadCatalogIds(locale);
+    const missing = [...referenceIds].filter((id) => !localeIds.has(id));
 
-    expect(missing, `Missing ${missing.length} keys in "${locale}":\n${missing.join('\n')}`).toEqual([]);
+    expect(missing, `Missing ${missing.length} IDs in "${locale}":\n${missing.join('\n')}`).toEqual([]);
   });
 
-  it.each(otherLocales)('%s should not have extra keys absent from en', (locale) => {
-    const localeKeys = getLeafKeys(loadLocale(locale));
-    const referenceSet = new Set(referenceKeys);
-    const extra = localeKeys.filter((key) => !referenceSet.has(key));
+  it.each(otherLocales)('%s should not have extra IDs absent from en', (locale) => {
+    const extra = [...loadCatalogIds(locale)].filter((id) => !referenceIds.has(id));
 
-    expect(extra, `Extra ${extra.length} keys in "${locale}":\n${extra.join('\n')}`).toEqual([]);
+    expect(extra, `Extra ${extra.length} IDs in "${locale}":\n${extra.join('\n')}`).toEqual([]);
   });
 });
 
-describe('translations used in source code exist in en locale', () => {
+describe('translations used in source code exist in the en catalog', () => {
   const srcDirs = ['components', 'app', 'hooks', 'lib', 'stores', 'contexts'].map((d) => path.join(rootDir, d));
   const allFiles = srcDirs.flatMap((d) => getSourceFiles(d));
   const usedKeysByFile = collectUsedKeysByFile(allFiles);
   const usedKeys = [...usedKeysByFile.keys()].sort();
 
-  it('all translation keys referenced in source should exist in en locale', () => {
-    const missing = usedKeys.filter((key) => resolveKey(referenceData, key) === undefined);
+  it('all translation keys referenced in source should exist in the en catalog', () => {
+    const missing = usedKeys.filter((key) => !referenceIds.has(key));
     const details = missing.map((key) => {
       const relativeFiles = (usedKeysByFile.get(key) ?? [])
         .map((filePath) => path.relative(rootDir, filePath))
@@ -152,7 +162,7 @@ describe('translations used in source code exist in en locale', () => {
 
     expect(
       missing,
-      `${missing.length} translation key(s) used in source code but missing from en locale:\n${details.join('\n')}`,
+      `${missing.length} translation key(s) used in source code but missing from the en catalog:\n${details.join('\n')}`,
     ).toEqual([]);
   });
 });

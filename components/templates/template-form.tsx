@@ -96,18 +96,18 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div>
         <label className="text-sm font-medium text-foreground">{tSettings("Template Name")}</label>
         <Input
           value={name}
           onChange={(e) => { setName(e.target.value); setNameError(null); }}
           placeholder={tSettings("e.g., Follow-up email")}
-          className={cn('mt-1', nameError && 'border-red-500')}
+          className={cn('mt-1', nameError && 'border-destructive')}
           autoFocus
         />
         {nameError && (
-          <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+          <p className="text-xs text-destructive mt-1">
             {tSettings(`settings.templates.validation.${nameError}`)}
           </p>
         )}
@@ -246,7 +246,7 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
           onClick={() => setIsFavorite(!isFavorite)}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <Star className={cn('w-4 h-4', isFavorite && 'fill-amber-400 text-amber-400')} />
+          <Star className={cn('w-4 h-4', isFavorite && 'fill-warning text-warning')} />
           {tSettings("Favorite")}
         </button>
 

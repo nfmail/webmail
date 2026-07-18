@@ -382,7 +382,7 @@ export function EmailList({
                   onClick={handleBatchDelete}
                   aria-label={t("Delete")}
                   disabled={isProcessing}
-                  className="text-red-600 dark:text-red-400 hover:bg-red-100/50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
+                  className="text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

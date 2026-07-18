@@ -77,7 +77,7 @@ function SidebarAppForm({
     : null;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Name */}
       <div>
         <label htmlFor="app-name" className="block text-sm font-medium mb-1">
@@ -281,7 +281,7 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
           )}
 
           {/* Apps list */}
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3">
             {sidebarApps.map((app) => {
               const AppIcon = lucideIcons[app.icon as keyof typeof lucideIcons] as LucideIcon | undefined;
 
@@ -313,8 +313,8 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
                   <span className={cn(
                     'text-[10px] px-1.5 py-0.5 rounded-full font-medium',
                     app.openMode === 'inline'
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400'
-                      : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                      ? 'bg-info/10 text-info'
+                      : 'bg-muted text-muted-foreground'
                   )}>
                     {app.openMode === 'inline' ? t("Inline") : t("Tab")}
                   </span>

@@ -27,8 +27,8 @@ export default function LocaleError({
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center max-w-md px-4">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-          <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-destructive/10 flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-destructive" />
         </div>
         <h2 className="text-xl font-semibold text-foreground mb-2">
           {t("Something went wrong")}

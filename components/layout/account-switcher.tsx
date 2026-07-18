@@ -235,7 +235,7 @@ export function AccountSwitcher({ variant = "rail", className }: AccountSwitcher
                         {account.displayName || account.label}
                       </span>
                       {account.isDefault && (
-                        <Star className="w-3 h-3 text-amber-500 flex-shrink-0 fill-amber-500" />
+                        <Star className="w-3 h-3 text-warning flex-shrink-0 fill-warning" />
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground truncate">
@@ -247,7 +247,7 @@ export function AccountSwitcher({ variant = "rail", className }: AccountSwitcher
                       ) : (
                         <span className={cn(
                           "w-1.5 h-1.5 rounded-full",
-                          account.isConnected ? "bg-green-500" : "bg-muted-foreground/40"
+                          account.isConnected ? "bg-success" : "bg-muted-foreground/40"
                         )} />
                       )}
                       <span className="text-[10px] text-muted-foreground truncate">

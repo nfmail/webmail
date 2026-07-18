@@ -80,7 +80,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
     >
       <div className="flex items-center gap-2">
         {template.isFavorite && (
-          <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
+          <Star className="w-3 h-3 fill-warning text-warning flex-shrink-0" />
         )}
         <span className="text-sm font-medium text-foreground truncate">
           {template.name}
@@ -106,7 +106,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-3">
           {title}
         </h3>
-        <div className="space-y-0.5">{items.map(renderTemplateItem)}</div>
+        <div className="flex flex-col gap-0.5">{items.map(renderTemplateItem)}</div>
       </div>
     );
   };
@@ -171,7 +171,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
 
             {filtered ? (
               filtered.length > 0 ? (
-                <div className="space-y-0.5">
+                <div className="flex flex-col gap-0.5">
                   {filtered.map(renderTemplateItem)}
                 </div>
               ) : (

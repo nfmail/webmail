@@ -92,7 +92,7 @@ export function SieveEditorModal({
           </button>
         </div>
 
-        <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col space-y-4">
+        <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col gap-4">
           <div className="flex items-start gap-2 p-3 rounded-md bg-warning/10 border border-warning/20 text-sm text-warning">
             <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <p>{t("Editing the raw Sieve script may break visual rule editing. Changes made here override the visual builder.")}</p>

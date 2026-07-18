@@ -205,7 +205,7 @@ export function CalendarToolbar({
                     <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">
                       {t("Calendars")}
                     </h3>
-                    <div className="space-y-0.5">
+                    <div className="flex flex-col gap-0.5">
                       {calendars.filter(c => !c.isShared).map((cal) => {
                         const isVisible = selectedCalendarIds.includes(cal.id);
                         const color = cal.color || "#3b82f6";
@@ -245,7 +245,7 @@ export function CalendarToolbar({
                           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 px-1">
                             {group.accountName}
                           </h3>
-                          <div className="space-y-0.5">
+                          <div className="flex flex-col gap-0.5">
                             {group.cals.map((cal) => {
                               const isVisible = selectedCalendarIds.includes(cal.id);
                               const color = cal.color || "#3b82f6";

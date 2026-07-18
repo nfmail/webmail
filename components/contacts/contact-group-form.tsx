@@ -85,7 +85,7 @@ export function ContactGroupForm({
         </h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
         {error && (
           <div className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded">
             {error}

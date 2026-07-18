@@ -644,14 +644,14 @@ export function EventModal({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="px-6 py-4 space-y-3">
-            <div className="flex items-start gap-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50 px-4 py-3">
-              <CalendarDays className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+          <div className="px-6 py-4 flex flex-col gap-3">
+            <div className="flex items-start gap-3 rounded-lg border border-info/30 bg-info/10 px-4 py-3">
+              <CalendarDays className="w-5 h-5 text-info mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-blue-900 dark:text-blue-200">
+                <p className="font-medium text-info">
                   {t("Invitation from {name}", { name: organizerInfo?.name || organizerInfo?.email || t("Organizer") })}
                 </p>
-                <p className="text-blue-700 dark:text-blue-400 mt-0.5">
+                <p className="text-info mt-0.5">
                   {t("Respond using the buttons below")}
                 </p>
               </div>
@@ -703,12 +703,12 @@ export function EventModal({
             )}
 
             {participants.length > 0 && (
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-1.5 text-sm font-medium">
                   <Users className="w-4 h-4" />
                   {t("Participants")}
                 </div>
-                <div className="space-y-1 ps-5">
+                <div className="flex flex-col gap-1 ps-5">
                   {participants.map(p => (
                     <div key={p.id} className="flex items-center justify-between text-sm">
                       <span className="truncate">{p.name || p.email}</span>
@@ -801,7 +801,7 @@ export function EventModal({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="px-6 py-4 space-y-3">
+          <div className="px-6 py-4 flex flex-col gap-3">
             {/* Date & Time */}
             <div className="flex items-start gap-2.5">
               <Clock className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -890,7 +890,7 @@ export function EventModal({
                   <span className="text-muted-foreground">
                     {t("{count, plural, one {# participant} other {# participants}}", { count: viewParticipants.length })}
                   </span>
-                  <div className="mt-1 space-y-0.5">
+                  <div className="mt-1 flex flex-col gap-0.5">
                     {viewParticipants.map((p) => (
                       <div key={p.id} className="flex items-center justify-between gap-2 text-xs">
                         <span className="truncate text-foreground">
@@ -984,7 +984,7 @@ export function EventModal({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="px-6 py-4 space-y-4">
+        <div className="px-6 py-4 flex flex-col gap-4">
           <div>
             <label className="text-sm font-medium mb-1 block">{t("Title")}</label>
             <Input
@@ -1129,7 +1129,7 @@ export function EventModal({
           </div>
 
           {pluginConflictWarnings.length > 0 && (
-            <div className="space-y-1.5">
+            <div className="flex flex-col gap-1.5">
               {pluginConflictWarnings.map(w => (
                 <div
                   key={w.key}
@@ -1138,7 +1138,7 @@ export function EventModal({
                       ? 'text-sm rounded-md border border-destructive/50 bg-destructive/10 text-destructive px-3 py-2'
                       : w.severity === 'info'
                         ? 'text-sm rounded-md border border-border bg-muted/40 text-muted-foreground px-3 py-2'
-                        : 'text-sm rounded-md border border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 px-3 py-2'
+                        : 'text-sm rounded-md border border-warning/50 bg-warning/10 text-warning px-3 py-2'
                   }
                   title={w.message}
                 >
@@ -1224,7 +1224,7 @@ export function EventModal({
             {alertRows.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("No reminders")}</p>
             ) : (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {alertRows.map((row) => (
                   <div key={row.id} className="flex items-center gap-2">
                     {row.unit !== "at_time" && (
@@ -1307,7 +1307,7 @@ export function EventModal({
             showDeleteConfirm ? (
               <div className="flex items-center gap-2">
                 <div>
-                  <span className="text-sm text-red-600 dark:text-red-400">
+                  <span className="text-sm text-destructive">
                     {t("Are you sure you want to delete this event?")}
                   </span>
                   {hasParticipants && (
@@ -1320,7 +1320,7 @@ export function EventModal({
                   variant="outline"
                   size="sm"
                   onClick={() => { onDelete(event!.id, hasParticipants || undefined); onClose(); }}
-                  className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700"
+                  className="text-destructive border-destructive/30"
                 >
                   {t("Delete event")}
                 </Button>
@@ -1333,7 +1333,7 @@ export function EventModal({
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowDeleteConfirm(true)}
-                className="text-red-600 dark:text-red-400"
+                className="text-destructive"
               >
                 <Trash2 className="w-4 h-4 me-1" />
                 {t("Delete event")}

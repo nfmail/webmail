@@ -194,7 +194,7 @@ export default function MarketplacePreviewPage() {
 
   if (error || !data) {
     return (
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         <Link
           href="/admin/marketplace"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
@@ -220,7 +220,7 @@ export default function MarketplacePreviewPage() {
     && !versionMismatch;
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="flex flex-col gap-6 max-w-4xl">
       {/* Back link */}
       <Link
         href="/admin/marketplace"
@@ -264,7 +264,7 @@ export default function MarketplacePreviewPage() {
               {ext.featured && <Star className="w-4 h-4 text-warning fill-warning shrink-0" />}
               {data.installed && !updateAvailable && (
                 <span
-                  className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 font-medium"
+                  className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-success/10 text-success font-medium"
                   title={data.installedVersion ? `Installed: v${data.installedVersion}` : undefined}
                 >
                   <Check className="w-3 h-3" /> Installed
@@ -272,7 +272,7 @@ export default function MarketplacePreviewPage() {
               )}
               {data.installed && updateAvailable && (
                 <span
-                  className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 font-medium"
+                  className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-info/10 text-info font-medium"
                   title={`Installed v${data.installedVersion} → v${ext.latestVersion} available`}
                 >
                   <ArrowUpCircle className="w-3 h-3" /> Update available
@@ -282,8 +282,8 @@ export default function MarketplacePreviewPage() {
             <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground flex-wrap">
               <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
                 isPlugin
-                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
-                  : 'bg-purple-100 text-purple-700 dark:bg-purple-950/30 dark:text-purple-400'
+                  ? 'bg-info/10 text-info'
+                  : 'bg-secondary text-secondary-foreground'
               }`}>
                 {isPlugin ? (ext.pluginType || 'plugin') : 'theme'}
               </span>
@@ -309,7 +309,7 @@ export default function MarketplacePreviewPage() {
                   onClick={handleInstall}
                   disabled={installing || !!bundle.error}
                   title={`Update from v${data.installedVersion} to v${ext.latestVersion}`}
-                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {installing ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpCircle className="w-4 h-4" />}
                   Update to v{ext.latestVersion}
@@ -348,13 +348,13 @@ export default function MarketplacePreviewPage() {
       </div>
 
       {message && (
-        <div className={`text-sm rounded-md px-3 py-2 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' : 'bg-destructive/10 text-destructive'}`}>
+        <div className={`text-sm rounded-md px-3 py-2 ${message.type === 'success' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
           {message.text}
         </div>
       )}
 
       {versionMismatch && (
-        <div className="flex items-start gap-2 text-sm rounded-md px-3 py-2 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+        <div className="flex items-start gap-2 text-sm rounded-md px-3 py-2 bg-warning/10 text-warning">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <div>
             <p className="font-medium">Update NF Mail to install this extension</p>
@@ -366,7 +366,7 @@ export default function MarketplacePreviewPage() {
       )}
 
       {bundle.error && (
-        <div className="flex items-start gap-2 text-sm rounded-md px-3 py-2 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+        <div className="flex items-start gap-2 text-sm rounded-md px-3 py-2 bg-warning/10 text-warning">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <div>
             <p className="font-medium">Could not preview bundle</p>
@@ -448,7 +448,7 @@ export default function MarketplacePreviewPage() {
           {manifestPerms.length === 0 ? (
             <p className="text-sm text-muted-foreground mt-2">This plugin requests no permissions.</p>
           ) : (
-            <ul className="mt-3 space-y-1.5">
+            <ul className="mt-3 flex flex-col gap-1.5">
               {manifestPerms.map(perm => {
                 const risky = RISKY_PERMISSIONS.has(perm);
                 return (
@@ -456,7 +456,7 @@ export default function MarketplacePreviewPage() {
                     key={perm}
                     className={`flex items-center gap-2 text-sm rounded-md px-2 py-1 ${
                       risky
-                        ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300'
+                        ? 'bg-warning/10 text-warning'
                         : 'bg-muted/50 text-foreground'
                     }`}
                   >
@@ -473,7 +473,7 @@ export default function MarketplacePreviewPage() {
               <p className="text-xs text-muted-foreground mt-0.5">
                 The plugin will be allowed to embed content from these origins.
               </p>
-              <ul className="mt-2 space-y-1">
+              <ul className="mt-2 flex flex-col gap-1">
                 {frameOrigins.map(origin => (
                   <li key={origin} className="text-xs font-mono text-foreground bg-muted/50 px-2 py-1 rounded">
                     {origin}
@@ -538,7 +538,7 @@ export default function MarketplacePreviewPage() {
               <FileCode className="w-4 h-4 text-muted-foreground" />
               <h2 className="text-sm font-medium text-foreground">{bundle.source.name}</h2>
               {bundle.source.truncated && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400">truncated</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-warning/10 text-warning">truncated</span>
               )}
             </div>
             {showSource ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
@@ -596,7 +596,7 @@ function ThemeColorSwatch({ preview }: { preview: { variant: 'light' | 'dark'; c
       <div className="px-3 py-2 text-xs font-medium text-muted-foreground bg-muted/30 border-b border-border capitalize">
         {preview.variant}
       </div>
-      <div className="p-3 space-y-2" style={{ background: bg, color: fg }}>
+      <div className="p-3 flex flex-col gap-2" style={{ background: bg, color: fg }}>
         <div className="flex items-center gap-2">
           <span className="inline-block w-6 h-6 rounded" style={{ background: accent }} />
           <span className="text-sm font-medium" style={{ color: fg }}>Sample text</span>

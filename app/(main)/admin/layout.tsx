@@ -248,7 +248,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           role="tablist"
           aria-orientation="vertical"
           aria-label={t("Admin sections")}
-          className="px-2 space-y-0.5"
+          className="px-2 flex flex-col gap-0.5"
         >
           {NAV_GROUPS.map((group, groupIndex) => (
             <div key={group.label}>
@@ -290,7 +290,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           className={cn(
                             'absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ring-2',
                             active ? 'ring-accent' : 'ring-background',
-                            updateImportant ? 'bg-red-500' : 'bg-amber-500',
+                            updateImportant ? 'bg-destructive' : 'bg-warning',
                           )}
                           aria-label={updateImportant ? 'Important update available' : 'Update available'}
                         />
@@ -305,7 +305,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </div>
 
-      <div className="px-2 py-2 border-t border-border space-y-0.5 shrink-0">
+      <div className="px-2 py-2 border-t border-border flex flex-col gap-0.5 shrink-0">
         {!isStalwartAdmin && (
           <Link
             href="/admin/change-password"

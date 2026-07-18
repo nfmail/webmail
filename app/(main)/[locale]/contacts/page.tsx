@@ -805,8 +805,8 @@ export default function ContactsPage() {
   if (!contactsEnabled) {
     return (
       <div className="flex h-dvh items-center justify-center bg-background p-6">
-        <div className="max-w-lg text-center space-y-3">
-          <AlertTriangle className="w-10 h-10 text-yellow-500 mx-auto" />
+        <div className="max-w-lg text-center flex flex-col gap-3">
+          <AlertTriangle className="w-10 h-10 text-warning mx-auto" />
           <p className="text-sm font-medium">Contacts feature is disabled by your administrator</p>
           <p className="text-xs text-muted-foreground">Please contact your administrator if you need access.</p>
         </div>

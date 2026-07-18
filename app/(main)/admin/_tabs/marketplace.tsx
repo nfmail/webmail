@@ -149,7 +149,7 @@ export function MarketplaceTab() {
   const totalPages = Math.ceil(total / perPage);
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Marketplace</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -158,7 +158,7 @@ export function MarketplaceTab() {
       </div>
 
       {message && (
-        <div className={`text-sm rounded-md px-3 py-2 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' : 'bg-destructive/10 text-destructive'}`}>
+        <div className={`text-sm rounded-md px-3 py-2 ${message.type === 'success' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
           {message.text}
         </div>
       )}
@@ -328,8 +328,8 @@ function ExtensionCard({
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
                 isPlugin
-                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
-                  : 'bg-purple-100 text-purple-700 dark:bg-purple-950/30 dark:text-purple-400'
+                  ? 'bg-info/10 text-info'
+                  : 'bg-secondary text-secondary-foreground'
               }`}>
                 {isPlugin ? (extension.pluginType || 'plugin') : 'theme'}
               </span>
@@ -381,7 +381,7 @@ function ExtensionCard({
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onInstall(); }}
             disabled={installing}
             title={`Update from v${extension.installedVersion} to v${extension.latestVersion}`}
-            className="inline-flex items-center gap-1.5 h-7 px-3 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-1.5 h-7 px-3 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
           >
             {installing ? (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -392,7 +392,7 @@ function ExtensionCard({
           </button>
         ) : extension.installed ? (
           <span
-            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 text-xs font-medium"
+            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md bg-success/10 text-success text-xs font-medium"
             title={extension.installedVersion ? `Installed: v${extension.installedVersion}` : undefined}
           >
             <Check className="w-3 h-3" />
@@ -400,7 +400,7 @@ function ExtensionCard({
           </span>
         ) : versionMismatch ? (
           <span
-            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300 text-xs font-medium"
+            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md bg-warning/10 text-warning text-xs font-medium"
             title={`Requires app v${extension.minAppVersion}+. You are running v${CURRENT_APP_VERSION}.`}
           >
             <AlertTriangle className="w-3 h-3" />

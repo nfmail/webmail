@@ -220,7 +220,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
               </div>
               <div className="flex items-center gap-2.5 shrink-0">
                 {isPinned && <Pin className="w-3.5 h-3.5 text-primary" />}
-                {isStarred && <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />}
+                {isStarred && <Star className="w-3.5 h-3.5 fill-warning text-warning" />}
                 {isImportant && <span className="h-2 w-2 rounded-full bg-warning" />}
                 {isAnswered && !isForwarded && <Reply className="w-3.5 h-3.5 text-muted-foreground" />}
                 {isForwarded && !isAnswered && <Forward className="w-3.5 h-3.5 text-muted-foreground" />}
@@ -232,7 +232,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                 )}
                 {email.hasAttachment && <Paperclip className="w-3.5 h-3.5 text-muted-foreground" />}
                 {keywordDefs.map((kd) => (
-                  <span key={kd.id} className={cn('h-2.5 w-2.5 rounded-full', KEYWORD_PALETTE[kd.color]?.dot || 'bg-gray-400')} />
+                  <span key={kd.id} className={cn('h-2.5 w-2.5 rounded-full', KEYWORD_PALETTE[kd.color]?.dot || 'bg-muted-foreground')} />
                 ))}
                 <span className={cn(
                   'text-xs tabular-nums',
@@ -260,7 +260,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                       <Pin className="w-3.5 h-3.5 text-primary" />
                     )}
                     {isStarred && (
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <Star className="w-3.5 h-3.5 fill-warning text-warning" />
                     )}
                     {isImportant && (
                       <span className="px-1.5 py-0.5 text-xs bg-warning/15 text-warning dark:text-warning rounded font-medium">
@@ -291,7 +291,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                       "inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full",
                       KEYWORD_PALETTE[kd.color]?.bg || "bg-muted"
                     )}>
-                      <span className={cn("w-1.5 h-1.5 rounded-full", KEYWORD_PALETTE[kd.color]?.dot || "bg-gray-400")} />
+                      <span className={cn("w-1.5 h-1.5 rounded-full", KEYWORD_PALETTE[kd.color]?.dot || "bg-muted-foreground")} />
                       {kd.label}
                     </span>
                   ))}

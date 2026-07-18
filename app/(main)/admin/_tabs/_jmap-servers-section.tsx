@@ -114,7 +114,7 @@ export function JmapServersSection({ value, source, onChange, onRevert }: Props)
   });
 
   return (
-    <div className="px-4 py-3 space-y-3">
+    <div className="px-4 py-3 flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -156,7 +156,7 @@ export function JmapServersSection({ value, source, onChange, onRevert }: Props)
       {drafts.map((d, i) => {
         const isDuplicate = duplicateIdx.has(i);
         return (
-          <div key={i} className="rounded-md border border-border bg-muted/20 p-3 space-y-2">
+          <div key={i} className="rounded-md border border-border bg-muted/20 p-3 flex flex-col gap-2">
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-start">
               <div className="sm:col-span-3">
                 <label className="block text-[11px] font-medium text-muted-foreground mb-1">ID</label>

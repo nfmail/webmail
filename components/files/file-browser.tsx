@@ -236,32 +236,32 @@ function isPreviewable(name: string): boolean {
 
 function getFileIconByName(name: string, size: "sm" | "lg") {
   const cls = size === "sm" ? "w-5 h-5" : "w-10 h-10";
-  if (isVectorFile(name)) return <PenTool className={`${cls} text-orange-500`} />;
-  if (is3DFile(name)) return <Box className={`${cls} text-cyan-500`} />;
-  if (isImageFile(name)) return <ImageIcon className={`${cls} text-emerald-500`} />;
-  if (isAudioFile(name)) return <FileAudio className={`${cls} text-purple-500`} />;
-  if (isVideoFile(name)) return <FileVideo className={`${cls} text-pink-500`} />;
-  if (isArchiveFile(name)) return <FileArchive className={`${cls} text-amber-600`} />;
-  if (isExecutableFile(name)) return <TerminalIcon className={`${cls} text-red-500`} />;
-  if (isSpreadsheetFile(name)) return <FileSpreadsheet className={`${cls} text-green-600`} />;
-  if (isPresentationFile(name)) return <Presentation className={`${cls} text-orange-600`} />;
-  if (isFontFile(name)) return <TypeIcon className={`${cls} text-indigo-500`} />;
-  if (isDatabaseFile(name)) return <Database className={`${cls} text-slate-500`} />;
-  if (isPdfFile(name)) return <FileText className={`${cls} text-red-600`} />;
-  if (isTextFile(name)) return <FileCode className={`${cls} text-yellow-600`} />;
+  if (isVectorFile(name)) return <PenTool className={`${cls} text-chart-3`} />;
+  if (is3DFile(name)) return <Box className={`${cls} text-chart-1`} />;
+  if (isImageFile(name)) return <ImageIcon className={`${cls} text-chart-2`} />;
+  if (isAudioFile(name)) return <FileAudio className={`${cls} text-chart-5`} />;
+  if (isVideoFile(name)) return <FileVideo className={`${cls} text-chart-5`} />;
+  if (isArchiveFile(name)) return <FileArchive className={`${cls} text-chart-3`} />;
+  if (isExecutableFile(name)) return <TerminalIcon className={`${cls} text-chart-4`} />;
+  if (isSpreadsheetFile(name)) return <FileSpreadsheet className={`${cls} text-chart-2`} />;
+  if (isPresentationFile(name)) return <Presentation className={`${cls} text-chart-3`} />;
+  if (isFontFile(name)) return <TypeIcon className={`${cls} text-chart-1`} />;
+  if (isDatabaseFile(name)) return <Database className={`${cls} text-muted-foreground`} />;
+  if (isPdfFile(name)) return <FileText className={`${cls} text-chart-4`} />;
+  if (isTextFile(name)) return <FileCode className={`${cls} text-chart-3`} />;
   return <File className={`${cls} text-muted-foreground`} />;
 }
 
 function getFileIcon(resource: FileResource) {
   if (resource.isDirectory) {
-    return <Folder className="w-5 h-5 text-blue-500" />;
+    return <Folder className="w-5 h-5 text-chart-1" />;
   }
   return getFileIconByName(resource.name, "sm");
 }
 
 function getGridIcon(resource: FileResource) {
   if (resource.isDirectory) {
-    return <Folder className="w-10 h-10 text-blue-500" />;
+    return <Folder className="w-10 h-10 text-chart-1" />;
   }
   return getFileIconByName(resource.name, "lg");
 }
@@ -309,8 +309,8 @@ function Thumbnail({ name, getImageUrl: fetchUrl, size = "sm" }: {
 
   if (failed || !src) {
     return size === "sm"
-      ? <ImageIcon className="w-5 h-5 text-emerald-500" />
-      : <ImageIcon className="w-10 h-10 text-emerald-500" />;
+      ? <ImageIcon className="w-5 h-5 text-chart-2" />
+      : <ImageIcon className="w-10 h-10 text-chart-2" />;
   }
 
   const cls = size === "sm"
@@ -1115,7 +1115,7 @@ export function FileBrowser({
                 <Info className="w-4 h-4" />
               </ToolbarIconButton>
               <ToolbarIconButton
-                className={cn(favorites.includes(currentPath) && "text-yellow-500")}
+                className={cn(favorites.includes(currentPath) && "text-chart-3")}
                 onClick={() => onToggleFavorite(currentPath)}
                 label={t("Toggle favorite")}
               >
@@ -1338,7 +1338,7 @@ export function FileBrowser({
                         currentPath === fav && "bg-muted font-medium"
                       )}
                     >
-                      <Folder className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                      <Folder className="w-3.5 h-3.5 text-chart-1 shrink-0" />
                       <span className="truncate">{fav === '/' ? t("Home") : fav.split('/').pop()}</span>
                     </button>
                   ))}
@@ -1973,7 +1973,7 @@ export function FileBrowser({
                       setBreadcrumbDropdown(null);
                     }}
                   >
-                    <Folder className="w-4 h-4 text-blue-500 shrink-0" />
+                    <Folder className="w-4 h-4 text-chart-1 shrink-0" />
                     <span className="truncate">{folder.name}</span>
                   </button>
                 );
@@ -2007,7 +2007,7 @@ export function FileBrowser({
             </div>
             <div className="flex flex-col items-center gap-3 mb-4">
               {detailResource.isDirectory
-                ? <Folder className="w-12 h-12 text-blue-500" />
+                ? <Folder className="w-12 h-12 text-chart-1" />
                 : getFileIconByName(detailResource.name, "lg")}
               <p className="text-sm font-medium text-center break-all">{detailResource.name}</p>
             </div>

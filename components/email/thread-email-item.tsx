@@ -161,7 +161,7 @@ export function ThreadEmailItem({
             {/* Indicators */}
             <div className="flex items-center gap-1 flex-shrink-0">
               {isStarred && (
-                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                <Star className="w-3 h-3 fill-warning text-warning" />
               )}
               {isAnswered && !isForwarded && (
                 <Reply className="w-3 h-3 text-muted-foreground" />

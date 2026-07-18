@@ -168,7 +168,7 @@ export function EmailContextMenu({
   const colorOptions = emailKeywords.map((kw) => ({
     name: kw.label,
     value: kw.id,
-    color: KEYWORD_PALETTE[kw.color]?.dot || "bg-gray-500",
+    color: KEYWORD_PALETTE[kw.color]?.dot || "bg-muted-foreground",
   }));
 
   // Build mailbox tree for move-to submenu with proper hierarchy

@@ -67,8 +67,8 @@ function VersionBadge() {
   const triggerColor = !banner
     ? "text-muted-foreground"
     : isRed
-      ? "text-red-600/80 dark:text-red-400/80 hover:text-red-600 dark:hover:text-red-400"
-      : "text-amber-600/80 dark:text-amber-400/80 hover:text-amber-600 dark:hover:text-amber-400";
+      ? "text-destructive"
+      : "text-warning";
 
   const triggerClass = cn(
     "peer text-center text-xs transition-colors",
@@ -90,14 +90,14 @@ function VersionBadge() {
         {trigger}
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-3 py-2 rounded-md bg-popover text-popover-foreground text-xs shadow-md border border-border opacity-0 peer-hover:opacity-100 hover:opacity-100 transition-opacity whitespace-nowrap z-10">
           <div className="flex items-center gap-2">
-            <div className="space-y-0.5">
+            <div className="flex flex-col gap-0.5">
               <p>Version: <span className="font-medium">{APP_VERSION}</span></p>
               <p>Build: <span className="font-medium">{BUILD_COMMIT}</span></p>
               {banner?.latest && (
                 <p>Latest: <span className="font-medium">{banner.latest}</span></p>
               )}
               {banner?.advisory && (
-                <p className="text-red-500 dark:text-red-400">{banner.advisory}</p>
+                <p className="text-destructive">{banner.advisory}</p>
               )}
             </div>
             <button
@@ -105,7 +105,7 @@ function VersionBadge() {
               className="p-1 rounded hover:bg-muted transition-colors"
               aria-label={t("Copy version info")}
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
@@ -464,8 +464,8 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
         <div className="w-full max-w-md mx-auto px-4 text-center">
           <div className="rounded-2xl border border-border/60 bg-background/80 backdrop-blur-sm shadow-xl p-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-5">
-              <AlertCircle className="w-8 h-8 text-red-500" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-5">
+              <AlertCircle className="w-8 h-8 text-destructive" />
             </div>
             <h1 className="text-xl font-semibold text-foreground mb-2">{t("Configuration Error")}</h1>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -482,8 +482,8 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
         <div className="w-full max-w-md mx-auto px-4 text-center">
           <div className="rounded-2xl border border-border/60 bg-background/80 backdrop-blur-sm shadow-xl p-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-5">
-              <AlertCircle className="w-8 h-8 text-red-500" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-5">
+              <AlertCircle className="w-8 h-8 text-destructive" />
             </div>
             <h1 className="text-xl font-semibold text-foreground mb-2">{t("Configuration Error")}</h1>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -967,7 +967,7 @@ export default function LoginPage() {
 
             {/* Dev Mode: One-click login */}
             {devMode ? (
-              <div className="space-y-4">
+              <div className="flex flex-col gap-4">
                 <Button
                   type="button"
                   className="w-full h-12 font-medium text-base bg-primary hover:bg-primary/90 transition-all duration-200 rounded-xl shadow-lg shadow-primary/20"
@@ -992,7 +992,7 @@ export default function LoginPage() {
               </div>
             ) : oauthOnly ? (
               /* OAuth-only mode: show SSO button only */
-              <div className="space-y-4">
+              <div className="flex flex-col gap-4">
                 {oauthMetadata ? (
                   <Button
                     type="button"
@@ -1031,11 +1031,11 @@ export default function LoginPage() {
               </div>
             ) : (
               /* Login Form */
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <fieldset disabled={isLoading} className="space-y-4">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <fieldset disabled={isLoading} className="flex flex-col gap-4">
                   {/* Server picker (when admin has configured a server list) */}
                   {hasServerList && jmapServers.length > 1 && (
-                    <div className="space-y-1.5">
+                    <div className="flex flex-col gap-1.5">
                       <label htmlFor="jmap-server-select" className="block text-sm font-medium text-foreground">
                         {t("Server")}
                       </label>
@@ -1059,7 +1059,7 @@ export default function LoginPage() {
                   )}
                   {/* JMAP Endpoint field (only when no server list and custom endpoints are allowed) */}
                   {!hasServerList && allowCustomJmapEndpoint && (
-                    <div className="space-y-1.5">
+                    <div className="flex flex-col gap-1.5">
                       <label htmlFor="jmap-endpoint" className="block text-sm font-medium text-foreground">
                         {t("JMAP Server")}
                       </label>
@@ -1079,7 +1079,7 @@ export default function LoginPage() {
                   )}
 
                   {/* Username field */}
-                  <div className="space-y-1.5">
+                  <div className="flex flex-col gap-1.5">
                     <label htmlFor="username" className="block text-sm font-medium text-foreground">
                       {t("Email")}
                     </label>
@@ -1133,7 +1133,7 @@ export default function LoginPage() {
                   </div>
 
                   {/* Password field */}
-                  <div className="space-y-1.5">
+                  <div className="flex flex-col gap-1.5">
                     <label htmlFor="password" className="block text-sm font-medium text-foreground">
                       {t("Password")}
                     </label>
@@ -1178,7 +1178,7 @@ export default function LoginPage() {
                       {t("I have a 2FA code")}
                     </button>
                   ) : (
-                    <div className="space-y-1.5">
+                    <div className="flex flex-col gap-1.5">
                       <label htmlFor="totp" className="block text-sm font-medium text-foreground">
                         {t("Authentication code")}
                       </label>

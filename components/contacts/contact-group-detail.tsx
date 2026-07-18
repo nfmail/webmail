@@ -97,7 +97,7 @@ export function ContactGroupDetail({
             {t("No members in this group")}
           </p>
         ) : (
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1">
             {members.map((member) => {
               const mName = getContactDisplayName(member);
               const mEmail = getContactPrimaryEmail(member);

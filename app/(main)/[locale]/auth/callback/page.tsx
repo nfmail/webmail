@@ -207,8 +207,8 @@ function OAuthCallbackInner() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
         <div className="w-full max-w-sm mx-auto px-4 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-red-500/10 mb-6">
-            <AlertCircle className="w-10 h-10 text-red-500" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-destructive/10 mb-6">
+            <AlertCircle className="w-10 h-10 text-destructive" />
           </div>
           <h1 className="text-xl font-medium text-foreground mb-2">
             {t("Authentication Failed")}

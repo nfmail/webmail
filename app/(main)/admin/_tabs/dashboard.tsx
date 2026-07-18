@@ -103,7 +103,7 @@ export function DashboardTab() {
   const jmapHostname = jmapUrl !== '-' ? (() => { try { return new URL(jmapUrl).hostname; } catch { return jmapUrl; } })() : '-';
 
   return (
-    <div className="max-w-3xl space-y-8">
+    <div className="max-w-3xl flex flex-col gap-8">
       {warnings.map((msg, i) => (
         <div key={i} className="flex items-start gap-3 rounded-lg border border-warning/20 bg-warning/10 p-4">
           <AlertTriangle className="w-5 h-5 text-warning mt-0.5 shrink-0" />

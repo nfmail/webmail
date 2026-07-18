@@ -120,8 +120,12 @@
   --color-muted-foreground: #b3b3b3;
   --color-accent: #1e3a8a;
   --color-accent-foreground: #dbeafe;
-  --color-destructive: #dc2626;
-  --color-destructive-foreground: #fafafa;
+  /* Dark destructive is lightened so text-destructive stays WCAG AA on every
+     dark surface (#f87171: 7.16:1 on background, 6.48 on card, 6.16 on
+     popover — #dc2626 was 3.53 on popover). Buttons flip to dark ink on the
+     light red (6.48:1), the standard dark-theme destructive pattern. */
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #171717;
   --color-popover: #1c1c1c;
   --color-popover-foreground: #fafafa;
 

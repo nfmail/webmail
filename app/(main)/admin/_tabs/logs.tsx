@@ -32,7 +32,7 @@ export function LogsTab() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-foreground">Audit Log</h1>
@@ -65,14 +65,14 @@ export function LogsTab() {
         </select>
       </div>
 
-      <div className="sm:hidden space-y-2">
+      <div className="sm:hidden flex flex-col gap-2">
         {loading && entries.length === 0 ? (
           <div className="rounded-lg border border-border px-4 py-8 text-center text-sm text-muted-foreground">Loading...</div>
         ) : entries.length === 0 ? (
           <div className="rounded-lg border border-border px-4 py-8 text-center text-sm text-muted-foreground">No entries found</div>
         ) : (
           entries.map((entry, i) => (
-            <div key={i} className="rounded-lg border border-border p-3 space-y-1.5">
+            <div key={i} className="rounded-lg border border-border p-3 flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground truncate">
                   {entry.action}

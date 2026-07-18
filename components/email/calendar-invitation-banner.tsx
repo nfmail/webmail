@@ -786,7 +786,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
       </div>
 
       {/* Content column */}
-      <div className="flex-1 min-w-0 space-y-2">
+      <div className="flex-1 min-w-0 flex flex-col gap-2">
         {/* Eyebrow + title + collapse */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
@@ -906,7 +906,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
 
         {/* Info / actor messages */}
         {showDetails && (bannerInfo || actorMessage || actorSummary?.participationComment) && (
-          <div className="space-y-0.5 text-xs text-muted-foreground">
+          <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
             {bannerInfo && <p className="leading-relaxed">{bannerInfo}</p>}
             {actorMessage && <p>{actorMessage}</p>}
             {actorSummary?.participationComment && (
@@ -932,7 +932,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
         {showDetails && proposedChanges.length > 0 && (
           <div className="rounded-md border border-border bg-muted/30 px-3 py-2.5 text-xs">
             <div className="font-medium text-foreground mb-1.5">{t("Proposed changes")}</div>
-            <div className="space-y-1.5">
+            <div className="flex flex-col gap-1.5">
               {proposedChanges.map((change) => (
                 <div key={change.label}>
                   <span className="font-medium text-foreground">{change.label}: </span>

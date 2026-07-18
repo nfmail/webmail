@@ -165,7 +165,7 @@ export function PluginConfigPanel({ pluginId, onBack }: Props) {
 
   if (!plugin) {
     return (
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         <button
           type="button"
           onClick={onBack}
@@ -182,7 +182,7 @@ export function PluginConfigPanel({ pluginId, onBack }: Props) {
   const hasSchema = schema && Object.keys(schema).length > 0;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -204,7 +204,7 @@ export function PluginConfigPanel({ pluginId, onBack }: Props) {
       </div>
 
       {message && (
-        <div className={`text-sm rounded-md px-3 py-2 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' : 'bg-destructive/10 text-destructive'}`}>
+        <div className={`text-sm rounded-md px-3 py-2 ${message.type === 'success' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
           {message.text}
         </div>
       )}
@@ -214,7 +214,7 @@ export function PluginConfigPanel({ pluginId, onBack }: Props) {
           <div className="px-4 py-3 border-b border-border bg-muted/30">
             <h2 className="text-sm font-medium text-foreground">Settings</h2>
           </div>
-          <div className="p-4 space-y-5">
+          <div className="p-4 flex flex-col gap-5">
             {Object.entries(schema).map(([key, field]) => (
               <div key={key}>
                 <label className="text-sm font-medium text-foreground block mb-1">

@@ -72,7 +72,7 @@ export function PlaceholderFillModal({
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(85vh-160px)] space-y-4">
+        <div className="p-6 overflow-y-auto max-h-[calc(85vh-160px)] flex flex-col gap-4">
           {placeholders.map((p) => (
             <div key={p}>
               <label className="text-sm font-medium text-foreground flex items-center gap-2">

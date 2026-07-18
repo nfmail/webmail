@@ -371,7 +371,7 @@ export function RichTextEditor({
   }
 
   return (
-    <div className={cn("flex flex-col", hasError && "ring-2 ring-red-500 dark:ring-red-400 rounded", className)}>
+    <div className={cn("flex flex-col", hasError && "ring-2 ring-destructive rounded", className)}>
       {/* Toolbar */}
       <TooltipProvider delayDuration={300}>
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-1.5 border-b border-border/50 bg-muted/30">
@@ -567,7 +567,7 @@ export function RichTextEditor({
                   <div className="h-px bg-border my-1" />
                   <button
                     type="button"
-                    className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-accent text-start text-red-600 dark:text-red-400"
+                    className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-accent text-start text-destructive"
                     onClick={() => { editor.chain().focus().deleteTable().run(); setTableMenuOpen(false); }}
                   >
                     <Trash2 className="w-4 h-4" /> Delete table

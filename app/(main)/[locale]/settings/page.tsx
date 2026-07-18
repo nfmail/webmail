@@ -881,7 +881,7 @@ export default function SettingsPage() {
               )}
             </div>
           </div>
-          <div className="px-2 space-y-0.5">
+          <div className="px-2 flex flex-col gap-0.5">
             {filteredGroupedTabs.length === 0 && (
               <div className="px-3 py-6 text-sm text-muted-foreground text-center">
                 {t("No matching settings")}

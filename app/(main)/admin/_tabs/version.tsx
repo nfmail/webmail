@@ -42,19 +42,19 @@ function severityChip(severity: UpdateSeverity) {
     case 'security':
       return {
         label: 'Security update',
-        className: 'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/30',
+        className: 'bg-destructive/10 text-destructive border-destructive/30',
         Icon: ShieldAlert,
       };
     case 'deprecated':
       return {
         label: 'Deprecated',
-        className: 'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/30',
+        className: 'bg-destructive/10 text-destructive border-destructive/30',
         Icon: ShieldAlert,
       };
     case 'normal':
       return {
         label: 'Update available',
-        className: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30',
+        className: 'bg-warning/10 text-warning border-warning/30',
         Icon: AlertTriangle,
       };
     case 'unknown':
@@ -67,7 +67,7 @@ function severityChip(severity: UpdateSeverity) {
     default:
       return {
         label: 'Up to date',
-        className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+        className: 'bg-success/10 text-success border-success/30',
         Icon: CheckCircle2,
       };
   }
@@ -128,7 +128,7 @@ export function VersionTab() {
   const newer = status?.latest && status.latest !== data.current ? status.latest : null;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-foreground">Version</h1>
@@ -152,7 +152,7 @@ export function VersionTab() {
         <div
           className={`text-sm rounded-md px-3 py-2 ${
             checkResult.ok
-              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300'
+              ? 'bg-success/10 text-success'
               : 'bg-destructive/10 text-destructive'
           }`}
         >
@@ -190,7 +190,7 @@ export function VersionTab() {
         )}
         {status?.advisory && (
           <SettingItem label="Advisory">
-            <span className="text-sm font-mono text-red-600 dark:text-red-400">{status.advisory}</span>
+            <span className="text-sm font-mono text-destructive">{status.advisory}</span>
           </SettingItem>
         )}
       </SettingsSection>
@@ -227,7 +227,7 @@ export function VersionTab() {
           </a>
         </SettingItem>
         <SettingItem label="Disabled by env" description="Set NF_UPDATE_CHECK=off to disable.">
-          <span className={`text-sm font-medium ${data.disabledByEnv ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
+          <span className={`text-sm font-medium ${data.disabledByEnv ? 'text-warning' : 'text-muted-foreground'}`}>
             {data.disabledByEnv ? 'Yes' : 'No'}
           </span>
         </SettingItem>

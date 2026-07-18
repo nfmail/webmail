@@ -356,7 +356,7 @@ export function ContactList({
 
       {filtersOpen && (
         <div className="border-b border-border bg-muted/30 animate-in slide-in-from-top-2 fade-in duration-200">
-          <div className="px-4 py-3 space-y-3">
+          <div className="px-4 py-3 flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-foreground">{t("Advanced filters")}</span>
               <div className="flex items-center gap-1">

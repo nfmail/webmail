@@ -33,32 +33,32 @@ const ACTION_CONFIG: Record<HoverAction, {
   delete: {
     icon: Trash2,
     titleKey: "delete",
-    className: "hover:text-red-600 dark:hover:text-red-400",
+    className: "hover:text-destructive",
   },
   star: {
     icon: Star,
     titleKey: "star",
-    className: "hover:text-amber-500 dark:hover:text-amber-400",
+    className: "hover:text-warning",
   },
   markRead: {
     icon: Mail,
     titleKey: "mark_read",
-    className: "hover:text-blue-600 dark:hover:text-blue-400",
+    className: "hover:text-info",
   },
   archive: {
     icon: Archive,
     titleKey: "archive",
-    className: "hover:text-green-600 dark:hover:text-green-400",
+    className: "hover:text-success",
   },
   tag: {
     icon: Tag,
     titleKey: "tag",
-    className: "hover:text-purple-600 dark:hover:text-purple-400",
+    className: "hover:text-primary",
   },
   spam: {
     icon: ShieldAlert,
     titleKey: "spam",
-    className: "hover:text-orange-600 dark:hover:text-orange-400",
+    className: "hover:text-warning",
   },
 };
 
@@ -138,7 +138,7 @@ export function EmailHoverActions({
           : Icon;
     const title = isNotSpam ? t("Not Spam") : t(config.titleKey);
     const className = isNotSpam
-      ? "hover:text-green-600 dark:hover:text-green-400"
+      ? "hover:text-success"
       : config.className;
 
     return (
@@ -155,7 +155,7 @@ export function EmailHoverActions({
         <DisplayIcon
           className={cn(
             "w-4 h-4",
-            actionId === "star" && isStarred && "fill-amber-400 text-amber-400",
+            actionId === "star" && isStarred && "fill-warning text-warning",
           )}
         />
       </button>

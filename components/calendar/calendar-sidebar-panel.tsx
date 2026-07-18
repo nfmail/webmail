@@ -451,7 +451,7 @@ export function CalendarSidebarPanel({
                         <div className="px-1 mb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                           {t("Calendars")}
                         </div>
-                        <div className="space-y-0.5">
+                        <div className="flex flex-col gap-0.5">
                           {owned.map(renderCalendarItem)}
                         </div>
                       </div>
@@ -462,7 +462,7 @@ export function CalendarSidebarPanel({
                           <Share2 className="w-3 h-3" />
                           {sg.label}
                         </div>
-                        <div className="space-y-0.5">
+                        <div className="flex flex-col gap-0.5">
                           {sg.calendars.map(renderCalendarItem)}
                         </div>
                       </div>
@@ -491,7 +491,7 @@ export function CalendarSidebarPanel({
               </h3>
             )}
           </div>
-          <div className="space-y-0.5">
+          <div className="flex flex-col gap-0.5">
             {personalCalendars.map(renderCalendarItem)}
           </div>
 
@@ -501,7 +501,7 @@ export function CalendarSidebarPanel({
                 <Share2 className="w-3 h-3" />
                 {group.accountName}
               </h3>
-              <div className="space-y-0.5">
+              <div className="flex flex-col gap-0.5">
                 {group.calendars.map(renderCalendarItem)}
               </div>
             </div>

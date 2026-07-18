@@ -22,9 +22,9 @@ interface TaskListViewProps {
 }
 
 function getTaskPriorityIcon(priority: number) {
-  if (priority >= 1 && priority <= 4) return <Flag className="h-3.5 w-3.5 text-red-500" />;
-  if (priority === 5) return <Flag className="h-3.5 w-3.5 text-orange-500" />;
-  if (priority >= 6 && priority <= 9) return <Flag className="h-3.5 w-3.5 text-gray-400" />;
+  if (priority >= 1 && priority <= 4) return <Flag className="h-3.5 w-3.5 text-destructive" />;
+  if (priority === 5) return <Flag className="h-3.5 w-3.5 text-warning" />;
+  if (priority >= 6 && priority <= 9) return <Flag className="h-3.5 w-3.5 text-muted-foreground" />;
   return null;
 }
 
@@ -35,7 +35,7 @@ function getDueDateLabel(due: string, showWithoutTime: boolean, t: ReturnType<ty
   if (isToday(dueDate)) {
     return {
       label: t("Today"),
-      className: "text-blue-600 dark:text-blue-400",
+      className: "text-info",
     };
   }
   if (isTomorrow(dueDate)) {
@@ -47,7 +47,7 @@ function getDueDateLabel(due: string, showWithoutTime: boolean, t: ReturnType<ty
   if (overdue) {
     return {
       label: t("Overdue"),
-      className: "text-red-600 dark:text-red-400",
+      className: "text-destructive",
     };
   }
 

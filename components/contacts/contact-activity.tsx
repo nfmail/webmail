@@ -265,7 +265,7 @@ export function ContactActivity({ contact }: ContactActivityProps) {
         ) : !events || events.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("No upcoming events")}</p>
         ) : (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             {eventGroups.map(([dateKey, group]) => (
               <div key={dateKey}>
                 <div className="text-xs font-medium text-muted-foreground mb-1.5">

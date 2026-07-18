@@ -578,7 +578,7 @@ function TagItem({
       fill="currentColor"
     />
   ) : (
-    <span className={cn("w-3 h-3 rounded-full", palette?.dot || "bg-gray-400")} />
+    <span className={cn("w-3 h-3 rounded-full", palette?.dot || "bg-muted-foreground")} />
   );
 
   return (
@@ -668,8 +668,8 @@ function VacationBanner() {
       onClick={() => router.push('/settings')}
       className={cn(
         "flex items-center gap-2 w-full px-3 py-2 text-xs",
-        "bg-amber-500/10 dark:bg-amber-400/10 text-amber-700 dark:text-amber-400",
-        "hover:bg-amber-500/15 dark:hover:bg-amber-400/15 transition-colors"
+        "bg-warning/10 text-warning",
+        "hover:bg-warning/15 transition-colors"
       )}
     >
       <Palmtree className="w-3.5 h-3.5 flex-shrink-0" />

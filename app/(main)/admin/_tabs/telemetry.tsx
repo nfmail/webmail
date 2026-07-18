@@ -115,8 +115,8 @@ export function TelemetryTab() {
   const isOn = status.consent === 'on';
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold">Anonymous Usage Stats</h1>
         <p className="text-sm text-muted-foreground">
           {PRODUCT.name} can send one anonymous heartbeat per day to a collector you configure, so operators can see how many instances are
@@ -127,7 +127,7 @@ export function TelemetryTab() {
         </p>
       </header>
 
-      <section className="rounded-lg border p-4 space-y-3">
+      <section className="rounded-lg border p-4 flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="min-w-0">
             <div className="font-medium">Status</div>
@@ -169,7 +169,7 @@ export function TelemetryTab() {
         </dl>
       </section>
 
-      <section className="rounded-lg border p-4 space-y-2">
+      <section className="rounded-lg border p-4 flex flex-col gap-2">
         <div className="font-medium">Account activity</div>
         <p className="text-sm text-muted-foreground">
           Unique accounts that have logged in over the last 90 days. Identities are stored as a
@@ -184,7 +184,7 @@ export function TelemetryTab() {
         </dl>
       </section>
 
-      <section className="rounded-lg border p-4 space-y-3">
+      <section className="rounded-lg border p-4 flex flex-col gap-3">
         <div className="font-medium">Endpoint</div>
         <p className="text-sm text-muted-foreground">
           Where heartbeats are sent. NF Mail does not configure a collector by default. Point at
@@ -209,7 +209,7 @@ export function TelemetryTab() {
         </div>
       </section>
 
-      <section className="rounded-lg border p-4 space-y-3">
+      <section className="rounded-lg border p-4 flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="min-w-0">
             <div className="font-medium">Payload preview</div>
@@ -229,7 +229,7 @@ export function TelemetryTab() {
         {sendResult && (
           <div
             className={`text-sm flex items-center gap-2 ${
-              sendResult.ok ? 'text-emerald-600' : 'text-red-600'
+              sendResult.ok ? 'text-success' : 'text-destructive'
             }`}
           >
             {sendResult.ok ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}

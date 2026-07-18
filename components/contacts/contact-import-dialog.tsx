@@ -108,7 +108,7 @@ export function ContactImportDialog({
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
         {result !== null ? (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="w-12 h-12 rounded-full bg-success/15 flex items-center justify-center mb-4">

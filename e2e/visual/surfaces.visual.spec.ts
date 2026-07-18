@@ -134,7 +134,13 @@ test.describe.serial('visual: authenticated', () => {
       'Files nav is hidden: the mock backend advertises no WebDAV capability. ' +
         'Run against a backend where supportsFiles is true to baseline this surface.',
     );
+    // Navigate from the mailbox: on tablet the contacts surface overlays the
+    // nav rail and renders no bottom bar, leaving no reachable files anchor.
+    await returnToMail(page);
     await navigate(page, 'files');
+    // Wait for a stable listing row so the shot never captures a half-loaded
+    // tree (see e2e/visual/README.md).
+    await page.getByText('Documents').first().waitFor({ timeout: 15_000 });
     await shootSurface(page, 'files');
   });
 });
@@ -151,7 +157,16 @@ async function returnToMail(page: Page): Promise<void> {
   }
   const mailLink = page.locator('a[href="/"], a[href="/en"]').first();
   if (await mailLink.count()) {
-    await mailLink.click().catch(() => {});
+    await mailLink.click({ timeout: 10_000 }).catch(() => {});
+    // Overlay-proof fallback (tablet surfaces can cover the rail while no
+    // bottom bar renders): fire the router handler directly.
+    if (!/\/(en\/?)?$/.test(new URL(page.url()).pathname)) {
+      await page
+        .evaluate(() => {
+          (document.querySelector('a[href="/"], a[href="/en"]') as HTMLElement | null)?.click();
+        })
+        .catch(() => {});
+    }
     await settle(page, 2500);
     if (!page.url().includes('/login')) {
       await dismissTour(page);

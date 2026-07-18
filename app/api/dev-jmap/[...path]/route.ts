@@ -1739,8 +1739,34 @@ function handleUnknown(method: string, _args: MethodArgs, callId: string): Metho
   return ['error', { type: 'unknownMethod', description: `Mock server does not implement ${method}` }, callId];
 }
 
+// ---------------------------------------------------------------------------
+// FileNode fixtures (draft-ietf-jmap-filenode) — a small deterministic tree so
+// the Files surface renders a real listing (folders have blobId: null; the
+// browse path calls FileNode/get with ids: null and builds the tree from
+// parentId). Dates go through daysAgo() so DEV_JMAP_MOCK_NOW pins them.
+// ---------------------------------------------------------------------------
+const FILE_RIGHTS = { mayRead: true, mayWrite: true, mayShare: true } as const;
+
+const fileNodes = [
+  { id: 'fn-docs', parentId: null, name: 'Documents', type: null, blobId: null, size: null, created: daysAgo(30), updated: daysAgo(3), shareWith: null, myRights: FILE_RIGHTS },
+  { id: 'fn-photos', parentId: null, name: 'Photos', type: null, blobId: null, size: null, created: daysAgo(21), updated: daysAgo(7), shareWith: null, myRights: FILE_RIGHTS },
+  { id: 'fn-notes', parentId: null, name: 'notes.txt', type: 'text/plain', blobId: 'blob-fn-notes', size: 1832, created: daysAgo(10), updated: daysAgo(2), shareWith: null, myRights: FILE_RIGHTS },
+  { id: 'fn-proposal', parentId: 'fn-docs', name: 'proposal.pdf', type: 'application/pdf', blobId: 'blob-fn-proposal', size: 482133, created: daysAgo(14), updated: daysAgo(14), shareWith: null, myRights: FILE_RIGHTS },
+  { id: 'fn-budget', parentId: 'fn-docs', name: 'budget.xlsx', type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 24576, blobId: 'blob-fn-budget', created: daysAgo(9), updated: daysAgo(4), shareWith: null, myRights: FILE_RIGHTS },
+  { id: 'fn-vacation', parentId: 'fn-photos', name: 'vacation.jpg', type: 'image/jpeg', blobId: 'blob-fn-vacation', size: 2411520, created: daysAgo(20), updated: daysAgo(20), shareWith: null, myRights: FILE_RIGHTS },
+];
+
+function handleFileNodeGet(args: MethodArgs, callId: string): MethodResult {
+  const ids = args.ids as string[] | null | undefined;
+  const list = ids == null ? fileNodes : fileNodes.filter((n) => ids.includes(n.id));
+  const notFound = ids == null ? [] : ids.filter((id) => !fileNodes.some((n) => n.id === id));
+  return ['FileNode/get', { accountId: ACCOUNT_ID, state: 'fn-state-1', list, notFound }, callId];
+}
+
 const METHOD_HANDLERS: Record<string, (args: MethodArgs, callId: string) => MethodResult> = {
   'Core/echo': handleCoreEcho,
+  'FileNode/get': handleFileNodeGet,
+  'FileNode/query': (_args, callId) => ['FileNode/query', { accountId: ACCOUNT_ID, queryState: 'fn-state-1', canCalculateChanges: false, position: 0, ids: fileNodes.map((n) => n.id), total: fileNodes.length }, callId],
   'Mailbox/get': handleMailboxGet,
   'Mailbox/set': handleMailboxSet,
   'Email/query': handleEmailQuery,
@@ -1882,6 +1908,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         'urn:ietf:params:jmap:contacts': {},
         'urn:ietf:params:jmap:calendars': {},
         'urn:ietf:params:jmap:sieve': {},
+        'urn:ietf:params:jmap:filenode': {},
       },
       accounts: {
         [ACCOUNT_ID]: {
@@ -1896,6 +1923,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             'urn:ietf:params:jmap:contacts': {},
             'urn:ietf:params:jmap:calendars': {},
             'urn:ietf:params:jmap:sieve': {},
+            'urn:ietf:params:jmap:filenode': {},
           },
         },
       },
@@ -1907,6 +1935,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         'urn:ietf:params:jmap:contacts': ACCOUNT_ID,
         'urn:ietf:params:jmap:calendars': ACCOUNT_ID,
         'urn:ietf:params:jmap:sieve': ACCOUNT_ID,
+        'urn:ietf:params:jmap:filenode': ACCOUNT_ID,
       },
       username: 'dev@localhost',
       apiUrl: `${base}/api/dev-jmap/api`,

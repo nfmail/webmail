@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } fr
 import { useTranslations, useLocale } from "@/i18n/client";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   X, Clock, MapPin, Video, Users, Repeat, Bell, AlignLeft,
   Pencil, Trash2, Copy, Send, Check,
@@ -301,14 +302,14 @@ export function EventDetailPopover({
             <p className="text-xs text-muted-foreground mt-0.5 ps-[18px]">
               {calendar.name}
               {event.status === "tentative" && (
-                <span className="ms-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning/15 text-warning">
+                <Badge className="ms-2 rounded px-1.5 text-[10px] bg-warning/15 text-warning">
                   {t("Tentative")}
-                </span>
+                </Badge>
               )}
               {event.status === "cancelled" && (
-                <span className="ms-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/15 text-destructive line-through">
+                <Badge className="ms-2 rounded px-1.5 text-[10px] bg-destructive/15 text-destructive line-through">
                   {t("Cancelled")}
-                </span>
+                </Badge>
               )}
             </p>
           )}

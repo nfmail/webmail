@@ -9,6 +9,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -564,8 +570,6 @@ export function EmailComposer({
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
   const [scheduleValue, setScheduleValue] = useState('');
   const [scheduleError, setScheduleError] = useState('');
-  const [showSendMenu, setShowSendMenu] = useState(false);
-  const sendMenuRef = useRef<HTMLDivElement>(null);
 
   const { client } = useAuthStore();
   const currentIdentity = selectedIdentityId
@@ -675,21 +679,10 @@ export function EmailComposer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signatureIdentity?.id, signatureIdentity?.htmlSignature, signatureIdentity?.textSignature, signatureSeparatorEnabled, signaturePosition, mode, plainTextMode]);
 
-  useEffect(() => {
-    const handleClickOutsideSendMenu = (event: MouseEvent) => {
-      if (!sendMenuRef.current?.contains(event.target as Node)) {
-        setShowSendMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutsideSendMenu);
-    return () => document.removeEventListener('mousedown', handleClickOutsideSendMenu);
-  }, []);
-
   const openScheduleDialog = useCallback(() => {
     setScheduleError('');
     setScheduleValue(getDefaultScheduleValue());
     setShowScheduleDialog(true);
-    setShowSendMenu(false);
   }, []);
 
   useEffect(() => {
@@ -2627,7 +2620,7 @@ export function EmailComposer({
               {t("Discard")}
             </button>
             {composerClient?.hasDelayedSend() ? (
-              <div ref={sendMenuRef} className="relative hidden md:inline-flex">
+              <div className="relative hidden md:inline-flex">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -2641,38 +2634,29 @@ export function EmailComposer({
                   </TooltipTrigger>
                   <TooltipContent>{getSendTooltip()}</TooltipContent>
                 </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      onClick={() => setShowSendMenu((open) => !open)}
-                      disabled={!canSend || isSending}
-                      aria-label={t("Schedule send")}
-                      className="rounded-s-none px-2"
-                      aria-haspopup="menu"
-                      aria-expanded={showSendMenu}
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("Schedule send")}</TooltipContent>
-                </Tooltip>
-                {showSendMenu && (
-                  <div
-                    role="menu"
-                    className="absolute right-0 bottom-full z-50 mb-2 min-w-44 rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg"
-                  >
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={openScheduleDialog}
-                      className="flex w-full items-center gap-2 rounded-sm px-3 py-2 text-start text-sm hover:bg-accent hover:text-accent-foreground"
-                    >
+                <DropdownMenu>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          disabled={!canSend || isSending}
+                          aria-label={t("Schedule send")}
+                          className="rounded-s-none px-2"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("Schedule send")}</TooltipContent>
+                  </Tooltip>
+                  <DropdownMenuContent align="end" side="top" className="min-w-44">
+                    <DropdownMenuItem onClick={openScheduleDialog}>
                       <CalendarClock className="w-4 h-4" />
                       {t("Schedule send")}
-                    </button>
-                  </div>
-                )}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <Tooltip>

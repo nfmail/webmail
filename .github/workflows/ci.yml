@@ -112,6 +112,11 @@ jobs:
           NEXT_TELEMETRY_DISABLED: "1"
         run: npm run build
 
+      # Gzipped client-JS budgets (total + largest chunk) — catches dependency
+      # bloat at PR time; refresh deliberately via check:bundle -- --update.
+      - name: Bundle budget
+        run: npm run check:bundle
+
   browser-smoke:
     name: Browser smoke
     runs-on: ubuntu-latest

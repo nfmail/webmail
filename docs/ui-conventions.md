@@ -33,6 +33,7 @@ Available token families include the shadcn defaults plus NF extensions:
 | Destructive        | `destructive`, `destructive-foreground`                      |
 | NF status (added)  | `success`, `warning`, `info` (each with a `-foreground` pair) |
 | NF states (added)  | `selection`, `selection-foreground`, `unread`                |
+| Qualitative        | `chart-1`…`chart-5` (theme-aware hues for category icons and data viz) |
 
 Use these as normal Tailwind utilities: `bg-success`, `text-warning`,
 `text-info`, `bg-selection`, `text-unread`, and so on. If you need a new color,
@@ -111,6 +112,36 @@ required reason to `scripts/ui-conventions-baseline.json`:
 
 `category` is `palette` or `space`. Entries without a non-empty `reason` are
 rejected. Keep exceptions rare and well justified.
+
+## Overlays
+
+Pick the overlay primitive by interaction, not by looks:
+
+- **Dialog** (`components/ui/dialog`) — modal forms and multi-field editors.
+- **ConfirmDialog / PromptDialog** (`components/ui/confirm-dialog`,
+  `prompt-dialog`) — the shared wrappers for confirmation and single-value
+  prompts; use these instead of composing AlertDialog by hand so focus,
+  keyboard, and button order stay consistent.
+- **DropdownMenu** — click-triggered action menus (toolbar/split buttons).
+  **ContextMenu** — right-click menus. Both come from `components/ui` and
+  handle keyboard navigation, focus return, and Escape for you; do not
+  hand-roll `role="menu"` panels.
+- **Sheet** — mobile slide-in panels. **Popover** — anchored, non-modal
+  content. **Tooltip** — icon-only controls; buttons with visible labels do
+  not need one.
+
+Rules that apply to every overlay: trigger and content come from the same
+primitive (no manual `useState` open flags when the primitive manages state),
+text goes through `t()`, and dynamic regions inside overlays remain reachable
+by keyboard (scrollable regions need `tabIndex={0}` semantics — the vendored
+components already handle this).
+
+## Data-driven colors
+
+User-chosen colors (calendar colors, tag colors, avatar hues) are data, not
+design tokens. Render them via inline styles and derive readable foregrounds
+with `pickForeground()` from `lib/color-contrast` instead of guessing a text
+color.
 
 ## Forms
 

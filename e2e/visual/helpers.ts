@@ -108,7 +108,18 @@ export async function navigate(
   // click the one the current viewport actually shows — the hidden one can
   // swallow the click without navigating (seen on mobile after a settings
   // subpage, where the calendar shot captured the settings surface instead).
-  await page.locator(`a[href="/${section}"]:visible`).first().click();
+  // Even a visible-anchor click can occasionally get lost on mobile (e.g.
+  // right after an overlay closes), so verify the URL actually changed and
+  // retry; without this the suite silently screenshots the wrong surface.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.locator(`a[href="/${section}"]:visible`).first().click();
+    try {
+      await page.waitForURL(new RegExp(`/${section}(/|$|\\?)`), { timeout: 5000 });
+      break;
+    } catch {
+      if (attempt === 2) throw new Error(`navigate: never reached /${section}`);
+    }
+  }
   await settle(page, 3000);
 }
 

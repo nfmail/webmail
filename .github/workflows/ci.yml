@@ -156,6 +156,11 @@ jobs:
 
   visual-regression:
     name: Visual regression
+    # The ruleset requires PR branches to be up to date, so the squash-merge
+    # result is byte-identical to the tested PR head — re-running this
+    # expensive suite on the push to main would only re-test the same tree.
+    # workflow_dispatch stays enabled for the baseline-regeneration path.
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -215,6 +220,9 @@ jobs:
 
   a11y-scan:
     name: Accessibility scan
+    # Same rationale as visual-regression: the up-to-date requirement makes a
+    # main-push re-run redundant with the PR run.
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

@@ -228,24 +228,53 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Tree-hash green marker: if this exact tree content already passed the
+      # visual suite (branch update, rebase-only push), skip the re-render —
+      # the pixels cannot differ.
+      - name: Compute tree hash
+        id: tree
+        run: echo "hash=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Check green marker
+        id: visual-marker
+        if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .ci-green/visual
+          key: visual-green-${{ steps.tree.outputs.hash }}
+
       - name: Install Chromium
+        if: ${{ steps.visual-marker.outputs.cache-hit != 'true' }}
         run: npx playwright install --with-deps chromium
 
+      # The suite runs against a production build (next start): no per-route
+      # dev compiles, faster and latency-deterministic. The mock JMAP flags
+      # are runtime env, so a plain build works.
+      - name: Build production bundle
+        if: ${{ steps.visual-marker.outputs.cache-hit != 'true' }}
+        run: npm run build
+
       # Compares the committed Linux-rendered baselines against a freshly
-      # rendered run. The config (playwright.visual.config.ts) boots its own
-      # dev server against the built-in mock JMAP backend, so no separate build
-      # or mail server is needed. Snapshots are OS-dependent and the runner is
-      # ubuntu, matching the platform the baselines were generated on.
+      # rendered run. Snapshots are OS-dependent and the runner is ubuntu,
+      # matching the platform the baselines were generated on.
       - name: Run visual regression suite
-        if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
+        if: ${{ github.event.inputs.update_visual_baselines != 'true' && steps.visual-marker.outputs.cache-hit != 'true' }}
+        env:
+          PLAYWRIGHT_VISUAL_WEB_SERVER_COMMAND: npm run start -- --port 3100
         run: npm run test:visual
+
+      - name: Write green marker
+        if: ${{ github.event.inputs.update_visual_baselines != 'true' && steps.visual-marker.outputs.cache-hit != 'true' }}
+        run: mkdir -p .ci-green && date > .ci-green/visual
 
       # Manual dispatch path: render fresh baselines on the CI platform (the
       # canonical rendering environment) and expose them as an artifact so a
       # maintainer can commit them after review.
       - name: Regenerate visual baselines
         if: ${{ github.event.inputs.update_visual_baselines == 'true' }}
-        run: npm run test:visual:update
+        env:
+          PLAYWRIGHT_VISUAL_WEB_SERVER_COMMAND: npm run start -- --port 3100
+        run: npm run build && npm run test:visual:update
 
       - name: Upload regenerated baselines
         if: ${{ github.event.inputs.update_visual_baselines == 'true' }}
@@ -294,15 +323,38 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Compute tree hash
+        id: tree
+        run: echo "hash=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Check green marker
+        id: a11y-marker
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .ci-green/a11y
+          key: a11y-green-${{ steps.tree.outputs.hash }}
+
       - name: Install Chromium
+        if: ${{ steps.a11y-marker.outputs.cache-hit != 'true' }}
         run: npx playwright install --with-deps chromium
+
+      - name: Build production bundle
+        if: ${{ steps.a11y-marker.outputs.cache-hit != 'true' }}
+        run: npm run build
 
       # axe-core scans of the key surfaces. The config
       # (playwright.a11y.config.ts) boots its own dev server against the
       # built-in mock JMAP backend, so no separate build or mail server is
       # needed — the same self-contained setup the visual suite uses.
       - name: Run accessibility scan
+        if: ${{ steps.a11y-marker.outputs.cache-hit != 'true' }}
+        env:
+          PLAYWRIGHT_A11Y_WEB_SERVER_COMMAND: npm run start -- --port 3100
         run: npm run test:a11y
+
+      - name: Write green marker
+        if: ${{ steps.a11y-marker.outputs.cache-hit != 'true' }}
+        run: mkdir -p .ci-green && date > .ci-green/a11y
 
       # test-results/ holds the axe violation attachments and Playwright traces
       # for any surface with a serious/critical finding, so a red run can be

@@ -265,18 +265,26 @@ describe('JMAPClient resilience', () => {
       // Then retry in authenticatedFetch also fails
       // So ping throws, keep-alive catches it, fires false
       // Then reconnect → connect() → authenticatedFetch(sessionUrl) succeeds
-      fetchSpy
-        // ping fails - network error, retry also fails
-        .mockRejectedValueOnce(new TypeError('Failed to fetch'))
-        .mockRejectedValueOnce(new TypeError('Failed to fetch'))
-        // reconnect → connect() → session URL succeeds
-        .mockImplementation(async (input: RequestInfo | URL) => {
-          if (String(input).includes('/.well-known/jmap')) {
-            return mockFetchResponse(200, session);
-          }
-          const echoResponse = { methodResponses: [['Core/echo', { ping: 'pong' }, '0']] };
-          return mockFetchResponse(200, echoResponse);
-        });
+      //
+      // Route-aware and stateful on purpose: an order-based mock queue
+      // (mockRejectedValueOnce×2) let any stray background fetch consume the
+      // planned failures on a contended runner, making the ping succeed and
+      // the test flake with only [true] recorded. Only API-endpoint requests
+      // participate in the failure budget.
+      let apiFailuresRemaining = 2;
+      fetchSpy.mockImplementation(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/.well-known/jmap')) {
+          // reconnect → connect() → session URL succeeds
+          return mockFetchResponse(200, session);
+        }
+        if (apiFailuresRemaining > 0) {
+          apiFailuresRemaining -= 1;
+          throw new TypeError('Failed to fetch');
+        }
+        const echoResponse = { methodResponses: [['Core/echo', { ping: 'pong' }, '0']] };
+        return mockFetchResponse(200, echoResponse);
+      });
 
       // Trigger the keep-alive interval
       await vi.advanceTimersByTimeAsync(30_000);

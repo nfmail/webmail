@@ -135,6 +135,9 @@ test.describe.serial('visual: authenticated', () => {
         'Run against a backend where supportsFiles is true to baseline this surface.',
     );
     await navigate(page, 'files');
+    // Wait for a stable listing row so the shot never captures a half-loaded
+    // tree (see e2e/visual/README.md).
+    await page.getByText('Documents').first().waitFor({ timeout: 15_000 });
     await shootSurface(page, 'files');
   });
 });

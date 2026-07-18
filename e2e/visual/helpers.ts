@@ -114,7 +114,9 @@ export async function navigate(
   for (let attempt = 0; attempt < 3; attempt++) {
     await page.locator(`a[href="/${section}"]:visible`).first().click();
     try {
-      await page.waitForURL(new RegExp(`/${section}(/|$|\\?)`), { timeout: 5000 });
+      // Generous per-attempt budget: a cold dev-server route compile can take
+      // >15s on CI before the client transition commits the URL.
+      await page.waitForURL(new RegExp(`/${section}(/|$|\\?)`), { timeout: 15_000 });
       break;
     } catch {
       if (attempt === 2) throw new Error(`navigate: never reached /${section}`);

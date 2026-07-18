@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations, useLocale } from "@/i18n/client";
 import { format } from "date-fns";
 import { toJalali, shouldUseJalaliCalendar, JALALI_MONTHS } from "@/lib/jalali-utils";
 

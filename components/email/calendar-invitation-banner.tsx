@@ -22,7 +22,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { useTranslations, useFormatter } from 'next-intl';
+import { useTranslations, useFormatter } from '@/i18n/client';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCalendarStore } from '@/stores/calendar-store';

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Download, ZoomIn, ZoomOut, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 
 interface ImagePreviewModalProps {
   name: string;

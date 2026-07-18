@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, Fragment } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import {
   addMonths, subMonths, addYears, subYears, setMonth, setYear,

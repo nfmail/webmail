@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/server";
 import { MailtoProtocolClient } from "@/components/protocol/mailto-protocol-client";
 
 export default async function MailtoProtocolPage() {

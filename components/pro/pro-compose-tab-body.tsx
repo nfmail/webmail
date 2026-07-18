@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { EmailComposer, type ComposerDraftData } from "@/components/email/email-composer";
 import { ErrorBoundary, ComposerErrorFallback } from "@/components/error";
 import { useAuthStore } from "@/stores/auth-store";

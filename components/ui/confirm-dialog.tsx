@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {

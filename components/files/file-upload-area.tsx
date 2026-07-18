@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Upload, FolderPlus, FilePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getDroppedFilesAndFolders } from "@/lib/webdav/drop-utils";

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo, type TouchEvent as ReactTouchEvent } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Plus } from "lucide-react";
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,

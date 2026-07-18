@@ -15,7 +15,7 @@ import { useEmailDrag } from "@/hooks/use-email-drag";
 import { useLongPress } from "@/hooks/use-long-press";
 import { ThreadEmailItem } from "./thread-email-item";
 import { EmailHoverActions } from "./email-hover-actions";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 
 /**
  * Small chip showing the originating folder of a message, rendered in the

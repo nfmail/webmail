@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useSettingsStore, KEYWORD_PALETTE, DEFAULT_KEYWORDS, type KeywordDefinition } from "@/stores/settings-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useEmailStore } from "@/stores/email-store";

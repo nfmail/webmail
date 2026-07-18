@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Paperclip, Download } from "lucide-react";
 import { sanitizeEmailHtmlForIframe } from "@/lib/email-sanitization";
 

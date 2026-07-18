@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { X, ShieldCheck, Search, Trash2, Plus, Loader2 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import {

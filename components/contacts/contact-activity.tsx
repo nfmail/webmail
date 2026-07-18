@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations, useFormatter } from "next-intl";
+import { useTranslations, useFormatter } from "@/i18n/client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/auth-store";

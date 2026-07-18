@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useConfig } from '@/hooks/use-config';
 import { SettingsSection, SettingItem, ToggleSwitch } from './settings-section';

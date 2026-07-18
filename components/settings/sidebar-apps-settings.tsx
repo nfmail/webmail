@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Plus, Pencil, Trash2, ExternalLink, PanelRight, GripVertical } from "lucide-react";
 import { icons as lucideIcons, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";

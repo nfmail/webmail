@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { useCalendarStore, CalendarViewMode } from '@/stores/calendar-store';
 import { useSettingsStore } from '@/stores/settings-store';
 import { usePolicyStore } from '@/stores/policy-store';

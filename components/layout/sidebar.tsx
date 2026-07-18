@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, ReactNode } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useRouter } from "@/i18n/navigation";
 import { PluginSlot } from "@/components/plugins/plugin-slot";
 import { Button } from "@/components/ui/button";

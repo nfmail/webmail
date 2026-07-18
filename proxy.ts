@@ -1,11 +1,42 @@
 import { type NextRequest, NextResponse } from "next/server";
-import createIntlMiddleware from "next-intl/middleware";
-import { routing } from "./i18n/routing";
+import {
+  LOCALE_COOKIE,
+  isSupportedLocale,
+  localeFromAcceptLanguage,
+  routing,
+} from "./i18n/routing";
 import { getEnabledPluginFrameOrigins } from "./lib/admin/csp-frame-origins";
 import { configManager } from "./lib/admin/config-manager";
 import { detectSetupState } from "./lib/setup/state";
 
-const intlMiddleware = createIntlMiddleware(routing);
+/**
+ * Locale negotiation for the [locale] app segment (replaces next-intl's
+ * middleware). Detection order: NEXT_LOCALE cookie, Accept-Language, default.
+ * Prefix modes: "always"/"as-needed" redirect to the prefixed URL; "never"
+ * (and the default locale in "as-needed") rewrites internally so the URL
+ * stays clean.
+ */
+function localeMiddleware(request: NextRequest): NextResponse {
+  const pathname = request.nextUrl.pathname;
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
+  const locale = isSupportedLocale(cookieLocale)
+    ? cookieLocale
+    : (localeFromAcceptLanguage(request.headers.get("accept-language")) ??
+      routing.defaultLocale);
+
+  const url = request.nextUrl.clone();
+  url.pathname = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
+
+  const needsPrefix =
+    routing.localePrefix === "always" ||
+    (routing.localePrefix === "as-needed" && locale !== routing.defaultLocale);
+
+  const response = needsPrefix ? NextResponse.redirect(url) : NextResponse.rewrite(url);
+  if (cookieLocale !== locale) {
+    response.cookies.set(LOCALE_COOKIE, locale, { path: "/", sameSite: "lax" });
+  }
+  return response;
+}
 
 // Next 16's Proxy always runs on Node.js runtime and route-segment config
 // (e.g. `export const config = { matcher }`) is no longer allowed in the
@@ -139,10 +170,10 @@ export async function proxy(request: NextRequest) {
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   );
 
-  let intlResponse: ReturnType<typeof intlMiddleware> | null = null;
+  let intlResponse: NextResponse | null = null;
   if (!isAdminRoute && !isProtocolRoute && !isSetupRoute && !isSandboxRoute && !hasLocalePrefix) {
     try {
-      intlResponse = intlMiddleware(request);
+      intlResponse = localeMiddleware(request);
     } catch (error) {
       console.error('Locale middleware error:', error);
     }

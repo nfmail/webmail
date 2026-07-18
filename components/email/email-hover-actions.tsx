@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settings-store";
 import type { HoverAction } from "@/stores/settings-store";
 import { cn } from "@/lib/utils";
 import { Trash2, Star, Mail, MailOpen, Archive, Tag, ShieldAlert, ShieldCheck } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useIsMobile } from "@/hooks/use-media-query";
 
 interface EmailHoverActionsProps {

@@ -46,12 +46,12 @@ describe('auth-store logout redirects', () => {
     vi.stubGlobal('fetch', fetchMock);
     const replaceSpy = vi.spyOn(browserNavigation, 'replaceWindowLocation').mockImplementation(() => {});
 
-    window.history.pushState({}, '', '/fr/calendar');
+    window.history.pushState({}, '', '/hu/calendar');
     useAuthStore.setState({ isAuthenticated: true, authMode: 'basic' });
 
     useAuthStore.getState().logout();
 
-    expect(replaceSpy).toHaveBeenCalledWith('/fr/login');
+    expect(replaceSpy).toHaveBeenCalledWith('/hu/login');
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/session?slot=0', { method: 'DELETE', keepalive: true });
   });
 

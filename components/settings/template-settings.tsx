@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { SettingsSection } from './settings-section';
 import { Button } from '@/components/ui/button';
 import { TemplateManagerModal } from '@/components/templates/template-manager-modal';

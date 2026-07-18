@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { X, Download } from "lucide-react";
 import { useConfig } from "@/hooks/use-config";
 import { withBasePath } from "@/lib/browser-navigation";

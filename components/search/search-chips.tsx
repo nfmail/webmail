@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchFilters } from "@/lib/jmap/search-utils";

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { isValidUnsubscribeUrl, parseMailtoUrl } from '@/lib/validation';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useIsDesktop } from '@/hooks/use-media-query';

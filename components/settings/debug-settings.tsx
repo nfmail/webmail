@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { useSettingsStore, ALL_DEBUG_CATEGORIES } from '@/stores/settings-store';
 import { SettingsSection, SettingItem, ToggleSwitch } from './settings-section';
 import { usePolicyStore } from '@/stores/policy-store';

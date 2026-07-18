@@ -21,7 +21,7 @@ import { useUIStore } from "@/stores/ui-store";
 import { groupEmailsByThread, sortThreadGroups } from "@/lib/thread-utils";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { SearchChips } from "@/components/search/search-chips";
 import { isFilterEmpty, DEFAULT_SEARCH_FILTERS } from "@/lib/jmap/search-utils";

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { Mail, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Email, Identity } from '@/lib/jmap/types';

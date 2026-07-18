@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Keyboard } from "lucide-react";
 import { KEYBOARD_SHORTCUTS } from "@/hooks/use-keyboard-shortcuts";
 import { cn } from "@/lib/utils";

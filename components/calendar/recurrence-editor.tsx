@@ -44,7 +44,7 @@ function monthName(month: number, locale: string): string {
 }
 
 function nthLabel(nth: number, t: CalendarT): string {
-  if (nth === -1) return t("recurrence.nth_last");
+  if (nth === -1) return t("last");
   if (nth >= 1 && nth <= 4) return t(`recurrence.nth_${nth}`);
   return String(nth);
 }
@@ -99,16 +99,16 @@ export function buildRecurrenceSummary(
   let base: string;
   switch (rule.frequency) {
     case "daily":
-      base = interval > 1 ? t("recurrence.every_n_days", { count: interval }) : t("recurrence.daily");
+      base = interval > 1 ? t("Every {count} days", { count: interval }) : t("Daily");
       break;
     case "weekly":
-      base = interval > 1 ? t("recurrence.every_n_weeks", { count: interval }) : t("recurrence.weekly");
+      base = interval > 1 ? t("Every {count} weeks", { count: interval }) : t("Weekly");
       break;
     case "monthly":
-      base = interval > 1 ? t("recurrence.every_n_months", { count: interval }) : t("recurrence.monthly");
+      base = interval > 1 ? t("Every {count} months", { count: interval }) : t("Monthly");
       break;
     case "yearly":
-      base = interval > 1 ? t("recurrence.every_n_years", { count: interval }) : t("recurrence.yearly");
+      base = interval > 1 ? t("Every {count} years", { count: interval }) : t("Yearly");
       break;
     default:
       return null;
@@ -122,32 +122,32 @@ export function buildRecurrenceSummary(
       .sort((a, b) => WEEKDAYS.indexOf(a.day) - WEEKDAYS.indexOf(b.day))
       .map((d) => weekdayName(d.day, locale, "short"))
       .join(", ");
-    if (days) parts.push(t("recurrence.on_days", { days }));
+    if (days) parts.push(t("on {days}", { days }));
   }
 
   if (rule.frequency === "monthly" || rule.frequency === "yearly") {
     if (rule.frequency === "yearly" && rule.byMonth?.length) {
       const m = parseInt(rule.byMonth[0], 10);
-      if (m >= 1 && m <= 12) parts.push(t("recurrence.in_month", { month: monthName(m, locale) }));
+      if (m >= 1 && m <= 12) parts.push(t("in {month}", { month: monthName(m, locale) }));
     }
     const nthDay = getNthDay(rule);
     if (nthDay) {
-      parts.push(t("recurrence.on_the_nth", {
+      parts.push(t("on the {nth} {day}", {
         nth: nthLabel(nthDay.nth, t),
         day: weekdayName(nthDay.day, locale),
       }));
     } else if (rule.byMonthDay?.length) {
-      parts.push(t("recurrence.on_day_n", { day: rule.byMonthDay[0] }));
+      parts.push(t("on day {day}", { day: rule.byMonthDay[0] }));
     }
   }
 
   let summary = parts.join(" ");
   if (rule.count) {
-    summary += ` · ${t("recurrence.occurrences", { count: rule.count })}`;
+    summary += ` · ${t("{count} occurrences", { count: rule.count })}`;
   } else if (rule.until) {
     const d = new Date(rule.until);
     if (!isNaN(d.getTime())) {
-      summary += ` · ${t("recurrence.until")} ${new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(d)}`;
+      summary += ` · ${t("Until")} ${new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(d)}`;
     }
   }
   return summary;

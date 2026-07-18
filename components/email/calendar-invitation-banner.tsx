@@ -52,23 +52,23 @@ interface InvitationChangeItem {
 function getBannerTitle(t: ReturnType<typeof useTranslations>, method: InvitationMethod): string {
   switch (method) {
     case 'publish':
-      return t('published_title');
+      return t("Published Event");
     case 'reply':
-      return t('response_title');
+      return t("Event Response");
     case 'add':
-      return t('update_title');
+      return t("Event Update");
     case 'counter':
-      return t('counter_title');
+      return t("Counter Proposal");
     case 'refresh':
-      return t('refresh_title');
+      return t("Refresh Request");
     case 'declinecounter':
-      return t('declined_counter_title');
+      return t("Counter Proposal Declined");
     case 'cancel':
-      return t('cancelled_title');
+      return t("Event Cancelled");
     case 'request':
     case 'unknown':
     default:
-      return t('title');
+      return t("Calendar Invitation");
   }
 }
 
@@ -81,19 +81,19 @@ function getActorMessage(
   switch (method) {
     case 'reply':
       return actorStatus
-        ? t('actor_response_info', { name: actorName, status: actorStatus })
-        : t('actor_sent_info', { name: actorName });
+        ? t("{name} responded {status}.", { name: actorName, status: actorStatus })
+        : t("Sent by {name}.", { name: actorName });
     case 'counter':
-      return t('actor_counter_info', { name: actorName });
+      return t("{name} proposed changes to this event.", { name: actorName });
     case 'refresh':
-      return t('actor_refresh_info', { name: actorName });
+      return t("{name} asked for the latest event details.", { name: actorName });
     case 'declinecounter':
-      return t('actor_declined_counter_info', { name: actorName });
+      return t("{name} declined the counter proposal.", { name: actorName });
     case 'request':
     case 'publish':
     case 'add':
     case 'cancel':
-      return t('actor_sent_info', { name: actorName });
+      return t("Sent by {name}.", { name: actorName });
     default:
       return null;
   }
@@ -106,26 +106,26 @@ function getBannerInfo(
   supportsCalendar: boolean,
 ): string | null {
   if (!supportsCalendar) {
-    return t('no_calendar');
+    return t("Calendar not available");
   }
 
   switch (method) {
     case 'request':
-      return t('request_info');
+      return t("You've been invited to this event. Respond to let the organizer know your availability.");
     case 'publish':
-      return t('published_info');
+      return t("This event was shared for reference.");
     case 'reply':
       return t(userIsOrganizer ? 'response_info_organizer' : 'response_info');
     case 'add':
-      return t('update_info');
+      return t("This message updates an existing event.");
     case 'cancel':
-      return t('cancel_info');
+      return t("The organizer has cancelled this event.");
     case 'counter':
       return t(userIsOrganizer ? 'counter_info_organizer' : 'counter_info');
     case 'refresh':
       return t(userIsOrganizer ? 'refresh_info_organizer' : 'refresh_info');
     case 'declinecounter':
-      return t('declined_counter_info');
+      return t("The organizer declined a counter proposal.");
     default:
       return null;
   }
@@ -137,16 +137,16 @@ function getTrustMessage(
 ): string | null {
   switch (trustAssessment.reason) {
     case 'authentication_failed':
-      return t('authentication_failed_info');
+      return t("Mail authentication checks for this invitation failed. Treat calendar actions with caution.");
     case 'authentication_missing':
-      return t('authentication_missing_info');
+      return t("This invitation does not include verified mail authentication. Confirm the details with the organizer if anything looks unusual.");
     case 'sender_mismatch':
-      return t('sender_mismatch_info', {
+      return t("This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}.", {
         sender: trustAssessment.senderEmail ?? '',
         organizer: trustAssessment.organizerEmail ?? '',
       });
     case 'sender_mismatch_unverified':
-      return t('sender_mismatch_unverified_info', {
+      return t("This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}, and the message could not be verified.", {
         sender: trustAssessment.senderEmail ?? '',
         organizer: trustAssessment.organizerEmail ?? '',
       });
@@ -161,15 +161,15 @@ function getParticipationLabel(
 ): string | null {
   switch (status) {
     case 'accepted':
-      return t('response_accepted');
+      return t("Accepted");
     case 'tentative':
-      return t('response_tentative');
+      return t("Tentative");
     case 'declined':
-      return t('response_declined');
+      return t("Declined");
     case 'delegated':
-      return t('response_delegated');
+      return t("Delegated");
     case 'needs-action':
-      return t('response_needed');
+      return t("Needs response");
     default:
       return null;
   }
@@ -198,14 +198,14 @@ function getViewActionLabel(
   userIsOrganizer: boolean,
 ): string {
   if (method === 'counter' && userIsOrganizer) {
-    return t('review_proposal');
+    return t("Review proposal");
   }
 
   if (method === 'refresh' && userIsOrganizer) {
-    return t('review_request');
+    return t("Review request");
   }
 
-  return t('view_in_calendar');
+  return t("View in calendar");
 }
 
 function buildProposalPatch(
@@ -273,21 +273,21 @@ function buildInvitationChangeItems(
 
   if (currentSummary.title !== proposedSummary.title && proposedSummary.title) {
     changes.push({
-      label: t('change_title'),
-      before: currentSummary.title || t('change_empty'),
+      label: t("Title"),
+      before: currentSummary.title || t("None"),
       after: proposedSummary.title,
     });
   }
 
   const currentSchedule = currentSummary.start
     ? `${formatDateTime(currentSummary.start)}${currentSummary.end ? ` - ${formatDateTime(currentSummary.end)}` : ''}`
-    : t('change_empty');
+    : t("None");
   const proposedSchedule = proposedSummary.start
     ? `${formatDateTime(proposedSummary.start)}${proposedSummary.end ? ` - ${formatDateTime(proposedSummary.end)}` : ''}`
-    : t('change_empty');
+    : t("None");
   if (currentSchedule !== proposedSchedule && proposedSummary.start) {
     changes.push({
-      label: t('change_time'),
+      label: t("Time"),
       before: currentSchedule,
       after: proposedSchedule,
     });
@@ -295,16 +295,16 @@ function buildInvitationChangeItems(
 
   if ((currentSummary.location ?? '') !== (proposedSummary.location ?? '') && proposedSummary.location) {
     changes.push({
-      label: t('change_location'),
-      before: currentSummary.location || t('change_empty'),
+      label: t("Location"),
+      before: currentSummary.location || t("None"),
       after: proposedSummary.location,
     });
   }
 
   if ((currentEvent.description ?? '') !== (proposedEvent.description ?? '') && proposedEvent.description) {
     changes.push({
-      label: t('change_description'),
-      before: currentEvent.description || t('change_empty'),
+      label: t("Description"),
+      before: currentEvent.description || t("None"),
       after: proposedEvent.description,
     });
   }

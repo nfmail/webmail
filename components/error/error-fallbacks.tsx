@@ -15,14 +15,14 @@ export function PageErrorFallback({ error: _error, resetError, t }: FallbackProp
           <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
         </div>
         <h2 className="text-xl font-semibold text-foreground mb-2">
-          {t("page_error_title")}
+          {t("Something went wrong")}
         </h2>
         <p className="text-muted-foreground mb-6">
-          {t("page_error_description")}
+          {t("We encountered an unexpected error. Please try again or return to the home page.")}
         </p>
         <Button onClick={resetError}>
           <RefreshCw className="w-4 h-4 me-2" />
-          {t("try_again")}
+          {t("Try again")}
         </Button>
       </div>
     </div>
@@ -37,11 +37,11 @@ export function SidebarErrorFallback({ resetError, t }: FallbackProps) {
     <div className="w-64 h-full border-e border-border bg-secondary flex flex-col items-center justify-center p-4">
       <FolderOpen className="w-10 h-10 text-muted-foreground mb-3" />
       <p className="text-sm text-muted-foreground text-center mb-4">
-        {t("sidebar_error")}
+        {t("Unable to load mailboxes")}
       </p>
       <Button variant="outline" size="sm" onClick={resetError}>
         <RefreshCw className="w-3 h-3 me-1" />
-        {t("reload")}
+        {t("Reload")}
       </Button>
     </div>
   );
@@ -55,11 +55,11 @@ export function EmailListErrorFallback({ resetError, t }: FallbackProps) {
     <div className="w-full h-full bg-background flex flex-col items-center justify-center p-4">
       <Inbox className="w-12 h-12 text-muted-foreground mb-3" />
       <p className="text-sm text-muted-foreground text-center mb-4">
-        {t("email_list_error")}
+        {t("Unable to load emails")}
       </p>
       <Button variant="outline" size="sm" onClick={resetError}>
         <RefreshCw className="w-4 h-4 me-2" />
-        {t("reload_emails")}
+        {t("Reload emails")}
       </Button>
     </div>
   );
@@ -75,14 +75,14 @@ export function EmailViewerErrorFallback({ resetError, t }: FallbackProps) {
         <Mail className="w-8 h-8 text-red-500" />
       </div>
       <h3 className="text-lg font-medium text-foreground mb-2">
-        {t("viewer_error_title")}
+        {t("Unable to display email")}
       </h3>
       <p className="text-sm text-muted-foreground text-center mb-6 max-w-md">
-        {t("viewer_error_description")}
+        {t("There was a problem rendering this email. It may contain unsupported content.")}
       </p>
       <Button onClick={resetError}>
         <RefreshCw className="w-4 h-4 me-2" />
-        {t("try_again")}
+        {t("Try again")}
       </Button>
     </div>
   );
@@ -96,10 +96,10 @@ export function ComposerErrorFallback({ resetError, t }: FallbackProps) {
     <div className="flex flex-col h-full bg-background border rounded-lg items-center justify-center p-8">
       <AlertCircle className="w-10 h-10 text-warning mb-3" />
       <p className="text-sm text-muted-foreground text-center mb-4">
-        {t("composer_error")}
+        {t("Unable to load composer")}
       </p>
       <Button variant="outline" size="sm" onClick={resetError}>
-        {t("retry")}
+        {t("Retry")}
       </Button>
     </div>
   );
@@ -113,14 +113,14 @@ export function SettingsErrorFallback({ resetError, t }: FallbackProps) {
     <div className="flex-1 flex flex-col items-center justify-center p-8">
       <Settings className="w-12 h-12 text-muted-foreground mb-4" />
       <h3 className="text-lg font-medium text-foreground mb-2">
-        {t("settings_error_title")}
+        {t("Settings unavailable")}
       </h3>
       <p className="text-sm text-muted-foreground text-center mb-6">
-        {t("settings_error_description")}
+        {t("Unable to load settings. Your preferences may not be saved.")}
       </p>
       <Button onClick={resetError}>
         <RefreshCw className="w-4 h-4 me-2" />
-        {t("reload_settings")}
+        {t("Reload settings")}
       </Button>
     </div>
   );

@@ -239,13 +239,13 @@ const _formatRecipients = (
 
   // If only one recipient and it's the current user, show "me"
   if (recipients.length === 1 && isFirstRecipientMe) {
-    return t('recipient_me');
+    return t("me");
   }
 
   // Format up to 2 recipients by name (or email if no name)
   const displayRecipients = recipients.slice(0, 2).map((r, index) => {
     if (index === 0 && isFirstRecipientMe) {
-      return t('recipient_me');
+      return t("me");
     }
     return r.name || r.email;
   });
@@ -253,7 +253,7 @@ const _formatRecipients = (
   // If more than 2 recipients, add count
   if (recipients.length > 2) {
     const displayName = displayRecipients[0];
-    return t('recipient_and_others', { name: displayName, count: recipients.length - 1 });
+    return t("{name} and {count} others", { name: displayName, count: recipients.length - 1 });
   }
 
   return displayRecipients.join(', ');
@@ -350,7 +350,7 @@ function renderClickableRecipients(
         <RecipientPopover
           name={r.name}
           email={r.email}
-          displayLabel={isMe ? t('recipient_me') : undefined}
+          displayLabel={isMe ? t("me") : undefined}
           onViewContact={onViewContact}
           className="text-sm"
         />

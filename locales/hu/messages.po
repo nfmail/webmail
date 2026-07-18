@@ -8003,3 +8003,232 @@ msgstr "A munkamenet lejárt. Kérjük, jelentkezz be újra."
 #. js-lingui-explicit-id
 msgid "your.email@example.com"
 msgstr "your.email@example.com"
+
+#. js-lingui-explicit-id
+msgid "Minimalist webmail client using JMAP protocol"
+msgstr "Minimalista webmail kliens JMAP protokollal"
+
+#. js-lingui-explicit-id
+msgid "Opening composer..."
+msgstr "Szerkesztő megnyitása..."
+
+#. js-lingui-explicit-id
+msgid "Opening calendar..."
+msgstr "Naptár megnyitása..."
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# minute before} other {# minutes before}}"
+msgstr "{count, plural, one {# perccel előtte} other {# perccel előtte}}"
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# hour before} other {# hours before}}"
+msgstr "{count, plural, one {# órával előtte} other {# órával előtte}}"
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# day before} other {# days before}}"
+msgstr "{count, plural, one {# nappal előtte} other {# nappal előtte}}"
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# week before} other {# weeks before}}"
+msgstr "{count, plural, one {# héttel előtte} other {# héttel előtte}}"
+
+#. js-lingui-explicit-id
+msgid "last"
+msgstr "utolsó"
+
+#. js-lingui-explicit-id
+msgid "Every {count} days"
+msgstr "Minden {count} nap"
+
+#. js-lingui-explicit-id
+msgid "Every {count} weeks"
+msgstr "Minden {count} hét"
+
+#. js-lingui-explicit-id
+msgid "Every {count} months"
+msgstr "Minden {count} hónap"
+
+#. js-lingui-explicit-id
+msgid "Every {count} years"
+msgstr "Minden {count}. évben"
+
+#. js-lingui-explicit-id
+msgid "on {days}"
+msgstr "ezeken a napokon: {days}"
+
+#. js-lingui-explicit-id
+msgid "in {month}"
+msgstr "{month} hónapban"
+
+#. js-lingui-explicit-id
+msgid "on the {nth} {day}"
+msgstr "a(z) {nth} {day}"
+
+#. js-lingui-explicit-id
+msgid "on day {day}"
+msgstr "a hónap {day}. napján"
+
+#. js-lingui-explicit-id
+msgid "{count} occurrences"
+msgstr "{count} alkalom"
+
+#. js-lingui-explicit-id
+msgid "Published Event"
+msgstr "Közzétett esemény"
+
+#. js-lingui-explicit-id
+msgid "Event Response"
+msgstr "Esemény válasz"
+
+#. js-lingui-explicit-id
+msgid "Event Update"
+msgstr "Esemény frissítés"
+
+#. js-lingui-explicit-id
+msgid "Counter Proposal"
+msgstr "Ellenjavaslat"
+
+#. js-lingui-explicit-id
+msgid "Refresh Request"
+msgstr "Frissítési kérelem"
+
+#. js-lingui-explicit-id
+msgid "Counter Proposal Declined"
+msgstr "Ellenjavaslat elutasítva"
+
+#. js-lingui-explicit-id
+msgid "Event Cancelled"
+msgstr "Esemény lemondva"
+
+#. js-lingui-explicit-id
+msgid "Calendar Invitation"
+msgstr "Naptár meghívó"
+
+#. js-lingui-explicit-id
+msgid "{name} responded {status}."
+msgstr "{name} válasza: {status}."
+
+#. js-lingui-explicit-id
+msgid "Sent by {name}."
+msgstr "Küldte: {name}."
+
+#. js-lingui-explicit-id
+msgid "{name} proposed changes to this event."
+msgstr "{name} módosításokat javasolt ehhez az eseményhez."
+
+#. js-lingui-explicit-id
+msgid "{name} asked for the latest event details."
+msgstr "{name} a legújabb esemény adatokat kérte."
+
+#. js-lingui-explicit-id
+msgid "{name} declined the counter proposal."
+msgstr "{name} elutasította az ellenjavaslatot."
+
+#. js-lingui-explicit-id
+msgid "You've been invited to this event. Respond to let the organizer know your availability."
+msgstr "Meghívtak erre az eseményre. Válaszolj, hogy a szervező tudja a rendelkezésre állásod."
+
+#. js-lingui-explicit-id
+msgid "This event was shared for reference."
+msgstr "Ez az esemény referencia célból lett megosztva."
+
+#. js-lingui-explicit-id
+msgid "This message updates an existing event."
+msgstr "Ez az üzenet egy meglévő eseményt frissít."
+
+#. js-lingui-explicit-id
+msgid "The organizer has cancelled this event."
+msgstr "A szervező lemondta ezt az eseményt."
+
+#. js-lingui-explicit-id
+msgid "The organizer declined a counter proposal."
+msgstr "A szervező elutasította az ellenjavaslatot."
+
+#. js-lingui-explicit-id
+msgid "Mail authentication checks for this invitation failed. Treat calendar actions with caution."
+msgstr "Az e-mail hitelesítési ellenőrzések ehhez a meghívóhoz sikertelenek voltak. Óvatosan kezeld a naptár műveleteket."
+
+#. js-lingui-explicit-id
+msgid "This invitation does not include verified mail authentication. Confirm the details with the organizer if anything looks unusual."
+msgstr "Ez a meghívó nem tartalmaz ellenőrzött e-mail hitelesítést. Ha bármi szokatlannak tűnik, erősítsd meg a részleteket a szervezővel."
+
+#. js-lingui-explicit-id
+msgid "This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}."
+msgstr "Ezt a meghívót {sender} küldte, míg a naptár adatokban szereplő szervező {organizer}."
+
+#. js-lingui-explicit-id
+msgid "This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}, and the message could not be verified."
+msgstr "Ezt a meghívót {sender} küldte, míg a naptár adatokban szereplő szervező {organizer}, és az üzenet nem volt hitelesíthető."
+
+#. js-lingui-explicit-id
+msgid "Delegated"
+msgstr "Delegálva"
+
+#. js-lingui-explicit-id
+msgid "Needs response"
+msgstr "Válasz szükséges"
+
+#. js-lingui-explicit-id
+msgid "Review proposal"
+msgstr "Javaslat áttekintése"
+
+#. js-lingui-explicit-id
+msgid "Review request"
+msgstr "Kérelem áttekintése"
+
+#. js-lingui-explicit-id
+msgid "View in calendar"
+msgstr "Megtekintés a naptárban"
+
+#. js-lingui-explicit-id
+msgid "Time"
+msgstr "Idő"
+
+#. js-lingui-explicit-id
+msgid "me"
+msgstr "én"
+
+#. js-lingui-explicit-id
+msgid "{name} and {count} others"
+msgstr "{name} és {count} további"
+
+#. js-lingui-explicit-id
+msgid "Unable to load mailboxes"
+msgstr "Nem sikerült betölteni a postafiókokat"
+
+#. js-lingui-explicit-id
+msgid "Reload"
+msgstr "Újratöltés"
+
+#. js-lingui-explicit-id
+msgid "Unable to load emails"
+msgstr "Nem sikerült betölteni az e-maileket"
+
+#. js-lingui-explicit-id
+msgid "Reload emails"
+msgstr "E-mailek újratöltése"
+
+#. js-lingui-explicit-id
+msgid "Unable to display email"
+msgstr "Nem sikerült megjeleníteni az e-mailt"
+
+#. js-lingui-explicit-id
+msgid "There was a problem rendering this email. It may contain unsupported content."
+msgstr "Probléma merült fel az e-mail megjelenítésekor. Lehet, hogy nem támogatott tartalmat tartalmaz."
+
+#. js-lingui-explicit-id
+msgid "Unable to load composer"
+msgstr "Nem sikerült betölteni a szerkesztőt"
+
+#. js-lingui-explicit-id
+msgid "Settings unavailable"
+msgstr "Beállítások nem elérhetők"
+
+#. js-lingui-explicit-id
+msgid "Unable to load settings. Your preferences may not be saved."
+msgstr "Nem sikerült betölteni a beállításokat. A preferenciáid nem biztos, hogy elmentődnek."
+
+#. js-lingui-explicit-id
+msgid "Reload settings"
+msgstr "Beállítások újratöltése"
+

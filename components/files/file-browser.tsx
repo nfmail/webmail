@@ -274,9 +274,9 @@ function ShareBadge({ resource, t }: { resource: FileResource; t: (key: string) 
     return (
       <Share2
         className="w-3.5 h-3.5 text-primary shrink-0"
-        aria-label={t("shared_with_me")}
+        aria-label={t("Shared with me")}
       >
-        <title>{t("shared_with_me")}</title>
+        <title>{t("Shared with me")}</title>
       </Share2>
     );
   }
@@ -284,9 +284,9 @@ function ShareBadge({ resource, t }: { resource: FileResource; t: (key: string) 
     return (
       <Users
         className="w-3.5 h-3.5 text-primary shrink-0"
-        aria-label={t("shared")}
+        aria-label={t("Shared")}
       >
-        <title>{t("shared")}</title>
+        <title>{t("Shared")}</title>
       </Users>
     );
   }

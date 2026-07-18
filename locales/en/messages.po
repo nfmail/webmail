@@ -8003,3 +8003,232 @@ msgstr "Your session has expired. Please sign in again."
 #. js-lingui-explicit-id
 msgid "your.email@example.com"
 msgstr "your.email@example.com"
+
+#. js-lingui-explicit-id
+msgid "Minimalist webmail client using JMAP protocol"
+msgstr "Minimalist webmail client using JMAP protocol"
+
+#. js-lingui-explicit-id
+msgid "Opening composer..."
+msgstr "Opening composer..."
+
+#. js-lingui-explicit-id
+msgid "Opening calendar..."
+msgstr "Opening calendar..."
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# minute before} other {# minutes before}}"
+msgstr "{count, plural, one {# minute before} other {# minutes before}}"
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# hour before} other {# hours before}}"
+msgstr "{count, plural, one {# hour before} other {# hours before}}"
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# day before} other {# days before}}"
+msgstr "{count, plural, one {# day before} other {# days before}}"
+
+#. js-lingui-explicit-id
+msgid "{count, plural, one {# week before} other {# weeks before}}"
+msgstr "{count, plural, one {# week before} other {# weeks before}}"
+
+#. js-lingui-explicit-id
+msgid "last"
+msgstr "last"
+
+#. js-lingui-explicit-id
+msgid "Every {count} days"
+msgstr "Every {count} days"
+
+#. js-lingui-explicit-id
+msgid "Every {count} weeks"
+msgstr "Every {count} weeks"
+
+#. js-lingui-explicit-id
+msgid "Every {count} months"
+msgstr "Every {count} months"
+
+#. js-lingui-explicit-id
+msgid "Every {count} years"
+msgstr "Every {count} years"
+
+#. js-lingui-explicit-id
+msgid "on {days}"
+msgstr "on {days}"
+
+#. js-lingui-explicit-id
+msgid "in {month}"
+msgstr "in {month}"
+
+#. js-lingui-explicit-id
+msgid "on the {nth} {day}"
+msgstr "on the {nth} {day}"
+
+#. js-lingui-explicit-id
+msgid "on day {day}"
+msgstr "on day {day}"
+
+#. js-lingui-explicit-id
+msgid "{count} occurrences"
+msgstr "{count} occurrences"
+
+#. js-lingui-explicit-id
+msgid "Published Event"
+msgstr "Published Event"
+
+#. js-lingui-explicit-id
+msgid "Event Response"
+msgstr "Event Response"
+
+#. js-lingui-explicit-id
+msgid "Event Update"
+msgstr "Event Update"
+
+#. js-lingui-explicit-id
+msgid "Counter Proposal"
+msgstr "Counter Proposal"
+
+#. js-lingui-explicit-id
+msgid "Refresh Request"
+msgstr "Refresh Request"
+
+#. js-lingui-explicit-id
+msgid "Counter Proposal Declined"
+msgstr "Counter Proposal Declined"
+
+#. js-lingui-explicit-id
+msgid "Event Cancelled"
+msgstr "Event Cancelled"
+
+#. js-lingui-explicit-id
+msgid "Calendar Invitation"
+msgstr "Calendar Invitation"
+
+#. js-lingui-explicit-id
+msgid "{name} responded {status}."
+msgstr "{name} responded {status}."
+
+#. js-lingui-explicit-id
+msgid "Sent by {name}."
+msgstr "Sent by {name}."
+
+#. js-lingui-explicit-id
+msgid "{name} proposed changes to this event."
+msgstr "{name} proposed changes to this event."
+
+#. js-lingui-explicit-id
+msgid "{name} asked for the latest event details."
+msgstr "{name} asked for the latest event details."
+
+#. js-lingui-explicit-id
+msgid "{name} declined the counter proposal."
+msgstr "{name} declined the counter proposal."
+
+#. js-lingui-explicit-id
+msgid "You've been invited to this event. Respond to let the organizer know your availability."
+msgstr "You've been invited to this event. Respond to let the organizer know your availability."
+
+#. js-lingui-explicit-id
+msgid "This event was shared for reference."
+msgstr "This event was shared for reference."
+
+#. js-lingui-explicit-id
+msgid "This message updates an existing event."
+msgstr "This message updates an existing event."
+
+#. js-lingui-explicit-id
+msgid "The organizer has cancelled this event."
+msgstr "The organizer has cancelled this event."
+
+#. js-lingui-explicit-id
+msgid "The organizer declined a counter proposal."
+msgstr "The organizer declined a counter proposal."
+
+#. js-lingui-explicit-id
+msgid "Mail authentication checks for this invitation failed. Treat calendar actions with caution."
+msgstr "Mail authentication checks for this invitation failed. Treat calendar actions with caution."
+
+#. js-lingui-explicit-id
+msgid "This invitation does not include verified mail authentication. Confirm the details with the organizer if anything looks unusual."
+msgstr "This invitation does not include verified mail authentication. Confirm the details with the organizer if anything looks unusual."
+
+#. js-lingui-explicit-id
+msgid "This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}."
+msgstr "This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}."
+
+#. js-lingui-explicit-id
+msgid "This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}, and the message could not be verified."
+msgstr "This invitation was sent from {sender}, while the organizer listed in the calendar data is {organizer}, and the message could not be verified."
+
+#. js-lingui-explicit-id
+msgid "Delegated"
+msgstr "Delegated"
+
+#. js-lingui-explicit-id
+msgid "Needs response"
+msgstr "Needs response"
+
+#. js-lingui-explicit-id
+msgid "Review proposal"
+msgstr "Review proposal"
+
+#. js-lingui-explicit-id
+msgid "Review request"
+msgstr "Review request"
+
+#. js-lingui-explicit-id
+msgid "View in calendar"
+msgstr "View in calendar"
+
+#. js-lingui-explicit-id
+msgid "Time"
+msgstr "Time"
+
+#. js-lingui-explicit-id
+msgid "me"
+msgstr "me"
+
+#. js-lingui-explicit-id
+msgid "{name} and {count} others"
+msgstr "{name} and {count} others"
+
+#. js-lingui-explicit-id
+msgid "Unable to load mailboxes"
+msgstr "Unable to load mailboxes"
+
+#. js-lingui-explicit-id
+msgid "Reload"
+msgstr "Reload"
+
+#. js-lingui-explicit-id
+msgid "Unable to load emails"
+msgstr "Unable to load emails"
+
+#. js-lingui-explicit-id
+msgid "Reload emails"
+msgstr "Reload emails"
+
+#. js-lingui-explicit-id
+msgid "Unable to display email"
+msgstr "Unable to display email"
+
+#. js-lingui-explicit-id
+msgid "There was a problem rendering this email. It may contain unsupported content."
+msgstr "There was a problem rendering this email. It may contain unsupported content."
+
+#. js-lingui-explicit-id
+msgid "Unable to load composer"
+msgstr "Unable to load composer"
+
+#. js-lingui-explicit-id
+msgid "Settings unavailable"
+msgstr "Settings unavailable"
+
+#. js-lingui-explicit-id
+msgid "Unable to load settings. Your preferences may not be saved."
+msgstr "Unable to load settings. Your preferences may not be saved."
+
+#. js-lingui-explicit-id
+msgid "Reload settings"
+msgstr "Reload settings"
+

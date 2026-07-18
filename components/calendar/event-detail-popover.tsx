@@ -92,13 +92,13 @@ function getAlertLabel(event: CalendarEvent, t: ReturnType<typeof useTranslation
   const first = Object.values(event.alerts)[0];
   if (!first || !first.trigger || first.trigger["@type"] !== "OffsetTrigger") return null;
   const offset = first.trigger.offset;
-  if (offset === "PT0S") return t("alerts.at_time");
+  if (offset === "PT0S") return t("At time of event");
   const minMatch = offset.match(/-?PT?(\d+)M$/);
-  if (minMatch) return t("alerts.minutes_before", { count: parseInt(minMatch[1]) });
+  if (minMatch) return t("{count, plural, one {# minute before} other {# minutes before}}", { count: parseInt(minMatch[1]) });
   const hourMatch = offset.match(/-?PT?(\d+)H$/);
-  if (hourMatch) return t("alerts.hours_before", { count: parseInt(hourMatch[1]) });
+  if (hourMatch) return t("{count, plural, one {# hour before} other {# hours before}}", { count: parseInt(hourMatch[1]) });
   const dayMatch = offset.match(/-?P(\d+)D/);
-  if (dayMatch) return t("alerts.days_before", { count: parseInt(dayMatch[1]) });
+  if (dayMatch) return t("{count, plural, one {# day before} other {# days before}}", { count: parseInt(dayMatch[1]) });
   return null;
 }
 

@@ -34,19 +34,19 @@ function getDueDateLabel(due: string, showWithoutTime: boolean, t: ReturnType<ty
 
   if (isToday(dueDate)) {
     return {
-      label: t("tasks.due_today"),
+      label: t("Today"),
       className: "text-blue-600 dark:text-blue-400",
     };
   }
   if (isTomorrow(dueDate)) {
     return {
-      label: t("tasks.due_tomorrow"),
+      label: t("Tomorrow"),
       className: "text-muted-foreground",
     };
   }
   if (overdue) {
     return {
-      label: t("tasks.overdue"),
+      label: t("Overdue"),
       className: "text-red-600 dark:text-red-400",
     };
   }

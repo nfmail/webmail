@@ -135,12 +135,12 @@ function formatAlertRowLabel(
   row: { value: number; unit: AlertUnit },
   t: ReturnType<typeof useTranslations>
 ): string {
-  if (row.unit === "at_time") return t("alerts.at_time");
+  if (row.unit === "at_time") return t("At time of event");
   switch (row.unit) {
-    case "minutes": return t("alerts.minutes_before", { count: row.value });
-    case "hours": return t("alerts.hours_before", { count: row.value });
-    case "days": return t("alerts.days_before", { count: row.value });
-    case "weeks": return t("alerts.weeks_before", { count: row.value });
+    case "minutes": return t("{count, plural, one {# minute before} other {# minutes before}}", { count: row.value });
+    case "hours": return t("{count, plural, one {# hour before} other {# hours before}}", { count: row.value });
+    case "days": return t("{count, plural, one {# day before} other {# days before}}", { count: row.value });
+    case "weeks": return t("{count, plural, one {# week before} other {# weeks before}}", { count: row.value });
   }
 }
 

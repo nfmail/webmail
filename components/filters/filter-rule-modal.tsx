@@ -307,7 +307,7 @@ export function FilterRuleModal({
                     <SelectContent>
                       {ALL_FIELDS.map((f) => (
                         <SelectItem key={f} value={f}>
-                          {t(`condition_fields.${f}`)}
+                          {t(`settings.filters.condition_fields.${f}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -336,7 +336,7 @@ export function FilterRuleModal({
                     <SelectContent>
                       {comparatorsFor(condition.field).map((c) => (
                         <SelectItem key={c} value={c}>
-                          {t(`comparators.${c}`)}
+                          {t(`settings.filters.comparators.${c}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -428,7 +428,7 @@ export function FilterRuleModal({
                     <SelectContent>
                       {ALL_ACTION_TYPES.map((a) => (
                         <SelectItem key={a} value={a}>
-                          {t(`action_types.${a}`)}
+                          {t(`settings.filters.action_types.${a}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>

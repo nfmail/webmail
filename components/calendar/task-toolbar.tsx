@@ -39,7 +39,7 @@ export function TaskToolbar({
                 : "hover:bg-muted text-muted-foreground"
             )}
           >
-            {t(`tasks.filter_${f}`)}
+            {t(`calendar.tasks.filter_${f}`)}
           </button>
         ))}
       </div>

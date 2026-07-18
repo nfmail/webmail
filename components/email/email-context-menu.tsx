@@ -312,7 +312,7 @@ export function EmailContextMenu({
               return nodes.map((node) => {
                 const Icon = getMailboxIcon(node.role);
                 const isTarget = moveTargetIds.has(node.id);
-                const nodeLabel = localizeMailboxName(node.role, node.name, (k) => tSidebar(`mailboxes.${k}`));
+                const nodeLabel = localizeMailboxName(node.role, node.name, (k) => tSidebar(`sidebar.mailboxes.${k}`));
                 return (
                   <div key={node.id}>
                     {isTarget ? (

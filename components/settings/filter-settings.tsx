@@ -36,8 +36,8 @@ function RuleSummary({ rule }: { rule: FilterRule }) {
   const t = useTranslations();
 
   const conditions = rule.conditions.slice(0, 2).map((c) => {
-    const field = t(`condition_fields.${c.field}`);
-    const comparator = t(`comparators.${c.comparator}`);
+    const field = t(`settings.filters.condition_fields.${c.field}`);
+    const comparator = t(`settings.filters.comparators.${c.comparator}`);
     // has_any is a no-value test ("attachment is present"); appending
     // `""` would look broken in the summary line.
     if (c.field === "attachment" && c.comparator === "has_any") {
@@ -58,7 +58,7 @@ function RuleSummary({ rule }: { rule: FilterRule }) {
     : "";
 
   const actions = rule.actions.slice(0, 2).map((a) => {
-    const action = t(`action_types.${a.type}`);
+    const action = t(`settings.filters.action_types.${a.type}`);
     return a.value ? `${action} "${a.value}"` : action;
   });
 
@@ -99,8 +99,8 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
           {t("If")}
         </span>
         {rule.conditions.map((c, i) => {
-          const field = t(`condition_fields.${c.field}`);
-          const comparator = t(`comparators.${c.comparator}`);
+          const field = t(`settings.filters.condition_fields.${c.field}`);
+          const comparator = t(`settings.filters.comparators.${c.comparator}`);
           return (
             <span key={i} className="contents">
               {i > 0 && (
@@ -137,7 +137,7 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
           {t("Then")}
         </span>
         {rule.actions.map((a, i) => {
-          const action = t(`action_types.${a.type}`);
+          const action = t(`settings.filters.action_types.${a.type}`);
           return (
             <span key={i} className="contents">
               {i > 0 && (

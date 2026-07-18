@@ -774,7 +774,7 @@ export default function LoginPage() {
                   </div>
                   <div className="flex-1 min-w-0 self-center">
                     <p className="text-sm text-destructive leading-relaxed">
-                      {t(`error.${error}`) || t("An unexpected error occurred. If this persists, contact your administrator.")}
+                      {t(`login.error.${error}`) || t("An unexpected error occurred. If this persists, contact your administrator.")}
                     </p>
                   </div>
                 </div>
@@ -958,7 +958,7 @@ export default function LoginPage() {
                   <p className="text-sm text-destructive leading-relaxed">
                     {error === 'invalid_credentials' && showTotpField && totpCode
                       ? t("Invalid authentication code. Please check your authenticator app and try again.")
-                      : t(`error.${error}`) || t("An unexpected error occurred. If this persists, contact your administrator.")}
+                      : t(`login.error.${error}`) || t("An unexpected error occurred. If this persists, contact your administrator.")}
                   </p>
                 </div>
               </div>

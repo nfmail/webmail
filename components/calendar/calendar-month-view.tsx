@@ -147,7 +147,7 @@ export function CalendarMonthView({
             "text-center text-xs font-medium text-muted-foreground py-2 border-e border-border last:border-e-0",
             isMobile && "py-1.5 text-[11px]"
           )}>
-            {isMobile ? t(`days.${d}`).slice(0, 2) : t(`days.${d}`)}
+            {isMobile ? t(`calendar.days.${d}`).slice(0, 2) : t(`calendar.days.${d}`)}
           </div>
         ))}
       </div>

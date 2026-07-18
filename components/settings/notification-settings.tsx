@@ -133,7 +133,7 @@ export function NotificationSettings() {
 
   const soundOptions = NOTIFICATION_SOUNDS.map((s) => ({
     value: s.id,
-    label: t(`sounds.${s.id}`),
+    label: t(`settings.notifications.sounds.${s.id}`),
   }));
 
   return (

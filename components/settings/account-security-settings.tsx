@@ -456,7 +456,7 @@ interface CredentialSectionProps {
 
 function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRemove }: CredentialSectionProps) {
   const t = useTranslations();
-  const tk = (key: string) => t(`${i18nNamespace}.${key}`);
+  const tk = (key: string) => t(`settings.security.${i18nNamespace}.${key}`);
   const { isSaving, isLoadingAuth } = useAccountSecurityStore();
   const [showAdd, setShowAdd] = useState(false);
   const [newDescription, setNewDescription] = useState('');

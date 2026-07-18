@@ -707,7 +707,7 @@ export function ContactsSidebar({
               {(["to", "cc", "bcc"] as const).map((field) => (
                 <ContextMenuItem
                   key={field}
-                  label={t(`groups.send_email_${field}`)}
+                  label={t(`contacts.groups.send_email_${field}`)}
                   onClick={() => {
                     const groupId = groupContextMenu.data!.id;
                     closeGroupContextMenu();

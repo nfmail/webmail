@@ -30,8 +30,8 @@ export function DebugSettings() {
           {ALL_DEBUG_CATEGORIES.map((cat) => (
             <SettingItem
               key={cat.id}
-              label={t(`debug_categories.${cat.labelKey}`)}
-              description={t(`debug_categories.${cat.labelKey}_description`)}
+              label={t(`settings.advanced.debug_categories.${cat.labelKey}`)}
+              description={t(`settings.advanced.debug_categories.${cat.labelKey}_description`)}
               htmlFor={`debug-category-${cat.id}-toggle`}
             >
               <ToggleSwitch

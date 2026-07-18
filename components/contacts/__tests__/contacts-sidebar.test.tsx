@@ -57,7 +57,7 @@ describe('ContactsSidebar — compose to group', () => {
     // Open the submenu then click "Cc".
     fireEvent.click(screen.getByRole('menuitem', { name: 'Send email to group' }));
 
-    fireEvent.click(screen.getByText('groups.send_email_cc'));
+    fireEvent.click(screen.getByText('contacts.groups.send_email_cc'));
     expect(onComposeGroup).toHaveBeenCalledWith('g1', 'cc');
   });
 });

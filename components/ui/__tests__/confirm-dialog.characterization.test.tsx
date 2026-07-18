@@ -40,8 +40,8 @@ describe('ConfirmDialog (characterization)', () => {
 
   it('renders default confirm/cancel labels from translations', () => {
     render(<ConfirmDialog {...baseProps} isOpen />);
-    expect(screen.getByRole('button', { name: 'confirm' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
 
   it('honors custom confirm/cancel text', () => {
@@ -64,7 +64,7 @@ describe('ConfirmDialog (characterization)', () => {
     render(
       <ConfirmDialog {...baseProps} isOpen onConfirm={onConfirm} onClose={onClose} />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'confirm' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(onConfirm).toHaveBeenCalledOnce();
     expect(onClose).toHaveBeenCalledOnce();
   });
@@ -75,7 +75,7 @@ describe('ConfirmDialog (characterization)', () => {
     render(
       <ConfirmDialog {...baseProps} isOpen onConfirm={onConfirm} onClose={onClose} />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onClose).toHaveBeenCalledOnce();
     expect(onConfirm).not.toHaveBeenCalled();
   });

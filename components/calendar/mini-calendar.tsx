@@ -160,7 +160,7 @@ export function MiniCalendar({
           )}
           {dayHeaderKeys.map((d) => (
             <div key={d} className="text-center text-[10px] font-medium text-muted-foreground py-1">
-              {t(`days.${d}`)}
+              {t(`calendar.days.${d}`)}
             </div>
           ))}
           {days.map((day, index) => {
@@ -218,7 +218,7 @@ export function MiniCalendar({
                   !isSelected && !isCurrentMonth && "hover:bg-muted"
                 )}
               >
-                {t(`months.${labelKey}`)}
+                {t(`calendar.months.${labelKey}`)}
               </button>
             );
           })}

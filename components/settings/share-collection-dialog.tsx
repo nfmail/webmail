@@ -303,7 +303,7 @@ export function ShareCollectionDialog({
                       </SelectTrigger>
                       <SelectContent>
                         {presetOptions.map((p) => (
-                          <SelectItem key={p} value={p}>{t(`preset.${p}`)}</SelectItem>
+                          <SelectItem key={p} value={p}>{t(`sharing.preset.${p}`)}</SelectItem>
                         ))}
                         {preset === "custom" && (
                           <SelectItem value="custom">{t("Custom")}</SelectItem>

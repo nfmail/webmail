@@ -183,7 +183,7 @@ export function CalendarToolbar({
                       : "text-muted-foreground active:bg-muted"
                   )}
                 >
-                  {t(`views.${v}`)}
+                  {t(`calendar.views.${v}`)}
                 </button>
               ))}
             </div>
@@ -313,7 +313,7 @@ export function CalendarToolbar({
             <button
               key={v}
               onClick={() => onViewModeChange(v)}
-              title={t(`views.${v}_hint`)}
+              title={t(`calendar.views.${v}_hint`)}
               className={cn(
                 "inline-flex items-center px-3 text-xs font-medium transition-colors",
                 v === viewMode
@@ -321,7 +321,7 @@ export function CalendarToolbar({
                   : "hover:bg-muted text-muted-foreground"
               )}
             >
-              {t(`views.${v}`)}
+              {t(`calendar.views.${v}`)}
             </button>
           ))}
         </div>

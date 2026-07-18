@@ -214,7 +214,7 @@ function OAuthCallbackInner() {
             {t("Authentication Failed")}
           </h1>
           <p className="text-muted-foreground text-sm mb-6">
-            {t(`oauth_error.${error}`)}
+            {t(`login.oauth_error.${error}`)}
           </p>
           <Button
             variant="outline"

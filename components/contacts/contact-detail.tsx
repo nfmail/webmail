@@ -349,7 +349,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 const years = getCompletedYears(ann.date);
                 const suffixKey = ann.kind === "birth" ? "detail.age_years" : "detail.years_since";
                 return (
-                  <FieldRow key={`an${i}`} icon={Cake} label={t(`detail.anniversary_${ann.kind}`)}>
+                  <FieldRow key={`an${i}`} icon={Cake} label={t(`contacts.detail.anniversary_${ann.kind}`)}>
                     <div className="text-sm">
                       {formatDate(ann.date)}
                       {years !== null && (
@@ -363,7 +363,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 <FieldRow icon={UserCircle} label={t("Gender")}>
                   <div className="text-sm">
                     {contact.speakToAs?.grammaticalGender && (
-                      <span>{t(`detail.gender_${contact.speakToAs.grammaticalGender}`, { defaultValue: contact.speakToAs.grammaticalGender })}</span>
+                      <span>{t(`contacts.detail.gender_${contact.speakToAs.grammaticalGender}`, { defaultValue: contact.speakToAs.grammaticalGender })}</span>
                     )}
                     {contact.speakToAs?.pronouns && (() => {
                       const firstPronoun = Object.values(contact.speakToAs!.pronouns!)[0]?.pronouns;
@@ -387,7 +387,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 <FieldRow
                   key={`pi${i}`}
                   icon={Heart}
-                  label={`${t(`detail.personal_${pi.kind}`)}${pi.level ? ` · ${pi.level}` : ""}`}
+                  label={`${t(`contacts.detail.personal_${pi.kind}`)}${pi.level ? ` · ${pi.level}` : ""}`}
                 >
                   <div className="text-sm">{pi.value}</div>
                 </FieldRow>

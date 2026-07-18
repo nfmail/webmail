@@ -240,7 +240,7 @@ export function ReadingSettings() {
           >
             {ALL_HOVER_ACTIONS.map((action) => (
               <ToggleGroupItem key={action.id} value={action.id} className="text-xs">
-                {t(`hover_actions.${action.labelKey}`)}
+                {t(`settings.email_behavior.hover_actions.${action.labelKey}`)}
               </ToggleGroupItem>
             ))}
           </ToggleGroup>

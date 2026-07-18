@@ -459,7 +459,7 @@ function MailboxTreeItem({
   const isVirtualNode = node.id.startsWith('shared-');
   const isSelected = selectedMailbox === node.id;
   const roleKey = resolveRoleKey(node.role, node.name);
-  const label = localizeMailboxName(node.role, node.name, (k) => tSidebar(`mailboxes.${k}`));
+  const label = localizeMailboxName(node.role, node.name, (k) => tSidebar(`sidebar.mailboxes.${k}`));
 
   const { isDragging: globalDragging } = useDragDropContext();
   const { dropHandlers, isValidDropTarget, isInvalidDropTarget } = useMailboxDrop({
@@ -1062,7 +1062,7 @@ export function Sidebar({
                     <SidebarRow
                       key={unifiedId}
                       icon={<Icon className={getIconClass(isSelected, false, colorfulSidebarIcons, count.role)} />}
-                      label={t(`unified_${count.role}`)}
+                      label={t(`sidebar.unified_${count.role}`)}
                       depth={0}
                       isSelected={isSelected}
                       unread={count.unreadEmails}

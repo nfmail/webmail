@@ -78,7 +78,7 @@ export function PlaceholderFillModal({
               <label className="text-sm font-medium text-foreground flex items-center gap-2">
                 <span className="font-mono text-xs text-primary">{`{{${p}}}`}</span>
                 {isBuiltInPlaceholder(p) && (
-                  <span className="text-xs text-muted-foreground">{t(`placeholders.${p}`)}</span>
+                  <span className="text-xs text-muted-foreground">{t(`templates.placeholders.${p}`)}</span>
                 )}
               </label>
               <Input

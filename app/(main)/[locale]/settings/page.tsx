@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useMemo, useSyncExternalStore } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { useTranslations, useMessages } from '@/i18n/client';
+import { useTranslations } from '@/i18n/client';
+import { SETTINGS_SEARCH_CONTENT } from '@/components/settings/settings-search-content';
 import {
   ArrowLeft,
   ChevronRight,
@@ -162,80 +163,6 @@ const tabGroupOrder: TabGroup[] = ['general', 'appearance', 'mail', 'privacy', '
 // appearance) explicitly list the subkeys they actually render so sub-results
 // are attributed to the correct tab. Tabs with their own namespace just point
 // at the namespace root.
-const tabSearchPaths: Record<Tab, string[]> = {
-  account: [
-    'settings.account.name_label',
-    'settings.account.username_label',
-    'settings.account.account_type_label',
-    'settings.account.auth_method_label',
-    'settings.account.email',
-    'settings.account.server',
-    'settings.account.storage',
-    'settings.account.accounts',
-  ],
-  language: ['settings.appearance.language'],
-  notifications: ['settings.notifications'],
-  appearance: [
-    'settings.appearance.theme',
-    'settings.appearance.font_size',
-    'settings.appearance.list_density',
-    'settings.appearance.animations',
-  ],
-  layout: [
-    'settings.appearance.toolbar_position',
-    'settings.appearance.toolbar_labels',
-    'settings.appearance.hide_account_switcher',
-    'settings.appearance.show_rail_account_list',
-    'settings.appearance.unified_mailbox',
-    'settings.appearance.all_mail',
-    'settings.appearance.colorful_sidebar_icons',
-    'settings.email_behavior.mail_layout',
-  ],
-  reading: [
-    'settings.email_behavior.mark_read',
-    'settings.email_behavior.archive_mode',
-    'settings.email_behavior.delete_action',
-    'settings.email_behavior.attachment_click_action',
-    'settings.email_behavior.attachment_image_previews',
-    'settings.email_behavior.attachment_position',
-    'settings.email_behavior.disable_threading',
-    'settings.email_behavior.emails_per_page',
-    'settings.email_behavior.hide_inline_image_attachments',
-    'settings.email_behavior.hover_actions',
-    'settings.email_behavior.permanently_delete_junk',
-    'settings.email_behavior.show_preview',
-  ],
-  composing: [
-    'settings.email_behavior.attachment_reminder',
-    'settings.email_behavior.auto_select_reply_identity',
-    'settings.email_behavior.plain_text_mode',
-    'settings.email_behavior.default_mail_program',
-    'settings.email_behavior.signature_position',
-    'settings.email_behavior.sub_address_delimiter',
-  ],
-  downloads: ['settings.downloads'],
-  identities: ['settings.identities'],
-  vacation: ['settings.vacation'],
-  filters: ['settings.filters'],
-  templates: ['settings.templates'],
-  folders: ['settings.folders'],
-  keywords: ['settings.keywords'],
-  security: ['settings.security'],
-  content_senders: [
-    'settings.email_behavior.always_light_mode',
-    'settings.email_behavior.external_content',
-    'settings.email_behavior.trusted_senders',
-  ],
-  calendar: ['calendar.settings', 'calendar.management'],
-  contacts: ['settings.contacts', 'contacts'],
-  files: ['settings.files'],
-  protocol_handlers: ['protocol_handlers'],
-  sidebar_apps: ['settings.sidebar_apps', 'sidebar_apps'],
-  about_data: ['settings.advanced'],
-  themes: [],
-  plugins: [],
-  debug: ['settings.advanced'],
-};
 
 // Extra English keywords per tab so common search terms hit even when the
 // translation doesn't contain the literal word.
@@ -267,19 +194,6 @@ const tabKeywords: Record<Tab, string> = {
   debug: 'logs developer console diagnostic',
 };
 
-function flattenStrings(node: unknown, sink: string[]): void {
-  if (typeof node === 'string') {
-    sink.push(node);
-    return;
-  }
-  if (Array.isArray(node)) {
-    for (const item of node) flattenStrings(item, sink);
-    return;
-  }
-  if (node && typeof node === 'object') {
-    for (const value of Object.values(node)) flattenStrings(value, sink);
-  }
-}
 
 interface SubResult {
   label: string;
@@ -289,48 +203,7 @@ interface SubResult {
   pluginId?: string;
 }
 
-// Walk a translation subtree and emit sub-results for renderable settings.
-// Picks up:
-//   - bare string leaves (when a tab path points directly at a flat label)
-//   - objects with a `label` or `title` field (the standard pattern)
-//   - flat `*_label` string keys at any object level (e.g. `name_label`)
-function collectSubResults(node: unknown, sink: SubResult[]): void {
-  if (typeof node === 'string') {
-    sink.push({ label: node });
-    return;
-  }
-  if (!node || typeof node !== 'object' || Array.isArray(node)) return;
-  const obj = node as Record<string, unknown>;
-  const label = typeof obj.label === 'string' ? obj.label : (typeof obj.title === 'string' ? obj.title : undefined);
-  if (label) {
-    sink.push({
-      label,
-      description: typeof obj.description === 'string' ? obj.description : undefined,
-    });
-  }
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string' && key !== 'label' && key !== 'title' && key.endsWith('_label')) {
-      sink.push({ label: value });
-    }
-  }
-  for (const value of Object.values(obj)) {
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      collectSubResults(value, sink);
-    }
-  }
-}
 
-function getByPath(obj: unknown, path: string): unknown {
-  let cur: unknown = obj;
-  for (const key of path.split('.')) {
-    if (cur && typeof cur === 'object' && key in (cur as Record<string, unknown>)) {
-      cur = (cur as Record<string, unknown>)[key];
-    } else {
-      return undefined;
-    }
-  }
-  return cur;
-}
 
 // Map legacy tab IDs to current ones; runs once on read of localStorage.
 const LEGACY_TAB_MAP: Record<string, Tab> = {
@@ -391,7 +264,6 @@ export default function SettingsPage() {
   const [pendingHighlight, setPendingHighlight] = useState<{ tab: SettingsTabId; label: string; pluginId?: string } | null>(null);
   const isDesktop = useIsDesktop();
 
-  const messages = useMessages() as Record<string, unknown>;
   const installedPlugins = usePluginStore((s) => s.plugins);
   const installedThemes = useThemeStore((s) => s.installedThemes);
   const sidebarAppsList = useSettingsStore((s) => s.sidebarApps);
@@ -410,15 +282,18 @@ export default function SettingsPage() {
   const { tabSearchHaystacks, tabSubResults } = useMemo(() => {
     const haystacks: Partial<Record<Tab, string>> = {};
     const subs: Partial<Record<Tab, SubResult[]>> = {};
-    const tabIds = Object.keys(tabSearchPaths) as Tab[];
+    const tabIds = Object.keys(SETTINGS_SEARCH_CONTENT) as Tab[];
     for (const tabId of tabIds) {
-      const strings: string[] = [tabId.replace(/_/g, ' '), tabKeywords[tabId] ?? ''];
-      const list: SubResult[] = [];
-      for (const path of tabSearchPaths[tabId]) {
-        const node = getByPath(messages, path);
-        flattenStrings(node, strings);
-        collectSubResults(node, list);
-      }
+      const content = SETTINGS_SEARCH_CONTENT[tabId];
+      const strings: string[] = [
+        tabId.replace(/_/g, ' '),
+        tabKeywords[tabId] ?? '',
+        ...content.texts.map((id) => t(id)),
+      ];
+      const list: SubResult[] = content.subs.map((s) => ({
+        label: t(s.label),
+        description: s.description ? t(s.description) : undefined,
+      }));
       // Dedupe sub-results by label
       const seen = new Set<string>();
       subs[tabId] = list.filter((r) => {
@@ -470,7 +345,7 @@ export default function SettingsPage() {
       ];
     }
     return { tabSearchHaystacks: haystacks, tabSubResults: subs };
-  }, [messages, installedPlugins, installedThemes, sidebarAppsList]);
+  }, [t, installedPlugins, installedThemes, sidebarAppsList]);
 
   // Sidebar resize state
   const [settingsSidebarWidth, setSettingsSidebarWidth] = useState(() => {
@@ -675,7 +550,7 @@ export default function SettingsPage() {
   const groupedTabs = tabGroupOrder
     .map((group) => ({
       group,
-      label: t(`tab_groups.${group}`),
+      label: t(`settings.tab_groups.${group}`),
       items: visibleTabs.filter((tab) => tab.group === group),
     }))
     .filter((g) => g.items.length > 0);

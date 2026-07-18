@@ -69,12 +69,14 @@ function extractUsedKeys(filePath: string): string[] {
   const content = fs.readFileSync(filePath, 'utf-8');
   const keys: string[] = [];
 
-  // Collect all variable→namespace assignments with their positions
-  const assignRegex = /const\s+(\w+)\s*=\s*useTranslations\(\s*["']([^"']*)["']\s*\)/g;
+  // Collect all variable→namespace assignments with their positions. The
+  // namespace argument is optional (text-msgid call sites use bare
+  // useTranslations()).
+  const assignRegex = /const\s+(\w+)\s*=\s*useTranslations\(\s*(?:["']([^"']*)["'])?\s*\)/g;
   const assignments: { varName: string; namespace: string; index: number }[] = [];
   let m: RegExpExecArray | null;
   while ((m = assignRegex.exec(content)) !== null) {
-    assignments.push({ varName: m[1], namespace: m[2], index: m.index });
+    assignments.push({ varName: m[1], namespace: m[2] ?? '', index: m.index });
   }
 
   if (assignments.length === 0) return keys;
@@ -85,10 +87,16 @@ function extractUsedKeys(filePath: string): string[] {
   // For each variable, find its t("key") calls and resolve namespace by position
   for (const varName of varNames) {
     const varAssignments = assignments.filter((a) => a.varName === varName);
-    const callRegex = new RegExp(`\\b${varName}\\(\\s*["']([^"'{}]+)["']`, 'g');
+    // Double-quoted literal with escape support: message texts may contain
+    // apostrophes, ICU braces, and escaped quotes/newlines.
+    const callRegex = new RegExp(`\\b${varName}(?:\\.raw|\\.has)?\\(\\s*"((?:[^"\\\\]|\\\\.)*)"`, 'g');
     while ((m = callRegex.exec(content)) !== null) {
-      const key = m[1];
-      if (key.startsWith('.')) continue;
+      const key = m[1]
+        .replaceAll('\\n', '\n')
+        .replaceAll('\\t', '\t')
+        .replaceAll('\\"', '"')
+        .replaceAll('\\\\', '\\');
+      if (key.startsWith('.') || key === '') continue;
       // Find the nearest preceding assignment for this variable
       const ns = varAssignments
         .filter((a) => a.index < m!.index)

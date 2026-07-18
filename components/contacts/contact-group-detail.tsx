@@ -80,7 +80,7 @@ export function ContactGroupDetail({
                   onClick={() => onComposeGroup(field)}
                   className="touch-manipulation"
                 >
-                  {t(`groups.send_email_${field}`)}
+                  {t(`contacts.groups.send_email_${field}`)}
                 </Button>
               ))}
             </div>

@@ -4,7 +4,7 @@ import { PromptDialog } from '../prompt-dialog';
 
 /**
  * Characterization tests for PromptDialog. next-intl is mocked globally so
- * default confirm/cancel labels resolve to the raw keys "confirm"/"cancel".
+ * default confirm/cancel labels resolve to the English texts "Confirm"/"Cancel".
  */
 describe('PromptDialog (characterization)', () => {
   const baseProps = {
@@ -39,13 +39,13 @@ describe('PromptDialog (characterization)', () => {
 
   it('disables confirm while the (trimmed) input is empty', () => {
     render(<PromptDialog {...baseProps} isOpen />);
-    expect(screen.getByRole('button', { name: 'confirm' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled();
   });
 
   it('enables confirm once the input has non-whitespace content', () => {
     render(<PromptDialog {...baseProps} isOpen />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Reports' } });
-    expect(screen.getByRole('button', { name: 'confirm' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeEnabled();
   });
 
   it('passes the trimmed input value to onSubmit, then calls onClose', () => {
@@ -55,7 +55,7 @@ describe('PromptDialog (characterization)', () => {
       <PromptDialog {...baseProps} isOpen onSubmit={onSubmit} onClose={onClose} />
     );
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '  Reports  ' } });
-    fireEvent.click(screen.getByRole('button', { name: 'confirm' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(onSubmit).toHaveBeenCalledWith('Reports');
     expect(onClose).toHaveBeenCalledOnce();
   });
@@ -82,7 +82,7 @@ describe('PromptDialog (characterization)', () => {
     render(
       <PromptDialog {...baseProps} isOpen onSubmit={onSubmit} onClose={onClose} defaultValue="X" />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onClose).toHaveBeenCalledOnce();
     expect(onSubmit).not.toHaveBeenCalled();
   });

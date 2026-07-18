@@ -108,7 +108,7 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
         />
         {nameError && (
           <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-            {tSettings(`validation.${nameError}`)}
+            {tSettings(`settings.templates.validation.${nameError}`)}
           </p>
         )}
       </div>
@@ -285,7 +285,7 @@ function PlaceholderDropdown({
               onClick={() => onSelect(p)}
             >
               <span className="font-mono text-xs text-primary">{`{{${p}}}`}</span>
-              <span className="ms-2 text-muted-foreground">{t(`placeholders.${p}`)}</span>
+              <span className="ms-2 text-muted-foreground">{t(`templates.placeholders.${p}`)}</span>
             </button>
           ))}
         </div>

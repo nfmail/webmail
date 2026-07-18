@@ -875,7 +875,7 @@ export function CalendarInvitationBanner({ email }: CalendarInvitationBannerProp
                   ? "bg-destructive/15 text-destructive"
                   : "bg-warning/15 text-warning",
               )}>
-                {t(`event_status_${parsedEvent.status}`)}
+                {t(`email_viewer.calendar_invitation.event_status_${parsedEvent.status}`)}
               </span>
             )}
             {existingEvent && (

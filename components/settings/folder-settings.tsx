@@ -445,7 +445,7 @@ export function FolderSettings() {
             <span className="text-sm text-foreground truncate">{mb.name}</span>
             {mb.role && (
               <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium flex-shrink-0">
-                {t(`role_${mb.role}`)}
+                {t(`settings.folders.role_${mb.role}`)}
               </span>
             )}
             {mb.unreadEmails > 0 && (
@@ -537,7 +537,7 @@ export function FolderSettings() {
           };
 
           return (
-            <SettingItem key={role} label={t(`role_${role}`)} htmlFor={`folder-role-${role}`}>
+            <SettingItem key={role} label={t(`settings.folders.role_${role}`)} htmlFor={`folder-role-${role}`}>
               <Select
                 id={`folder-role-${role}`}
                 value={getRoleMailboxId(role)}

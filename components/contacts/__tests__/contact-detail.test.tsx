@@ -25,7 +25,7 @@ const contact: ContactCard = {
 describe('ContactDetail', () => {
   it('shows empty state when contact is null', () => {
     render(<ContactDetail contact={null} onEdit={vi.fn()} onDelete={vi.fn()} />);
-    expect(screen.getByText('detail.no_contact_selected')).toBeInTheDocument();
+    expect(screen.getByText('Select a contact to view details')).toBeInTheDocument();
   });
 
   it('displays the contact name', () => {
@@ -53,15 +53,15 @@ describe('ContactDetail', () => {
   it('calls onEdit when edit button is clicked', () => {
     const onEdit = vi.fn();
     render(<ContactDetail contact={contact} onEdit={onEdit} onDelete={vi.fn()} />);
-    fireEvent.click(screen.getByText('form.edit_title'));
+    fireEvent.click(screen.getByText('Edit Contact'));
     expect(onEdit).toHaveBeenCalledOnce();
   });
 
   it('calls onDelete when delete button is clicked', () => {
     const onDelete = vi.fn();
     render(<ContactDetail contact={contact} onEdit={vi.fn()} onDelete={onDelete} />);
-    fireEvent.click(screen.getByLabelText('detail.more_actions'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /context_menu\.delete/ }));
+    fireEvent.click(screen.getByLabelText('More actions'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
     expect(onDelete).toHaveBeenCalledOnce();
   });
 });

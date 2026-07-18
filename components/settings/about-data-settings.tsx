@@ -124,7 +124,7 @@ export function AboutDataSettings() {
       {showGame && <SpamSiegeGame onClose={() => setShowGame(false)} />}
       <div className="rounded-lg border border-border bg-card p-5 mb-6">
         <div className="flex items-center gap-4">
-          <button onClick={handleLogoClick} className="flex items-center gap-4 flex-1 text-start focus:outline-none group/about cursor-pointer" aria-label="About">
+          <button onClick={handleLogoClick} className="flex items-center gap-4 flex-1 text-start focus:outline-none group/about cursor-pointer" aria-label={t("About")}>
             <div className="shrink-0">
               <img
                 src={`${getPathPrefix()}${PRODUCT.branding.logoLightUrl}`}

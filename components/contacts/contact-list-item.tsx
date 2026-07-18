@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, type DragEvent } from "react";
+import { useTranslations } from "@/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { ContactCard } from "@/lib/jmap/types";
@@ -21,6 +22,7 @@ interface ContactListItemProps {
 }
 
 export function ContactListItem({ contact, isSelected, isChecked, hasSelection, density, selectedContactIds, onClick, onCheckboxClick, onContextMenu }: ContactListItemProps) {
+  const t = useTranslations();
   const name = getContactDisplayName(contact);
   const email = getContactPrimaryEmail(contact);
   const org = contact.organizations
@@ -72,8 +74,7 @@ export function ContactListItem({ contact, isSelected, isChecked, hasSelection, 
           onClick={onCheckboxClick}
           role="checkbox"
           aria-checked={isChecked}
-          // i18n follow-up: no per-row select key exists in the contacts namespace.
-          aria-label={name ? `Select ${name}` : "Select contact"}
+          aria-label={name ? t("Select {name}", { name }) : t("Select contact")}
           className={cn(
             "p-1 rounded flex-shrink-0 transition-all duration-200",
             "hover:bg-muted/50 hover:scale-110",

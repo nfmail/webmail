@@ -39,6 +39,7 @@ const THEME_OPTIONS = [
 ];
 
 function VersionBadge() {
+  const t = useTranslations();
   const [copied, setCopied] = useState(false);
   const banner = useUpdateStore(useShallow(selectBanner));
   const startPolling = useUpdateStore((s) => s.startPolling);
@@ -102,7 +103,7 @@ function VersionBadge() {
             <button
               onClick={handleCopy}
               className="p-1 rounded hover:bg-muted transition-colors"
-              aria-label="Copy version info"
+              aria-label={t("Copy version info")}
             >
               {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
@@ -714,7 +715,7 @@ export default function LoginPage() {
             <div
               className="absolute right-0 top-full mt-2 w-40 rounded-xl border border-border bg-background shadow-lg overflow-hidden animate-fade-in z-50"
               role="listbox"
-              aria-label="Theme selection"
+              aria-label={t("Theme selection")}
             >
               {THEME_OPTIONS.map((option) => {
                 const Icon = option.icon;
@@ -863,7 +864,7 @@ export default function LoginPage() {
           <div
             className="absolute right-0 top-full mt-2 w-40 rounded-xl border border-border bg-background shadow-lg overflow-hidden animate-fade-in z-50"
             role="listbox"
-            aria-label="Theme selection"
+            aria-label={t("Theme selection")}
           >
             {THEME_OPTIONS.map((option) => {
               const Icon = option.icon;

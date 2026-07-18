@@ -1,6 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
+import { useTranslations } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import type { InlineAppState } from '@/hooks/use-sidebar-apps';
 
@@ -12,6 +13,7 @@ interface InlineAppViewProps {
 }
 
 export function InlineAppView({ apps, activeAppId, onClose, className }: InlineAppViewProps) {
+  const t = useTranslations();
   const activeApp = apps.find((a) => a.id === activeAppId);
 
   return (
@@ -22,7 +24,7 @@ export function InlineAppView({ apps, activeAppId, onClose, className }: InlineA
         <button
           onClick={onClose}
           className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-          aria-label="Close"
+          aria-label={t("Close")}
         >
           <X className="w-4 h-4" />
         </button>

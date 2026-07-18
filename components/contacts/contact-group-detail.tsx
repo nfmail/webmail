@@ -121,8 +121,7 @@ export function ContactGroupDetail({
                   <Button
                     variant="ghost"
                     size="icon"
-                    // i18n follow-up: no "remove member" key exists in the contacts namespace.
-                    aria-label={mName ? `Remove ${mName}` : "Remove member"}
+                    aria-label={mName ? t("Remove {name}", { name: mName }) : t("Remove member")}
                     className={cn(
                       "h-8 w-8 transition-opacity",
                       isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"

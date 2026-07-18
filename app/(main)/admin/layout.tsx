@@ -32,6 +32,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from '@/i18n/client';
 import { useConfig } from '@/hooks/use-config';
 import { usePolicyStore } from '@/stores/policy-store';
 import { useThemeStore } from '@/stores/theme-store';
@@ -83,6 +84,7 @@ const NAV_GROUPS: ReadonlyArray<{
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const storeActiveTab = useAdminTabStore((s) => s.activeTab);
@@ -245,7 +247,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div
           role="tablist"
           aria-orientation="vertical"
-          aria-label="Admin sections"
+          aria-label={t("Admin sections")}
           className="px-2 space-y-0.5"
         >
           {NAV_GROUPS.map((group, groupIndex) => (
@@ -413,7 +415,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           'md:hidden fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] border-e border-border bg-secondary flex flex-col transition-transform duration-200 ease-out',
           mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
         )}
-        aria-label="Admin navigation"
+        aria-label={t("Admin navigation")}
         aria-hidden={!mobileNavOpen}
       >
         <div className="h-14 flex items-center justify-between px-3 border-b border-border shrink-0">
@@ -429,7 +431,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             type="button"
             onClick={() => setMobileNavOpen(false)}
             className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            aria-label="Close navigation"
+            aria-label={t("Close navigation")}
           >
             <X className="w-5 h-5" />
           </button>
@@ -445,7 +447,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             type="button"
             onClick={() => setMobileNavOpen(true)}
             className="flex items-center justify-center w-9 h-9 rounded-md text-foreground hover:bg-muted transition-colors"
-            aria-label="Open navigation"
+            aria-label={t("Open navigation")}
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -478,7 +480,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile bottom nav (main webmail nav) */}
       <nav
         className="md:hidden fixed inset-x-0 bottom-0 z-30 flex items-center bg-background border-t border-border pb-[env(safe-area-inset-bottom)]"
-        aria-label="Main navigation"
+        aria-label={t("Main navigation")}
       >
         <a
           href={`${prefix}/`}

@@ -8232,3 +8232,184 @@ msgstr "Nem sikerült betölteni a beállításokat. A preferenciáid nem biztos
 msgid "Reload settings"
 msgstr "Beállítások újratöltése"
 
+
+#. js-lingui-explicit-id
+msgid "About"
+msgstr "Névjegy"
+
+#. js-lingui-explicit-id
+msgid "Admin navigation"
+msgstr "Admin navigáció"
+
+#. js-lingui-explicit-id
+msgid "Admin sections"
+msgstr "Admin szakaszok"
+
+#. js-lingui-explicit-id
+msgid "Align Center"
+msgstr "Középre igazítás"
+
+#. js-lingui-explicit-id
+msgid "Align Left"
+msgstr "Balra igazítás"
+
+#. js-lingui-explicit-id
+msgid "Align Right"
+msgstr "Jobbra igazítás"
+
+#. js-lingui-explicit-id
+msgid "Back to Plugins"
+msgstr "Vissza a bővítményekhez"
+
+#. js-lingui-explicit-id
+msgid "Bold"
+msgstr "Félkövér"
+
+#. js-lingui-explicit-id
+msgid "Bullet List"
+msgstr "Felsorolás"
+
+#. js-lingui-explicit-id
+msgid "Clear Formatting"
+msgstr "Formázás törlése"
+
+#. js-lingui-explicit-id
+msgid "Close navigation"
+msgstr "Navigáció bezárása"
+
+#. js-lingui-explicit-id
+msgid "Code Block"
+msgstr "Kódblokk"
+
+#. js-lingui-explicit-id
+msgid "Collapse panel"
+msgstr "Panel összecsukása"
+
+#. js-lingui-explicit-id
+msgid "Copy version info"
+msgstr "Verzióinformáció másolása"
+
+#. js-lingui-explicit-id
+msgid "Create new"
+msgstr "Új létrehozása"
+
+#. js-lingui-explicit-id
+msgid "Expand panel"
+msgstr "Panel kibontása"
+
+#. js-lingui-explicit-id
+msgid "Heading 1"
+msgstr "Címsor 1"
+
+#. js-lingui-explicit-id
+msgid "Heading 2"
+msgstr "Címsor 2"
+
+#. js-lingui-explicit-id
+msgid "Italic"
+msgstr "Dőlt"
+
+#. js-lingui-explicit-id
+msgid "Link"
+msgstr "Hivatkozás"
+
+#. js-lingui-explicit-id
+msgid "Loading"
+msgstr "Betöltés"
+
+#. js-lingui-explicit-id
+msgid "Main navigation"
+msgstr "Főnavigáció"
+
+#. js-lingui-explicit-id
+msgid "Managed by administrator"
+msgstr "Rendszergazda által kezelt"
+
+#. js-lingui-explicit-id
+msgid "Menu options"
+msgstr "Menüopciók"
+
+#. js-lingui-explicit-id
+msgid "Open navigation"
+msgstr "Navigáció megnyitása"
+
+#. js-lingui-explicit-id
+msgid "Ordered List"
+msgstr "Számozott lista"
+
+#. js-lingui-explicit-id
+msgid "Quote"
+msgstr "Idézet"
+
+#. js-lingui-explicit-id
+msgid "Redo"
+msgstr "Újra"
+
+#. js-lingui-explicit-id
+msgid "Remove address"
+msgstr "Cím eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Remove date"
+msgstr "Dátum eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Remove email"
+msgstr "E-mail eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Remove entry"
+msgstr "Bejegyzés eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Remove member"
+msgstr "Tag eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Remove online service"
+msgstr "Online szolgáltatás eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Remove phone"
+msgstr "Telefonszám eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Remove {name}"
+msgstr "{name} eltávolítása"
+
+#. js-lingui-explicit-id
+msgid "Resize"
+msgstr "Átméretezés"
+
+#. js-lingui-explicit-id
+msgid "Select contact"
+msgstr "Névjegy kijelölése"
+
+#. js-lingui-explicit-id
+msgid "Select {name}"
+msgstr "{name} kijelölése"
+
+#. js-lingui-explicit-id
+msgid "Strikethrough"
+msgstr "Áthúzott"
+
+#. js-lingui-explicit-id
+msgid "Submenu options"
+msgstr "Almenü opciók"
+
+#. js-lingui-explicit-id
+msgid "Table"
+msgstr "Táblázat"
+
+#. js-lingui-explicit-id
+msgid "Text direction (RTL/LTR)"
+msgstr "Szövegirány (RTL/LTR)"
+
+#. js-lingui-explicit-id
+msgid "Theme selection"
+msgstr "Témaválasztás"
+
+#. js-lingui-explicit-id
+msgid "Underline"
+msgstr "Aláhúzott"
+

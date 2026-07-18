@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "@/i18n/client";
 import { useTotpReauthStore } from "@/stores/totp-reauth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ import { Shield } from "lucide-react";
  * the useTotpReauthStore when a 401 is received on a TOTP-authenticated session.
  */
 export function TotpReauthDialog() {
+  const t = useTranslations();
   const { isOpen, submit, cancel } = useTotpReauthStore();
   const [code, setCode] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -85,7 +87,7 @@ export function TotpReauthDialog() {
             className="h-12 text-center font-mono tracking-widest text-lg bg-muted/40 border-border/60 rounded-xl focus:bg-background focus:border-primary/50 transition-all duration-200"
             placeholder="000000"
             autoComplete="one-time-code"
-            aria-label="Authentication code"
+            aria-label={t("Authentication code")}
           />
           <div className="flex gap-3">
             <Button

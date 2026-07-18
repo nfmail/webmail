@@ -175,8 +175,7 @@ export function ContactGroupForm({
                   <button
                     type="button"
                     onClick={() => toggleMember(id)}
-                    // i18n follow-up: no "remove member" key exists in the contacts namespace.
-                    aria-label={`Remove ${getContactDisplayName(contact)}`}
+                    aria-label={t("Remove {name}", { name: getContactDisplayName(contact) })}
                     className="hover:text-destructive"
                   >
                     <X className="w-3 h-3" />

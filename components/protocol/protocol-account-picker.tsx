@@ -78,7 +78,7 @@ export function ProtocolAccountPicker({
 
         {details.length > 0 && (
           <div className="border-b border-border bg-muted/40 px-5 py-3">
-            <dl className="space-y-1.5 text-sm">
+            <dl className="flex flex-col gap-1.5 text-sm">
               {details.map((detail) => (
                 <div key={detail.label} className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3">
                   <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{detail.label}</dt>

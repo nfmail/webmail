@@ -139,11 +139,7 @@ export function ContextMenuItem({
         "focus:bg-muted data-[highlighted]:bg-muted",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
         destructive &&
-          // Light: #dc2626 clears 4.5:1 on the white menu surface. Dark: #dc2626
-          // as text on #0a0a0a is only 4.10:1, so use the lighter red-400 which
-          // clears 4.5:1 there. (The solid --color-destructive token stays
-          // #dc2626 because it must keep working as a button *background*.)
-          "text-destructive dark:text-red-400 focus:bg-destructive/10 data-[highlighted]:bg-destructive/10"
+          "text-destructive focus:bg-destructive/10 data-[highlighted]:bg-destructive/10"
       )}
     >
       {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}

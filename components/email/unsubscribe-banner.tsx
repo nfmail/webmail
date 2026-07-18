@@ -108,8 +108,8 @@ export function UnsubscribeBanner({
   if (success) {
     return (
       <span className="inline-flex items-center gap-1 ms-1">
-        <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
-        <span className="text-xs text-green-600 dark:text-green-400">
+        <CheckCircle className="w-3 h-3 text-success" />
+        <span className="text-xs text-success">
           {t(unsubMethod === 'http'
             ? 'email_viewer.unsubscribe_banner.success_http'
             : 'email_viewer.unsubscribe_banner.success_mailto'
@@ -122,10 +122,10 @@ export function UnsubscribeBanner({
   if (error) {
     return (
       <span className="inline-flex items-center gap-1 ms-1">
-        <AlertCircle className="w-3 h-3 text-red-500 dark:text-red-400" />
+        <AlertCircle className="w-3 h-3 text-destructive" />
         <button
           onClick={onDismiss}
-          className="text-xs text-red-500 dark:text-red-400 hover:underline bg-transparent p-0 min-h-0"
+          className="text-xs text-destructive hover:underline bg-transparent p-0 min-h-0"
         >
           {t("Unable to unsubscribe")}
         </button>
@@ -139,7 +139,7 @@ export function UnsubscribeBanner({
         <span className="text-muted-foreground mx-1">·</span>
         <button
           onClick={() => setShowConfirm(true)}
-          className="text-xs text-blue-600 dark:text-blue-400 hover:underline bg-transparent p-0 min-h-0 leading-normal"
+          className="text-xs text-primary hover:underline bg-transparent p-0 min-h-0 leading-normal"
         >
           {t("Unsubscribe")}
         </button>

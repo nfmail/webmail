@@ -49,14 +49,14 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
+    <div className="max-w-md mx-auto flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Change Password</h1>
         <p className="text-sm text-muted-foreground mt-1">Update your admin password.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1.5">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-foreground">Current Password</label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -71,7 +71,7 @@ export default function ChangePasswordPage() {
           </div>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-foreground">New Password</label>
           <input
             type="password"
@@ -84,7 +84,7 @@ export default function ChangePasswordPage() {
           />
         </div>
 
-        <div className="space-y-1.5">
+        <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-foreground">Confirm New Password</label>
           <input
             type="password"
@@ -98,10 +98,10 @@ export default function ChangePasswordPage() {
         </div>
 
         {error && (
-          <p className="text-sm text-red-500">{error}</p>
+          <p className="text-sm text-destructive">{error}</p>
         )}
         {success && (
-          <p className="text-sm text-green-600">Password changed. Redirecting...</p>
+          <p className="text-sm text-success">Password changed. Redirecting...</p>
         )}
 
         <button

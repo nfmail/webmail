@@ -172,7 +172,7 @@ export function ThreadConversationView({
 
       {/* Email Cards */}
       <div className="flex-1 overflow-y-auto">
-        <div className="space-y-3" style={{ padding: 'var(--density-card-p)' }}>
+        <div className="flex flex-col gap-3" style={{ padding: 'var(--density-card-p)' }}>
           {emails.map((email, index) => {
             const senderEmail = email.from?.[0]?.email?.toLowerCase();
             const senderIsTrusted = senderEmail
@@ -522,7 +522,7 @@ function EmailCard({
               {sender?.name || sender?.email || "Unknown"}
             </span>
             {isStarred && (
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400 flex-shrink-0" />
+              <Star className="w-4 h-4 fill-warning text-warning flex-shrink-0" />
             )}
             {email.hasAttachment && (
               <Paperclip className="w-4 h-4 text-muted-foreground flex-shrink-0" />

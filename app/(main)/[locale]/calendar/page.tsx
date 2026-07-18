@@ -1158,7 +1158,7 @@ export default function CalendarPage() {
             </DialogDescription>
           )}
         </DialogHeader>
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           <Button variant="outline" className="w-full justify-start h-auto py-3" onClick={handleImportWebcal}>
             <span className="text-start">
               <span className="block font-medium">{tWebcalAction("Import once")}</span>

@@ -11,8 +11,8 @@ export function PageErrorFallback({ error: _error, resetError, t }: FallbackProp
   return (
     <div className="flex h-screen items-center justify-center bg-background">
       <div className="text-center max-w-md px-4">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-          <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-destructive/10 flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-destructive" />
         </div>
         <h2 className="text-xl font-semibold text-foreground mb-2">
           {t("Something went wrong")}
@@ -71,8 +71,8 @@ export function EmailListErrorFallback({ resetError, t }: FallbackProps) {
 export function EmailViewerErrorFallback({ resetError, t }: FallbackProps) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-muted/30 p-8">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
-        <Mail className="w-8 h-8 text-red-500" />
+      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-destructive/10 flex items-center justify-center">
+        <Mail className="w-8 h-8 text-destructive" />
       </div>
       <h3 className="text-lg font-medium text-foreground mb-2">
         {t("Unable to display email")}

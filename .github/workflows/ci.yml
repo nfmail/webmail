@@ -194,8 +194,9 @@ jobs:
     # workflow_dispatch stays enabled for the baseline-regeneration path.
     needs: ui-changes
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && needs.ui-changes.outputs.ui == 'true')
+      !cancelled() &&
+      (github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && needs.ui-changes.outputs.ui == 'true'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -258,8 +259,9 @@ jobs:
     # Same rationale and gating as visual-regression.
     needs: ui-changes
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && needs.ui-changes.outputs.ui == 'true')
+      !cancelled() &&
+      (github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && needs.ui-changes.outputs.ui == 'true'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

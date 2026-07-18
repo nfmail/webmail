@@ -39,7 +39,7 @@ function getPreviewIcon(file: SampleFile, colored: boolean, size: "sm" | "lg") {
     case "jpg": case "png": case "gif":
       return <ImageIcon className={cn(cls, colored ? "text-success" : "text-muted-foreground")} />;
     case "mp3": case "wav":
-      return <FileAudio className={cn(cls, colored ? "text-purple-500" : "text-muted-foreground")} />;
+      return <FileAudio className={cn(cls, colored ? "text-info" : "text-muted-foreground")} />;
     case "pdf":
       return <FileText className={cn(cls, colored ? "text-destructive" : "text-muted-foreground")} />;
     case "md": case "json": case "js": case "ts":

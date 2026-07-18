@@ -306,7 +306,7 @@ export function EventDetailPopover({
                 </span>
               )}
               {event.status === "cancelled" && (
-                <span className="ms-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 line-through">
+                <span className="ms-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/15 text-destructive line-through">
                   {t("Cancelled")}
                 </span>
               )}
@@ -324,7 +324,7 @@ export function EventDetailPopover({
 
       {/* Content */}
       <div className={cn(
-        "px-4 py-2 space-y-2.5 overflow-y-auto",
+        "px-4 py-2 flex flex-col gap-2.5 overflow-y-auto",
         isMobile ? "flex-1" : ""
       )} style={isMobile ? undefined : { maxHeight: MAX_HEIGHT - 140 }}>
         {/* Date & Time */}
@@ -431,7 +431,7 @@ export function EventDetailPopover({
               <span className="text-muted-foreground">
                 {t("{count, plural, one {# participant} other {# participants}}", { count: participants.length })}
               </span>
-              <div className="mt-1 space-y-0.5">
+              <div className="mt-1 flex flex-col gap-0.5">
                 {participants.slice(0, 5).map((p) => (
                   <div key={p.id} className="flex items-center justify-between gap-2 text-xs">
                     <span className="truncate text-foreground">
@@ -486,7 +486,7 @@ export function EventDetailPopover({
       {!isAttendeeMode && (
         <div className="px-4 py-2 border-t border-border">
           {noteExpanded ? (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <textarea
                 ref={noteInputRef}
                 value={noteText}
@@ -593,7 +593,7 @@ export function EventDetailPopover({
               variant="outline"
               size="sm"
               onClick={onDelete}
-              className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 h-7 text-xs"
+              className="text-destructive border-destructive/30 h-7 text-xs"
             >
               {t("Delete event")}
             </Button>
@@ -627,7 +627,7 @@ export function EventDetailPopover({
               variant="ghost"
               size="sm"
               onClick={() => setShowDeleteConfirm(true)}
-              className="h-7 text-xs text-red-600 dark:text-red-400"
+              className="h-7 text-xs text-destructive"
               title={t("Delete event")}
             >
               <Trash2 className="w-3.5 h-3.5" />

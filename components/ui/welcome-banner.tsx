@@ -84,11 +84,11 @@ export function WelcomeBanner() {
             <div className="flex-shrink-0 mt-0.5 p-1.5 rounded-md bg-primary/10">
               <Lightbulb className="w-4 h-4 text-primary" />
             </div>
-            <div className="space-y-1.5">
+            <div className="flex flex-col gap-1.5">
               <h3 className="text-sm font-medium text-foreground">
                 {t("Welcome to your mailbox")}
               </h3>
-              <ul className="space-y-1 text-sm text-muted-foreground">
+              <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
                 <li>{t("Press c to compose a new email")}</li>
                 <li>{t("Press ? to see all keyboard shortcuts")}</li>
                 <li>{t("Find Calendar, Contacts and Settings in the sidebar menu")}</li>

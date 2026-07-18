@@ -137,7 +137,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {filtered.map((template) => (
               <div
                 key={template.id}
@@ -152,8 +152,8 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
                     className={cn(
                       'w-4 h-4 transition-colors',
                       template.isFavorite
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-muted-foreground hover:text-amber-400'
+                        ? 'fill-warning text-warning'
+                        : 'text-muted-foreground hover:text-warning'
                     )}
                   />
                 </button>
@@ -220,7 +220,7 @@ export function TemplateManagerModal({ isOpen, onClose }: TemplateManagerModalPr
                       size="sm"
                       onClick={() => setDeleteConfirmId(template.id)}
                       disabled={!!editingId || isCreating}
-                      className="h-8 w-8 p-0 hover:text-red-600 dark:hover:text-red-400"
+                      className="h-8 w-8 p-0 hover:text-destructive"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>

@@ -65,7 +65,7 @@ export function PWAInstallPrompt() {
   const darkLogoSrc = withBasePath(appLogoDarkUrl || faviconUrl);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 p-4 max-w-sm animate-in slide-in-from-bottom-4">
+    <div className="fixed bottom-4 right-4 z-50 bg-popover text-popover-foreground rounded-lg shadow-lg border border-border p-4 max-w-sm animate-in slide-in-from-bottom-4">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-start gap-3">
           {logoSrc ? (
@@ -75,7 +75,7 @@ export function PWAInstallPrompt() {
               className="w-8 h-8 shrink-0 object-contain dark:hidden"
             />
           ) : (
-            <Download className="w-5 h-5 mt-0.5 text-blue-600 dark:text-blue-400 shrink-0" />
+            <Download className="w-5 h-5 mt-0.5 text-info shrink-0" />
           )}
           {logoSrc && (
             <img
@@ -85,17 +85,17 @@ export function PWAInstallPrompt() {
             />
           )}
           <div>
-            <h3 className="font-semibold text-sm text-neutral-900 dark:text-white">
+            <h3 className="font-semibold text-sm text-foreground">
               {t("Install {appName}", { appName })}
             </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {t("Install our app for quick access and offline support.")}
             </p>
           </div>
         </div>
         <button
           onClick={handleDismiss}
-          className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
           aria-label={t("Dismiss install prompt")}
         >
           <X className="w-4 h-4" />
@@ -105,20 +105,20 @@ export function PWAInstallPrompt() {
         <div className="flex gap-2">
           <button
             onClick={handleDismiss}
-            className="flex-1 px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            className="flex-1 px-3 py-2 text-sm font-medium text-secondary-foreground bg-secondary rounded hover:bg-secondary/80 transition-colors"
           >
             {t("Not now")}
           </button>
           <button
             onClick={handleInstall}
-            className="flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+            className="flex-1 px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded hover:bg-primary/90 transition-colors"
           >
             {t("Install")}
           </button>
         </div>
         <button
           onClick={handleDismissForever}
-          className="w-full text-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors text-center"
+          className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors text-center"
         >
           {t("Don't remind me again")}
         </button>

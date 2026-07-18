@@ -267,7 +267,7 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                 </div>
                 <div className="flex items-center gap-2.5 shrink-0">
                   {isPinned && <Pin className="w-3.5 h-3.5 text-primary" />}
-                  {isStarred && <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />}
+                  {isStarred && <Star className="w-3.5 h-3.5 fill-warning text-warning" />}
                   {isAnswered && !isForwarded && <Reply className="w-3.5 h-3.5 text-muted-foreground" />}
                   {isForwarded && !isAnswered && <Forward className="w-3.5 h-3.5 text-muted-foreground" />}
                   {isAnswered && isForwarded && (
@@ -278,12 +278,12 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                   )}
                   {email.hasAttachment && <Paperclip className="w-3.5 h-3.5 text-muted-foreground" />}
                   {resolvedKeywordDefs.map((kd) => (
-                    <span key={kd.id} className={cn('h-2.5 w-2.5 rounded-full', KEYWORD_PALETTE[kd.color]?.dot || 'bg-gray-400')} />
+                    <span key={kd.id} className={cn('h-2.5 w-2.5 rounded-full', KEYWORD_PALETTE[kd.color]?.dot || 'bg-muted-foreground')} />
                   ))}
                   {showSourceFolder && <SourceFolderTag name={email.sourceFolder!} />}
                   {scheduledSendLabel ? (
                     <span
-                      className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-sky-500/20 bg-sky-500/10 px-2 py-0.5 text-xs font-medium tabular-nums text-sky-700 dark:text-sky-300"
+                      className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-info/20 bg-info/10 px-2 py-0.5 text-xs font-medium tabular-nums text-info"
                       title={scheduledSendLabel}
                     >
                       <CalendarClock className="h-3 w-3 shrink-0" />
@@ -323,7 +323,7 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                         <Pin className="w-3.5 h-3.5 text-primary" />
                       )}
                       {isStarred && (
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        <Star className="w-3.5 h-3.5 fill-warning text-warning" />
                       )}
                       {isAnswered && !isForwarded && (
                         <Reply className="w-3.5 h-3.5 text-muted-foreground" />
@@ -348,14 +348,14 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                         "inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full",
                         KEYWORD_PALETTE[kd.color]?.bg || "bg-muted"
                       )}>
-                        <span className={cn("w-1.5 h-1.5 rounded-full", KEYWORD_PALETTE[kd.color]?.dot || "bg-gray-400")} />
+                        <span className={cn("w-1.5 h-1.5 rounded-full", KEYWORD_PALETTE[kd.color]?.dot || "bg-muted-foreground")} />
                         {kd.label}
                       </span>
                     ))}
                     {showSourceFolder && <SourceFolderTag name={email.sourceFolder!} />}
                     {scheduledSendLabel ? (
                       <span
-                        className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-sky-500/20 bg-sky-500/10 px-2 py-0.5 text-[11px] font-medium tabular-nums text-sky-700 dark:text-sky-300"
+                        className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-info/20 bg-info/10 px-2 py-0.5 text-[11px] font-medium tabular-nums text-info"
                         title={scheduledSendLabel}
                       >
                         <CalendarClock className="h-3 w-3 shrink-0" />
@@ -731,7 +731,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                   </div>
                   <div className="flex items-center gap-2.5 shrink-0">
                     {hasPinned && <Pin className="w-3.5 h-3.5 text-primary" />}
-                    {hasStarred && <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />}
+                    {hasStarred && <Star className="w-3.5 h-3.5 fill-warning text-warning" />}
                     {hasAnswered && !hasForwarded && <Reply className="w-3.5 h-3.5 text-muted-foreground" />}
                     {hasForwarded && !hasAnswered && <Forward className="w-3.5 h-3.5 text-muted-foreground" />}
                     {hasAnswered && hasForwarded && (
@@ -742,12 +742,12 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                     )}
                     {hasAttachment && <Paperclip className="w-3.5 h-3.5 text-muted-foreground" />}
                     {keywordDef && (
-                      <span className={cn('h-2.5 w-2.5 rounded-full', KEYWORD_PALETTE[keywordDef.color]?.dot || 'bg-gray-400')} />
+                      <span className={cn('h-2.5 w-2.5 rounded-full', KEYWORD_PALETTE[keywordDef.color]?.dot || 'bg-muted-foreground')} />
                     )}
                     {showSourceFolder && <SourceFolderTag name={latestEmail.sourceFolder!} />}
                     {scheduledSendLabel ? (
                       <span
-                        className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-sky-500/20 bg-sky-500/10 px-2 py-0.5 text-xs font-medium tabular-nums text-sky-700 dark:text-sky-300"
+                        className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-info/20 bg-info/10 px-2 py-0.5 text-xs font-medium tabular-nums text-info"
                         title={scheduledSendLabel}
                       >
                         <CalendarClock className="h-3 w-3 shrink-0" />
@@ -799,7 +799,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                           <Pin className="w-3.5 h-3.5 text-primary" />
                         )}
                         {hasStarred && (
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <Star className="w-3.5 h-3.5 fill-warning text-warning" />
                         )}
                         {hasAnswered && !hasForwarded && (
                           <Reply className="w-3.5 h-3.5 text-muted-foreground" />
@@ -824,14 +824,14 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                           "inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full",
                           KEYWORD_PALETTE[keywordDef.color]?.bg || "bg-muted"
                         )}>
-                          <span className={cn("w-1.5 h-1.5 rounded-full", KEYWORD_PALETTE[keywordDef.color]?.dot || "bg-gray-400")} />
+                          <span className={cn("w-1.5 h-1.5 rounded-full", KEYWORD_PALETTE[keywordDef.color]?.dot || "bg-muted-foreground")} />
                           {keywordDef.label}
                         </span>
                       )}
                       {showSourceFolder && <SourceFolderTag name={latestEmail.sourceFolder!} />}
                       {scheduledSendLabel ? (
                         <span
-                          className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-sky-500/20 bg-sky-500/10 px-2 py-0.5 text-[11px] font-medium tabular-nums text-sky-700 dark:text-sky-300"
+                          className="inline-flex max-w-[11rem] shrink-0 items-center gap-1 truncate rounded-full border border-info/20 bg-info/10 px-2 py-0.5 text-[11px] font-medium tabular-nums text-info"
                           title={scheduledSendLabel}
                         >
                           <CalendarClock className="h-3 w-3 shrink-0" />

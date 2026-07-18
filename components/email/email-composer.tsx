@@ -2080,13 +2080,13 @@ export function EmailComposer({
               </div>
             )}
             {saveStatus === 'saved' && (
-              <div className="flex items-center gap-1 text-xs text-green-600">
+              <div className="flex items-center gap-1 text-xs text-success">
                 <Check className="w-3 h-3" />
                 <span className="hidden md:inline">{t("Draft saved")}</span>
               </div>
             )}
             {saveStatus === 'error' && (
-              <div className="flex items-center gap-1 text-xs text-red-600">
+              <div className="flex items-center gap-1 text-xs text-destructive">
                 <X className="w-3 h-3" />
                 <span className="hidden md:inline">{t("Failed to save")}</span>
               </div>
@@ -2108,7 +2108,7 @@ export function EmailComposer({
 
       <div className="flex-1 min-h-0 overflow-auto">
         {/* Fields section */}
-        <div className="space-y-0 border-b">
+        <div className="border-b">
           {/* From field */}
           <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50">
             <span className="text-sm text-muted-foreground w-12 md:w-16 shrink-0">{t("From")}:</span>
@@ -2388,7 +2388,7 @@ export function EmailComposer({
               }}
               className={cn(
                 "flex-1 border-0 focus-visible:ring-0 h-8 px-0 text-sm",
-                validationErrors.subject && "ring-2 ring-red-500 dark:ring-red-400"
+                validationErrors.subject && "ring-2 ring-destructive"
               )}
               aria-invalid={validationErrors.subject || undefined}
             />
@@ -2407,7 +2407,7 @@ export function EmailComposer({
             placeholder={t("Write your message...")}
             className={cn(
               "w-full min-h-[300px] px-4 py-3 text-sm text-foreground bg-transparent resize-y focus:outline-none font-mono",
-              validationErrors.body && "ring-2 ring-red-500 dark:ring-red-400 rounded"
+              validationErrors.body && "ring-2 ring-destructive rounded"
             )}
             style={{ height: 'calc(100vh - 350px)' }}
             aria-invalid={validationErrors.body || undefined}
@@ -2469,7 +2469,7 @@ export function EmailComposer({
                   key={index}
                   className={cn(
                     "relative flex items-center gap-2 px-3 py-1.5 rounded-md text-sm overflow-hidden",
-                    att.error ? "bg-red-500/10 text-red-600 dark:text-red-400" : "bg-muted text-foreground"
+                    att.error ? "bg-destructive/10 text-destructive" : "bg-muted text-foreground"
                   )}
                 >
                   {att.uploading && (
@@ -2500,7 +2500,7 @@ export function EmailComposer({
                     )}
                     <button
                       onClick={() => removeAttachment(index)}
-                      className="ms-1 hover:text-red-500 min-w-[20px] min-h-[20px] flex items-center justify-center"
+                      className="ms-1 hover:text-destructive min-w-[20px] min-h-[20px] flex items-center justify-center"
                       title={att.uploading ? t("Cancel upload") : undefined}
                       aria-label={att.uploading ? t("Cancel upload") : `${tCommon("Delete")} ${att.name}`}
                     >
@@ -2604,7 +2604,7 @@ export function EmailComposer({
                   onClick={() => setRequestReadReceipt(v => !v)}
                   className={cn(
                     "h-9 w-9",
-                    requestReadReceipt && "bg-green-600 text-white hover:bg-green-600 hover:text-white dark:bg-green-600 dark:hover:bg-green-600"
+                    requestReadReceipt && "bg-success text-success-foreground hover:bg-success hover:text-success-foreground"
                   )}
                   aria-label={requestReadReceipt ? t("Read receipt requested (click to disable)") : t("Request a read receipt")}
                   aria-pressed={requestReadReceipt}
@@ -2622,7 +2622,7 @@ export function EmailComposer({
             <button
               type="button"
               onClick={handleClose}
-              className="text-sm text-muted-foreground hover:text-red-500 transition-colors px-2 py-1"
+              className="text-sm text-muted-foreground hover:text-destructive transition-colors px-2 py-1"
             >
               {t("Discard")}
             </button>
@@ -3102,7 +3102,7 @@ function RecipientChipInput({
       <div
         className={cn(
           "flex flex-wrap items-center gap-1 min-h-[32px] cursor-text",
-          validationError && "ring-2 ring-red-500 dark:ring-red-400 rounded",
+          validationError && "ring-2 ring-destructive rounded",
           isDragOver && "ring-2 ring-primary/50 rounded bg-accent/20"
         )}
         onClick={() => inputRef.current?.focus()}
@@ -3215,7 +3215,7 @@ function RecipientChipInput({
         )}
       </div>
       {validationError && validationMessage && (
-        <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">{validationMessage}</p>
+        <p className="text-xs text-destructive mt-0.5">{validationMessage}</p>
       )}
       {activeAutoField === field &&
         (autocompleteResults.length > 0 || (canSearchServer && serverSearchQuery.length > 0)) && (

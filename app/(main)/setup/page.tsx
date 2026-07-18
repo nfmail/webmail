@@ -341,7 +341,7 @@ function CompletedScreen() {
           {PRODUCT.name} is configured and ready to use.
         </p>
       </div>
-      <div className="mt-6 space-y-2">
+      <div className="mt-6 flex flex-col gap-2">
         <a
           href={`${getPathPrefix()}/admin/login`}
           className="block w-full rounded-md bg-primary text-primary-foreground text-center px-4 py-2.5 text-sm font-medium hover:bg-primary/90"
@@ -379,7 +379,7 @@ function InsecureContextScreen({ onContinue }: { onContinue: () => void }) {
           Please use HTTPS if at all possible - terminate TLS on the container or a reverse proxy in front of it.
         </p>
       </div>
-      <div className="mt-6 space-y-2">
+      <div className="mt-6 flex flex-col gap-2">
         {httpsUrl && (
           <a
             href={httpsUrl}
@@ -423,7 +423,7 @@ function AlreadyConfiguredScreen() {
           {PRODUCT.name} is configured. Sign in to continue.
         </p>
       </div>
-      <div className="mt-6 space-y-2">
+      <div className="mt-6 flex flex-col gap-2">
         <a
           href={`${getPathPrefix()}/admin/login`}
           className="block w-full rounded-md bg-primary text-primary-foreground text-center px-4 py-2.5 text-sm font-medium hover:bg-primary/90"
@@ -518,7 +518,7 @@ function WelcomeStep({ tokenFromUrl, onSubmit }: { tokenFromUrl: string; onSubmi
   }
 
   return (
-    <form onSubmit={handle} className="space-y-4">
+    <form onSubmit={handle} className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold">Welcome</h2>
       <p className="text-sm text-muted-foreground">
         Paste the setup token printed in the container logs to continue. The token expires after 1 hour.
@@ -698,7 +698,7 @@ function ServerStep({ config, setConfig, onNext }: Pick<StepProps, 'config' | 's
   }
 
   return (
-    <form onSubmit={handle} className="space-y-4">
+    <form onSubmit={handle} className="flex flex-col gap-4">
       <StepHeader title="Server" subtitle="Where your mail lives." />
       <Field label="Application name">
         <Input value={config.appName} onChange={(v) => setConfig({ ...config, appName: v })} required />
@@ -823,9 +823,9 @@ function ServerStep({ config, setConfig, onNext }: Pick<StepProps, 'config' | 's
         </div>
 
         {showAdditional && (
-          <div className="mt-3 space-y-3">
+          <div className="mt-3 flex flex-col gap-3">
             {config.jmapServers.map((row, i) => (
-              <div key={i} className="rounded-md border border-border bg-background p-3 space-y-2">
+              <div key={i} className="rounded-md border border-border bg-background p-3 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground">Server #{i + 1}</span>
                   <button
@@ -871,7 +871,7 @@ function ServerStep({ config, setConfig, onNext }: Pick<StepProps, 'config' | 's
             )}
 
             {hasRowErrors && (
-              <ul className="text-xs text-destructive list-disc ps-5 space-y-0.5">
+              <ul className="text-xs text-destructive list-disc ps-5 [&>*+*]:mt-0.5">
                 {rowErrors.map((err, i) => (
                   <li key={i}>{err}</li>
                 ))}
@@ -935,7 +935,7 @@ function AuthStep({ config, setConfig, onNext, onBack }: Pick<StepProps, 'config
   }
 
   return (
-    <form onSubmit={handle} className="space-y-4">
+    <form onSubmit={handle} className="flex flex-col gap-4">
       <StepHeader title="Authentication" subtitle="Basic auth is always available. OAuth/OIDC is optional." />
       <Toggle
         checked={config.oauthEnabled}
@@ -1019,7 +1019,7 @@ function SecurityStep({ config, setConfig, onNext, onBack }: Pick<StepProps, 'co
   }
 
   return (
-    <form onSubmit={handle} className="space-y-4">
+    <form onSubmit={handle} className="flex flex-col gap-4">
       <StepHeader
         title="Security & Sessions"
         subtitle='Session secret unlocks "Remember me" and settings sync.'
@@ -1107,7 +1107,7 @@ function LoggingStep({ config, setConfig, onNext, onBack }: Pick<StepProps, 'con
     }
   }
   return (
-    <form onSubmit={handle} className="space-y-4">
+    <form onSubmit={handle} className="flex flex-col gap-4">
       <StepHeader title="Logging" subtitle="Format and verbosity for the application logs." />
       <Field label="Format">
         <Select
@@ -1182,7 +1182,7 @@ function BrandingStep({ config, setConfig, onNext, onBack }: Pick<StepProps, 'co
   }
 
   return (
-    <form onSubmit={handle} className="space-y-4">
+    <form onSubmit={handle} className="flex flex-col gap-4">
       <StepHeader
         title="Branding"
         subtitle="All fields optional. Upload a file or paste a URL - defaults are used for anything you skip."
@@ -1191,7 +1191,7 @@ function BrandingStep({ config, setConfig, onNext, onBack }: Pick<StepProps, 'co
         <Input value={config.loginCompanyName} onChange={(v) => setConfig({ ...config, loginCompanyName: v })} />
       </Field>
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         <BrandingAsset
           label="Favicon"
           hint="Browser tab icon. SVG recommended."
@@ -1315,7 +1315,7 @@ function BrandingAsset({
 
   const previewClasses =
     'shrink-0 w-16 h-16 rounded-md border border-border flex items-center justify-center overflow-hidden transition-colors ' +
-    (previewBg === 'dark' ? 'bg-zinc-900' : 'bg-muted/40') +
+    (previewBg === 'dark' ? 'bg-[#18181b]' : 'bg-muted/40') +
     (dragOver ? ' ring-2 ring-primary border-primary' : '');
 
   return (
@@ -1449,7 +1449,7 @@ function ReviewStep({ config, onBack, onFinish }: { config: WizardConfig; onBack
     passwordsMatch;
 
   return (
-    <form onSubmit={handle} className="space-y-5">
+    <form onSubmit={handle} className="flex flex-col gap-5">
       <StepHeader title="Almost done" subtitle="Review your settings, choose an admin password, and apply." />
 
       {/* Summary card with grouped sections */}
@@ -1593,7 +1593,7 @@ function SummaryGroup({ icon, title, children }: { icon: ReactNode; title: strin
         <span className="text-muted-foreground">{icon}</span>
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</span>
       </div>
-      <div className="px-3 py-2 space-y-1.5">{children}</div>
+      <div className="px-3 py-2 flex flex-col gap-1.5">{children}</div>
     </div>
   );
 }

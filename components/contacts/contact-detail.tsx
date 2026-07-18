@@ -226,7 +226,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
       <div className={cn("divide-y divide-border/60", isMobile ? "px-4" : "px-6")}>
         {hasContactDetails && (
           <Section title={t("Contact details")}>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {emails.map((e, i) => (
                 <FieldRow key={`em${i}`} icon={Mail} label={e.label || formatContexts(e.contexts) || t("Email")}>
                   <div className="flex items-center gap-2 group">
@@ -280,7 +280,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
                 }
                 return (
                   <FieldRow key={`ad${i}`} icon={MapPin} label={formatContexts(a.contexts) || t("Address")}>
-                    <div className="text-sm space-y-0.5">
+                    <div className="text-sm flex flex-col gap-0.5">
                       {lines.map((line, idx) => (
                         <div key={idx}>{line}</div>
                       ))}
@@ -318,7 +318,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
         {hasWork && (
           <Section title={t("Work")}>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {orgs.map((o, i) => (
                 <FieldRow key={`org${i}`} icon={Building} label={t("Organization")}>
                   <div className="text-sm">
@@ -344,7 +344,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
         {hasPersonal && (
           <Section title={t("Personal")}>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {anniversaries.map((ann, i) => {
                 const years = getCompletedYears(ann.date);
                 const suffixKey = ann.kind === "birth" ? "detail.age_years" : "detail.years_since";
@@ -410,7 +410,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
         {relatedTo.length > 0 && (
           <Section title={t("Related Contacts")}>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               {relatedTo.map(([uri, rel], i) => {
                 const relType = rel.relation ? Object.keys(rel.relation).find(k => rel.relation![k]) : undefined;
                 return (
@@ -425,9 +425,9 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
         {cryptoKeys.length > 0 && (
           <Section title={t("Crypto Keys")}>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {cryptoKeys.map((key, i) => (
-                <div key={i} className="rounded-md border border-border/60 bg-muted/30 p-3 space-y-1">
+                <div key={i} className="rounded-md border border-border/60 bg-muted/30 p-3 flex flex-col gap-1">
                   <div className="flex items-start gap-2 text-sm break-all">
                     <KeyRound className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     {typeof key.uri === 'string' && key.uri.startsWith("http") ? (
@@ -446,7 +446,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
 
         {(contact.calendarUri || contact.schedulingUri || contact.freeBusyUri) && (
           <Section title={t("Calendar")}>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {contact.calendarUri && (
                 <FieldRow icon={Calendar} label={t("Calendar URL")}>
                   <a href={contact.calendarUri} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
@@ -476,7 +476,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
           <Section title={t("Notes")}>
             <div className="flex items-start gap-3">
               <StickyNote className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
-              <div className="text-sm space-y-2 flex-1 min-w-0">
+              <div className="text-sm flex flex-col gap-2 flex-1 min-w-0">
                 {notes.map((n, i) => (
                   <p key={i} className="whitespace-pre-wrap">{n.note}</p>
                 ))}
@@ -488,7 +488,7 @@ export function ContactDetail({ contact, onEdit, onDelete, onAddToGroup, onDupli
         <ContactActivity contact={contact} />
 
         {(contact.created || contact.updated) && (
-          <div className="py-4 text-xs text-muted-foreground space-y-1">
+          <div className="py-4 text-xs text-muted-foreground flex flex-col gap-1">
             {contact.created && <div>{t("Created")}: {formatDate(contact.created)}</div>}
             {contact.updated && <div>{t("Last updated")}: {formatDate(contact.updated)}</div>}
           </div>
@@ -588,10 +588,10 @@ function MoreActionsMenu({ items, label }: { items: MoreItem[]; label: string })
                 }}
                 className={cn(
                   "w-full flex items-center gap-2 px-3 py-1.5 text-sm text-start hover:bg-muted focus:bg-muted focus:outline-none transition-colors",
-                  item.destructive && "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 focus:bg-red-50 dark:focus:bg-red-950",
+                  item.destructive && "text-destructive hover:bg-destructive/10 focus:bg-destructive/10",
                 )}
               >
-                <item.icon className={cn("w-4 h-4 flex-shrink-0", item.destructive ? "text-red-600 dark:text-red-400" : "text-muted-foreground")} />
+                <item.icon className={cn("w-4 h-4 flex-shrink-0", item.destructive ? "text-destructive" : "text-muted-foreground")} />
                 <span className="flex-1">{item.label}</span>
               </button>
             );

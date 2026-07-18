@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
           <p className="text-sm text-muted-foreground mt-1">Enter your admin password to continue</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
               Password

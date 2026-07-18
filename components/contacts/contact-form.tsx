@@ -92,7 +92,7 @@ function FormSection({ icon: Icon, title, children, collapsible, defaultOpen = t
         )}
       </button>
       {(open || !collapsible) && (
-        <div className="space-y-3 mt-3">
+        <div className="flex flex-col gap-3 mt-3">
           {children}
         </div>
       )}
@@ -742,7 +742,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {/* Email */}
           <FormSection icon={Mail} title={t("Email")}>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               {emails.map((entry, i) => (
                 <div key={i}>
                   <div className="flex items-center gap-2">
@@ -794,7 +794,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {/* Phone */}
           <FormSection icon={Phone} title={t("Phone")}>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               {phones.map((entry, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <Input
@@ -874,9 +874,9 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {/* Addresses */}
           <FormSection icon={MapPin} title={t("Addresses")} collapsible defaultOpen={addresses.length > 0}>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {addresses.map((addr, i) => (
-                <div key={i} className="rounded-md border border-border/60 bg-muted/20 p-3 space-y-2 relative">
+                <div key={i} className="rounded-md border border-border/60 bg-muted/20 p-3 flex flex-col gap-2 relative">
                   <Button type="button" variant="ghost" size="icon" aria-label={t("Remove address")} onClick={() => setAddresses(addresses.filter((_, j) => j !== i))} className="h-6 w-6 absolute top-2 right-2">
                     <X className="w-3 h-3" />
                   </Button>
@@ -908,7 +908,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {/* Online Services */}
           <FormSection icon={Globe} title={t("Online Services")} collapsible defaultOpen={onlineServices.length > 0}>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               {onlineServices.map((svc, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <Input
@@ -937,7 +937,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {/* Anniversaries */}
           <FormSection icon={Cake} title={t("Anniversaries")} collapsible defaultOpen={anniversaries.length > 0}>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               {anniversaries.map((ann, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <Input
@@ -969,7 +969,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {/* Personal Info */}
           <FormSection icon={Heart} title={t("Personal Info")} collapsible defaultOpen={personalInfoEntries.length > 0}>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               {personalInfoEntries.map((pi, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <Input
@@ -1043,7 +1043,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
           {/* Calendar */}
           <FormSection icon={Calendar} title={t("Calendar")} collapsible defaultOpen={!!(calendarUri || schedulingUri || freeBusyUri)}>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">{t("Calendar URL")}</label>
                 <Input value={calendarUri} onChange={(e) => setCalendarUri(e.target.value)} placeholder="https://..." />

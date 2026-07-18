@@ -468,7 +468,7 @@ export function ContactSidebarPanel({
 
         {/* Details sections */}
         {contact && (
-          <div className="px-4 pb-4 space-y-4">
+          <div className="px-4 pb-4 flex flex-col gap-4">
             {/* Emails */}
             {emails.length > 0 && (
               <SidebarSection icon={Mail} title={t("Emails")}>
@@ -561,7 +561,7 @@ export function ContactSidebarPanel({
 
         {/* No contact found message */}
         {!contact && (
-          <div className="px-4 pb-4 text-center space-y-3">
+          <div className="px-4 pb-4 text-center flex flex-col items-center gap-3">
             <p className="text-xs text-muted-foreground">
               {t("Not in your contacts")}
             </p>
@@ -632,7 +632,7 @@ function SidebarSection({ icon: Icon, title, children }: { icon: React.Component
         <Icon className="w-3.5 h-3.5 text-muted-foreground" />
         <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</h4>
       </div>
-      <div className="space-y-1 ps-5.5">{children}</div>
+      <div className="flex flex-col gap-1 ps-5.5">{children}</div>
     </div>
   );
 }
@@ -731,7 +731,7 @@ export function EmailViewer({
   const colorOptions = emailKeywords.map((kw) => ({
     name: kw.label,
     value: kw.id,
-    color: KEYWORD_PALETTE[kw.color]?.dot || 'bg-gray-500',
+    color: KEYWORD_PALETTE[kw.color]?.dot || 'bg-muted-foreground',
   }));
 
   // Tablet list visibility
@@ -2640,7 +2640,7 @@ export function EmailViewer({
         <div className="bg-background border-b border-border">
           <div className="px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-start justify-between gap-2 lg:gap-4">
-              <div className="flex-1 min-w-0 space-y-2 lg:space-y-3">
+              <div className="flex-1 min-w-0 flex flex-col gap-2 lg:gap-3">
                 <div className="h-6 lg:h-8 bg-muted/60 rounded-md w-3/4"></div>
                 <div className="flex items-center gap-2 lg:gap-3">
                   <div className="h-3 lg:h-4 bg-muted/60 rounded w-24 lg:w-32"></div>
@@ -2658,7 +2658,7 @@ export function EmailViewer({
           <div className="px-4 lg:px-6 pb-3 lg:pb-4">
             <div className="flex items-start gap-3 lg:gap-4">
               <div className="w-10 h-10 lg:w-12 lg:h-12 bg-muted/60 rounded-full"></div>
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 flex flex-col gap-2">
                 <div className="h-4 bg-muted/60 rounded w-48"></div>
                 <div className="h-3 bg-muted/60 rounded w-64"></div>
               </div>
@@ -2669,7 +2669,7 @@ export function EmailViewer({
         {/* Loading Content Skeleton */}
         <div className="flex-1 overflow-auto bg-muted/20">
           <div className="px-6 pt-4 pb-6">
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               <div className="h-4 bg-muted/60 rounded w-full"></div>
               <div className="h-4 bg-muted/60 rounded w-5/6"></div>
               <div className="h-4 bg-muted/60 rounded w-4/6"></div>
@@ -3011,7 +3011,7 @@ export function EmailViewer({
                 <span className="flex items-center gap-0.5">
                   {currentColors.slice(0, 3).map((tagId) => {
                     const kw = emailKeywords.find(k => k.id === tagId) ?? { id: tagId, label: tagId, color: 'gray' };
-                    return <span key={tagId} className={cn("w-3 h-3 rounded-full", KEYWORD_PALETTE[kw.color]?.dot || 'bg-gray-500')} />;
+                    return <span key={tagId} className={cn("w-3 h-3 rounded-full", KEYWORD_PALETTE[kw.color]?.dot || 'bg-muted-foreground')} />;
                   })}
                 </span>
                 {showToolbarLabels && currentColors.length === 1 && (
@@ -3078,14 +3078,14 @@ export function EmailViewer({
                 data-overflow-priority="7"
                 className={cn(
                   "flex-col items-center gap-0.5 h-auto py-1.5 px-2 sm:flex-row sm:h-8 sm:gap-1.5 sm:py-0",
-                  isInJunkFolder ? "hover:bg-green-50 dark:hover:bg-green-950/30" : "hover:bg-red-50 dark:hover:bg-red-950/30"
+                  isInJunkFolder ? "hover:bg-success/10" : "hover:bg-destructive/10"
                 )}
                 aria-label={isInJunkFolder ? t("Mark as legitimate") : t("Report spam")}
               >
                 {isInJunkFolder ? (
-                  <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <ShieldCheck className="h-4 w-4 text-success" />
                 ) : (
-                  <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  <ShieldAlert className="h-4 w-4 text-destructive" />
                 )}
                 {showToolbarLabels && <span className="text-[10px] leading-tight sm:text-sm">{isInJunkFolder ? t("Not spam") : t("Spam")}</span>}
               </Button>
@@ -3194,7 +3194,7 @@ export function EmailViewer({
                 onClick={() => { onToggleStar?.(); setMoreMenuOpen(false); setMoreMenuSub(null); }}
                 className="w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2"
               >
-                <Star className={cn("w-4 h-4", isStarred && "fill-yellow-400 text-yellow-400")} />
+                <Star className={cn("w-4 h-4", isStarred && "fill-warning text-warning")} />
                 {isStarred ? t("Unstar (s)") : t("Star (s)")}
               </button>
               {/* Overflow: reply */}
@@ -3337,9 +3337,9 @@ export function EmailViewer({
                   className={cn("w-full px-3 py-1.5 text-sm text-start hover:bg-muted text-foreground flex items-center gap-2", hiddenPriorities.has(7) ? "" : "sm:hidden")}
                 >
                   {isInJunkFolder ? (
-                    <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    <ShieldCheck className="h-4 w-4 text-success" />
                   ) : (
-                    <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
+                    <ShieldAlert className="h-4 w-4 text-destructive" />
                   )}
                   {isInJunkFolder ? t("Mark as legitimate") : t("Report spam")}
                 </button>
@@ -3456,7 +3456,7 @@ export function EmailViewer({
                 onClick={() => { onToggleStar?.(); setMoreMenuOpen(false); }}
                 className="w-full px-4 py-3 min-h-[44px] text-sm text-start hover:bg-muted text-foreground flex items-center gap-3"
               >
-                <Star className={cn("w-5 h-5", isStarred && "fill-yellow-400 text-yellow-400")} />
+                <Star className={cn("w-5 h-5", isStarred && "fill-warning text-warning")} />
                 {isStarred ? t("Unstar (s)") : t("Star (s)")}
               </button>
               {/* Tag (opens sub-view) */}
@@ -3468,7 +3468,7 @@ export function EmailViewer({
                   <Tag className="w-5 h-5" />
                   <span className="flex-1">{t("Tag")}</span>
                   {currentColors.length > 0 && (
-                    <div className="flex -space-x-1 me-1">
+                    <div className="flex [&>*:not(:first-child)]:-ms-1 me-1">
                       {currentColors.slice(0, 3).map((c) => {
                         const opt = colorOptions.find((o) => o.value === c);
                         return opt ? <span key={c} className={cn("w-3 h-3 rounded-full border border-background", opt.color)} /> : null;
@@ -3643,7 +3643,7 @@ export function EmailViewer({
                       >
                         <Star className={cn(
                           "w-4 h-4 lg:w-5 lg:h-5 transition-colors",
-                          isStarred ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"
+                          isStarred ? "fill-warning text-warning" : "text-muted-foreground"
                         )} />
                       </button>
                     </TooltipTrigger>
@@ -3655,7 +3655,7 @@ export function EmailViewer({
                   <span className="flex items-center gap-0.5">
                     {currentColors.map((tagId) => {
                       const kw = emailKeywords.find(k => k.id === tagId) ?? { id: tagId, label: tagId, color: 'gray' };
-                      const dotClass = KEYWORD_PALETTE[kw.color]?.dot || 'bg-gray-500';
+                      const dotClass = KEYWORD_PALETTE[kw.color]?.dot || 'bg-muted-foreground';
                       return (
                         <span key={tagId} className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", dotClass)} title={kw.label} />
                       );
@@ -3762,7 +3762,7 @@ export function EmailViewer({
                     {email.to.length > 2 && (
                       <button
                         onClick={() => setShowFullHeaders(!showFullHeaders)}
-                        className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                        className="text-primary hover:underline text-sm"
                       >
                         {t("+{count} more", { count: email.to.length - 2 })}
                       </button>
@@ -4140,9 +4140,9 @@ export function EmailViewer({
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2 py-1 rounded-md border text-xs",
                   tooltip && "cursor-help",
-                  status.icon === 'check' && "bg-green-500/[0.07] border-green-500/30",
-                  status.icon === 'x' && "bg-red-500/[0.07] border-red-500/30",
-                  status.icon === 'alert' && "bg-amber-500/[0.07] border-amber-500/30",
+                  status.icon === 'check' && "bg-success/[0.07] border-success/30",
+                  status.icon === 'x' && "bg-destructive/[0.07] border-destructive/30",
+                  status.icon === 'alert' && "bg-warning/[0.07] border-warning/30",
                   status.icon === 'minus' && "bg-muted/40 border-border",
                 )}
                 title={tooltip}
@@ -4279,22 +4279,22 @@ export function EmailViewer({
                       {email.spamScore !== undefined && (
                         <span className={cn(
                           "inline-flex items-center gap-1.5 px-2 py-1 rounded-md border text-xs",
-                          email.spamScore > 5 ? "bg-red-500/[0.07] border-red-500/30" :
-                          email.spamScore > 2 ? "bg-amber-500/[0.07] border-amber-500/30" :
-                          "bg-green-500/[0.07] border-green-500/30",
+                          email.spamScore > 5 ? "bg-destructive/[0.07] border-destructive/30" :
+                          email.spamScore > 2 ? "bg-warning/[0.07] border-warning/30" :
+                          "bg-success/[0.07] border-success/30",
                         )}>
                           <Shield className={cn(
                             "w-3.5 h-3.5",
-                            email.spamScore > 5 ? "text-red-700 dark:text-red-400" :
-                            email.spamScore > 2 ? "text-amber-700 dark:text-amber-400" :
-                            "text-green-700 dark:text-green-400",
+                            email.spamScore > 5 ? "text-destructive" :
+                            email.spamScore > 2 ? "text-warning" :
+                            "text-success",
                           )} />
                           <span className="font-medium text-foreground">{t("Spam Score")}</span>
                           <span className={cn(
                             "text-[10px] uppercase tracking-wider",
-                            email.spamScore > 5 ? "text-red-700 dark:text-red-400" :
-                            email.spamScore > 2 ? "text-amber-700 dark:text-amber-400" :
-                            "text-green-700 dark:text-green-400",
+                            email.spamScore > 5 ? "text-destructive" :
+                            email.spamScore > 2 ? "text-warning" :
+                            "text-success",
                           )}>
                             {email.spamScore.toFixed(1)}
                           </span>
@@ -4309,15 +4309,15 @@ export function EmailViewer({
                     </div>
                     {email.spamLLM && (
                       <div className="mt-2 flex items-start gap-2 text-sm">
-                        {email.spamLLM.verdict === 'LEGITIMATE' ? <Brain className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-700 dark:text-green-400" /> :
-                         email.spamLLM.verdict === 'SPAM' ? <ShieldAlert className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-700 dark:text-red-400" /> :
-                         <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-700 dark:text-amber-400" />}
+                        {email.spamLLM.verdict === 'LEGITIMATE' ? <Brain className="w-4 h-4 mt-0.5 flex-shrink-0 text-success" /> :
+                         email.spamLLM.verdict === 'SPAM' ? <ShieldAlert className="w-4 h-4 mt-0.5 flex-shrink-0 text-destructive" /> :
+                         <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-warning" />}
                         <div className="min-w-0">
                           <span className={cn(
                             "font-medium",
-                            email.spamLLM.verdict === 'LEGITIMATE' ? "text-green-700 dark:text-green-400" :
-                            email.spamLLM.verdict === 'SPAM' ? "text-red-700 dark:text-red-400" :
-                            "text-amber-700 dark:text-amber-400",
+                            email.spamLLM.verdict === 'LEGITIMATE' ? "text-success" :
+                            email.spamLLM.verdict === 'SPAM' ? "text-destructive" :
+                            "text-warning",
                           )}>
                             {email.spamLLM.verdict}
                           </span>
@@ -4338,7 +4338,7 @@ export function EmailViewer({
                       )}
                       {email.inReplyTo && email.inReplyTo.length > 0 && (
                         <Row label={t("In-Reply-To")} mono>
-                          <div className="space-y-0.5">
+                          <div className="flex flex-col gap-0.5">
                             {email.inReplyTo.map((id, i) => <div key={i} className="break-all">{id}</div>)}
                           </div>
                         </Row>
@@ -4350,7 +4350,7 @@ export function EmailViewer({
                               <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
                               {t(email.references.length === 1 ? 'previous_messages' : 'previous_messages_plural', { count: email.references.length })}
                             </summary>
-                            <div className="mt-1 space-y-0.5 font-mono text-xs">
+                            <div className="mt-1 flex flex-col gap-0.5 font-mono text-xs">
                               {email.references.map((id, i) => <div key={i} className="break-all">{id}</div>)}
                             </div>
                           </details>
@@ -4504,7 +4504,7 @@ export function EmailViewer({
                     <div className="w-10 h-10 rounded-full bg-info/15 text-info flex items-center justify-center flex-shrink-0 shadow-sm">
                       <Image className="w-5 h-5" />
                     </div>
-                    <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex-1 min-w-0 flex flex-col gap-2">
                       <div>
                         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                           External Content
@@ -4964,7 +4964,7 @@ export function EmailViewer({
           style={isDark ? { backgroundColor: '#121212' } : undefined}>
             {isBodyLoading ? (
               <div
-                className="space-y-3 px-6 py-4 animate-pulse"
+                className="flex flex-col gap-3 px-6 py-4 animate-pulse"
                 style={{ minHeight: `${lastBodyHeightRef.current}px` }}
               >
                 <div className="h-2 bg-muted/15 rounded w-full"></div>
@@ -5014,7 +5014,7 @@ export function EmailViewer({
                   fallbackColor={activeAccount?.avatarColor}
                 />
               </div>
-              <div className="flex-1 min-w-0 space-y-3">
+              <div className="flex-1 min-w-0 flex flex-col gap-3">
                   <textarea
                     value={quickReplyText}
                     onChange={(e) => setQuickReplyText(e.target.value)}

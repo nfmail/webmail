@@ -488,8 +488,8 @@ export default function FilesPage() {
             <div className="flex-1 min-h-0 flex flex-col">
               {!filesEnabled ? (
                 <div className="flex items-center justify-center h-full">
-                  <div className="max-w-lg text-center space-y-3 px-4">
-                    <AlertTriangle className="w-10 h-10 text-yellow-500 mx-auto" />
+                  <div className="max-w-lg text-center flex flex-col gap-3 px-4">
+                    <AlertTriangle className="w-10 h-10 text-warning mx-auto" />
                     <p className="text-sm font-medium">{t("Files feature is disabled by your administrator")}</p>
                     <p className="text-xs text-muted-foreground">{t("Large file uploads via WebDAV can cause Stalwart/RocksDB instability, including out-of-memory crashes and unrecoverable disk usage. Deleted files may not be immediately purged from blob storage. This feature is not recommended for production environments.")}</p>
                   </div>
@@ -522,9 +522,9 @@ export default function FilesPage() {
                     </div>
                   ) : (
                     <>
-                  {(capabilities?.upload || capabilities?.delete) && <div className="mx-4 mt-3 mb-1 flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2">
-                    <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
-                    <p className="text-xs text-yellow-700 dark:text-yellow-400">{t("Large file uploads can cause server instability. Deleted files may not be immediately purged from storage. Use with caution.")}</p>
+                  {(capabilities?.upload || capabilities?.delete) && <div className="mx-4 mt-3 mb-1 flex items-start gap-2 rounded-md border border-warning/30 bg-warning/10 px-3 py-2">
+                    <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+                    <p className="text-xs text-warning">{t("Large file uploads can cause server instability. Deleted files may not be immediately purged from storage. Use with caution.")}</p>
                   </div>}
                 <FileBrowser
                   currentPath={currentPath}

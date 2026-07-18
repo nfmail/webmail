@@ -2634,10 +2634,10 @@ export default function Home() {
         <h1 className="sr-only">{currentMailboxName}</h1>
         <AppTopBannerSlot />
         {isRateLimited && rateLimitSecondsLeft !== null && (
-          <div className="flex items-center justify-center gap-2 bg-amber-500/10 border-b border-amber-500/30 text-amber-700 dark:text-amber-300 text-sm py-1.5 px-4 flex-shrink-0">
+          <div className="flex items-center justify-center gap-2 bg-warning/10 border-b border-warning/30 text-warning text-sm py-1.5 px-4 flex-shrink-0">
             <AlertTriangle className="h-3.5 w-3.5" />
             <span>{tCommon("Server authentication is temporarily rate limited.")}</span>
-            <span className="text-amber-700/80 dark:text-amber-300/80">{tCommon("Bulwark has paused background requests to avoid lockout. Retrying in {seconds}s.", { seconds: rateLimitSecondsLeft })}</span>
+            <span className="text-warning">{tCommon("Bulwark has paused background requests to avoid lockout. Retrying in {seconds}s.", { seconds: rateLimitSecondsLeft })}</span>
           </div>
         )}
         {connectionLost && (
@@ -2915,7 +2915,7 @@ export default function Home() {
 
               {/* Filter Area */}
               {isAdvancedSearchOpen && (
-                <div className="px-3 pb-3 space-y-2.5 animate-in slide-in-from-top-1 fade-in duration-150">
+                <div className="px-3 pb-3 flex flex-col gap-2.5 animate-in slide-in-from-top-1 fade-in duration-150">
                   {/* Quick toggle filters + clear */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -2958,7 +2958,7 @@ export default function Home() {
 
                   {/* Advanced fields */}
                   {showAdvancedFields && (
-                    <div className="space-y-2.5 animate-in slide-in-from-top-1 fade-in duration-150">
+                    <div className="flex flex-col gap-2.5 animate-in slide-in-from-top-1 fade-in duration-150">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="text-xs text-muted-foreground mb-1 block">{t("From")}</label>

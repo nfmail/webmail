@@ -153,7 +153,7 @@ function StorageQuotaCircle({ quota, usagePercent }: { quota: { used: number; to
       {open && createPortal(
         <div ref={popoverRef} style={popoverStyle} className="w-52 rounded-lg border border-border bg-background text-foreground shadow-lg p-3 z-50">
           <p className="text-xs font-semibold mb-2">{t("Storage")}</p>
-          <div className="space-y-1.5 text-xs">
+          <div className="flex flex-col gap-1.5 text-xs">
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t("Used")}</span>
               <span className="font-medium tabular-nums">{formatFileSize(quota.used)}</span>
@@ -427,7 +427,7 @@ export function NavigationRail({
                 <span
                   className={cn(
                     "absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ring-2 ring-background",
-                    updateImportant ? "bg-red-500" : "bg-amber-500",
+                    updateImportant ? "bg-destructive" : "bg-warning",
                   )}
                   aria-label={updateImportant ? "Important update available" : "Update available"}
                 />
@@ -616,7 +616,7 @@ export function NavigationRail({
               <span
                 className={cn(
                   "absolute top-2 right-2 w-2 h-2 rounded-full ring-2 ring-background",
-                  updateImportant ? "bg-red-500" : "bg-amber-500",
+                  updateImportant ? "bg-destructive" : "bg-warning",
                 )}
                 aria-label={updateImportant ? "Important update available" : "Update available"}
               />

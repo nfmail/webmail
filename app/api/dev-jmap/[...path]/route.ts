@@ -70,21 +70,33 @@ function recomputeMailboxCounts(): void {
 // Email fixtures
 // ---------------------------------------------------------------------------
 
+// Fixture dates anchor to DEV_JMAP_MOCK_NOW when set (the visual-regression
+// suite pins it so date-relative surfaces — calendar grid, "today" markers,
+// relative timestamps — render identically on every run); otherwise they
+// anchor to the real current time.
+const MOCK_NOW_MS = process.env.DEV_JMAP_MOCK_NOW
+  ? Date.parse(process.env.DEV_JMAP_MOCK_NOW)
+  : NaN;
+
+function fixtureNow(): Date {
+  return Number.isNaN(MOCK_NOW_MS) ? new Date() : new Date(MOCK_NOW_MS);
+}
+
 function daysAgo(n: number): string {
-  const d = new Date();
+  const d = fixtureNow();
   d.setDate(d.getDate() - n);
   return d.toISOString();
 }
 
 function hoursAgo(n: number): string {
-  const d = new Date();
+  const d = fixtureNow();
   d.setTime(d.getTime() - n * 3600000);
   return d.toISOString();
 }
 
 /** Return an ISO date-time string for a day offset (0 = today) at a given hour:minute. */
 function localDateTime(dayOffset: number, hour: number, minute: number): string {
-  const d = new Date();
+  const d = fixtureNow();
   d.setDate(d.getDate() + dayOffset);
   d.setHours(hour, minute, 0, 0);
   return d.toISOString().replace(/Z$/, '');

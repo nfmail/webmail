@@ -11,6 +11,26 @@ import { type Page, type Locator, expect } from '@playwright/test';
 
 export const BASE_URL = process.env.PLAYWRIGHT_VISUAL_BASE_URL || 'http://localhost:3100';
 
+/**
+ * The instant every visual run pretends "now" is. The mock backend anchors its
+ * fixture dates to the same value via DEV_JMAP_MOCK_NOW (see
+ * playwright.visual.config.ts — keep the two in sync), so calendar grids,
+ * "today" markers, and relative timestamps render identically on every run.
+ */
+export const FIXED_NOW = new Date('2026-07-15T13:37:00Z');
+
+/**
+ * Pin the browser clock to FIXED_NOW. Call before the first navigation.
+ *
+ * Only the visual suite freezes the clock (its specs call this explicitly);
+ * the a11y suite reuses login() with a real clock, because axe-core's
+ * analyze() hangs on frame-bearing surfaces (thread-view's email iframes)
+ * when Date is frozen.
+ */
+export async function freezeClock(page: Page): Promise<void> {
+  await page.clock.setFixedTime(FIXED_NOW);
+}
+
 /** Default screenshot comparison options applied to every surface. */
 export const SHOT_OPTS = {
   animations: 'disabled' as const,
@@ -84,7 +104,22 @@ export async function navigate(
   page: Page,
   section: 'calendar' | 'contacts' | 'files' | 'settings',
 ): Promise<void> {
-  await page.locator(`a[href="/${section}"]`).first().click();
+  // Two anchors can exist per section (desktop rail + mobile bottom bar);
+  // click the one the current viewport actually shows — the hidden one can
+  // swallow the click without navigating (seen on mobile after a settings
+  // subpage, where the calendar shot captured the settings surface instead).
+  // Even a visible-anchor click can occasionally get lost on mobile (e.g.
+  // right after an overlay closes), so verify the URL actually changed and
+  // retry; without this the suite silently screenshots the wrong surface.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.locator(`a[href="/${section}"]:visible`).first().click();
+    try {
+      await page.waitForURL(new RegExp(`/${section}(/|$|\\?)`), { timeout: 5000 });
+      break;
+    } catch {
+      if (attempt === 2) throw new Error(`navigate: never reached /${section}`);
+    }
+  }
   await settle(page, 3000);
 }
 

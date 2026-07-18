@@ -49,6 +49,9 @@ export default defineConfig({
 
   use: {
     baseURL: BASE_URL,
+    // Fixed timezone so client-side date rendering matches the mock backend's
+    // pinned clock regardless of where the suite runs.
+    timezoneId: 'UTC',
     contextOptions: { reducedMotion: 'reduce' },
     screenshot: 'off',
     trace: 'retain-on-failure',
@@ -71,6 +74,11 @@ export default defineConfig({
     env: {
       // Built-in mock JMAP backend: deterministic data, one-click dev login.
       DEV_MOCK_JMAP: 'true',
+      // Pin fixture dates (and the server timezone) so date-anchored surfaces
+      // don't drift between runs; e2e/visual/helpers.ts pins the browser clock
+      // to the same instant. Keep in sync with FIXED_NOW in helpers.ts.
+      DEV_JMAP_MOCK_NOW: '2026-07-15T13:37:00Z',
+      TZ: 'UTC',
       JMAP_SERVER_URL: '/api/dev-jmap',
       SESSION_SECRET: 'visual-baseline-not-for-production',
       SETTINGS_SYNC_ENABLED: 'true',

@@ -58,6 +58,12 @@ export default defineConfig({
     env: {
       // Built-in mock JMAP backend: deterministic data, one-click dev login.
       DEV_MOCK_JMAP: 'true',
+      // The shared login() helper (e2e/visual/helpers.ts) freezes the browser
+      // clock to FIXED_NOW; pin the mock fixtures to the same instant so
+      // server-generated timestamps are never "in the future" relative to the
+      // page. Keep in sync with playwright.visual.config.ts.
+      DEV_JMAP_MOCK_NOW: '2026-07-15T13:37:00Z',
+      TZ: 'UTC',
       JMAP_SERVER_URL: '/api/dev-jmap',
       SESSION_SECRET: 'a11y-scan-not-for-production',
       SETTINGS_SYNC_ENABLED: 'true',

@@ -6,6 +6,7 @@ import {
   settle,
   dismissTour,
   filesAvailable,
+  freezeClock,
   shootSurface,
   injectStability,
   SHOT_OPTS,
@@ -27,6 +28,7 @@ import {
 // ---------------------------------------------------------------------------
 test.describe('visual: unauthenticated', () => {
   test('login', async ({ page }) => {
+    await freezeClock(page);
     await page.goto(`${BASE_URL}/en/login`, { waitUntil: 'load' });
     await page.getByRole('button', { name: /sign in/i }).waitFor({ timeout: 45_000 });
     await settle(page, 1500);
@@ -57,6 +59,7 @@ test.describe.serial('visual: authenticated', () => {
       reducedMotion: 'reduce',
     });
     page = await context.newPage();
+    await freezeClock(page);
     await login(page);
   });
 
@@ -107,10 +110,13 @@ test.describe.serial('visual: authenticated', () => {
 
   test('calendar', async () => {
     await navigate(page, 'calendar');
-    // The calendar grid is anchored to the current month/day, so its body
-    // drifts over time; mask it and keep the surrounding chrome under test.
-    const grid = page.locator('[role="grid"], [class*="calendar"]').first();
-    await shootSurface(page, 'calendar', [grid]);
+    // Guard against a mis-fired navigation shooting the wrong surface: the
+    // "Today" toolbar button only exists on the calendar.
+    await page.getByRole('button', { name: /today/i }).first().waitFor({ timeout: 15_000 });
+    // The browser clock and mock fixtures are both pinned to FIXED_NOW, so the
+    // whole calendar body (grid, events, today marker) is deterministic and
+    // stays under test unmasked.
+    await shootSurface(page, 'calendar');
   });
 
   test('contacts', async () => {

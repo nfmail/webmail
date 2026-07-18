@@ -11,6 +11,8 @@ import { withBasePath } from "@/lib/browser-navigation";
 import { PRODUCT } from "@/lib/product-metadata";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -3663,9 +3665,9 @@ export function EmailViewer({
                   </span>
                 )}
                 {isImportant && (
-                  <span className="px-1.5 lg:px-2 py-0.5 bg-warning/15 text-warning rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 self-center">
+                  <Badge className="px-1.5 lg:px-2 bg-warning/15 text-warning whitespace-nowrap self-center">
                     {t("Important")}
-                  </span>
+                  </Badge>
                 )}
               </div>
             </div>
@@ -4964,14 +4966,14 @@ export function EmailViewer({
           style={isDark ? { backgroundColor: '#121212' } : undefined}>
             {isBodyLoading ? (
               <div
-                className="flex flex-col gap-3 px-6 py-4 animate-pulse"
+                className="flex flex-col gap-3 px-6 py-4"
                 style={{ minHeight: `${lastBodyHeightRef.current}px` }}
               >
-                <div className="h-2 bg-muted/15 rounded w-full"></div>
-                <div className="h-2 bg-muted/15 rounded w-5/6"></div>
-                <div className="h-2 bg-muted/15 rounded w-4/6"></div>
-                <div className="h-2 bg-muted/15 rounded w-full"></div>
-                <div className="h-2 bg-muted/15 rounded w-3/4"></div>
+                <Skeleton className="h-2 w-full rounded bg-muted/15" />
+                <Skeleton className="h-2 w-5/6 rounded bg-muted/15" />
+                <Skeleton className="h-2 w-4/6 rounded bg-muted/15" />
+                <Skeleton className="h-2 w-full rounded bg-muted/15" />
+                <Skeleton className="h-2 w-3/4 rounded bg-muted/15" />
               </div>
             ) : effectiveEmailContent.isHtml ? (
               <iframe

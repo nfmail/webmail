@@ -11,6 +11,19 @@ import { type Page, type Locator, expect } from '@playwright/test';
 
 export const BASE_URL = process.env.PLAYWRIGHT_VISUAL_BASE_URL || 'http://localhost:3100';
 
+/**
+ * The instant every visual run pretends "now" is. The mock backend anchors its
+ * fixture dates to the same value via DEV_JMAP_MOCK_NOW (see
+ * playwright.visual.config.ts — keep the two in sync), so calendar grids,
+ * "today" markers, and relative timestamps render identically on every run.
+ */
+export const FIXED_NOW = new Date('2026-07-15T13:37:00Z');
+
+/** Pin the browser clock to FIXED_NOW. Call before the first navigation. */
+export async function freezeClock(page: Page): Promise<void> {
+  await page.clock.setFixedTime(FIXED_NOW);
+}
+
 /** Default screenshot comparison options applied to every surface. */
 export const SHOT_OPTS = {
   animations: 'disabled' as const,
@@ -57,6 +70,7 @@ export async function settle(page: Page, ms = 2500): Promise<void> {
  * Also dismisses the first-run welcome tour so the mail list is deterministic.
  */
 export async function login(page: Page): Promise<void> {
+  await freezeClock(page);
   await page.goto(`${BASE_URL}/en/login`, { waitUntil: 'load' });
   await page.getByRole('button', { name: /sign in/i }).click({ timeout: 45_000 });
   await page.waitForURL((u) => !u.pathname.includes('/login'), { timeout: 45_000 });

@@ -50,14 +50,20 @@ Determinism aids:
 - injected CSS disables transitions/animations, hides the text caret, and hides
   the Next.js dev overlay
 - the first-run welcome tour is dismissed before the mail screenshot
+- **pinned clock**: the browser clock (`page.clock.setFixedTime`, see
+  `FIXED_NOW` in `helpers.ts`) and the mock backend's fixture dates
+  (`DEV_JMAP_MOCK_NOW` in `playwright.visual.config.ts`) are both pinned to the
+  same instant, and both the server (`TZ`) and browser (`timezoneId`) run in
+  UTC. Date-anchored surfaces — the calendar grid, "today" markers, relative
+  timestamps — therefore render identically on every run and stay under test
+  unmasked. Keep the two constants in sync if you ever move the pinned date.
 - dynamic regions are masked (see below)
 
 ### Masking
 
 - **`.tabular-nums`** — relative mail timestamps and folder/label/unread
-  counters. The mock generates these relative to "now", so they drift.
-- **calendar grid** — anchored to the current month/day; the body is masked and
-  only the surrounding chrome (toolbar, sidebar, header) is compared.
+  counters (deterministic with the pinned clock, but kept masked as a
+  belt-and-braces measure for runs against a non-mock backend).
 - **login self-update notice** — depends on a network check.
 
 `maxDiffPixelRatio` is `0.02` to absorb sub-pixel font-rendering noise.
@@ -160,8 +166,9 @@ Baselines are a **source of truth**, not disposable output.
   anchor on small viewports. Click the `:visible` anchor and wait for a stable
   row (e.g. the first folder) before shooting, or the shot captures the mail
   list instead.
-- **Calendar / contacts data** — dates and mock records are time-relative;
-  the calendar body is masked. If mock data changes materially, regenerate.
+- **Calendar / contacts data** — fixture dates are pinned via
+  `DEV_JMAP_MOCK_NOW` + the frozen browser clock, so they don't drift between
+  runs. If mock data changes materially, regenerate.
 
 ## Files
 

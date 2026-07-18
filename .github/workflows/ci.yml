@@ -26,6 +26,8 @@ env:
 jobs:
   repository-policy:
     name: Repository policy
+    # Baseline-regeneration dispatches only need the visual job.
+    if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -55,6 +57,8 @@ jobs:
 
   quality:
     name: Typecheck, lint, and unit tests
+    # Baseline-regeneration dispatches only need the visual job.
+    if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -89,6 +93,8 @@ jobs:
 
   build:
     name: Production build
+    # Baseline-regeneration dispatches only need the visual job.
+    if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -119,6 +125,8 @@ jobs:
 
   browser-smoke:
     name: Browser smoke
+    # Baseline-regeneration dispatches only need the visual job.
+    if: ${{ github.event.inputs.update_visual_baselines != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -261,11 +269,12 @@ jobs:
 
   a11y-scan:
     name: Accessibility scan
-    # Same rationale and gating as visual-regression.
+    # Same rationale and gating as visual-regression, except baseline-regen
+    # dispatches skip it (only the visual job matters there).
     needs: ui-changes
     if: >-
       !cancelled() &&
-      (github.event_name == 'workflow_dispatch' ||
+      ((github.event_name == 'workflow_dispatch' && github.event.inputs.update_visual_baselines != 'true') ||
       (github.event_name == 'pull_request' && needs.ui-changes.outputs.ui == 'true'))
     runs-on: ubuntu-latest
     timeout-minutes: 20

@@ -157,7 +157,16 @@ async function returnToMail(page: Page): Promise<void> {
   }
   const mailLink = page.locator('a[href="/"], a[href="/en"]').first();
   if (await mailLink.count()) {
-    await mailLink.click().catch(() => {});
+    await mailLink.click({ timeout: 10_000 }).catch(() => {});
+    // Overlay-proof fallback (tablet surfaces can cover the rail while no
+    // bottom bar renders): fire the router handler directly.
+    if (!/\/(en\/?)?$/.test(new URL(page.url()).pathname)) {
+      await page
+        .evaluate(() => {
+          (document.querySelector('a[href="/"], a[href="/en"]') as HTMLElement | null)?.click();
+        })
+        .catch(() => {});
+    }
     await settle(page, 2500);
     if (!page.url().includes('/login')) {
       await dismissTour(page);

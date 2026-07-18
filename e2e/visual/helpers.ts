@@ -112,16 +112,25 @@ export async function navigate(
   // right after an overlay closes), so verify the URL actually changed and
   // retry; without this the suite silently screenshots the wrong surface.
   for (let attempt = 0; attempt < 3; attempt++) {
-    // Prefer the LAST visible anchor: when both the desktop rail and the
-    // mobile/tablet bottom bar render, a surface's own side panel (e.g. the
-    // contacts list on tablet) can overlay the rail entry, while the bottom
-    // bar stays clickable. Retries force the click past any remaining
-    // hit-target interception; the URL guard below proves navigation.
-    await page
-      .locator(`a[href="/${section}"]:visible`)
-      .last()
-      .click({ force: attempt > 0, timeout: 10_000 })
-      .catch(() => {});
+    // Escalating click strategies: plain pointer click, forced click, then a
+    // direct DOM click. On tablet a surface's own panel can fully overlay the
+    // nav rail while no bottom bar renders (see nfw tracking for the app-side
+    // question) — element.click() still fires the router handler regardless
+    // of overlays, and the URL guard below proves the navigation happened.
+    if (attempt < 2) {
+      await page
+        .locator(`a[href="/${section}"]:visible`)
+        .last()
+        .click({ force: attempt > 0, timeout: 10_000 })
+        .catch(() => {});
+    } else {
+      await page
+        .evaluate((sec) => {
+          const anchors = document.querySelectorAll(`a[href="/${sec}"]`);
+          (anchors[anchors.length - 1] as HTMLElement | undefined)?.click();
+        }, section)
+        .catch(() => {});
+    }
     try {
       // Generous per-attempt budget: a cold dev-server route compile can take
       // >15s on CI before the client transition commits the URL.

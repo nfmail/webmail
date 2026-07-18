@@ -34,6 +34,7 @@
     "check:toolchain": "node scripts/check-toolchain.mjs",
     "check:ui": "node scripts/check-ui-conventions.mjs",
     "i18n:compile": "lingui compile",
+    "check:bundle": "node scripts/check-bundle-budget.mjs",
     "check:i18n": "npm run i18n:compile && git diff --exit-code -- 'locales/*/messages.ts'",
     "start": "next start",
     "lint": "eslint .",

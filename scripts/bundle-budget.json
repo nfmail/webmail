@@ -1,0 +1,7 @@
+{
+  "description": "Gzipped client-JS budgets in KB (total of .next/static/chunks and the largest single chunk), enforced by scripts/check-bundle-budget.mjs after next build. Refresh deliberately with --update and review the diff.",
+  "budgets": {
+    "total-client-js": 3430,
+    "largest-chunk": 280
+  }
+}

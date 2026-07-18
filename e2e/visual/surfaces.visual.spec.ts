@@ -59,6 +59,7 @@ test.describe.serial('visual: authenticated', () => {
       reducedMotion: 'reduce',
     });
     page = await context.newPage();
+    await freezeClock(page);
     await login(page);
   });
 

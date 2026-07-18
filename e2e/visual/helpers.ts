@@ -19,7 +19,14 @@ export const BASE_URL = process.env.PLAYWRIGHT_VISUAL_BASE_URL || 'http://localh
  */
 export const FIXED_NOW = new Date('2026-07-15T13:37:00Z');
 
-/** Pin the browser clock to FIXED_NOW. Call before the first navigation. */
+/**
+ * Pin the browser clock to FIXED_NOW. Call before the first navigation.
+ *
+ * Only the visual suite freezes the clock (its specs call this explicitly);
+ * the a11y suite reuses login() with a real clock, because axe-core's
+ * analyze() hangs on frame-bearing surfaces (thread-view's email iframes)
+ * when Date is frozen.
+ */
 export async function freezeClock(page: Page): Promise<void> {
   await page.clock.setFixedTime(FIXED_NOW);
 }
@@ -70,7 +77,6 @@ export async function settle(page: Page, ms = 2500): Promise<void> {
  * Also dismisses the first-run welcome tour so the mail list is deterministic.
  */
 export async function login(page: Page): Promise<void> {
-  await freezeClock(page);
   await page.goto(`${BASE_URL}/en/login`, { waitUntil: 'load' });
   await page.getByRole('button', { name: /sign in/i }).click({ timeout: 45_000 });
   await page.waitForURL((u) => !u.pathname.includes('/login'), { timeout: 45_000 });

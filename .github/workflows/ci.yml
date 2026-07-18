@@ -79,6 +79,11 @@ jobs:
       - name: Lint and formatting conventions
         run: npm run lint
 
+      # Compiled message catalogs are committed; recompiling must be a no-op,
+      # otherwise a .po edit landed without its compiled counterpart.
+      - name: i18n catalogs are compiled
+        run: npm run check:i18n
+
       - name: Unit tests
         run: npm test
 

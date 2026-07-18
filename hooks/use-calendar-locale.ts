@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useLocale } from "next-intl";
+import { useLocale } from "@/i18n/client";
 import { useSettingsStore } from "@/stores/settings-store";
 import {
   toJalali,

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/server";
 import { WebcalProtocolClient } from "@/components/protocol/webcal-protocol-client";
 
 export default async function WebcalProtocolPage() {

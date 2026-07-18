@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,

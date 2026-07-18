@@ -1,11 +1,44 @@
 import { type NextRequest, NextResponse } from "next/server";
-import createIntlMiddleware from "next-intl/middleware";
-import { routing } from "./i18n/routing";
+import {
+  LOCALE_COOKIE,
+  isSupportedLocale,
+  localeFromAcceptLanguage,
+  routing,
+} from "./i18n/routing";
 import { getEnabledPluginFrameOrigins } from "./lib/admin/csp-frame-origins";
 import { configManager } from "./lib/admin/config-manager";
 import { detectSetupState } from "./lib/setup/state";
 
-const intlMiddleware = createIntlMiddleware(routing);
+/**
+ * Locale negotiation for the [locale] app segment (replaces next-intl's
+ * middleware). Detection order: NEXT_LOCALE cookie, Accept-Language, default.
+ * Prefix modes: "always"/"as-needed" redirect to the prefixed URL; "never"
+ * (and the default locale in "as-needed") rewrites internally so the URL
+ * stays clean.
+ */
+function localeMiddleware(request: NextRequest, requestHeaders: Headers): NextResponse {
+  const pathname = request.nextUrl.pathname;
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
+  const locale = isSupportedLocale(cookieLocale)
+    ? cookieLocale
+    : (localeFromAcceptLanguage(request.headers.get("accept-language")) ??
+      routing.defaultLocale);
+
+  const url = request.nextUrl.clone();
+  url.pathname = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
+
+  const needsPrefix =
+    routing.localePrefix === "always" ||
+    (routing.localePrefix === "as-needed" && locale !== routing.defaultLocale);
+
+  const response = needsPrefix
+    ? NextResponse.redirect(url)
+    : NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+  if (cookieLocale !== locale) {
+    response.cookies.set(LOCALE_COOKIE, locale, { path: "/", sameSite: "lax" });
+  }
+  return response;
+}
 
 // Next 16's Proxy always runs on Node.js runtime and route-segment config
 // (e.g. `export const config = { matcher }`) is no longer allowed in the
@@ -139,26 +172,28 @@ export async function proxy(request: NextRequest) {
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   );
 
-  let intlResponse: ReturnType<typeof intlMiddleware> | null = null;
+  // Expose the nonce AND the request pathname to server components as request
+  // headers. The root (main)/layout renders <html> ABOVE the [locale] segment,
+  // so the request locale can't be resolved from route params there - the
+  // layout reads x-pathname to recover it for <html lang>. Forward through the
+  // official `request.headers` mechanism: hand-writing only our two names into
+  // x-middleware-override-headers made Next treat that as the COMPLETE header
+  // allowlist, stripping the RSC router headers and silently breaking every
+  // client-side navigation in dev.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("x-pathname", pathname);
+
+  let intlResponse: NextResponse | null = null;
   if (!isAdminRoute && !isProtocolRoute && !isSetupRoute && !isSandboxRoute && !hasLocalePrefix) {
     try {
-      intlResponse = intlMiddleware(request);
+      intlResponse = localeMiddleware(request, requestHeaders);
     } catch (error) {
       console.error('Locale middleware error:', error);
     }
   }
-  const response = intlResponse ?? NextResponse.next();
-
-  const existing = response.headers.get("x-middleware-override-headers");
-  // Expose the nonce AND the request pathname to server components as request
-  // headers. The root (main)/layout renders <html> ABOVE the [locale] segment,
-  // so getLocale() can't resolve the active locale there and falls back to the
-  // default - emitting <html lang="en"> on e.g. /de pages, which makes browsers
-  // offer to "translate this page". The layout reads x-pathname to recover it.
-  const overrides = [existing, "x-nonce", "x-pathname"].filter(Boolean).join(",");
-  response.headers.set("x-middleware-override-headers", overrides);
-  response.headers.set("x-middleware-request-x-nonce", nonce);
-  response.headers.set("x-middleware-request-x-pathname", pathname);
+  const response =
+    intlResponse ?? NextResponse.next({ request: { headers: requestHeaders } });
 
   response.headers.set("X-Content-Type-Options", "nosniff");
 

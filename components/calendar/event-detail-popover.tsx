@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations, useLocale } from "@/i18n/client";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import {

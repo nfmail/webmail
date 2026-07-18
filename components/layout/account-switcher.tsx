@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { Check, Plus, LogOut, Star, ChevronDown, AlertCircle, GripVertical } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useAccountStore, type AccountEntry } from "@/stores/account-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { getMaxAccounts, sortDefaultFirst, reorderNonDefaultIds } from "@/lib/account-utils";

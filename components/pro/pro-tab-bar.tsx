@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type DragEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Mail, Calendar, BookUser, HardDrive, Settings, PenSquare, MailOpen, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProTabStore, type ProTab, type ProTabKind } from "@/stores/pro-tab-store";

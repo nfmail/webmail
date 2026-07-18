@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Component, ReactNode } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { debug } from "@/lib/debug";
 
 export interface FallbackProps {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useTour } from "./tour-provider";
 import { cn } from "@/lib/utils";
 import { useFocusTrap } from "@/hooks/use-focus-trap";

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Sidebar } from "@/components/layout/sidebar";
 import { EmailList } from "@/components/email/email-list";
 import { EmailViewer } from "@/components/email/email-viewer";

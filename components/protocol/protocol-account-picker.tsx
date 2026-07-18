@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import type { ParsedMailto } from "@/lib/protocol-handlers/mailto";
 import type { ParsedWebcal } from "@/lib/protocol-handlers/webcal";
 import type { AccountEntry } from "@/stores/account-store";

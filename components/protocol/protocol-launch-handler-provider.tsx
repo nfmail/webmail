@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { ReactNode } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { getPathPrefix } from "@/lib/browser-navigation";
 import { parseMailto } from "@/lib/protocol-handlers/mailto";

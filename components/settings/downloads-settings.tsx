@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useSettingsStore } from "@/stores/settings-store";
 import { SettingsSection, SettingItem, Select, ToggleSwitch } from "./settings-section";
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";

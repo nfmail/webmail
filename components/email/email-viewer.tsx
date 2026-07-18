@@ -82,7 +82,7 @@ import {
   PenSquare,
   CalendarClock,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useRouter } from "@/i18n/navigation";
 import type { Attachment as PostalMimeAttachment } from 'postal-mime';
 import { useSettingsStore, KEYWORD_PALETTE } from "@/stores/settings-store";

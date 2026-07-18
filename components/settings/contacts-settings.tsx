@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SettingsSection, SettingItem, ToggleSwitch } from "./settings-section";

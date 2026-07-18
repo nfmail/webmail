@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, useMemo, Fragment } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import {
   Folder, File, Upload, FolderPlus, Download, Trash2,
   Pencil, RefreshCw, Home, MoreVertical,

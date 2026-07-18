@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { apiFetch, getPathPrefix, toRouterPath } from "@/lib/browser-navigation";
 import { Loader2, AlertCircle } from "lucide-react";

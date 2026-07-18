@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState, type CSSProperties, type DragEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent, Calendar } from "@/lib/jmap/types";
 import { format } from "date-fns";

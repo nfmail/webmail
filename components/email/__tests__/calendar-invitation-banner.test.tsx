@@ -55,7 +55,7 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock('next-intl', () => ({
+vi.mock('@/i18n/client', () => ({
   useTranslations: () => (key: string, values?: Record<string, string>) => {
     const strings: Record<string, string> = {
       loading: 'Loading event details…',

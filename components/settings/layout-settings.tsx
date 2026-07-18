@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { Folder } from 'lucide-react';
 import { useSettingsStore, type ToolbarPosition, type MailLayout } from '@/stores/settings-store';
 import { SettingsSection, SettingItem, RadioGroup, ToggleSwitch } from './settings-section';

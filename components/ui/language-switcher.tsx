@@ -2,34 +2,21 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useLocaleStore } from '@/stores/locale-store';
+import { locales } from '@/i18n/routing';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { flagComponents } from './flag-icons';
 
+// Options follow the maintained locale registry (i18n/routing.ts); labels are
+// the languages' native names.
+const NATIVE_NAMES: Record<string, string> = {
+  en: 'English',
+  hu: 'Magyar',
+};
+
 const languages = [
   { value: 'auto', label: 'Auto' },
-  { value: 'cs', label: 'Česky' },
-  { value: 'sk', label: 'Slovenčina' },
-  { value: 'da', label: 'Dansk' },
-  { value: 'de', label: 'Deutsch' },
-  { value: 'en', label: 'English' },
-  { value: 'fa', label: 'فارسی' },
-  { value: 'es', label: 'Español' },
-  { value: 'fr', label: 'Français' },
-  { value: 'he', label: 'עברית' },
-  { value: 'it', label: 'Italiano' },
-  { value: 'hu', label: 'Magyar' },
-  { value: 'lv', label: 'Latviešu' },
-  { value: 'nl', label: 'Nederlands' },
-  { value: 'pl', label: 'Polski' },
-  { value: 'pt', label: 'Português' },
-  { value: 'ro', label: 'Română' },
-  { value: 'tr', label: 'Türkçe' },
-  { value: 'ru', label: 'Русский' },
-  { value: 'uk', label: 'Українська' },
-  { value: 'ko', label: '한국어' },
-  { value: 'ja', label: '日本語' },
-  { value: 'zh', label: '简体中文' },
+  ...locales.map((value) => ({ value: value as string, label: NATIVE_NAMES[value] ?? value })),
 ];
 
 function FlagIcon({ locale }: { locale: string }) {

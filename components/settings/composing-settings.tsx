@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { useSettingsStore } from '@/stores/settings-store';
 import type { SendDelaySeconds } from '@/stores/settings-store';
 import { useAuthStore } from '@/stores/auth-store';

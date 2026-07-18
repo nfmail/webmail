@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ComponentType, type DragEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { NavigationRail } from "@/components/layout/navigation-rail";
 import { KeyboardShortcutsModal } from "@/components/keyboard-shortcuts-modal";
 import { SidebarAppsModal } from "@/components/layout/sidebar-apps-modal";

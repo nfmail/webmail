@@ -1,4 +1,4 @@
-import { unlink, writeFileSync } from "fs";
+import { unlinkSync, writeFileSync } from "fs";
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PRODUCT } from '@/lib/product-metadata';
 
@@ -153,11 +153,8 @@ describe('config API route', () => {
 
     const config = await getConfig();
 
-    unlink('./session-secret', (err) => {
-      if (err) throw err;
-    });
-
     expect(config.rememberMeEnabled).toBe(true);
+    unlinkSync('./session-secret');
   });
 
   it('should enable settingsSync only when both SESSION_SECRET and SETTINGS_SYNC_ENABLED are set', async () => {
@@ -180,11 +177,8 @@ describe('config API route', () => {
 
     const config2 = await getConfig();
 
-    unlink('./session-secret', (err) => {
-      if (err) throw err;
-    });
-
     expect(config2.settingsSyncEnabled).toBe(true);
+    unlinkSync('./session-secret');
   });
 
   it('should disable stalwart features when explicitly set to false', async () => {

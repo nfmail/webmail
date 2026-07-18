@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useSyncExternalStore } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { useTranslations, useMessages } from 'next-intl';
+import { useTranslations, useMessages } from '@/i18n/client';
 import {
   ArrowLeft,
   ChevronRight,

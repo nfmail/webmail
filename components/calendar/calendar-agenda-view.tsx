@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useEffect, useCallback } from "react";
-import { useTranslations, useFormatter } from "next-intl";
+import { useTranslations, useFormatter } from "@/i18n/client";
 import { format, isToday, isTomorrow, startOfDay } from "date-fns";
 import { MapPin, Users } from "lucide-react";
 import { cn } from "@/lib/utils";

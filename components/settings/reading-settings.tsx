@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/i18n/client';
 import { useSettingsStore } from '@/stores/settings-store';
 import type { ArchiveMode, HoverAction, HoverActionsMode, HoverActionsCorner } from '@/stores/settings-store';
 import { ALL_HOVER_ACTIONS } from '@/stores/settings-store';

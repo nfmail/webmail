@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { getLocaleDirection } from "@/i18n/direction";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/server";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { configManager } from "@/lib/admin/config-manager";
 import {

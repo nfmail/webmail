@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/client";
 import { Folder, FolderOpen, FileText, FileCode, ImageIcon, FileAudio, File, Home, ChevronRight, ChevronDown } from "lucide-react";
 import { SettingsSection, SettingItem, ToggleSwitch, RadioGroup } from "./settings-section";
 import { loadFilesSettings, saveFilesSettings, type FilesSettings, type FolderLayout } from "@/components/files/files-settings-dialog";

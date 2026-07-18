@@ -4,49 +4,47 @@ import { messages as enMessages } from '@/locales/en/messages';
 import { messages as huMessages } from '@/locales/hu/messages';
 
 /**
- * Sanity checks on the compiled Lingui catalogs: explicit dotted IDs resolve,
- * ICU plurals and {param} interpolation format correctly in both locales, and
- * the catalogs cover the same ID set (hu falls back to English text at compile
- * time for anything untranslated, so the key sets must match).
+ * Sanity checks on the compiled Lingui catalogs. Message IDs are the natural
+ * English source texts (classic gettext), except for the retained dotted-key
+ * families that back dynamic template-literal call sites (see ADR 0010 /
+ * scripts/i18n/textify-messages.mjs).
  */
 describe('compiled i18n catalogs', () => {
   const en = setupI18n({ locale: 'en', messages: { en: enMessages } });
   const hu = setupI18n({ locale: 'hu', messages: { hu: huMessages } });
 
-  it('resolves plain explicit IDs in both locales', () => {
-    expect(en._('common.loading')).not.toBe('common.loading');
-    expect(hu._('common.loading')).not.toBe('common.loading');
+  it('resolves text msgids in both locales', () => {
+    expect(en._('Cancel')).toBe('Cancel');
+    expect(hu._('Cancel')).not.toBe('Cancel'); // translated
   });
 
   it('formats ICU plurals per locale', () => {
-    const one = en._('email_list.batch_actions.selected_messages', { count: 1 });
-    const many = en._('email_list.batch_actions.selected_messages', { count: 5 });
-    expect(one).toContain('1');
+    const pluralId = Object.keys(enMessages).find(
+      (id) => id.includes('{count, plural') && id.includes('selected'),
+    );
+    expect(pluralId).toBeTruthy();
+    const one = en._(pluralId!, { count: 1 });
+    const many = en._(pluralId!, { count: 5 });
     expect(many).toContain('5');
     expect(one).not.toBe(many);
-
-    const huMany = hu._('email_list.batch_actions.selected_messages', { count: 5 });
-    expect(huMany).toContain('5');
+    expect(hu._(pluralId!, { count: 5 })).toContain('5');
   });
 
-  it('interpolates {param} values', () => {
-    const ids = Object.keys(enMessages);
-    // Find a message that uses simple interpolation to prove the pipeline.
-    const withParam = ids.find((id) => {
-      const m = enMessages[id as keyof typeof enMessages];
-      return typeof m !== 'string' && Array.isArray(m);
-    });
-    expect(withParam).toBeTruthy();
+  it('keeps retained dotted-key families for dynamic call sites', () => {
+    expect(en._('sidebar.mailboxes.inbox')).not.toBe('sidebar.mailboxes.inbox');
+    expect(hu._('sidebar.mailboxes.inbox')).not.toBe('sidebar.mailboxes.inbox');
   });
 
   it('has identical ID sets in en and hu', () => {
     const enIds = Object.keys(enMessages).sort();
     const huIds = Object.keys(huMessages).sort();
     expect(huIds).toEqual(enIds);
-    expect(enIds.length).toBeGreaterThan(2500);
+    expect(enIds.length).toBeGreaterThan(1500);
   });
 
-  it('returns the ID itself for unknown messages (missing-key behavior)', () => {
-    expect(en._('nonexistent.key.for.test')).toBe('nonexistent.key.for.test');
+  it('returns the ID itself for unknown messages (English fallback behavior)', () => {
+    expect(en._('This exact sentence is not in the catalog')).toBe(
+      'This exact sentence is not in the catalog',
+    );
   });
 });

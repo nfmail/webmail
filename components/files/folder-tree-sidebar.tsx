@@ -29,7 +29,7 @@ interface FolderTreeSidebarProps {
 }
 
 export function FolderTreeSidebar({ currentPath, onNavigate, listByParentId, width = 256, isResizing }: FolderTreeSidebarProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
   const client = useFileStore(s => s.client);
   const sharedRoots = useFileStore(s => s.sharedRoots);
   const loadSharedRoots = useFileStore(s => s.loadSharedRoots);
@@ -159,7 +159,7 @@ export function FolderTreeSidebar({ currentPath, onNavigate, listByParentId, wid
             style={{ paddingBlock: "var(--density-sidebar-py)", paddingLeft: "24px" }}
           >
             <Home className={cn("w-4 h-4 flex-shrink-0 me-2 transition-colors")} />
-            <span className="truncate">{t("breadcrumb_root")}</span>
+            <span className="truncate">{t("Home")}</span>
           </button>
         </div>
 
@@ -192,7 +192,7 @@ export function FolderTreeSidebar({ currentPath, onNavigate, listByParentId, wid
           <div className="mt-2 pt-2 border-t border-border/60">
             <div className="px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
               <Share2 className="w-3 h-3" />
-              <span className="truncate">{t("shared_with_me")}</span>
+              <span className="truncate">{t("Shared with me")}</span>
             </div>
             {sharedRoots.filter(r => r.isDirectory).map(r => {
               const path = `/${r.name}`;
@@ -210,7 +210,7 @@ export function FolderTreeSidebar({ currentPath, onNavigate, listByParentId, wid
                     onClick={() => handleFolderClick(path, r.id)}
                     className="flex items-center px-1 rounded transition-colors duration-150 flex-1 text-start min-w-0"
                     style={{ paddingBlock: "var(--density-sidebar-py)", paddingLeft: "24px" }}
-                    title={r.ownerName ? t("shared_by", { name: r.ownerName }) : r.name}
+                    title={r.ownerName ? t("Shared by {name}", { name: r.ownerName }) : r.name}
                   >
                     <Folder className="w-4 h-4 flex-shrink-0 me-2 text-primary" />
                     <span className="truncate">{r.name}</span>

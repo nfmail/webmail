@@ -20,8 +20,8 @@ function utcToLocalDatetime(utcIso: string): string {
 }
 
 export function VacationSettings() {
-  const t = useTranslations('settings.vacation');
-  const tNotifications = useTranslations('notifications');
+  const t = useTranslations();
+  const tNotifications = useTranslations();
   const { client } = useAuthStore();
   const managedAccountId = useManagedAccountStore((s) => s.managedAccountId);
   const {
@@ -64,17 +64,17 @@ export function VacationSettings() {
     const warnings: string[] = [];
 
     if (localFromDate && localToDate && new Date(localToDate) <= new Date(localFromDate)) {
-      warnings.push(t('warnings.end_before_start'));
+      warnings.push(t("End date must be after start date"));
     }
 
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     if (localFromDate && new Date(localFromDate) < todayStart) {
-      warnings.push(t('warnings.start_in_past'));
+      warnings.push(t("Start date is in the past"));
     }
 
     if (localEnabled && !localTextBody.trim()) {
-      warnings.push(t('warnings.empty_body'));
+      warnings.push(t("Message body is empty - recipients will receive a blank reply"));
     }
 
     setValidationWarnings(warnings);
@@ -108,18 +108,18 @@ export function VacationSettings() {
         textBody: localTextBody,
       }, managedAccountId ?? undefined);
 
-      toast.success(tNotifications('vacation_saved'));
+      toast.success(tNotifications("Vacation responder settings saved"));
     } catch (error) {
       console.error('Failed to save vacation response:', error);
-      toast.error(tNotifications('vacation_save_failed'));
+      toast.error(tNotifications("Failed to save vacation responder settings"));
     }
   };
 
   if (!isSupported) {
     return (
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Vacation Responder")} description={t("Automatically reply to incoming emails while you're away")}>
         <div className="text-sm text-muted-foreground py-4">
-          {t('not_supported')}
+          {t("Your mail server does not support vacation responses.")}
         </div>
       </SettingsSection>
     );
@@ -127,10 +127,10 @@ export function VacationSettings() {
 
   if (isLoading) {
     return (
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Vacation Responder")} description={t("Automatically reply to incoming emails while you're away")}>
         <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" />
-          {t('loading')}
+          {t("Loading vacation settings...")}
         </div>
       </SettingsSection>
     );
@@ -138,9 +138,9 @@ export function VacationSettings() {
 
   if (error) {
     return (
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Vacation Responder")} description={t("Automatically reply to incoming emails while you're away")}>
         <div className="text-sm text-destructive py-4">
-          {t('fetch_error')}
+          {t("Failed to load vacation settings. Please try again.")}
         </div>
       </SettingsSection>
     );
@@ -148,10 +148,10 @@ export function VacationSettings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Vacation Responder")} description={t("Automatically reply to incoming emails while you're away")}>
         <SettingItem
-          label={t('status.label')}
-          description={t('status.description')}
+          label={t("Vacation Responder")}
+          description={t("Send an automatic reply to people who email you")}
           htmlFor="vacation-enabled"
         >
           <div className="flex items-center gap-3">
@@ -160,17 +160,17 @@ export function VacationSettings() {
                 ? 'bg-success/10 text-success'
                 : 'bg-muted text-muted-foreground'
             }`}>
-              {localEnabled ? t('status.active') : t('status.inactive')}
+              {localEnabled ? t("Active") : t("Inactive")}
             </span>
             <ToggleSwitch id="vacation-enabled" checked={localEnabled} onChange={setLocalEnabled} />
           </div>
         </SettingItem>
       </SettingsSection>
 
-      <SettingsSection title={t('date_range.title')} description={t('date_range.description')}>
+      <SettingsSection title={t("Date Range")} description={t("Optionally limit the auto-reply to a specific period")}>
         <SettingItem
-          label={t('date_range.start')}
-          description={t('date_range.start_description')}
+          label={t("Start Date")}
+          description={t("Leave empty for no start limit")}
           htmlFor="vacation-from-date"
         >
           <Input
@@ -182,8 +182,8 @@ export function VacationSettings() {
           />
         </SettingItem>
         <SettingItem
-          label={t('date_range.end')}
-          description={t('date_range.end_description')}
+          label={t("End Date")}
+          description={t("Leave empty for no end limit")}
           htmlFor="vacation-to-date"
         >
           <Input
@@ -196,10 +196,10 @@ export function VacationSettings() {
         </SettingItem>
       </SettingsSection>
 
-      <SettingsSection title={t('message.title')} description={t('message.description')}>
+      <SettingsSection title={t("Auto-Reply Message")} description={t("The message that will be sent as a reply")}>
         <SettingItem
-          label={t('message.subject_label')}
-          description={t('message.subject_description')}
+          label={t("Subject")}
+          description={t("Subject line of the auto-reply")}
           htmlFor="vacation-subject"
         >
           <Input
@@ -207,19 +207,19 @@ export function VacationSettings() {
             type="text"
             value={localSubject}
             onChange={(e) => setLocalSubject(e.target.value)}
-            placeholder={t('message.subject_placeholder')}
+            placeholder={t("Out of Office")}
             className="w-64"
           />
         </SettingItem>
         <div className="py-3">
           <Field>
-            <FieldLabel htmlFor="vacation-body">{t('message.body_label')}</FieldLabel>
-            <FieldDescription>{t('message.body_description')}</FieldDescription>
+            <FieldLabel htmlFor="vacation-body">{t("Message Body")}</FieldLabel>
+            <FieldDescription>{t("Plain text message content")}</FieldDescription>
             <Textarea
               id="vacation-body"
               value={localTextBody}
               onChange={(e) => setLocalTextBody(e.target.value)}
-              placeholder={t('message.body_placeholder')}
+              placeholder={t("Thank you for your email. I am currently out of the office and will respond when I return.")}
               rows={6}
               className="resize-y"
             />
@@ -228,14 +228,14 @@ export function VacationSettings() {
       </SettingsSection>
 
       {localTextBody.trim() && (
-        <SettingsSection title={t('preview.title')}>
+        <SettingsSection title={t("Preview")}>
           <button
             type="button"
             onClick={() => setShowPreview(!showPreview)}
             className="flex items-center gap-2 text-sm text-primary hover:underline"
           >
             {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            {showPreview ? t('preview.hide') : t('preview.show')}
+            {showPreview ? t("Hide preview") : t("Show preview")}
           </button>
           {showPreview && (
             <div className="mt-3 p-4 rounded border border-border bg-background">
@@ -267,10 +267,10 @@ export function VacationSettings() {
           {isSaving ? (
             <>
               <Loader2 className="w-4 h-4 me-2 animate-spin" />
-              {t('saving')}
+              {t("Saving...")}
             </>
           ) : (
-            t('save')
+            t("Save Changes")
           )}
         </Button>
       </div>

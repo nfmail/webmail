@@ -14,7 +14,7 @@ interface FileUploadAreaProps {
 }
 
 export function FileUploadArea({ onUpload, onUploadFolder, onCreateFolder, onCreateTextFile }: FileUploadAreaProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -58,9 +58,9 @@ export function FileUploadArea({ onUpload, onUploadFolder, onCreateFolder, onCre
           <Upload className="w-8 h-8 text-muted-foreground" />
         </div>
         <div className="text-center">
-          <h3 className="text-base font-medium">{t("empty_state_title")}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{t("empty_state_description")}</p>
-          <p className="text-xs text-muted-foreground mt-2">{t("drop_files_here")}</p>
+          <h3 className="text-base font-medium">{t("No files yet")}</h3>
+          <p className="text-sm text-muted-foreground mt-1">{t("Upload files or create folders to get started")}</p>
+          <p className="text-xs text-muted-foreground mt-2">{t("Drop files or folders here to upload")}</p>
         </div>
         <div className="flex gap-2 flex-wrap justify-center">
           <Button
@@ -69,7 +69,7 @@ export function FileUploadArea({ onUpload, onUploadFolder, onCreateFolder, onCre
             onClick={onCreateFolder}
           >
             <FolderPlus className="w-4 h-4 me-2" />
-            {t("new_folder")}
+            {t("New Folder")}
           </Button>
           {onCreateTextFile && (
             <Button
@@ -78,7 +78,7 @@ export function FileUploadArea({ onUpload, onUploadFolder, onCreateFolder, onCre
               onClick={onCreateTextFile}
             >
               <FilePlus className="w-4 h-4 me-2" />
-              {t("new_text_file")}
+              {t("New Text File")}
             </Button>
           )}
         </div>

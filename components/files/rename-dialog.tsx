@@ -21,7 +21,7 @@ interface RenameDialogProps {
 }
 
 export function RenameDialog({ currentName, title, label, onConfirm, onCancel }: RenameDialogProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
   const [name, setName] = useState(currentName);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,21 +42,21 @@ export function RenameDialog({ currentName, title, label, onConfirm, onCancel }:
     <Dialog open onOpenChange={(open) => { if (!open) onCancel(); }}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{title || t("rename_title")}</DialogTitle>
+          <DialogTitle>{title || t("Rename")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={label || t("new_name")}
+            placeholder={label || t("New name")}
           />
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-              {t("cancel")}
+              {t("Cancel")}
             </Button>
             <Button type="submit" disabled={!name.trim() || isSubmitting}>
-              {t("save")}
+              {t("Save")}
             </Button>
           </DialogFooter>
         </form>

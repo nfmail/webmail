@@ -38,7 +38,7 @@ function escapeHtml(s: string): string {
 // origin. Parsing happens in the caller (FilePreviewModal); this is pure
 // presentation.
 export function EmlPreview({ message }: { message: ParsedEml }) {
-  const t = useTranslations("email_viewer");
+  const t = useTranslations();
 
   const bodyDoc = message.html
     ? sanitizeEmailHtmlForIframe(message.html)
@@ -68,13 +68,13 @@ export function EmlPreview({ message }: { message: ParsedEml }) {
       <h2 className="text-lg font-semibold text-foreground break-words">{message.subject || ""}</h2>
       <div className="mt-2 flex flex-col gap-0.5 text-sm text-muted-foreground border-b border-border pb-3">
         {message.from && (
-          <div><span className="font-medium text-foreground">{t("from")}: </span>{formatAddress(message.from)}</div>
+          <div><span className="font-medium text-foreground">{t("From")}: </span>{formatAddress(message.from)}</div>
         )}
         {message.to && message.to.length > 0 && (
-          <div><span className="font-medium text-foreground">{t("to")}: </span>{message.to.map(formatAddress).join(", ")}</div>
+          <div><span className="font-medium text-foreground">{t("To")}: </span>{message.to.map(formatAddress).join(", ")}</div>
         )}
         {message.date && (
-          <div><span className="font-medium text-foreground">{t("date")}: </span>{new Date(message.date).toLocaleString()}</div>
+          <div><span className="font-medium text-foreground">{t("Date")}: </span>{new Date(message.date).toLocaleString()}</div>
         )}
       </div>
       {bodyDoc && (
@@ -87,14 +87,14 @@ export function EmlPreview({ message }: { message: ParsedEml }) {
       )}
       {message.attachments && message.attachments.length > 0 && (
         <div className="mt-4 border-t border-border pt-3">
-          <div className="text-xs font-medium text-muted-foreground mb-2">{t("attachments")}</div>
+          <div className="text-xs font-medium text-muted-foreground mb-2">{t("Attachments")}</div>
           <div className="flex flex-wrap gap-2">
             {message.attachments.map((att, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => downloadAttachment(att)}
-                title={t("download")}
+                title={t("Download")}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm bg-muted text-foreground hover:bg-muted/70"
               >
                 <Paperclip className="w-3 h-3 flex-shrink-0" />

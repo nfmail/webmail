@@ -193,7 +193,7 @@ function Select({ value, onChange, children, className }: {
 }
 
 export function ContactForm({ contact, addressBooks, allKeywords, defaultAddressBookId, prefill, onSave, onCancel }: ContactFormProps) {
-  const t = useTranslations("contacts.form");
+  const t = useTranslations();
   const isEditing = !!contact;
 
   // Split a free-form display name into given/surname for prefill.
@@ -422,11 +422,11 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
     e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setPhotoError(t("photo_invalid"));
+      setPhotoError(t("Invalid image file"));
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      setPhotoError(t("photo_too_large"));
+      setPhotoError(t("Image is too large (max 10 MB)"));
       return;
     }
     setPhotoError(null);
@@ -436,7 +436,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
       setPhotoUri(uri);
       setPhotoMediaType(mediaType);
     } catch {
-      setPhotoError(t("photo_invalid"));
+      setPhotoError(t("Invalid image file"));
     } finally {
       setPhotoUploading(false);
     }
@@ -455,7 +455,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
   const handleEmailBlur = (index: number, address: string) => {
     if (address.trim() && !validateEmail(address)) {
-      setEmailErrors(prev => ({ ...prev, [index]: t("email_error_inline") }));
+      setEmailErrors(prev => ({ ...prev, [index]: t("Invalid email format") }));
     } else {
       setEmailErrors(prev => {
         const next = { ...prev };
@@ -470,14 +470,14 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
     setError(null);
 
     if (!givenName.trim() && !surname.trim()) {
-      setError(t("name_required"));
+      setError(t("At least a first name or last name is required"));
       return;
     }
 
     const validEmails = emails.filter(e => e.address.trim());
     for (const entry of validEmails) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(entry.address.trim())) {
-        setError(t("email_invalid"));
+        setError(t("Please enter a valid email address"));
         return;
       }
     }
@@ -609,7 +609,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
     try {
       await onSave(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("save_failed"));
+      setError(err instanceof Error ? err.message : t("Failed to save contact"));
     } finally {
       setIsSaving(false);
     }
@@ -622,9 +622,9 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
     <form onSubmit={handleSubmit} className="flex flex-col h-full bg-background">
       <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
         <h2 className="text-lg font-semibold">
-          {isEditing ? t("edit_title") : t("create_title")}
+          {isEditing ? t("Edit Contact") : t("New Contact")}
         </h2>
-        <button type="button" onClick={onCancel} aria-label={t("cancel")} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground">
+        <button type="button" onClick={onCancel} aria-label={t("Cancel")} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground">
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -643,8 +643,8 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               onClick={() => photoInputRef.current?.click()}
               disabled={photoUploading}
               className="relative group rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60"
-              title={t("upload_photo")}
-              aria-label={t("upload_photo")}
+              title={t("Upload photo")}
+              aria-label={t("Upload photo")}
             >
               <Avatar
                 name={previewName || undefined}
@@ -658,7 +658,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                 className="absolute inset-0 rounded-full bg-black/55 text-white flex flex-col items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity"
               >
                 <Camera className="w-5 h-5" />
-                <span className="text-[10px] font-medium leading-none">{t("change_photo")}</span>
+                <span className="text-[10px] font-medium leading-none">{t("Change")}</span>
               </span>
               <input
                 ref={photoInputRef}
@@ -669,7 +669,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               />
             </button>
             <div className="flex flex-col gap-1 min-w-0 flex-1">
-              <p className="text-xs text-muted-foreground">{t("photo_hint")}</p>
+              <p className="text-xs text-muted-foreground">{t("JPG or PNG, up to 10 MB. Will be resized.")}</p>
               {photoError && (
                 <p className="text-xs text-destructive">{photoError}</p>
               )}
@@ -680,7 +680,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                   className="inline-flex items-center gap-1 self-start text-xs text-muted-foreground hover:text-destructive transition-colors"
                 >
                   <Trash2 className="w-3 h-3" />
-                  {t("remove_photo")}
+                  {t("Remove photo")}
                 </button>
               )}
             </div>
@@ -689,13 +689,13 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
           <div className="divide-y divide-border/60">
 
           {addressBooks && addressBooks.length > 1 && (
-            <FormSection icon={Book} title={t("section_address_book") || "Directory"}>
+            <FormSection icon={Book} title={t("Directory") || "Directory"}>
               <Select
                 value={selectedBookId}
                 onChange={(e) => setSelectedBookId(e.target.value)}
                 className="w-full"
               >
-                <option value="">{t("select_address_book") || "Select a directory..."}</option>
+                <option value="">{t("Select a directory...") || "Select a directory..."}</option>
                 {addressBooks.map((book) => (
                   <option key={book.id} value={book.id}>
                     {book.accountName ? `${book.name} (${book.accountName})` : book.name}
@@ -705,43 +705,43 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
             </FormSection>
           )}
 
-          <FormSection icon={User} title={t("section_identity")}>
+          <FormSection icon={User} title={t("Name & Identity")}>
             <div className="grid grid-cols-[auto_1fr_1fr_auto] gap-2">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("prefix")}</label>
-                <Input value={prefix} onChange={(e) => setPrefix(e.target.value)} placeholder={t("prefix_placeholder")} className="w-20" />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Prefix")}</label>
+                <Input value={prefix} onChange={(e) => setPrefix(e.target.value)} placeholder={t("Dr., Mr., Mrs.")} className="w-20" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
-                  {t("given_name")} <span className="text-destructive">*</span>
+                  {t("First name")} <span className="text-destructive">*</span>
                 </label>
-                <Input value={givenName} onChange={(e) => setGivenName(e.target.value)} placeholder={t("given_name")} autoFocus />
+                <Input value={givenName} onChange={(e) => setGivenName(e.target.value)} placeholder={t("First name")} autoFocus />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
-                  {t("surname")} <span className="text-destructive">*</span>
+                  {t("Last name")} <span className="text-destructive">*</span>
                 </label>
-                <Input value={surname} onChange={(e) => setSurname(e.target.value)} placeholder={t("surname")} />
+                <Input value={surname} onChange={(e) => setSurname(e.target.value)} placeholder={t("Last name")} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("suffix")}</label>
-                <Input value={suffix} onChange={(e) => setSuffix(e.target.value)} placeholder={t("suffix_placeholder")} className="w-20" />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Suffix")}</label>
+                <Input value={suffix} onChange={(e) => setSuffix(e.target.value)} placeholder={t("Jr., Sr., III")} className="w-20" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("middle_name")}</label>
-                <Input value={additionalName} onChange={(e) => setAdditionalName(e.target.value)} placeholder={t("middle_name")} />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Middle name")}</label>
+                <Input value={additionalName} onChange={(e) => setAdditionalName(e.target.value)} placeholder={t("Middle name")} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("nickname")}</label>
-                <Input value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder={t("nickname_placeholder")} />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Nickname")}</label>
+                <Input value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder={t("Nickname")} />
               </div>
             </div>
           </FormSection>
 
           {/* Email */}
-          <FormSection icon={Mail} title={t("email")}>
+          <FormSection icon={Mail} title={t("Email")}>
             <div className="space-y-2">
               {emails.map((entry, i) => (
                 <div key={i}>
@@ -759,7 +759,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                         }
                       }}
                       onBlur={() => handleEmailBlur(i, entry.address)}
-                      placeholder={t("email_placeholder")}
+                      placeholder={t("email@example.com")}
                       className={cn("flex-1", emailErrors[i] && "border-destructive focus:ring-destructive")}
                     />
                     <Select
@@ -771,8 +771,8 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                       }}
                     >
                       <option value="">-</option>
-                      <option value="work">{t("context_work")}</option>
-                      <option value="private">{t("context_private")}</option>
+                      <option value="work">{t("Work")}</option>
+                      <option value="private">{t("Private")}</option>
                     </Select>
                     {emails.length > 1 && (
                       <Button type="button" variant="ghost" size="icon" aria-label="Remove email" onClick={() => setEmails(emails.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
@@ -787,13 +787,13 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               ))}
               <Button type="button" variant="ghost" size="sm" onClick={() => setEmails([...emails, { address: "", context: "" }])} className="text-xs">
                 <Plus className="w-3 h-3 me-1" />
-                {t("add_email")}
+                {t("Add email")}
               </Button>
             </div>
           </FormSection>
 
           {/* Phone */}
-          <FormSection icon={Phone} title={t("phone")}>
+          <FormSection icon={Phone} title={t("Phone")}>
             <div className="space-y-2">
               {phones.map((entry, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -806,7 +806,7 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                       next[i] = { ...next[i], number: e.target.value };
                       setPhones(next);
                     }}
-                    placeholder={t("phone_placeholder")}
+                    placeholder={t("+1 234 567 890")}
                     className="flex-1"
                   />
                   <Select
@@ -818,13 +818,13 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     }}
                     className="w-[5.5rem]"
                   >
-                    <option value="">{t("phone_type")}</option>
-                    <option value="voice">{t("phone_voice")}</option>
-                    <option value="cell">{t("phone_cell")}</option>
-                    <option value="fax">{t("phone_fax")}</option>
-                    <option value="pager">{t("phone_pager")}</option>
-                    <option value="video">{t("phone_video")}</option>
-                    <option value="text">{t("phone_text")}</option>
+                    <option value="">{t("Type")}</option>
+                    <option value="voice">{t("Voice")}</option>
+                    <option value="cell">{t("Mobile")}</option>
+                    <option value="fax">{t("Fax")}</option>
+                    <option value="pager">{t("Pager")}</option>
+                    <option value="video">{t("Video")}</option>
+                    <option value="text">{t("Text")}</option>
                   </Select>
                   <Select
                     value={entry.context}
@@ -835,8 +835,8 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     }}
                   >
                     <option value="">-</option>
-                    <option value="work">{t("context_work")}</option>
-                    <option value="private">{t("context_private")}</option>
+                    <option value="work">{t("Work")}</option>
+                    <option value="private">{t("Private")}</option>
                   </Select>
                   <Button type="button" variant="ghost" size="icon" aria-label="Remove phone" onClick={() => setPhones(phones.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
@@ -845,82 +845,82 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               ))}
               <Button type="button" variant="ghost" size="sm" onClick={() => setPhones([...phones, { number: "", context: "", feature: "" }])} className="text-xs">
                 <Plus className="w-3 h-3 me-1" />
-                {t("add_phone")}
+                {t("Add phone")}
               </Button>
             </div>
           </FormSection>
 
           {/* Work & Organization */}
-          <FormSection icon={Building} title={t("section_work")} collapsible defaultOpen={!!(organization || department || jobTitle || role)}>
+          <FormSection icon={Building} title={t("Work & Organization")} collapsible defaultOpen={!!(organization || department || jobTitle || role)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("organization")}</label>
-                <Input value={organization} onChange={(e) => setOrganization(e.target.value)} placeholder={t("organization_placeholder")} />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Organization")}</label>
+                <Input value={organization} onChange={(e) => setOrganization(e.target.value)} placeholder={t("Company name")} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("department")}</label>
-                <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder={t("department_placeholder")} />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Department")}</label>
+                <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder={t("Department")} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("job_title")}</label>
-                <Input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t("job_title_placeholder")} />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Job title")}</label>
+                <Input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t("e.g., Software Engineer")} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("role")}</label>
-                <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder={t("role_placeholder")} />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Role")}</label>
+                <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder={t("e.g., Team Lead")} />
               </div>
             </div>
           </FormSection>
 
           {/* Addresses */}
-          <FormSection icon={MapPin} title={t("addresses")} collapsible defaultOpen={addresses.length > 0}>
+          <FormSection icon={MapPin} title={t("Addresses")} collapsible defaultOpen={addresses.length > 0}>
             <div className="space-y-3">
               {addresses.map((addr, i) => (
                 <div key={i} className="rounded-md border border-border/60 bg-muted/20 p-3 space-y-2 relative">
                   <Button type="button" variant="ghost" size="icon" aria-label="Remove address" onClick={() => setAddresses(addresses.filter((_, j) => j !== i))} className="h-6 w-6 absolute top-2 right-2">
                     <X className="w-3 h-3" />
                   </Button>
-                  <Input value={addr.street} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], street: e.target.value }; setAddresses(n); }} placeholder={t("street")} />
+                  <Input value={addr.street} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], street: e.target.value }; setAddresses(n); }} placeholder={t("Street")} />
                   <div className="grid grid-cols-2 gap-2">
-                    <Input value={addr.locality} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], locality: e.target.value }; setAddresses(n); }} placeholder={t("city")} />
-                    <Input value={addr.region} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], region: e.target.value }; setAddresses(n); }} placeholder={t("region")} />
+                    <Input value={addr.locality} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], locality: e.target.value }; setAddresses(n); }} placeholder={t("City")} />
+                    <Input value={addr.region} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], region: e.target.value }; setAddresses(n); }} placeholder={t("State / Region")} />
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <Input value={addr.postcode} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], postcode: e.target.value }; setAddresses(n); }} placeholder={t("postcode")} />
-                    <Input value={addr.country} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], country: e.target.value }; setAddresses(n); }} placeholder={t("country")} />
+                    <Input value={addr.postcode} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], postcode: e.target.value }; setAddresses(n); }} placeholder={t("Postal code")} />
+                    <Input value={addr.country} onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], country: e.target.value }; setAddresses(n); }} placeholder={t("Country")} />
                     <Select
                       value={addr.context}
                       onChange={(e) => { const n = [...addresses]; n[i] = { ...n[i], context: e.target.value as AddressEntry["context"] }; setAddresses(n); }}
                     >
                       <option value="">-</option>
-                      <option value="work">{t("context_work")}</option>
-                      <option value="private">{t("context_private")}</option>
+                      <option value="work">{t("Work")}</option>
+                      <option value="private">{t("Private")}</option>
                     </Select>
                   </div>
                 </div>
               ))}
               <Button type="button" variant="ghost" size="sm" onClick={() => setAddresses([...addresses, { street: "", locality: "", region: "", postcode: "", country: "", context: "" }])} className="text-xs">
                 <Plus className="w-3 h-3 me-1" />
-                {t("add_address")}
+                {t("Add address")}
               </Button>
             </div>
           </FormSection>
 
           {/* Online Services */}
-          <FormSection icon={Globe} title={t("online_services")} collapsible defaultOpen={onlineServices.length > 0}>
+          <FormSection icon={Globe} title={t("Online Services")} collapsible defaultOpen={onlineServices.length > 0}>
             <div className="space-y-2">
               {onlineServices.map((svc, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <Input
                     value={svc.uri}
                     onChange={(e) => { const n = [...onlineServices]; n[i] = { ...n[i], uri: e.target.value }; setOnlineServices(n); }}
-                    placeholder={t("url_placeholder")}
+                    placeholder={t("https://...")}
                     className="flex-1"
                   />
                   <Input
                     value={svc.service}
                     onChange={(e) => { const n = [...onlineServices]; n[i] = { ...n[i], service: e.target.value }; setOnlineServices(n); }}
-                    placeholder={t("service_placeholder")}
+                    placeholder={t("Service")}
                     className="w-24"
                   />
                   <Button type="button" variant="ghost" size="icon" aria-label="Remove online service" onClick={() => setOnlineServices(onlineServices.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
@@ -930,13 +930,13 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               ))}
               <Button type="button" variant="ghost" size="sm" onClick={() => setOnlineServices([...onlineServices, { uri: "", service: "", label: "" }])} className="text-xs">
                 <Plus className="w-3 h-3 me-1" />
-                {t("add_online_service")}
+                {t("Add online service")}
               </Button>
             </div>
           </FormSection>
 
           {/* Anniversaries */}
-          <FormSection icon={Cake} title={t("anniversaries")} collapsible defaultOpen={anniversaries.length > 0}>
+          <FormSection icon={Cake} title={t("Anniversaries")} collapsible defaultOpen={anniversaries.length > 0}>
             <div className="space-y-2">
               {anniversaries.map((ann, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -950,10 +950,10 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
                     value={ann.kind}
                     onChange={(e) => { const n = [...anniversaries]; n[i] = { ...n[i], kind: e.target.value as AnniversaryEntry["kind"] }; setAnniversaries(n); }}
                   >
-                    <option value="birth">{t("anniversary_birth")}</option>
-                    <option value="wedding">{t("anniversary_wedding")}</option>
-                    <option value="death">{t("anniversary_death")}</option>
-                    <option value="other">{t("anniversary_other")}</option>
+                    <option value="birth">{t("Birthday")}</option>
+                    <option value="wedding">{t("Anniversary")}</option>
+                    <option value="death">{t("Memorial")}</option>
+                    <option value="other">{t("Other")}</option>
                   </Select>
                   <Button type="button" variant="ghost" size="icon" aria-label="Remove date" onClick={() => setAnniversaries(anniversaries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
@@ -962,39 +962,39 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               ))}
               <Button type="button" variant="ghost" size="sm" onClick={() => setAnniversaries([...anniversaries, { date: "", kind: "birth" }])} className="text-xs">
                 <Plus className="w-3 h-3 me-1" />
-                {t("add_anniversary")}
+                {t("Add date")}
               </Button>
             </div>
           </FormSection>
 
           {/* Personal Info */}
-          <FormSection icon={Heart} title={t("personal_info")} collapsible defaultOpen={personalInfoEntries.length > 0}>
+          <FormSection icon={Heart} title={t("Personal Info")} collapsible defaultOpen={personalInfoEntries.length > 0}>
             <div className="space-y-2">
               {personalInfoEntries.map((pi, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <Input
                     value={pi.value}
                     onChange={(e) => { const n = [...personalInfoEntries]; n[i] = { ...n[i], value: e.target.value }; setPersonalInfoEntries(n); }}
-                    placeholder={t("personal_info_placeholder")}
+                    placeholder={t("e.g., Photography")}
                     className="flex-1"
                   />
                   <Select
                     value={pi.kind}
                     onChange={(e) => { const n = [...personalInfoEntries]; n[i] = { ...n[i], kind: e.target.value as PersonalInfoEntry["kind"] }; setPersonalInfoEntries(n); }}
                   >
-                    <option value="expertise">{t("personal_expertise")}</option>
-                    <option value="hobby">{t("personal_hobby")}</option>
-                    <option value="interest">{t("personal_interest")}</option>
-                    <option value="other">{t("personal_other")}</option>
+                    <option value="expertise">{t("Expertise")}</option>
+                    <option value="hobby">{t("Hobby")}</option>
+                    <option value="interest">{t("Interest")}</option>
+                    <option value="other">{t("Other")}</option>
                   </Select>
                   <Select
                     value={pi.level}
                     onChange={(e) => { const n = [...personalInfoEntries]; n[i] = { ...n[i], level: e.target.value as PersonalInfoEntry["level"] }; setPersonalInfoEntries(n); }}
                   >
-                    <option value="">{t("level")}</option>
-                    <option value="high">{t("level_high")}</option>
-                    <option value="medium">{t("level_medium")}</option>
-                    <option value="low">{t("level_low")}</option>
+                    <option value="">{t("Level")}</option>
+                    <option value="high">{t("High")}</option>
+                    <option value="medium">{t("Medium")}</option>
+                    <option value="low">{t("Low")}</option>
                   </Select>
                   <Button type="button" variant="ghost" size="icon" aria-label="Remove entry" onClick={() => setPersonalInfoEntries(personalInfoEntries.filter((_, j) => j !== i))} className="h-8 w-8 shrink-0">
                     <X className="w-3 h-3" />
@@ -1003,68 +1003,68 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
               ))}
               <Button type="button" variant="ghost" size="sm" onClick={() => setPersonalInfoEntries([...personalInfoEntries, { value: "", kind: "hobby", level: "" }])} className="text-xs">
                 <Plus className="w-3 h-3 me-1" />
-                {t("add_personal_info")}
+                {t("Add entry")}
               </Button>
             </div>
           </FormSection>
 
           {/* Categories */}
-          <FormSection icon={Tag} title={t("categories")} collapsible defaultOpen={!!keywordsStr}>
+          <FormSection icon={Tag} title={t("Categories")} collapsible defaultOpen={!!keywordsStr}>
             <CategoryComboBox
               keywordsStr={keywordsStr}
               onChange={setKeywordsStr}
               allKeywords={allKeywords || []}
-              placeholder={t("categories_placeholder")}
-              hint={t("categories_hint")}
-              addLabel={t("category_add")}
+              placeholder={t("e.g., Family, Friends, Colleagues")}
+              hint={t("Type to search or add categories")}
+              addLabel={t("Add")}
             />
           </FormSection>
 
           {/* Gender */}
-          <FormSection icon={UserCircle} title={t("gender")} collapsible defaultOpen={!!(genderSex || genderIdentity)}>
+          <FormSection icon={UserCircle} title={t("Gender")} collapsible defaultOpen={!!(genderSex || genderIdentity)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("gender_sex")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Sex")}</label>
                 <Select value={genderSex} onChange={(e) => setGenderSex(e.target.value)} className="w-full">
                   <option value="">-</option>
-                  <option value="masculine">{t("gender_male")}</option>
-                  <option value="feminine">{t("gender_female")}</option>
-                  <option value="other">{t("gender_other")}</option>
-                  <option value="none">{t("gender_none")}</option>
-                  <option value="unknown">{t("gender_unknown")}</option>
+                  <option value="masculine">{t("Male")}</option>
+                  <option value="feminine">{t("Female")}</option>
+                  <option value="other">{t("Other")}</option>
+                  <option value="none">{t("Not applicable")}</option>
+                  <option value="unknown">{t("Unknown")}</option>
                 </Select>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("gender_identity")}</label>
-                <Input value={genderIdentity} onChange={(e) => setGenderIdentity(e.target.value)} placeholder={t("gender_identity_placeholder")} />
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Gender identity")}</label>
+                <Input value={genderIdentity} onChange={(e) => setGenderIdentity(e.target.value)} placeholder={t("Gender identity...")} />
               </div>
             </div>
           </FormSection>
 
           {/* Calendar */}
-          <FormSection icon={Calendar} title={t("calendar")} collapsible defaultOpen={!!(calendarUri || schedulingUri || freeBusyUri)}>
+          <FormSection icon={Calendar} title={t("Calendar")} collapsible defaultOpen={!!(calendarUri || schedulingUri || freeBusyUri)}>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("calendar_uri")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Calendar URL")}</label>
                 <Input value={calendarUri} onChange={(e) => setCalendarUri(e.target.value)} placeholder="https://..." />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("scheduling_uri")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Scheduling URL")}</label>
                 <Input value={schedulingUri} onChange={(e) => setSchedulingUri(e.target.value)} placeholder="https://..." />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t("freebusy_uri")}</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("Free/Busy URL")}</label>
                 <Input value={freeBusyUri} onChange={(e) => setFreeBusyUri(e.target.value)} placeholder="https://..." />
               </div>
             </div>
           </FormSection>
 
           {/* Notes */}
-          <FormSection icon={StickyNote} title={t("note")} collapsible defaultOpen={!!note}>
+          <FormSection icon={StickyNote} title={t("Notes")} collapsible defaultOpen={!!note}>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder={t("note_placeholder")}
+              placeholder={t("Add a note...")}
               className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-y outline-none focus:ring-2 focus:ring-ring"
             />
           </FormSection>
@@ -1075,10 +1075,10 @@ export function ContactForm({ contact, addressBooks, allKeywords, defaultAddress
 
       <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border flex-shrink-0">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-          {t("cancel")}
+          {t("Cancel")}
         </Button>
         <Button type="submit" disabled={isSaving}>
-          {isSaving ? (isEditing ? t("updating") : t("creating")) : t("save")}
+          {isSaving ? (isEditing ? t("Updating...") : t("Creating...")) : t("Save")}
         </Button>
       </div>
     </form>

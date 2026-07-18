@@ -27,9 +27,9 @@ interface TemplateFormProps {
 }
 
 export function TemplateForm({ template, initialData, onSave, onCancel }: TemplateFormProps) {
-  const t = useTranslations('templates');
-  const tSettings = useTranslations('settings.templates');
-  const tComposer = useTranslations('email_composer');
+  const t = useTranslations();
+  const tSettings = useTranslations();
+  const tComposer = useTranslations();
 
   const { identities } = useAuthStore();
   const templates = useTemplateStore((s) => s.templates);
@@ -98,27 +98,27 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-foreground">{tSettings('name')}</label>
+        <label className="text-sm font-medium text-foreground">{tSettings("Template Name")}</label>
         <Input
           value={name}
           onChange={(e) => { setName(e.target.value); setNameError(null); }}
-          placeholder={tSettings('name_placeholder')}
+          placeholder={tSettings("e.g., Follow-up email")}
           className={cn('mt-1', nameError && 'border-red-500')}
           autoFocus
         />
         {nameError && (
           <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-            {tSettings(`validation.${nameError}`)}
+            {tSettings(`settings.templates.validation.${nameError}`)}
           </p>
         )}
       </div>
 
       <div>
-        <label className="text-sm font-medium text-foreground">{tSettings('category')}</label>
+        <label className="text-sm font-medium text-foreground">{tSettings("Category")}</label>
         <Input
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          placeholder={tSettings('category_placeholder')}
+          placeholder={tSettings("e.g., Work, Personal")}
           className="mt-1"
           list="template-categories"
         />
@@ -133,7 +133,7 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
 
       <div>
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-foreground">{tSettings('subject')}</label>
+          <label className="text-sm font-medium text-foreground">{tSettings("Subject")}</label>
           <div className="relative">
             <Button
               type="button"
@@ -143,7 +143,7 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
               onClick={() => setShowPlaceholderMenu(showPlaceholderMenu === 'subject' ? null : 'subject')}
             >
               <Plus className="w-3 h-3 me-1" />
-              {t('placeholder')}
+              {t("Variable")}
             </Button>
             {showPlaceholderMenu === 'subject' && (
               <PlaceholderDropdown
@@ -156,14 +156,14 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
         <Input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          placeholder={tSettings('subject_placeholder')}
+          placeholder={tSettings("Email subject line")}
           className="mt-1"
         />
       </div>
 
       <div>
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-foreground">{tSettings('body')}</label>
+          <label className="text-sm font-medium text-foreground">{tSettings("Body")}</label>
           <div className="relative">
             <Button
               type="button"
@@ -173,7 +173,7 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
               onClick={() => setShowPlaceholderMenu(showPlaceholderMenu === 'body' ? null : 'body')}
             >
               <Plus className="w-3 h-3 me-1" />
-              {t('placeholder')}
+              {t("Variable")}
             </Button>
             {showPlaceholderMenu === 'body' && (
               <PlaceholderDropdown
@@ -186,7 +186,7 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder={tSettings('body_placeholder')}
+          placeholder={tSettings("Email body content...")}
           rows={6}
           className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-y"
         />
@@ -194,29 +194,29 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
-          <label className="text-sm font-medium text-foreground">{tComposer('to')}</label>
+          <label className="text-sm font-medium text-foreground">{tComposer("To")}</label>
           <Input
             value={toRecipients}
             onChange={(e) => setToRecipients(e.target.value)}
-            placeholder={tSettings('recipients_placeholder')}
+            placeholder={tSettings("email@example.com")}
             className="mt-1"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-foreground">{tComposer('cc')}</label>
+          <label className="text-sm font-medium text-foreground">{tComposer("CC")}</label>
           <Input
             value={ccRecipients}
             onChange={(e) => setCcRecipients(e.target.value)}
-            placeholder={tSettings('recipients_placeholder')}
+            placeholder={tSettings("email@example.com")}
             className="mt-1"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-foreground">{tComposer('bcc')}</label>
+          <label className="text-sm font-medium text-foreground">{tComposer("BCC")}</label>
           <Input
             value={bccRecipients}
             onChange={(e) => setBccRecipients(e.target.value)}
-            placeholder={tSettings('recipients_placeholder')}
+            placeholder={tSettings("email@example.com")}
             className="mt-1"
           />
         </div>
@@ -224,13 +224,13 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
 
       {identities.length > 1 && (
         <div>
-          <label className="text-sm font-medium text-foreground">{tSettings('identity')}</label>
+          <label className="text-sm font-medium text-foreground">{tSettings("Send As")}</label>
           <select
             value={identityId}
             onChange={(e) => setIdentityId(e.target.value)}
             className="mt-1 w-full px-3 py-2 text-sm rounded-md bg-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <option value="">{tSettings('default_identity')}</option>
+            <option value="">{tSettings("Default identity")}</option>
             {identities.map((id) => (
               <option key={id.id} value={id.id}>
                 {id.name ? `${id.name} <${id.email}>` : id.email}
@@ -247,15 +247,15 @@ export function TemplateForm({ template, initialData, onSave, onCancel }: Templa
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <Star className={cn('w-4 h-4', isFavorite && 'fill-amber-400 text-amber-400')} />
-          {tSettings('favorite')}
+          {tSettings("Favorite")}
         </button>
 
         <div className="flex gap-2">
           <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-            {tSettings('cancel')}
+            {tSettings("Cancel")}
           </Button>
           <Button type="submit" size="sm">
-            {template ? tSettings('update') : tSettings('create')}
+            {template ? tSettings("Update") : tSettings("Create")}
           </Button>
         </div>
       </div>
@@ -270,7 +270,7 @@ function PlaceholderDropdown({
   onSelect: (name: string) => void;
   onClose: () => void;
 }) {
-  const t = useTranslations('templates');
+  const t = useTranslations();
 
   return (
     <>
@@ -285,7 +285,7 @@ function PlaceholderDropdown({
               onClick={() => onSelect(p)}
             >
               <span className="font-mono text-xs text-primary">{`{{${p}}}`}</span>
-              <span className="ms-2 text-muted-foreground">{t(`placeholders.${p}`)}</span>
+              <span className="ms-2 text-muted-foreground">{t(`templates.placeholders.${p}`)}</span>
             </button>
           ))}
         </div>

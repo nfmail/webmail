@@ -20,7 +20,7 @@ const CUSTOM_DELIMITER_SENTINEL = '__custom__';
 const DEFAULT_CUSTOM_DELIMITER = '~';
 
 export function ComposingSettings() {
-  const t = useTranslations('settings.email_behavior');
+  const t = useTranslations();
   const [newKeyword, setNewKeyword] = useState('');
 
   const {
@@ -41,10 +41,10 @@ export function ComposingSettings() {
   const delayedSendSupported = client?.hasDelayedSend() ?? false;
 
   return (
-    <SettingsSection title={t('title')} description={t('description')}>
+    <SettingsSection title={t("Email Behavior")} description={t("Configure how emails are handled")}>
       <SettingItem
-        label={t('auto_select_reply_identity.label')}
-        description={t('auto_select_reply_identity.description')}
+        label={t("Reply From Received Address")}
+        description={t("When replying, send from the address the message was originally sent to. Matches identities first; for domain catch-all deliveries, rewrites the From header to the alias while sending through your primary identity.")}
         htmlFor="auto-select-reply-identity"
       >
         <ToggleSwitch
@@ -55,8 +55,8 @@ export function ComposingSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('plain_text_mode.label')}
-        description={t('plain_text_mode.description')}
+        label={t("Plain Text Only")}
+        description={t("Disable the rich text editor and send all emails as plain text only, including replies and forwards")}
         htmlFor="plain-text-mode"
       >
         <ToggleSwitch
@@ -67,8 +67,8 @@ export function ComposingSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('rtl_editing.label')}
-        description={t('rtl_editing.description')}
+        label={t("Right-to-left editing support")}
+        description={t("Adds a direction button to the composer toolbar so you can set paragraphs left-to-right or right-to-left")}
         htmlFor="rtl-editing-support"
       >
         <ToggleSwitch
@@ -79,8 +79,8 @@ export function ComposingSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('send_delay.label')}
-        description={t('send_delay.description')}
+        label={t("Undo send / send delay")}
+        description={t("Delay normal sends by a short server-side window.")}
         htmlFor="send-delay-select"
       >
         <div className="flex flex-col items-end gap-1">
@@ -89,21 +89,21 @@ export function ComposingSettings() {
             value={String(sendDelaySeconds)}
             onChange={(value) => updateSetting('sendDelaySeconds', Number(value) as SendDelaySeconds)}
             options={[
-              { value: '0', label: t('send_delay.off') },
-              { value: '10', label: t('send_delay.seconds', { seconds: 10 }) },
-              { value: '30', label: t('send_delay.seconds', { seconds: 30 }) },
-              { value: '60', label: t('send_delay.seconds', { seconds: 60 }) },
+              { value: '0', label: t("Off") },
+              { value: '10', label: t("{seconds} seconds", { seconds: 10 }) },
+              { value: '30', label: t("{seconds} seconds", { seconds: 30 }) },
+              { value: '60', label: t("{seconds} seconds", { seconds: 60 }) },
             ]}
           />
           {sendDelaySeconds > 0 && !delayedSendSupported && (
-            <p className="max-w-64 text-end text-xs text-warning">{t('send_delay.unsupported')}</p>
+            <p className="max-w-64 text-end text-xs text-warning">{t("The current account does not advertise delayed-send support. The setting is still saved for other accounts.")}</p>
           )}
         </div>
       </SettingItem>
 
       <SettingItem
-        label={t('signature_position.label')}
-        description={t('signature_position.description')}
+        label={t("Signature Position")}
+        description={t("Where to insert your signature in replies and forwards. Above the quoted text reads naturally as a closing for the reply; below keeps the original message contiguous.")}
         htmlFor="signature-position-select"
       >
         <Select
@@ -111,15 +111,15 @@ export function ComposingSettings() {
           value={signaturePosition}
           onChange={(value) => updateSetting('signaturePosition', value as 'above_quote' | 'below_quote')}
           options={[
-            { value: 'above_quote', label: t('signature_position.above_quote') },
-            { value: 'below_quote', label: t('signature_position.below_quote') },
+            { value: 'above_quote', label: t("Before quoted text") },
+            { value: 'below_quote', label: t("After quoted text") },
           ]}
         />
       </SettingItem>
 
       <SettingItem
-        label={t('signature_separator.label')}
-        description={t('signature_separator.description')}
+        label={t("Signature Delimiter")}
+        description={t("Prefix the signature with the standard \"-- \" delimiter line (RFC 3676). Turn off if you'd rather flow straight from your message into the signature.")}
         htmlFor="signature-separator-enabled"
       >
         <ToggleSwitch
@@ -130,8 +130,8 @@ export function ComposingSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('request_read_receipt.label')}
-        description={t('request_read_receipt.description')}
+        label={t("Request read receipts by default")}
+        description={t("Pre-enable the read-receipt request when composing a new message.")}
         htmlFor="request-read-receipt-default"
       >
         <ToggleSwitch
@@ -142,8 +142,8 @@ export function ComposingSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('read_receipt_response.label')}
-        description={t('read_receipt_response.description')}
+        label={t("Respond to read-receipt requests")}
+        description={t("What to do when an incoming message asks for a read receipt.")}
         htmlFor="read-receipt-response-select"
       >
         <Select
@@ -151,16 +151,16 @@ export function ComposingSettings() {
           value={readReceiptResponse}
           onChange={(value) => updateSetting('readReceiptResponse', value as 'ask' | 'always' | 'never')}
           options={[
-            { value: 'ask', label: t('read_receipt_response.ask') },
-            { value: 'always', label: t('read_receipt_response.always') },
-            { value: 'never', label: t('read_receipt_response.never') },
+            { value: 'ask', label: t("Ask each time") },
+            { value: 'always', label: t("Always send") },
+            { value: 'never', label: t("Never send") },
           ]}
         />
       </SettingItem>
 
       <SettingItem
-        label={t('sub_address_delimiter.label')}
-        description={t('sub_address_delimiter.description', { delimiter: subAddressDelimiter })}
+        label={t("Sub-Address Delimiter")}
+        description={t("Character separating your username from a sub-address tag. Match the delimiter your mail server uses (e.g. user{delimiter}tag@domain.com).", { delimiter: subAddressDelimiter })}
         htmlFor="sub-address-delimiter-select"
       >
         <div className="flex flex-col items-end gap-2">
@@ -179,9 +179,9 @@ export function ComposingSettings() {
             options={[
               ...SUPPORTED_SUB_ADDRESS_DELIMITERS.map((delim) => ({
                 value: delim,
-                label: t('sub_address_delimiter.option', { delimiter: delim }),
+                label: t("{delimiter}  (user{delimiter}tag@domain.com)", { delimiter: delim }),
               })),
-              { value: CUSTOM_DELIMITER_SENTINEL, label: t('sub_address_delimiter.custom') },
+              { value: CUSTOM_DELIMITER_SENTINEL, label: t("Custom…") },
             ]}
           />
           {!isSupportedSubAddressDelimiter(subAddressDelimiter) && (
@@ -195,7 +195,7 @@ export function ComposingSettings() {
                   updateSetting('subAddressDelimiter', next);
                 }
               }}
-              aria-label={t('sub_address_delimiter.custom_input_label')}
+              aria-label={t("Custom delimiter character")}
               placeholder={DEFAULT_CUSTOM_DELIMITER}
               className="w-16 text-center font-mono"
             />
@@ -204,8 +204,8 @@ export function ComposingSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('attachment_reminder.label')}
-        description={t('attachment_reminder.description')}
+        label={t("Attachment Reminder")}
+        description={t("Warn before sending when your message mentions attachments but none are attached")}
         htmlFor="attachment-reminder-enabled"
       >
         <ToggleSwitch
@@ -218,16 +218,16 @@ export function ComposingSettings() {
         <div className="border-b border-border py-3">
           <Field>
             <FieldLabel htmlFor="attachment-reminder-new-keyword">
-              {t('attachment_reminder.keywords_label')}
+              {t("Trigger keywords")}
             </FieldLabel>
-            <FieldDescription>{t('attachment_reminder.keywords_description')}</FieldDescription>
+            <FieldDescription>{t("Words or phrases that trigger the reminder when found in your message")}</FieldDescription>
             <div className="flex flex-wrap gap-1.5">
               {attachmentReminderKeywords.map((kw) => (
                 <span key={kw} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-muted text-foreground">
                   {kw}
                   <button
                     type="button"
-                    aria-label={t('attachment_reminder.remove')}
+                    aria-label={t("Remove")}
                     onClick={() => updateSetting('attachmentReminderKeywords', attachmentReminderKeywords.filter(k => k !== kw))}
                     className="text-muted-foreground hover:text-foreground"
                   >
@@ -252,11 +252,11 @@ export function ComposingSettings() {
                 type="text"
                 value={newKeyword}
                 onChange={(e) => setNewKeyword(e.target.value)}
-                placeholder={t('attachment_reminder.add_placeholder')}
+                placeholder={t("Add keyword...")}
                 className="flex-1 min-w-0"
               />
               <Button type="submit" variant="secondary" size="sm" disabled={!newKeyword.trim()}>
-                {t('attachment_reminder.add')}
+                {t("Add")}
               </Button>
             </form>
           </Field>

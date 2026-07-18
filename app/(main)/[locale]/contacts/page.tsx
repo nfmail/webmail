@@ -50,7 +50,7 @@ type View =
   | "bulk-add-to-group";
 
 export default function ContactsPage() {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
   const contactsEnabled = usePolicyStore((s) => s.isFeatureEnabled('contactsEnabled'));
   const { client, isAuthenticated, logout, checkAuth, isLoading: authLoading } = useAuthStore();
   const { showAppsModal, inlineApp, loadedApps, handleManageApps, handleInlineApp, closeInlineApp, closeAppsModal } = useSidebarApps();
@@ -269,12 +269,12 @@ export default function ContactsPage() {
     try {
       await moveContactToAddressBook(client, contactIds, addressBook);
       const msg = contactIds.length === 1
-        ? t("address_books.moved", { name: addressBook.name })
-        : t("address_books.moved_plural", { count: contactIds.length, name: addressBook.name });
+        ? t("Contact moved to {name}", { name: addressBook.name })
+        : t("{count} contacts moved to {name}", { count: contactIds.length, name: addressBook.name });
       toast.success(msg);
     } catch (error) {
       console.error('Failed to move contacts:', error);
-      toast.error(t("address_books.move_failed"));
+      toast.error(t("Failed to move contact"));
     }
   }, [client, moveContactToAddressBook, t]);
 
@@ -294,12 +294,12 @@ export default function ContactsPage() {
         }
       }
       const msg = contactIds.length === 1
-        ? t("category_added", { name: keyword })
-        : t("category_added_plural", { count: contactIds.length, name: keyword });
+        ? t("Contact added to {name}", { name: keyword })
+        : t("{count} contacts added to {name}", { count: contactIds.length, name: keyword });
       toast.success(msg);
     } catch (error) {
       console.error('Failed to add contacts to category:', error);
-      toast.error(t("toast.error_update"));
+      toast.error(t("Failed to update contact"));
     }
   }, [client, supportsSync, contacts, updateContact, updateLocalContact, t]);
 
@@ -323,11 +323,11 @@ export default function ContactsPage() {
     try {
       await createAddressBook(client, name);
       await refreshAddressBooks();
-      toast.success(t("address_books.created"));
+      toast.success(t("Address book created"));
       setCreatingAddressBook(false);
     } catch (error) {
       console.error('Failed to create address book:', error);
-      toast.error(t("address_books.create_failed"));
+      toast.error(t("Failed to create address book"));
     }
   }, [client, createAddressBook, refreshAddressBooks, t]);
 
@@ -355,9 +355,9 @@ export default function ContactsPage() {
 
   const deleteContactById = useCallback(async (contactId: string) => {
     const confirmed = await confirmDialog({
-      title: t("delete_confirm_title"),
-      message: t("delete_confirm"),
-      confirmText: t("form.delete"),
+      title: t("Delete contact"),
+      message: t("Are you sure you want to delete this contact?"),
+      confirmText: t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
@@ -368,11 +368,11 @@ export default function ContactsPage() {
       } else {
         deleteLocalContact(contactId);
       }
-      toast.success(t("toast.deleted"));
+      toast.success(t("Contact deleted"));
       if (selectedContactId === contactId) setView("list");
     } catch (error) {
       console.error('Failed to delete contact:', error);
-      toast.error(t("toast.error_delete"));
+      toast.error(t("Failed to delete contact"));
     }
   }, [confirmDialog, t, supportsSync, client, deleteContact, deleteLocalContact, selectedContactId]);
 
@@ -406,7 +406,7 @@ export default function ContactsPage() {
     const data: Partial<ContactCard> = JSON.parse(JSON.stringify(rest));
     if (supportsSync && client) {
       await createContact(client, data);
-      toast.success(t("toast.created"));
+      toast.success(t("Contact created"));
     } else {
       const localContact: ContactCard = {
         id: `local-${generateUUID()}`,
@@ -414,14 +414,14 @@ export default function ContactsPage() {
         ...data,
       };
       addLocalContact(localContact);
-      toast.success(t("toast.created"));
+      toast.success(t("Contact created"));
     }
   }, [supportsSync, client, createContact, addLocalContact, t]);
 
   const handleSaveNew = useCallback(async (data: Partial<ContactCard>) => {
     if (supportsSync && client) {
       await createContact(client, data);
-      toast.success(t("toast.created"));
+      toast.success(t("Contact created"));
     } else {
       const localContact: ContactCard = {
         id: `local-${generateUUID()}`,
@@ -429,7 +429,7 @@ export default function ContactsPage() {
         ...data,
       };
       addLocalContact(localContact);
-      toast.success(t("toast.created"));
+      toast.success(t("Contact created"));
     }
     setDefaultBookIdForCreate(undefined);
     setCreatePrefill(undefined);
@@ -446,10 +446,10 @@ export default function ContactsPage() {
 
     if (supportsSync && client) {
       await updateContact(client, selectedContact.id, data);
-      toast.success(t("toast.updated"));
+      toast.success(t("Contact updated"));
     } else {
       updateLocalContact(selectedContact.id, data);
-      toast.success(t("toast.updated"));
+      toast.success(t("Contact updated"));
     }
     setView("detail");
   }, [supportsSync, client, selectedContact, updateContact, updateLocalContact, t]);
@@ -527,7 +527,7 @@ export default function ContactsPage() {
       recipients.push(formatRecipient(getContactDisplayName(member), email));
     }
     if (recipients.length === 0) {
-      toast.error(t("groups.no_member_emails"));
+      toast.error(t("This group has no members with an email address."));
       return;
     }
     openComposeInApp(recipients, field);
@@ -541,16 +541,16 @@ export default function ContactsPage() {
 
   const handleDeleteGroupFromSidebar = useCallback(async (groupId: string) => {
     const confirmed = await confirmDialog({
-      title: t("groups.delete_confirm_title"),
-      message: t("groups.delete_confirm"),
-      confirmText: t("form.delete"),
+      title: t("Delete group"),
+      message: t("Are you sure you want to delete this group?"),
+      confirmText: t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
 
     try {
       await deleteGroup(supportsSync && client ? client : null, groupId);
-      toast.success(t("toast.deleted"));
+      toast.success(t("Contact deleted"));
       if (selectedGroupId === groupId) {
         setSelectedGroupId(null);
         setActiveCategory("all");
@@ -558,7 +558,7 @@ export default function ContactsPage() {
       }
     } catch (error) {
       console.error('Failed to delete group:', error);
-      toast.error(t("toast.error_delete"));
+      toast.error(t("Failed to delete contact"));
     }
   }, [confirmDialog, deleteGroup, supportsSync, client, selectedGroupId, t]);
 
@@ -566,21 +566,21 @@ export default function ContactsPage() {
     if (!selectedGroup) return;
 
     const confirmed = await confirmDialog({
-      title: t("groups.delete_confirm_title"),
-      message: t("groups.delete_confirm"),
-      confirmText: t("form.delete"),
+      title: t("Delete group"),
+      message: t("Are you sure you want to delete this group?"),
+      confirmText: t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
 
     try {
       await deleteGroup(supportsSync && client ? client : null, selectedGroup.id);
-      toast.success(t("toast.deleted"));
+      toast.success(t("Contact deleted"));
       setSelectedGroupId(null);
       setView("list");
     } catch (error) {
       console.error('Failed to delete group:', error);
-      toast.error(t("toast.error_delete"));
+      toast.error(t("Failed to delete contact"));
     }
   };
 
@@ -594,11 +594,11 @@ export default function ContactsPage() {
       const toRemove = currentIds.filter(id => !memberIds.includes(id));
       if (toAdd.length > 0) await addMembersToGroup(jmapClient, selectedGroup.id, toAdd);
       if (toRemove.length > 0) await removeMembersFromGroup(jmapClient, selectedGroup.id, toRemove);
-      toast.success(t("toast.updated"));
+      toast.success(t("Contact updated"));
       setView("group-detail");
     } else {
       await createGroup(jmapClient, name, memberIds);
-      toast.success(t("toast.created"));
+      toast.success(t("Contact created"));
       setView("list");
     }
   }, [view, selectedGroup, selectedGroupMembers, supportsSync, client, createGroup, updateGroup, addMembersToGroup, removeMembersFromGroup, t]);
@@ -611,10 +611,10 @@ export default function ContactsPage() {
         selectedGroup.id,
         [memberId]
       );
-      toast.success(t("toast.updated"));
+      toast.success(t("Contact updated"));
     } catch (error) {
       console.error('Failed to remove group member:', error);
-      toast.error(t("toast.error_update"));
+      toast.error(t("Failed to update contact"));
     }
   };
 
@@ -622,9 +622,9 @@ export default function ContactsPage() {
     if (selectedContactIds.size === 0) return;
 
     const confirmed = await confirmDialog({
-      title: t("bulk.delete_confirm_title"),
-      message: t("bulk.delete_confirm", { count: selectedContactIds.size }),
-      confirmText: t("bulk.delete"),
+      title: t("Delete contacts"),
+      message: t("Delete {count, plural, one {1 contact} other {# contacts}}?", { count: selectedContactIds.size }),
+      confirmText: t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
@@ -634,11 +634,11 @@ export default function ContactsPage() {
         supportsSync && client ? client : null,
         Array.from(selectedContactIds)
       );
-      toast.success(t("bulk.deleted", { count: selectedContactIds.size }));
+      toast.success(t("{count, plural, one {1 contact deleted} other {# contacts deleted}}", { count: selectedContactIds.size }));
       setView("list");
     } catch (error) {
       console.error('Failed to bulk delete contacts:', error);
-      toast.error(t("toast.error_delete"));
+      toast.error(t("Failed to delete contact"));
     }
   };
 
@@ -655,7 +655,7 @@ export default function ContactsPage() {
     const toExport = contacts.filter(c => selectedContactIds.has(c.id));
     if (toExport.length > 0) {
       exportContacts(toExport);
-      toast.success(t("export.success", { count: toExport.length }));
+      toast.success(t("{count, plural, one {1 contact exported} other {# contacts exported}}", { count: toExport.length }));
       clearSelection();
     }
   };
@@ -667,11 +667,11 @@ export default function ContactsPage() {
         groupId,
         Array.from(selectedContactIds)
       );
-      toast.success(t("bulk.added_to_group"));
+      toast.success(t("Contacts added to group"));
       setView("list");
     } catch (error) {
       console.error('Failed to add contacts to group:', error);
-      toast.error(t("toast.error_update"));
+      toast.error(t("Failed to update contact"));
     }
   };
 
@@ -737,9 +737,9 @@ export default function ContactsPage() {
         return (
           <div className="flex flex-col h-full">
             <div className="px-6 py-4 border-b border-border">
-              <h2 className="text-lg font-semibold">{t("bulk.choose_group")}</h2>
+              <h2 className="text-lg font-semibold">{t("Choose a group")}</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                {t("bulk.adding_contacts", { count: selectedContactIds.size })}
+                {t("Adding {count, plural, one {1 contact} other {# contacts}}", { count: selectedContactIds.size })}
               </p>
             </div>
             <div className="flex-1 overflow-y-auto divide-y divide-border">
@@ -760,7 +760,7 @@ export default function ContactsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium truncate">{gName}</div>
                       <div className="text-xs text-muted-foreground">
-                        {t("groups.member_count", { count: memberCount })}
+                        {t("{count, plural, =0 {No members} one {1 member} other {# members}}", { count: memberCount })}
                       </div>
                     </div>
                   </button>
@@ -769,7 +769,7 @@ export default function ContactsPage() {
             </div>
             <div className="px-6 py-4 border-t border-border">
               <Button variant="outline" onClick={handleCancel} className="w-full">
-                {t("form.cancel")}
+                {t("Cancel")}
               </Button>
             </div>
           </div>
@@ -831,7 +831,7 @@ export default function ContactsPage() {
   return (
     <div className={cn("flex flex-col bg-background overflow-hidden pt-[env(safe-area-inset-top)]", isEmbedded ? "h-full" : "h-dvh")}>
       {/* Page-level heading for assistive tech (axe page-has-heading-one). */}
-      <h1 className="sr-only">{t("title")}</h1>
+      <h1 className="sr-only">{t("Contacts")}</h1>
       <AppTopBannerSlot />
       <div className={cn("flex flex-1 min-h-0 overflow-hidden", isMobile && "flex-col")}>
       {/* Navigation Rail - desktop only (hidden when embedded in Pro shell) */}
@@ -905,17 +905,17 @@ export default function ContactsPage() {
                       }}
                       onDeleteAddressBook={client ? async (book) => {
                         const ok = await confirmDialog({
-                          title: t("address_books.delete"),
-                          message: t("address_books.confirm_delete", { name: book.name }),
+                          title: t("Delete address book"),
+                          message: t("Delete \"{name}\"? All contacts in this address book will be removed.", { name: book.name }),
                           variant: "destructive",
-                          confirmText: t("address_books.delete"),
+                          confirmText: t("Delete address book"),
                         });
                         if (!ok) return;
                         try {
                           await removeAddressBook(client, book);
-                          toast.success(t("address_books.deleted"));
+                          toast.success(t("Address book deleted"));
                         } catch {
-                          toast.error(t("address_books.delete_failed"));
+                          toast.error(t("Failed to delete address book"));
                         }
                       } : undefined}
                       onRenameKeyword={(kw) => setRenamingKeyword(kw)}
@@ -995,7 +995,7 @@ export default function ContactsPage() {
                     className="touch-manipulation"
                   >
                     <ArrowLeft className="w-4 h-4 me-2" />
-                    {returnToEmail ? t("back_to_email") : t("back_to_contacts")}
+                    {returnToEmail ? t("Back to email") : t("Back to contacts")}
                   </Button>
                 </div>
               )}
@@ -1022,20 +1022,20 @@ export default function ContactsPage() {
       {renamingKeyword !== null && (
         <RenameDialog
           currentName={renamingKeyword}
-          title={t("rename_category")}
-          label={t("category_name_label")}
+          title={t("Rename category")}
+          label={t("Category name")}
           onCancel={() => setRenamingKeyword(null)}
           onConfirm={async (newName) => {
             try {
               await renameKeyword(supportsSync && client ? client : null, renamingKeyword, newName);
-              toast.success(t("category_renamed"));
+              toast.success(t("Category renamed"));
               if (typeof activeCategory === "object" && "keyword" in activeCategory && activeCategory.keyword === renamingKeyword) {
                 setActiveCategory({ keyword: newName.trim() });
               }
               setRenamingKeyword(null);
             } catch (err) {
               console.error("Failed to rename category:", err);
-              toast.error(t("category_rename_failed"));
+              toast.error(t("Failed to rename category"));
             }
           }}
         />
@@ -1043,8 +1043,8 @@ export default function ContactsPage() {
       {creatingAddressBook && (
         <RenameDialog
           currentName=""
-          title={t("address_books.create")}
-          label={t("address_books.name_label")}
+          title={t("New address book")}
+          label={t("Address book name")}
           onCancel={() => setCreatingAddressBook(false)}
           onConfirm={handleCreateAddressBook}
         />
@@ -1052,18 +1052,18 @@ export default function ContactsPage() {
       {renamingAddressBook && (
         <RenameDialog
           currentName={renamingAddressBook.name}
-          title={t("address_books.rename")}
-          label={t("address_books.name_label")}
+          title={t("Rename address book")}
+          label={t("Address book name")}
           onCancel={() => setRenamingAddressBook(null)}
           onConfirm={async (newName) => {
             if (!client) return;
             try {
               await renameAddressBook(client, renamingAddressBook, newName);
-              toast.success(t("address_books.renamed"));
+              toast.success(t("Address book renamed"));
               setRenamingAddressBook(null);
             } catch (err) {
               console.error("Failed to rename address book:", err);
-              toast.error(t("address_books.rename_failed"));
+              toast.error(t("Failed to rename address book"));
             }
           }}
         />
@@ -1080,7 +1080,7 @@ export default function ContactsPage() {
         >
           {/* The child renders its own visible header; expose an sr-only title
               so Radix has an accessible name for the dialog. */}
-          <DialogTitle className="sr-only">{t("import.title")}</DialogTitle>
+          <DialogTitle className="sr-only">{t("Import Contacts")}</DialogTitle>
           <ContactImportDialog
             existingContacts={contacts}
             onImport={handleImportContacts}

@@ -13,7 +13,7 @@ interface ImagePreviewModalProps {
 }
 
 export function ImagePreviewModal({ name, onClose, onDownload, getImageUrl }: ImagePreviewModalProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -92,7 +92,7 @@ export function ImagePreviewModal({ name, onClose, onDownload, getImageUrl }: Im
           <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
         )}
         {error && (
-          <p className="text-white/70 text-sm">{t("preview_error")}</p>
+          <p className="text-white/70 text-sm">{t("Failed to load preview")}</p>
         )}
         {imageUrl && !error && (
           <img

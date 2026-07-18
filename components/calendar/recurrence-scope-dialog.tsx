@@ -27,17 +27,17 @@ export function RecurrenceScopeDialog({
   onSelect,
   onClose,
 }: RecurrenceScopeDialogProps) {
-  const t = useTranslations("calendar.recurrence_scope");
+  const t = useTranslations();
   const id = useId();
   const [selected, setSelected] = useState<RecurrenceEditScope>("this");
 
   const isDelete = actionType === "delete";
-  const heading = isDelete ? t("delete_title") : t("edit_title");
+  const heading = isDelete ? t("Delete recurring event") : t("Edit recurring event");
 
   const options: { value: RecurrenceEditScope; label: string }[] = [
-    { value: "this", label: t("this_event") },
-    { value: "this_and_future", label: t("this_and_future") },
-    { value: "all", label: t("all_events") },
+    { value: "this", label: t("This event only") },
+    { value: "this_and_future", label: t("This and following events") },
+    { value: "all", label: t("All events") },
   ];
 
   return (
@@ -57,7 +57,7 @@ export function RecurrenceScopeDialog({
             <div>
               <DialogTitle className="text-lg font-semibold">{heading}</DialogTitle>
               <DialogDescription className="mt-1">
-                {t("description")}
+                {t("This is a recurring event. Which events would you like to modify?")}
               </DialogDescription>
             </div>
           </div>
@@ -88,13 +88,13 @@ export function RecurrenceScopeDialog({
 
         <DialogFooter className="px-6 pb-6">
           <Button variant="outline" onClick={onClose}>
-            {t("cancel")}
+            {t("Cancel")}
           </Button>
           <Button
             variant={isDelete ? "destructive" : "default"}
             onClick={() => onSelect(selected)}
           >
-            {isDelete ? t("delete") : t("save")}
+            {isDelete ? t("Delete") : t("Save")}
           </Button>
         </DialogFooter>
       </DialogContent>

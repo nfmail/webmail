@@ -107,7 +107,7 @@ export function ContactsSidebar({
   className,
   multiAccountMode,
 }: ContactsSidebarProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
   const router = useRouter();
   const { contextMenu: groupContextMenu, openContextMenu: openGroupContextMenu, closeContextMenu: closeGroupContextMenu, menuRef: groupMenuRef } = useContextMenu<ContactCard>();
   const { contextMenu: bookContextMenu, openContextMenu: openBookContextMenu, closeContextMenu: closeBookContextMenu, menuRef: bookMenuRef } = useContextMenu<AddressBook>();
@@ -206,7 +206,7 @@ export function ContactsSidebar({
     }
     for (const [key, list] of byAccount.entries()) {
       const fallback = key === '__other__'
-        ? t('address_books.title')
+        ? t("My Address Books")
         : list[0]?.accountName || key;
       ordered.push({ key, label: fallback, split: splitAccountBooks(list) });
     }
@@ -270,7 +270,7 @@ export function ContactsSidebar({
     <div className={cn("flex flex-col h-full bg-secondary", className)}>
       {/* Header */}
       <div className="px-3 border-b border-border flex items-center justify-between" style={{ paddingBlock: 'var(--density-header-py)' }}>
-        <span className="text-sm font-semibold truncate">{t("title")}</span>
+        <span className="text-sm font-semibold truncate">{t("Contacts")}</span>
         <div className="relative flex-shrink-0">
           <Button
             ref={menuBtnRef}
@@ -296,14 +296,14 @@ export function ContactsSidebar({
                 onClick={() => { setShowMenu(false); onCreateContact(); }}
               >
                 <UserPlus className="w-4 h-4" />
-                {t("create_new")}
+                {t("New Contact")}
               </button>
               <button
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-accent transition-colors text-start"
                 onClick={() => { setShowMenu(false); onCreateGroup(); }}
               >
                 <UsersRound className="w-4 h-4" />
-                {t("groups.create")}
+                {t("New Group")}
               </button>
               {onCreateAddressBook && (
                 <button
@@ -311,7 +311,7 @@ export function ContactsSidebar({
                   onClick={() => { setShowMenu(false); onCreateAddressBook(); }}
                 >
                   <BookPlus className="w-4 h-4" />
-                  {t("address_books.create")}
+                  {t("New address book")}
                 </button>
               )}
               {onImport && (
@@ -320,7 +320,7 @@ export function ContactsSidebar({
                   onClick={() => { setShowMenu(false); onImport(); }}
                 >
                   <Upload className="w-4 h-4" />
-                  {t("import.title")}
+                  {t("Import Contacts")}
                 </button>
               )}
             </div>
@@ -342,7 +342,7 @@ export function ContactsSidebar({
           style={{ paddingBlock: 'var(--density-sidebar-py, 4px)', minHeight: '32px' }}
         >
           <BookUser className="w-4 h-4 flex-shrink-0" />
-          <span className="truncate">{t("tabs.all")}</span>
+          <span className="truncate">{t("All")}</span>
           <span className="ms-auto text-xs text-muted-foreground tabular-nums">
             {individuals.length}
           </span>
@@ -378,7 +378,7 @@ export function ContactsSidebar({
                     {owned.length > 0 && (
                       <div className="mt-1">
                         <div className="px-3 py-0.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                          {t("address_books.title")}
+                          {t("My Address Books")}
                         </div>
                         {owned.map((book) => (
                           <AddressBookItem
@@ -431,7 +431,7 @@ export function ContactsSidebar({
                     <ChevronDown className="w-3 h-3 text-muted-foreground" />
                   )}
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    {t("address_books.title")}
+                    {t("My Address Books")}
                   </span>
                 </button>
                 <button
@@ -441,7 +441,7 @@ export function ContactsSidebar({
                     router.push('/settings');
                   }}
                   className="p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 hover:bg-muted"
-                  title={t("address_books.manage")}
+                  title={t("Manage address books")}
                 >
                   <Settings className="w-3 h-3 text-muted-foreground" />
                 </button>
@@ -474,7 +474,7 @@ export function ContactsSidebar({
                 <ChevronDown className="w-3 h-3 text-muted-foreground" />
               )}
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                {t("tabs.groups")}
+                {t("Groups")}
               </span>
             </button>
 
@@ -518,7 +518,7 @@ export function ContactsSidebar({
               <ChevronDown className="w-3 h-3 text-muted-foreground" />
             )}
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              {t("detail.categories")}
+              {t("Categories")}
             </span>
           </button>
 
@@ -536,7 +536,7 @@ export function ContactsSidebar({
                 style={{ paddingBlock: 'var(--density-sidebar-py, 4px)', minHeight: '32px' }}
               >
                 <Tag className="w-3.5 h-3.5 flex-shrink-0 opacity-50" />
-                <span className="truncate italic">{t("no_category")}</span>
+                <span className="truncate italic">{t("No Category")}</span>
                 <span className="ms-auto text-xs text-muted-foreground tabular-nums">
                   {uncategorizedCount}
                 </span>
@@ -575,7 +575,7 @@ export function ContactsSidebar({
                 )}
                 <Share2 className="w-3 h-3 text-muted-foreground" />
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider truncate">
-                  {t("address_books.shared_prefix", { name: group.accountName })}
+                  {t("Shared: {name}", { name: group.accountName })}
                 </span>
               </button>
               <button
@@ -585,7 +585,7 @@ export function ContactsSidebar({
                   router.push('/settings');
                 }}
                 className="p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 hover:bg-muted"
-                title={t("address_books.manage")}
+                title={t("Manage address books")}
               >
                 <Settings className="w-3 h-3 text-muted-foreground" />
               </button>
@@ -623,7 +623,7 @@ export function ContactsSidebar({
             {canCreate && (
               <ContextMenuItem
                 icon={UserPlus}
-                label={t("address_books.new_contact_in_book")}
+                label={t("New contact in this address book")}
                 onClick={() => {
                   closeBookContextMenu();
                   onCreateContactInBook(book);
@@ -633,7 +633,7 @@ export function ContactsSidebar({
             {canRename && (
               <ContextMenuItem
                 icon={Pencil}
-                label={t("address_books.rename")}
+                label={t("Rename address book")}
                 onClick={() => {
                   closeBookContextMenu();
                   onRenameAddressBook(book);
@@ -643,7 +643,7 @@ export function ContactsSidebar({
             {canShare && (
               <ContextMenuItem
                 icon={Users}
-                label={t("address_books.share")}
+                label={t("Share address book")}
                 onClick={() => {
                   closeBookContextMenu();
                   onShareAddressBook(book);
@@ -654,7 +654,7 @@ export function ContactsSidebar({
             {canDelete && (
               <ContextMenuItem
                 icon={Trash2}
-                label={t("address_books.delete")}
+                label={t("Delete address book")}
                 onClick={() => {
                   closeBookContextMenu();
                   onDeleteAddressBook(book);
@@ -676,7 +676,7 @@ export function ContactsSidebar({
         >
           <ContextMenuItem
             icon={Pencil}
-            label={t("rename_category")}
+            label={t("Rename category")}
             onClick={() => {
               const kw = keywordContextMenu.data!;
               closeKeywordContextMenu();
@@ -696,18 +696,18 @@ export function ContactsSidebar({
         >
           <ContextMenuItem
             icon={Pencil}
-            label={t("groups.edit")}
+            label={t("Edit Group")}
             onClick={() => {
               closeGroupContextMenu();
               onEditGroup?.(groupContextMenu.data!.id);
             }}
           />
           {onComposeGroup && (
-            <ContextMenuSubMenu icon={Mail} label={t("groups.send_email")}>
+            <ContextMenuSubMenu icon={Mail} label={t("Send email to group")}>
               {(["to", "cc", "bcc"] as const).map((field) => (
                 <ContextMenuItem
                   key={field}
-                  label={t(`groups.send_email_${field}`)}
+                  label={t(`contacts.groups.send_email_${field}`)}
                   onClick={() => {
                     const groupId = groupContextMenu.data!.id;
                     closeGroupContextMenu();
@@ -720,7 +720,7 @@ export function ContactsSidebar({
           <ContextMenuSeparator />
           <ContextMenuItem
             icon={Trash2}
-            label={t("form.delete")}
+            label={t("Delete")}
             onClick={() => {
               closeGroupContextMenu();
               onDeleteGroup?.(groupContextMenu.data!.id);

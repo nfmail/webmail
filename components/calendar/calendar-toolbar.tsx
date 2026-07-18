@@ -50,7 +50,7 @@ export function CalendarToolbar({
   enableCalendarTasks,
   onMenuClick,
 }: CalendarToolbarProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const {
     weekStartsOn,
     formatMonthYear,
@@ -97,7 +97,7 @@ export function CalendarToolbar({
           ? formatMonthYearShort(selectedDate)
           : formatMonthYear(selectedDate);
       case "tasks":
-        return t("views.tasks");
+        return t("Tasks");
     }
   };
 
@@ -127,7 +127,7 @@ export function CalendarToolbar({
           size="icon"
           onClick={onMenuClick}
           className="h-8 w-8 -ms-1 me-1"
-          aria-label={t("nav_open_menu")}
+          aria-label={t("Open menu")}
         >
           <Menu className="w-4 h-4" />
         </Button>
@@ -141,7 +141,7 @@ export function CalendarToolbar({
               <button
                 onClick={onMenuClick}
                 className="p-1.5 -ms-1 rounded-md hover:bg-muted transition-colors touch-manipulation"
-                aria-label={t("nav_open_menu")}
+                aria-label={t("Open menu")}
               >
                 <Menu className="w-4 h-4" />
               </button>
@@ -150,22 +150,22 @@ export function CalendarToolbar({
               <button
                 onClick={onNavigateBack}
                 className="p-1.5 -ms-1 rounded-md hover:bg-muted transition-colors touch-manipulation"
-                aria-label={t("back_to_month")}
+                aria-label={t("Back to month")}
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            <button onClick={onPrev} className="p-1.5 rounded-md hover:bg-muted transition-colors touch-manipulation" aria-label={t("nav_prev")}>
+            <button onClick={onPrev} className="p-1.5 rounded-md hover:bg-muted transition-colors touch-manipulation" aria-label={t("Previous")}>
               <ChevronLeft className="w-4 h-4" />
             </button>
             <span className="text-sm font-semibold text-center flex-1 select-none truncate">
               {getDateLabel()}
             </span>
-            <button onClick={onNext} className="p-1.5 rounded-md hover:bg-muted transition-colors touch-manipulation" aria-label={t("nav_next")}>
+            <button onClick={onNext} className="p-1.5 rounded-md hover:bg-muted transition-colors touch-manipulation" aria-label={t("Next")}>
               <ChevronRight className="w-4 h-4" />
             </button>
             <Button variant="ghost" size="sm" onClick={onToday} className="touch-manipulation text-xs h-7 px-2 ms-0.5">
-              {t("views.today")}
+              {t("Today")}
             </Button>
           </div>
 
@@ -183,7 +183,7 @@ export function CalendarToolbar({
                       : "text-muted-foreground active:bg-muted"
                   )}
                 >
-                  {t(`views.${v}`)}
+                  {t(`calendar.views.${v}`)}
                 </button>
               ))}
             </div>
@@ -196,14 +196,14 @@ export function CalendarToolbar({
                     "p-1.5 rounded-md border border-border transition-colors touch-manipulation",
                     showCalendarDropdown ? "bg-muted" : "hover:bg-muted"
                   )}
-                  aria-label={t("my_calendars")}
+                  aria-label={t("Calendars")}
                 >
                   <CalendarDays className="w-4 h-4" />
                 </button>
                 {showCalendarDropdown && (
                   <div className="absolute top-full right-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px]">
                     <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">
-                      {t("my_calendars")}
+                      {t("Calendars")}
                     </h3>
                     <div className="space-y-0.5">
                       {calendars.filter(c => !c.isShared).map((cal) => {
@@ -287,12 +287,12 @@ export function CalendarToolbar({
       {!isMobile && (
         <div className="flex items-center gap-1">
           <Button variant="outline" size="sm" onClick={onToday} className="h-8 me-1">
-            {t("views.today")}
+            {t("Today")}
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onPrev} aria-label={t("nav_prev")}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onPrev} aria-label={t("Previous")}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onNext} aria-label={t("nav_next")}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onNext} aria-label={t("Next")}>
             <ChevronRight className="w-4 h-4" />
           </Button>
           <span className="text-base font-semibold ms-2 select-none">
@@ -313,7 +313,7 @@ export function CalendarToolbar({
             <button
               key={v}
               onClick={() => onViewModeChange(v)}
-              title={t(`views.${v}_hint`)}
+              title={t(`calendar.views.${v}_hint`)}
               className={cn(
                 "inline-flex items-center px-3 text-xs font-medium transition-colors",
                 v === viewMode
@@ -321,7 +321,7 @@ export function CalendarToolbar({
                   : "hover:bg-muted text-muted-foreground"
               )}
             >
-              {t(`views.${v}`)}
+              {t(`calendar.views.${v}`)}
             </button>
           ))}
         </div>
@@ -331,7 +331,7 @@ export function CalendarToolbar({
         <div className="relative" ref={importDropdownRef}>
           <Button variant="outline" size="sm" className="h-8" onClick={() => setShowImportDropdown((v) => !v)}>
             <Upload className="w-4 h-4 me-1" />
-            {t("import.title")}
+            {t("Import Calendar")}
             <ChevronDown className="w-3 h-3 ms-1" />
           </Button>
           {showImportDropdown && (
@@ -342,7 +342,7 @@ export function CalendarToolbar({
                   className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors text-foreground"
                 >
                   <Upload className="w-4 h-4" />
-                  {t("import.title")}
+                  {t("Import Calendar")}
                 </button>
               )}
               {onSubscribe && (
@@ -351,7 +351,7 @@ export function CalendarToolbar({
                   className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors text-foreground"
                 >
                   <Globe className="w-4 h-4" />
-                  {t("subscription.title")}
+                  {t("iCal Subscription")}
                 </button>
               )}
             </div>
@@ -362,7 +362,7 @@ export function CalendarToolbar({
       {!isMobile && (
         <Button size="sm" className="h-8" onClick={onCreateEvent} data-tour="create-event-button">
           <Plus className="w-4 h-4 me-1" />
-          {t("events.create")}
+          {t("Create event")}
         </Button>
       )}
     </div>

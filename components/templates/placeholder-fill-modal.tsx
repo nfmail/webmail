@@ -27,7 +27,7 @@ export function PlaceholderFillModal({
   onSkip,
   onClose,
 }: PlaceholderFillModalProps) {
-  const t = useTranslations('templates');
+  const t = useTranslations();
 
   const [values, setValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
@@ -62,7 +62,7 @@ export function PlaceholderFillModal({
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 id="placeholder-fill-title" className="text-lg font-semibold text-foreground">
-            {t('fill_placeholders')}
+            {t("Fill Placeholder Values")}
           </h2>
           <button
             onClick={onClose}
@@ -78,13 +78,13 @@ export function PlaceholderFillModal({
               <label className="text-sm font-medium text-foreground flex items-center gap-2">
                 <span className="font-mono text-xs text-primary">{`{{${p}}}`}</span>
                 {isBuiltInPlaceholder(p) && (
-                  <span className="text-xs text-muted-foreground">{t(`placeholders.${p}`)}</span>
+                  <span className="text-xs text-muted-foreground">{t(`templates.placeholders.${p}`)}</span>
                 )}
               </label>
               <Input
                 value={values[p]}
                 onChange={(e) => setValues((prev) => ({ ...prev, [p]: e.target.value }))}
-                placeholder={t('enter_value')}
+                placeholder={t("Enter a value...")}
                 className="mt-1"
               />
             </div>
@@ -92,7 +92,7 @@ export function PlaceholderFillModal({
 
           {preview && (
             <div className="mt-4 pt-4 border-t border-border">
-              <p className="text-xs font-medium text-muted-foreground mb-2">{t('preview')}</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">{t("Preview")}</p>
               <div className="text-sm text-foreground whitespace-pre-wrap p-3 rounded-md bg-muted/50 border border-border max-h-32 overflow-y-auto">
                 {preview}
               </div>
@@ -102,10 +102,10 @@ export function PlaceholderFillModal({
 
         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
           <Button variant="ghost" size="sm" onClick={onSkip}>
-            {t('insert_raw')}
+            {t("Insert Raw")}
           </Button>
           <Button size="sm" onClick={() => onConfirm(values)}>
-            {t('insert_with_values')}
+            {t("Insert with Values")}
           </Button>
         </div>
       </div>

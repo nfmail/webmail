@@ -132,7 +132,7 @@ function TemplateEditor({
 }
 
 export function DownloadsSettings() {
-  const t = useTranslations("settings.downloads");
+  const t = useTranslations();
   const {
     emailDownloadTemplate,
     attachmentDownloadTemplate,
@@ -187,88 +187,88 @@ export function DownloadsSettings() {
   );
 
   return (
-    <SettingsSection title={t("title")} description={t("description")}>
+    <SettingsSection title={t("Downloads")} description={t("Customize how downloaded emails and attachments are named.")}>
       <TemplateEditor
         id="downloads-email-template"
-        label={t("email_template.label")}
-        description={t("email_template.description")}
+        label={t("Email (.eml) filename")}
+        description={t("Template used when you export an email or drag one out to the file system. The .eml extension is added automatically.")}
         value={emailDownloadTemplate}
         defaultValue={DEFAULT_EMAIL_TEMPLATE}
         tokens={EMAIL_TOKENS}
         preview={emlPreview}
         onChange={(next) => updateSetting("emailDownloadTemplate", next)}
-        resetLabel={t("reset")}
-        previewLabel={t("preview")}
+        resetLabel={t("Restore default")}
+        previewLabel={t("Preview:")}
         placeholder={DEFAULT_EMAIL_TEMPLATE}
       />
       <TemplateEditor
         id="downloads-attachment-template"
-        label={t("attachment_template.label")}
-        description={t("attachment_template.description")}
+        label={t("Attachment filename")}
+        description={t("Template used when downloading or dragging out an attachment. If you omit '{filename}' and '{ext}', the original extension is preserved.")}
         value={attachmentDownloadTemplate}
         defaultValue={DEFAULT_ATTACHMENT_TEMPLATE}
         tokens={ATTACHMENT_TOKENS}
         preview={attachmentPreview}
         onChange={(next) => updateSetting("attachmentDownloadTemplate", next)}
-        resetLabel={t("reset")}
-        previewLabel={t("preview")}
+        resetLabel={t("Restore default")}
+        previewLabel={t("Preview:")}
         placeholder={DEFAULT_ATTACHMENT_TEMPLATE}
       />
       <TemplateEditor
         id="downloads-bundle-template"
-        label={t("bundle_template.label")}
-        description={t("bundle_template.description")}
+        label={t("Multi-email .zip filename")}
+        description={t("Template used when you drag out or download several selected emails as a single .zip archive. The .zip extension is added automatically.")}
         value={bundleDownloadTemplate}
         defaultValue={DEFAULT_BUNDLE_TEMPLATE}
         tokens={BUNDLE_TOKENS}
         preview={bundlePreview}
         onChange={(next) => updateSetting("bundleDownloadTemplate", next)}
-        resetLabel={t("reset")}
-        previewLabel={t("preview")}
+        resetLabel={t("Restore default")}
+        previewLabel={t("Preview:")}
         placeholder={DEFAULT_BUNDLE_TEMPLATE}
       />
-      <SettingItem label={t("spaces.label")} description={t("spaces.description")} htmlFor="downloads-space-replacement">
+      <SettingItem label={t("Spaces")} description={t("Replace spaces in the resulting filename with another character.")} htmlFor="downloads-space-replacement">
         <Select
           id="downloads-space-replacement"
           value={filenameSpaceReplacement}
           onChange={(value) => updateSetting("filenameSpaceReplacement", value as "keep" | "underscore" | "dash")}
           options={[
-            { value: "keep", label: t("spaces.keep") },
-            { value: "underscore", label: t("spaces.underscore") },
-            { value: "dash", label: t("spaces.dash") },
+            { value: "keep", label: t("Keep spaces") },
+            { value: "underscore", label: t("Replace with _") },
+            { value: "dash", label: t("Replace with -") },
           ]}
         />
       </SettingItem>
-      <SettingItem label={t("lowercase.label")} description={t("lowercase.description")} htmlFor="downloads-lowercase">
+      <SettingItem label={t("Lowercase")} description={t("Force the entire filename to lowercase.")} htmlFor="downloads-lowercase">
         <ToggleSwitch
           id="downloads-lowercase"
           checked={filenameLowercase}
           onChange={(checked) => updateSetting("filenameLowercase", checked)}
         />
       </SettingItem>
-      <SettingItem label={t("strip_diacritics.label")} description={t("strip_diacritics.description")} htmlFor="downloads-strip-diacritics">
+      <SettingItem label={t("Strip diacritics")} description={t("Convert accented letters to their ASCII equivalents (ä → a, é → e). Useful for tools that mangle Unicode filenames.")} htmlFor="downloads-strip-diacritics">
         <ToggleSwitch
           id="downloads-strip-diacritics"
           checked={filenameStripDiacritics}
           onChange={(checked) => updateSetting("filenameStripDiacritics", checked)}
         />
       </SettingItem>
-      <SettingItem label={t("collapse_separators.label")} description={t("collapse_separators.description")} htmlFor="downloads-collapse-separators">
+      <SettingItem label={t("Collapse repeated separators")} description={t("Collapse runs of spaces, underscores, or dashes to a single character.")} htmlFor="downloads-collapse-separators">
         <ToggleSwitch
           id="downloads-collapse-separators"
           checked={filenameCollapseSeparators}
           onChange={(checked) => updateSetting("filenameCollapseSeparators", checked)}
         />
       </SettingItem>
-      <SettingItem label={t("after_export.label")} description={t("after_export.description")} htmlFor="downloads-post-export-action">
+      <SettingItem label={t("After export")} description={t("Optionally move the email after exporting it as .eml.")} htmlFor="downloads-post-export-action">
         <Select
           id="downloads-post-export-action"
           value={postExportAction}
           onChange={(value) => updateSetting("postExportAction", value as "keep" | "archive" | "trash")}
           options={[
-            { value: "keep", label: t("after_export.keep") },
-            { value: "archive", label: t("after_export.archive") },
-            { value: "trash", label: t("after_export.trash") },
+            { value: "keep", label: t("Keep in mailbox") },
+            { value: "archive", label: t("Move to archive") },
+            { value: "trash", label: t("Move to trash") },
           ]}
         />
       </SettingItem>

@@ -32,8 +32,8 @@ interface ICalSubscriptionModalProps {
 }
 
 export function ICalSubscriptionModal({ client, onClose, editSubscription, initialUrl, initialName }: ICalSubscriptionModalProps) {
-  const t = useTranslations("calendar.subscription");
-  const tCommon = useTranslations("common");
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const addICalSubscription = useCalendarStore((s) => s.addICalSubscription);
   const updateICalSubscription = useCalendarStore((s) => s.updateICalSubscription);
 
@@ -60,7 +60,7 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
     try {
       new URL(trimmedUrl);
     } catch {
-      setError(t("invalid_url"));
+      setError(t("Please enter a valid URL"));
       return;
     }
 
@@ -75,19 +75,19 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
         if (color !== editSubscription.color) updates.color = color;
         if (refreshInterval !== editSubscription.refreshInterval) updates.refreshInterval = refreshInterval;
         await updateICalSubscription(client, editSubscription.id, updates);
-        toast.success(t("updated", { name: name.trim() }));
+        toast.success(t("Updated \"{name}\"", { name: name.trim() }));
         onClose();
       } else {
         const subscription = await addICalSubscription(client, trimmedUrl, name.trim(), color, refreshInterval);
         if (subscription) {
-          toast.success(t("success", { name: name.trim() }));
+          toast.success(t("Subscribed to \"{name}\"", { name: name.trim() }));
           onClose();
         } else {
-          setError(t("error"));
+          setError(t("Failed to add subscription"));
         }
       }
     } catch {
-      setError(isEdit ? t("update_error") : t("error"));
+      setError(isEdit ? t("Failed to update subscription") : t("Failed to add subscription"));
     } finally {
       setIsSubmitting(false);
     }
@@ -98,25 +98,25 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
       <DialogContent
         showCloseButton={!isSubmitting}
         className="max-w-md gap-0 p-0"
-        aria-label={t("title")}
+        aria-label={t("iCal Subscription")}
       >
         <DialogHeader className="flex-row items-center gap-2 px-6 py-4 border-b border-border">
           <Globe className="w-5 h-5 text-primary" />
-          <DialogTitle className="text-lg font-semibold">{isEdit ? t("edit_title") : t("title")}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">{isEdit ? t("Edit Subscription") : t("iCal Subscription")}</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 px-6 py-4">
-          <p className="text-sm text-muted-foreground">{t("description")}</p>
+          <p className="text-sm text-muted-foreground">{t("Subscribe to an external iCalendar feed. Events will be synced automatically into their own calendar. Supports https:// and webcal:// URLs.")}</p>
 
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
-              {t("url_label")}
+              {t("Calendar URL")}
             </label>
             <input
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder={t("url_placeholder")}
+              placeholder={t("https://example.com/calendar.ics or webcal://...")}
               autoFocus
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={isSubmitting}
@@ -126,13 +126,13 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
 
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
-              {t("name_label")}
+              {t("Calendar name")}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={t("name_placeholder")}
+              placeholder={t("e.g. Public Holidays")}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={isSubmitting}
               onKeyDown={(e) => { if (e.key === "Enter" && isValid) handleSubmit(); }}
@@ -141,14 +141,14 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
 
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
-              {t("color_label")}
+              {t("Color")}
             </label>
             <CalendarColorPicker value={color} onChange={setColor} allowCustom />
           </div>
 
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
-              {t("refresh_interval")}
+              {t("Refresh interval")}
             </label>
             <Select
               value={String(refreshInterval)}
@@ -159,11 +159,11 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="15">{t("interval_15")}</SelectItem>
-                <SelectItem value="30">{t("interval_30")}</SelectItem>
-                <SelectItem value="60">{t("interval_60")}</SelectItem>
-                <SelectItem value="360">{t("interval_360")}</SelectItem>
-                <SelectItem value="1440">{t("interval_1440")}</SelectItem>
+                <SelectItem value="15">{t("Every 15 minutes")}</SelectItem>
+                <SelectItem value="30">{t("Every 30 minutes")}</SelectItem>
+                <SelectItem value="60">{t("Every hour")}</SelectItem>
+                <SelectItem value="360">{t("Every 6 hours")}</SelectItem>
+                <SelectItem value="1440">{t("Every day")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -177,16 +177,16 @@ export function ICalSubscriptionModal({ client, onClose, editSubscription, initi
 
         <DialogFooter className="px-6 py-4 border-t border-border">
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
-            {tCommon("cancel")}
+            {tCommon("Cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={!isValid || isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin me-2" />
-                {isEdit ? t("saving") : t("subscribing")}
+                {isEdit ? t("Saving...") : t("Subscribing...")}
               </>
             ) : (
-              isEdit ? t("save") : t("subscribe")
+              isEdit ? t("Save changes") : t("Subscribe")
             )}
           </Button>
         </DialogFooter>

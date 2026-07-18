@@ -339,8 +339,8 @@ describe('RecipientChipInput drag and drop', () => {
       fireEvent.drop(ccButton, { dataTransfer: dt });
     });
 
-    // cc_label is rendered by the mock translation as its key string
-    const ccLabel = await screen.findByText('cc_label');
+    // the i18n mock echoes the English text passed to t(); the Cc field label is "Cc:"
+    const ccLabel = await screen.findByText('Cc:');
     expect(ccLabel).toBeInTheDocument();
   });
 });

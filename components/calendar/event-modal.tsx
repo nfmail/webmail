@@ -135,12 +135,12 @@ function formatAlertRowLabel(
   row: { value: number; unit: AlertUnit },
   t: ReturnType<typeof useTranslations>
 ): string {
-  if (row.unit === "at_time") return t("alerts.at_time");
+  if (row.unit === "at_time") return t("At time of event");
   switch (row.unit) {
-    case "minutes": return t("alerts.minutes_before", { count: row.value });
-    case "hours": return t("alerts.hours_before", { count: row.value });
-    case "days": return t("alerts.days_before", { count: row.value });
-    case "weeks": return t("alerts.weeks_before", { count: row.value });
+    case "minutes": return t("{count, plural, one {# minute before} other {# minutes before}}", { count: row.value });
+    case "hours": return t("{count, plural, one {# hour before} other {# hours before}}", { count: row.value });
+    case "days": return t("{count, plural, one {# day before} other {# days before}}", { count: row.value });
+    case "weeks": return t("{count, plural, one {# week before} other {# weeks before}}", { count: row.value });
   }
 }
 
@@ -186,7 +186,7 @@ export function EventModal({
   currentUserEmails = [],
   isMobile = false,
 }: EventModalProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const locale = useLocale();
   const timeFormat = useSettingsStore((s) => s.timeFormat);
   const timeDisplayFmt = timeFormat === "12h" ? "h:mm a" : "HH:mm";
@@ -635,10 +635,10 @@ export function EventModal({
     const participants = getParticipantList(event);
 
     return (
-      <div ref={modalRef} role="dialog" aria-modal={isMobile || undefined} aria-label={event.title || t("events.no_title")} className={isMobile ? "fixed inset-0 z-50 flex flex-col bg-background" : "flex flex-col h-full bg-background"}>
+      <div ref={modalRef} role="dialog" aria-modal={isMobile || undefined} aria-label={event.title || t("(No title)")} className={isMobile ? "fixed inset-0 z-50 flex flex-col bg-background" : "flex flex-col h-full bg-background"}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
-          <h2 className="text-lg font-semibold truncate">{event.title || t("events.no_title")}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground" aria-label={t("form.cancel")}>
+          <h2 className="text-lg font-semibold truncate">{event.title || t("(No title)")}</h2>
+          <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground" aria-label={t("Cancel")}>
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -649,10 +649,10 @@ export function EventModal({
               <CalendarDays className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-medium text-blue-900 dark:text-blue-200">
-                  {t("participants.invited_by", { name: organizerInfo?.name || organizerInfo?.email || t("participants.organizer") })}
+                  {t("Invitation from {name}", { name: organizerInfo?.name || organizerInfo?.email || t("Organizer") })}
                 </p>
                 <p className="text-blue-700 dark:text-blue-400 mt-0.5">
-                  {t("participants.respond_below")}
+                  {t("Respond using the buttons below")}
                 </p>
               </div>
             </div>
@@ -706,7 +706,7 @@ export function EventModal({
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 text-sm font-medium">
                   <Users className="w-4 h-4" />
-                  {t("participants.title")}
+                  {t("Participants")}
                 </div>
                 <div className="space-y-1 ps-5">
                   {participants.map(p => (
@@ -723,7 +723,7 @@ export function EventModal({
 
         <div className="px-6 py-4 border-t border-border flex-shrink-0">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{t("participants.rsvp_label")}</span>
+            <span className="text-sm font-medium">{t("Your response")}</span>
             <div className="flex gap-2">
               <Button
                 size="sm"
@@ -734,7 +734,7 @@ export function EventModal({
                   : "text-success border-success/30 hover:bg-success/10"}
               >
                 {userCurrentStatus === "accepted" && <Check className="w-4 h-4 me-1" />}
-                {t("participants.accepted")}
+                {t("Accepted")}
               </Button>
               <Button
                 size="sm"
@@ -745,7 +745,7 @@ export function EventModal({
                   : "border border-warning/30 text-warning hover:bg-warning/10"}
               >
                 {userCurrentStatus === "tentative" && <Check className="w-4 h-4 me-1" />}
-                {t("participants.tentative")}
+                {t("Tentative")}
               </Button>
               <Button
                 size="sm"
@@ -756,7 +756,7 @@ export function EventModal({
                   : "text-destructive hover:bg-destructive/10"}
               >
                 {userCurrentStatus === "declined" && <Check className="w-4 h-4 me-1" />}
-                {t("participants.declined")}
+                {t("Declined")}
               </Button>
             </div>
           </div>
@@ -779,7 +779,7 @@ export function EventModal({
     const color = getEventColor(event, eventCalendar);
 
     return (
-      <div ref={modalRef} role="dialog" aria-modal={isMobile || undefined} aria-label={event.title || t("events.no_title")} className={isMobile ? "fixed inset-0 z-50 flex flex-col bg-background" : "flex flex-col h-full bg-background"}>
+      <div ref={modalRef} role="dialog" aria-modal={isMobile || undefined} aria-label={event.title || t("(No title)")} className={isMobile ? "fixed inset-0 z-50 flex flex-col bg-background" : "flex flex-col h-full bg-background"}>
         {/* Color accent bar */}
         <div className="h-1 w-full flex-shrink-0" style={{ backgroundColor: color }} />
 
@@ -788,13 +788,13 @@ export function EventModal({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-              <h2 className="text-lg font-semibold truncate">{event.title || t("events.no_title")}</h2>
+              <h2 className="text-lg font-semibold truncate">{event.title || t("(No title)")}</h2>
             </div>
             {eventCalendar && (
               <p className="text-xs text-muted-foreground mt-0.5 ps-[18px]">{eventCalendar.name}</p>
             )}
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 flex-shrink-0 mt-0.5 text-muted-foreground hover:text-foreground" aria-label={t("form.cancel")}>
+          <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 flex-shrink-0 mt-0.5 text-muted-foreground hover:text-foreground" aria-label={t("Cancel")}>
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -814,7 +814,7 @@ export function EventModal({
                       <>
                         <div className="font-medium text-foreground">{formatEventDate(startD)} –</div>
                         <div className="font-medium text-foreground">{formatEventDate(displayEnd)}</div>
-                        <div className="text-muted-foreground">{t("events.all_day")}</div>
+                        <div className="text-muted-foreground">{t("All day")}</div>
                       </>
                     );
                   }
@@ -845,7 +845,7 @@ export function EventModal({
                         {formatEventDate(startD)}
                       </span>
                       {event.showWithoutTime ? (
-                        <span className="text-muted-foreground ms-1.5">{t("events.all_day")}</span>
+                        <span className="text-muted-foreground ms-1.5">{t("All day")}</span>
                       ) : (
                         <div className="text-muted-foreground">
                           {format(startD, timeDisplayFmt)} – {format(endD, timeDisplayFmt)}
@@ -888,7 +888,7 @@ export function EventModal({
                 <Users className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                 <div className="text-sm min-w-0">
                   <span className="text-muted-foreground">
-                    {t("participants.count", { count: viewParticipants.length })}
+                    {t("{count, plural, one {# participant} other {# participants}}", { count: viewParticipants.length })}
                   </span>
                   <div className="mt-1 space-y-0.5">
                     {viewParticipants.map((p) => (
@@ -896,7 +896,7 @@ export function EventModal({
                         <span className="truncate text-foreground">
                           {p.name || p.email}
                           {p.isOrganizer && (
-                            <span className="text-muted-foreground ms-1">({t("participants.organizer").toLowerCase()})</span>
+                            <span className="text-muted-foreground ms-1">({t("Organizer").toLowerCase()})</span>
                           )}
                         </span>
                         <StatusBadge status={p.status} isOrganizer={p.isOrganizer} t={t} />
@@ -939,32 +939,32 @@ export function EventModal({
             {onDelete && (
               showDeleteConfirm ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-destructive">{t("form.delete_confirm")}</span>
+                  <span className="text-sm text-destructive">{t("Are you sure you want to delete this event?")}</span>
                   <Button variant="outline" size="sm" onClick={() => { onDelete(event.id, hasParticipants || undefined); onClose(); }} className="text-destructive border-destructive/30">
-                    {t("events.delete")}
+                    {t("Delete event")}
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(false)}>
-                    {t("form.cancel")}
+                    {t("Cancel")}
                   </Button>
                 </div>
               ) : (
                 <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(true)} className="text-destructive">
                   <Trash2 className="w-4 h-4 me-1" />
-                  {t("events.delete")}
+                  {t("Delete event")}
                 </Button>
               )
             )}
             {onDuplicate && !showDeleteConfirm && (
-              <Button variant="ghost" size="sm" onClick={handleDuplicate} aria-label={t("events.duplicate")}>
+              <Button variant="ghost" size="sm" onClick={handleDuplicate} aria-label={t("Duplicate")}>
                 <Copy className="w-4 h-4 me-1" />
-                {t("events.duplicate")}
+                {t("Duplicate")}
               </Button>
             )}
           </div>
           {!showDeleteConfirm && (
             <Button onClick={() => setMode("edit")}>
               <Pencil className="w-4 h-4 me-1" />
-              {t("events.edit")}
+              {t("Edit event")}
             </Button>
           )}
         </div>
@@ -973,12 +973,12 @@ export function EventModal({
   }
 
   return (
-    <div ref={modalRef} role="dialog" aria-modal={isMobile || undefined} aria-label={isEdit ? t("events.edit") : t("events.create")} data-tour="event-modal" className={isMobile ? "fixed inset-0 z-50 flex flex-col bg-background" : "flex flex-col h-full bg-background"}>
+    <div ref={modalRef} role="dialog" aria-modal={isMobile || undefined} aria-label={isEdit ? t("Edit event") : t("Create event")} data-tour="event-modal" className={isMobile ? "fixed inset-0 z-50 flex flex-col bg-background" : "flex flex-col h-full bg-background"}>
       <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
         <h2 className="text-lg font-semibold">
-          {isEdit ? t("events.edit") : t("events.create")}
+          {isEdit ? t("Edit event") : t("Create event")}
         </h2>
-        <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground" aria-label={t("form.cancel")}>
+        <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground" aria-label={t("Cancel")}>
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -986,22 +986,22 @@ export function EventModal({
       <div className="flex-1 overflow-y-auto">
         <div className="px-6 py-4 space-y-4">
           <div>
-            <label className="text-sm font-medium mb-1 block">{t("form.title")}</label>
+            <label className="text-sm font-medium mb-1 block">{t("Title")}</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("form.title")}
+              placeholder={t("Title")}
               maxLength={500}
               autoFocus
             />
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-1 block">{t("form.description")}</label>
+            <label className="text-sm font-medium mb-1 block">{t("Description")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={t("form.description")}
+              placeholder={t("Description")}
               rows={3}
               maxLength={10000}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
@@ -1009,11 +1009,11 @@ export function EventModal({
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-1 block">{t("form.location")}</label>
+            <label className="text-sm font-medium mb-1 block">{t("Location")}</label>
             <Input
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder={t("form.location")}
+              placeholder={t("Location")}
               maxLength={500}
             />
           </div>
@@ -1022,7 +1022,7 @@ export function EventModal({
             <label className="text-sm font-medium mb-1 block">
               <span className="flex items-center gap-1.5">
                 <Video className="w-4 h-4" />
-                {t("form.meeting_link")}
+                {t("Meeting link")}
               </span>
             </label>
             <Input
@@ -1055,7 +1055,7 @@ export function EventModal({
             <label className="text-sm font-medium mb-1 block">
               <span className="flex items-center gap-1.5">
                 <Users className="w-4 h-4" />
-                {t("participants.title")}
+                {t("Participants")}
               </span>
             </label>
             <ParticipantInput
@@ -1066,7 +1066,7 @@ export function EventModal({
             />
             {isEdit && statusCounts && (existingParticipants.length > 0) && (
               <p className="text-xs text-muted-foreground mt-1.5">
-                {t("participants.status_summary", {
+                {t("{accepted} accepted, {pending} pending", {
                   accepted: statusCounts.accepted,
                   pending: statusCounts.tentative + statusCounts['needs-action'],
                 })}
@@ -1082,12 +1082,12 @@ export function EventModal({
               onChange={(e) => setAllDay(e.target.checked)}
               className="rounded border-input"
             />
-            <label htmlFor="allDay" className="text-sm">{t("form.all_day_event")}</label>
+            <label htmlFor="allDay" className="text-sm">{t("All-day event")}</label>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium mb-1 block">{t("form.start_date")}</label>
+              <label className="text-sm font-medium mb-1 block">{t("Start date")}</label>
               <input
                 type="date"
                 value={startDate}
@@ -1097,7 +1097,7 @@ export function EventModal({
             </div>
             {!allDay && (
               <div>
-                <label className="text-sm font-medium mb-1 block">{t("form.start_time")}</label>
+                <label className="text-sm font-medium mb-1 block">{t("Start time")}</label>
                 <input
                   type="time"
                   value={startTime}
@@ -1107,7 +1107,7 @@ export function EventModal({
               </div>
             )}
             <div>
-              <label className="text-sm font-medium mb-1 block">{t("form.end_date")}</label>
+              <label className="text-sm font-medium mb-1 block">{t("End date")}</label>
               <input
                 type="date"
                 value={endDate}
@@ -1117,7 +1117,7 @@ export function EventModal({
             </div>
             {!allDay && (
               <div>
-                <label className="text-sm font-medium mb-1 block">{t("form.end_time")}</label>
+                <label className="text-sm font-medium mb-1 block">{t("End time")}</label>
                 <input
                   type="time"
                   value={endTime}
@@ -1150,7 +1150,7 @@ export function EventModal({
 
           {calendars.length > 1 && (
             <div>
-              <label className="text-sm font-medium mb-1 block">{t("form.calendar_select")}</label>
+              <label className="text-sm font-medium mb-1 block">{t("Calendar")}</label>
               <Select value={calendarId} onValueChange={setCalendarId}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -1167,7 +1167,7 @@ export function EventModal({
           )}
 
           <div>
-            <label className="text-sm font-medium mb-1 block">{t("recurrence.title")}</label>
+            <label className="text-sm font-medium mb-1 block">{t("Recurrence")}</label>
             <div className="flex items-center gap-2">
               <Select
                 value={recurrence}
@@ -1187,12 +1187,12 @@ export function EventModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">{t("recurrence.none")}</SelectItem>
-                  <SelectItem value="daily">{t("recurrence.daily")}</SelectItem>
-                  <SelectItem value="weekly">{t("recurrence.weekly")}</SelectItem>
-                  <SelectItem value="monthly">{t("recurrence.monthly")}</SelectItem>
-                  <SelectItem value="yearly">{t("recurrence.yearly")}</SelectItem>
-                  <SelectItem value="custom">{customRuleSummary || t("recurrence.custom")}</SelectItem>
+                  <SelectItem value="none">{t("Does not repeat")}</SelectItem>
+                  <SelectItem value="daily">{t("Daily")}</SelectItem>
+                  <SelectItem value="weekly">{t("Weekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("Monthly")}</SelectItem>
+                  <SelectItem value="yearly">{t("Yearly")}</SelectItem>
+                  <SelectItem value="custom">{customRuleSummary || t("Custom…")}</SelectItem>
                 </SelectContent>
               </Select>
               {recurrence === "custom" && !showRecurrenceEditor && (
@@ -1200,7 +1200,7 @@ export function EventModal({
                   type="button"
                   onClick={() => setShowRecurrenceEditor(true)}
                   className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  aria-label={t("recurrence.edit_custom")}
+                  aria-label={t("Edit custom recurrence")}
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
@@ -1220,9 +1220,9 @@ export function EventModal({
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-1 block">{t("alerts.title")}</label>
+            <label className="text-sm font-medium mb-1 block">{t("Reminders")}</label>
             {alertRows.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("alerts.none")}</p>
+              <p className="text-sm text-muted-foreground">{t("No reminders")}</p>
             ) : (
               <div className="space-y-2">
                 {alertRows.map((row) => (
@@ -1238,7 +1238,7 @@ export function EventModal({
                           updateAlertRow(row.id, { value: Number.isFinite(n) ? Math.max(1, n) : 1 });
                         }}
                         className="w-20"
-                        aria-label={t("alerts.amount")}
+                        aria-label={t("Reminder amount")}
                       />
                     )}
                     <Select
@@ -1251,22 +1251,22 @@ export function EventModal({
                         });
                       }}
                     >
-                      <SelectTrigger className="flex-1" aria-label={t("alerts.unit")}>
+                      <SelectTrigger className="flex-1" aria-label={t("Reminder unit")}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="at_time">{t("alerts.at_time")}</SelectItem>
-                        <SelectItem value="minutes">{t("alerts.unit_minutes_before")}</SelectItem>
-                        <SelectItem value="hours">{t("alerts.unit_hours_before")}</SelectItem>
-                        <SelectItem value="days">{t("alerts.unit_days_before")}</SelectItem>
-                        <SelectItem value="weeks">{t("alerts.unit_weeks_before")}</SelectItem>
+                        <SelectItem value="at_time">{t("At time of event")}</SelectItem>
+                        <SelectItem value="minutes">{t("minutes before")}</SelectItem>
+                        <SelectItem value="hours">{t("hours before")}</SelectItem>
+                        <SelectItem value="days">{t("days before")}</SelectItem>
+                        <SelectItem value="weeks">{t("weeks before")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <button
                       type="button"
                       onClick={() => removeAlertRow(row.id)}
                       className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                      aria-label={t("alerts.remove")}
+                      aria-label={t("Remove reminder")}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1280,7 +1280,7 @@ export function EventModal({
               className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
             >
               <Plus className="w-4 h-4" />
-              {t("alerts.add")}
+              {t("Add reminder")}
             </button>
           </div>
 
@@ -1294,7 +1294,7 @@ export function EventModal({
                 className="rounded border-input"
               />
               <label htmlFor="sendInvitations" className="text-sm">
-                {t("participants.send_invitations")}
+                {t("Send invitations to participants")}
               </label>
             </div>
           )}
@@ -1308,11 +1308,11 @@ export function EventModal({
               <div className="flex items-center gap-2">
                 <div>
                   <span className="text-sm text-red-600 dark:text-red-400">
-                    {t("form.delete_confirm")}
+                    {t("Are you sure you want to delete this event?")}
                   </span>
                   {hasParticipants && (
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {t("participants.cancel_notification")}
+                      {t("Participants will be notified of the cancellation")}
                     </p>
                   )}
                 </div>
@@ -1322,10 +1322,10 @@ export function EventModal({
                   onClick={() => { onDelete(event!.id, hasParticipants || undefined); onClose(); }}
                   className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700"
                 >
-                  {t("events.delete")}
+                  {t("Delete event")}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(false)}>
-                  {t("form.cancel")}
+                  {t("Cancel")}
                 </Button>
               </div>
             ) : (
@@ -1336,7 +1336,7 @@ export function EventModal({
                 className="text-red-600 dark:text-red-400"
               >
                 <Trash2 className="w-4 h-4 me-1" />
-                {t("events.delete")}
+                {t("Delete event")}
               </Button>
             )
           )}
@@ -1345,20 +1345,20 @@ export function EventModal({
               variant="ghost"
               size="sm"
               onClick={handleDuplicate}
-              aria-label={t("events.duplicate")}
+              aria-label={t("Duplicate")}
             >
               <Copy className="w-4 h-4 me-1" />
-              {t("events.duplicate")}
+              {t("Duplicate")}
             </Button>
           )}
         </div>
 
         <div className="flex gap-2">
           <Button variant="outline" onClick={isEdit ? () => setMode("view") : onClose}>
-            {t("form.cancel")}
+            {t("Cancel")}
           </Button>
           <Button onClick={handleSave} disabled={!title.trim() || isSaving}>
-            {t("form.save")}
+            {t("Save")}
           </Button>
         </div>
       </div>
@@ -1372,7 +1372,7 @@ function StatusBadge({ status, isOrganizer, t }: {
   t: ReturnType<typeof useTranslations>;
 }) {
   if (isOrganizer) {
-    return <span className="text-xs text-primary">{t("participants.organizer")}</span>;
+    return <span className="text-xs text-primary">{t("Organizer")}</span>;
   }
   const colors: Record<string, string> = {
     accepted: "text-success",

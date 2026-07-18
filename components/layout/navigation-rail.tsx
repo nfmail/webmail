@@ -89,7 +89,7 @@ function RailTooltip({
 }
 
 function StorageQuotaCircle({ quota, usagePercent }: { quota: { used: number; total: number }; usagePercent: number }) {
-  const t = useTranslations("sidebar");
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -133,7 +133,7 @@ function StorageQuotaCircle({ quota, usagePercent }: { quota: { used: number; to
         ref={buttonRef}
         onClick={() => setOpen(!open)}
         className="relative w-8 h-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors cursor-pointer"
-        aria-label={t("storage")}
+        aria-label={t("Storage")}
       >
         <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
           <circle cx="16" cy="16" r="12" fill="none" className="stroke-muted" strokeWidth="3" />
@@ -152,18 +152,18 @@ function StorageQuotaCircle({ quota, usagePercent }: { quota: { used: number; to
 
       {open && createPortal(
         <div ref={popoverRef} style={popoverStyle} className="w-52 rounded-lg border border-border bg-background text-foreground shadow-lg p-3 z-50">
-          <p className="text-xs font-semibold mb-2">{t("storage")}</p>
+          <p className="text-xs font-semibold mb-2">{t("Storage")}</p>
           <div className="space-y-1.5 text-xs">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{t("storage_used")}</span>
+              <span className="text-muted-foreground">{t("Used")}</span>
               <span className="font-medium tabular-nums">{formatFileSize(quota.used)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{t("storage_free")}</span>
+              <span className="text-muted-foreground">{t("Free")}</span>
               <span className="font-medium tabular-nums">{formatFileSize(free)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{t("storage_total")}</span>
+              <span className="text-muted-foreground">{t("Total")}</span>
               <span className="font-medium tabular-nums">{formatFileSize(quota.total)}</span>
             </div>
           </div>
@@ -181,7 +181,7 @@ function StorageQuotaCircle({ quota, usagePercent }: { quota: { used: number; to
             />
           </div>
           <p className="text-[10px] text-muted-foreground mt-1 tabular-nums">
-            {Math.round(usagePercent)}% {t("storage_used").toLowerCase()}
+            {Math.round(usagePercent)}% {t("Used").toLowerCase()}
           </p>
         </div>,
         document.body
@@ -204,7 +204,7 @@ export function NavigationRail({
   onNavigate,
   activeItemId,
 }: NavigationRailProps) {
-  const t = useTranslations("sidebar");
+  const t = useTranslations();
   const pathname = usePathname();
   const router = useRouter();
   const { appLogoLightUrl, appLogoDarkUrl } = useConfig();
@@ -341,7 +341,7 @@ export function NavigationRail({
       <nav
         className={cn("flex items-center bg-background border-t border-border shrink-0 overflow-x-auto mobile-scroll-hidden pb-[calc(env(safe-area-inset-bottom)/2)]", className)}
         role="navigation"
-        aria-label={t("nav_label")}
+        aria-label={t("Navigation")}
       >
         {visibleItems.map((item) => {
           const isActive = getIsActive(item.href, item.id);
@@ -433,7 +433,7 @@ export function NavigationRail({
                 />
               )}
             </span>
-            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("admin") || "Admin"}</span>
+            <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Admin") || "Admin"}</span>
           </a>
         )}
 
@@ -456,7 +456,7 @@ export function NavigationRail({
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-primary" />
             )}
           </div>
-          <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("settings")}</span>
+          <span className="text-[10px] font-medium leading-tight truncate max-w-full">{t("Settings")}</span>
         </Link>
       </nav>
     );
@@ -492,7 +492,7 @@ export function NavigationRail({
           collapsed ? "items-center gap-1 py-3 px-1" : "gap-0.5 py-2 px-2",
         )}
         role="navigation"
-        aria-label={t("nav_label")}
+        aria-label={t("Navigation")}
       >
         {visibleItems.map((item) => {
           const isActive = getIsActive(item.href, item.id);
@@ -579,7 +579,7 @@ export function NavigationRail({
 
         {/* Manage apps button */}
         {sidebarAppsEnabled && onManageApps && (
-          <RailTooltip label={t("add_app")} show={collapsed}>
+          <RailTooltip label={t("Apps")} show={collapsed}>
           <button
             onClick={onManageApps}
             className={cn(
@@ -590,11 +590,11 @@ export function NavigationRail({
               "max-lg:min-h-[44px]",
               "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
-            aria-label={collapsed ? t("add_app") : undefined}
+            aria-label={collapsed ? t("Apps") : undefined}
             style={collapsed ? undefined : { paddingBlock: 'var(--density-sidebar-py)' }}
           >
             <Plus className="w-[18px] h-[18px] flex-shrink-0" />
-            {!collapsed && <span className="truncate">{t("add_app")}</span>}
+            {!collapsed && <span className="truncate">{t("Apps")}</span>}
           </button>
           </RailTooltip>
         )}
@@ -605,11 +605,11 @@ export function NavigationRail({
       {/* Footer: Admin + Settings + Help + Storage Quota + Sign Out + Push Status */}
       <div className="mt-auto flex flex-col items-center gap-2 pb-3 px-1">
         {isStalwartAdmin && (
-          <RailTooltip label={t("admin") || "Admin"}>
+          <RailTooltip label={t("Admin") || "Admin"}>
           <a
             href={`${getPathPrefix()}/admin`}
             className="flex items-center justify-center w-10 h-10 rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted relative"
-            aria-label={t("admin") || "Admin"}
+            aria-label={t("Admin") || "Admin"}
           >
             <Shield className="w-[18px] h-[18px]" />
             {hasUpdate && (
@@ -625,7 +625,7 @@ export function NavigationRail({
           </RailTooltip>
         )}
 
-        <RailTooltip label={t("settings")}>
+        <RailTooltip label={t("Settings")}>
         <Link
           href="/settings"
           onClick={handleNavClick('settings')}
@@ -636,7 +636,7 @@ export function NavigationRail({
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:text-foreground hover:bg-muted"
           )}
-          aria-label={t("settings")}
+          aria-label={t("Settings")}
           aria-current={isSettingsActive ? "page" : undefined}
         >
           <Settings className="w-[18px] h-[18px]" />
@@ -646,12 +646,12 @@ export function NavigationRail({
         <div className="w-8 border-t" style={{ borderColor: 'rgba(128, 128, 128, 0.3)' }} />
 
         {onShowShortcuts && (
-          <RailTooltip label={t("keyboard_shortcuts")}>
+          <RailTooltip label={t("Keyboard Shortcuts")}>
           <button
             onClick={onShowShortcuts}
             data-tour="nav-shortcuts"
             className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            aria-label={t("keyboard_shortcuts")}
+            aria-label={t("Keyboard Shortcuts")}
           >
             <Keyboard className="w-[18px] h-[18px]" />
           </button>
@@ -659,12 +659,12 @@ export function NavigationRail({
         )}
         {!onShowShortcuts && (
           <>
-            <RailTooltip label={t("keyboard_shortcuts")}>
+            <RailTooltip label={t("Keyboard Shortcuts")}>
             <button
               onClick={() => setShowShortcutsModal(true)}
               data-tour="nav-shortcuts"
               className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              aria-label={t("keyboard_shortcuts")}
+              aria-label={t("Keyboard Shortcuts")}
             >
               <Keyboard className="w-[18px] h-[18px]" />
             </button>
@@ -720,11 +720,11 @@ export function NavigationRail({
               );
             })}
             {accounts.length < getMaxAccounts() && (
-              <RailTooltip label={t("add_account")}>
+              <RailTooltip label={t("Add account")}>
               <button
                 onClick={() => router.push(`/login?mode=add-account` as never)}
                 className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-muted-foreground/50 text-muted-foreground hover:border-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
-                aria-label={t("add_account")}
+                aria-label={t("Add account")}
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
@@ -733,12 +733,12 @@ export function NavigationRail({
             </div>
 
             {/* Logout button with popover */}
-            <RailTooltip label={t("sign_out")}>
+            <RailTooltip label={t("Sign out")}>
             <button
               ref={logoutBtnRef}
               onClick={() => setLogoutMenuOpen(!logoutMenuOpen)}
               className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              aria-label={t("sign_out")}
+              aria-label={t("Sign out")}
               aria-expanded={logoutMenuOpen}
               aria-haspopup="true"
             >
@@ -759,7 +759,7 @@ export function NavigationRail({
                   role="menuitem"
                 >
                   <LogOut className="w-4 h-4" />
-                  {t("sign_out")}
+                  {t("Sign out")}
                 </button>
                 {accounts.length > 1 && (
                   <button
@@ -768,7 +768,7 @@ export function NavigationRail({
                     role="menuitem"
                   >
                     <LogOut className="w-4 h-4" />
-                    {t("sign_out_all")}
+                    {t("Sign out of all accounts")}
                   </button>
                 )}
               </div>,

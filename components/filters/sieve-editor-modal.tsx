@@ -19,7 +19,7 @@ export function SieveEditorModal({
   onClose,
   onValidate,
 }: SieveEditorModalProps) {
-  const t = useTranslations("settings.filters.sieve_editor");
+  const t = useTranslations();
   const [script, setScript] = useState(content);
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{
@@ -40,7 +40,7 @@ export function SieveEditorModal({
       const result = await onValidate(script);
       setValidationResult(result);
     } catch {
-      setValidationResult({ isValid: false, errors: [t("validation_failed")] });
+      setValidationResult({ isValid: false, errors: [t("Validation request failed")] });
     } finally {
       setIsValidating(false);
     }
@@ -78,15 +78,15 @@ export function SieveEditorModal({
         ref={modalRef}
         role="dialog"
         aria-modal="true"
-        aria-label={t("title")}
+        aria-label={t("Sieve Script Editor")}
         className="relative bg-background border border-border rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">{t("title")}</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t("Sieve Script Editor")}</h2>
           <button
             onClick={onClose}
             className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 text-muted-foreground hover:text-foreground"
-            aria-label={t("cancel")}
+            aria-label={t("Cancel")}
           >
             <X className="w-5 h-5" />
           </button>
@@ -95,7 +95,7 @@ export function SieveEditorModal({
         <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col space-y-4">
           <div className="flex items-start gap-2 p-3 rounded-md bg-warning/10 border border-warning/20 text-sm text-warning">
             <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <p>{t("warning")}</p>
+            <p>{t("Editing the raw Sieve script may break visual rule editing. Changes made here override the visual builder.")}</p>
           </div>
 
           <div className="flex-1 min-h-0 flex border border-border rounded-md overflow-hidden">
@@ -123,7 +123,7 @@ export function SieveEditorModal({
               onKeyDown={handleKeyDown}
               className="flex-1 bg-background text-foreground font-mono text-sm p-2 resize-none focus:outline-none leading-[1.5rem]"
               spellCheck={false}
-              aria-label={t("script_content")}
+              aria-label={t("Sieve script")}
             />
           </div>
 
@@ -138,13 +138,13 @@ export function SieveEditorModal({
               {validationResult.isValid ? (
                 <>
                   <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <p>{t("valid")}</p>
+                  <p>{t("Script is valid")}</p>
                 </>
               ) : (
                 <>
                   <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">{t("invalid")}</p>
+                    <p className="font-medium">{t("Script has errors")}</p>
                     {validationResult.errors?.map((err, i) => (
                       <p key={i} className="mt-1 font-mono text-xs">
                         {err}
@@ -159,7 +159,7 @@ export function SieveEditorModal({
           {showSaveWarning && (
             <div className="flex items-start gap-2 p-3 rounded-md bg-warning/10 border border-warning/20 text-sm text-warning">
               <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <p>{t("save_warning")}</p>
+              <p>{t("Saving will overwrite any visual rules. This cannot be undone. Click Save again to confirm.")}</p>
             </div>
           )}
         </div>
@@ -173,18 +173,18 @@ export function SieveEditorModal({
             {isValidating ? (
               <>
                 <Loader2 className="w-4 h-4 me-2 animate-spin" />
-                {t("validating")}
+                {t("Validating...")}
               </>
             ) : (
-              t("validate")
+              t("Validate")
             )}
           </Button>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
-              {t("cancel")}
+              {t("Cancel")}
             </Button>
             <Button onClick={handleSave} disabled={!script.trim()}>
-              {showSaveWarning ? t("confirm_save") : t("save")}
+              {showSaveWarning ? t("Confirm Save") : t("Save")}
             </Button>
           </div>
         </div>

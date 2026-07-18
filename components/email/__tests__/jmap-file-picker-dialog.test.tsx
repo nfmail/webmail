@@ -72,7 +72,7 @@ describe("JmapFilePickerDialog", () => {
 
     fireEvent.click(await screen.findByText("Documents"));
     fireEvent.click(await screen.findByRole("checkbox", { name: /report.txt/ }));
-    fireEvent.click(screen.getByRole("button", { name: "attach" }));
+    fireEvent.click(screen.getByRole("button", { name: /Attach/ }));
 
     await waitFor(() => {
       expect(onAttach).toHaveBeenCalledWith([{
@@ -104,7 +104,7 @@ describe("JmapFilePickerDialog", () => {
     );
 
     fireEvent.click(await screen.findByRole("checkbox", { name: /notes.txt/ }));
-    fireEvent.click(screen.getByRole("button", { name: "attach" }));
+    fireEvent.click(screen.getByRole("button", { name: /Attach/ }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Stored file was not found.",

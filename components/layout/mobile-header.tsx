@@ -24,7 +24,7 @@ export function MobileHeader({
   onSearch,
   className,
 }: MobileHeaderProps) {
-  const t = useTranslations('sidebar');
+  const t = useTranslations();
   const { toggleSidebar, goBack, sidebarOpen } = useUIStore();
   // Pane-aware: in Pro split mode the viewport is desktop-wide while the
   // pane is narrow. The Tailwind `lg:hidden` variant alone would never fire
@@ -84,7 +84,7 @@ export function MobileHeader({
             size="icon"
             onClick={onSearch}
             className="h-11 w-11"
-            aria-label={t('mobile.search')}
+            aria-label={t("Search")}
           >
             <Search className="h-5 w-5" />
           </Button>
@@ -95,7 +95,7 @@ export function MobileHeader({
             size="icon"
             onClick={onCompose}
             className="h-11 w-11 text-primary"
-            aria-label={t('mobile.compose')}
+            aria-label={t("Compose")}
           >
             <Plus className="h-5 w-5" />
           </Button>
@@ -123,7 +123,7 @@ export function MobileViewerHeader({
   onArchive: _onArchive,
   className,
 }: MobileViewerHeaderProps) {
-  const t = useTranslations('sidebar');
+  const t = useTranslations();
   const isPaneDesktop = useIsDesktop();
   if (isPaneDesktop) return null;
 
@@ -139,7 +139,7 @@ export function MobileViewerHeader({
         size="icon"
         onClick={onBack}
         className="h-11 w-11"
-        aria-label={t('mobile.go_back')}
+        aria-label={t("Go back")}
       >
         <ArrowLeft className="h-5 w-5" />
       </Button>

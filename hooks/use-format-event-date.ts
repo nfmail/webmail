@@ -17,7 +17,7 @@ import { toJalali, shouldUseJalaliCalendar, JALALI_MONTHS } from "@/lib/jalali-u
  *              "چهارشنبه, ۹ اردیبهشت ۱۴۰۵"
  */
 export function useFormatEventDate(): (date: Date) => string {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const locale = useLocale();
   const isJalali = shouldUseJalaliCalendar(locale);
 
@@ -28,14 +28,14 @@ export function useFormatEventDate(): (date: Date) => string {
         // Use Gregorian day-of-week for the translation key (date-fns format)
         const dayOfWeek = format(date, "EEE").toLowerCase();
         const monthName = JALALI_MONTHS[jm - 1];
-        return `${t(`days.${dayOfWeek}`)}, ${jd} ${monthName} ${jy}`;
+        return `${t(`calendar.days.${dayOfWeek}`)}, ${jd} ${monthName} ${jy}`;
       }
 
       const dayOfWeek = format(date, "EEE").toLowerCase();
       const month = format(date, "MMM").toLowerCase();
       const day = format(date, "d");
       const year = format(date, "yyyy");
-      return `${t(`days.${dayOfWeek}`)}, ${t(`months.${month}`)} ${day}, ${year}`;
+      return `${t(`calendar.days.${dayOfWeek}`)}, ${t(`calendar.months.${month}`)} ${day}, ${year}`;
     },
     [t, isJalali]
   );

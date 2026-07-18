@@ -57,9 +57,9 @@ interface IdentityFormProps {
 }
 
 export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) {
-  const t = useTranslations('identities.form');
-  const tValidation = useTranslations('identities.validation_errors');
-  const tDisplay = useTranslations('identities.display');
+  const t = useTranslations();
+  const tValidation = useTranslations();
+  const tDisplay = useTranslations();
   const isEditing = !!identity;
 
   const [formData, setFormData] = useState<IdentityFormData>({
@@ -92,7 +92,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = t('name_required');
+      newErrors.name = t("Name is required");
     }
 
     // Use secure email validation
@@ -105,7 +105,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
     if (replyToInput.trim()) {
       const validation = validateEmailList(replyToInput);
       if (!validation.valid) {
-        newErrors.replyTo = tValidation('invalid_emails', { emails: validation.invalidEmails.join(', ') });
+        newErrors.replyTo = tValidation("Invalid emails: {emails}", { emails: validation.invalidEmails.join(', ') });
       }
     }
 
@@ -113,7 +113,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
     if (bccInput.trim()) {
       const validation = validateEmailList(bccInput);
       if (!validation.valid) {
-        newErrors.bcc = tValidation('invalid_emails', { emails: validation.invalidEmails.join(', ') });
+        newErrors.bcc = tValidation("Invalid emails: {emails}", { emails: validation.invalidEmails.join(', ') });
       }
     }
 
@@ -153,7 +153,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
         {/* Name */}
         <Field data-invalid={errors.name ? true : undefined}>
           <FieldLabel htmlFor="identity-name">
-            {t('name_label')} <span className="text-destructive">*</span>
+            {t("Display Name")} <span className="text-destructive">*</span>
           </FieldLabel>
           <Input
             id="identity-name"
@@ -161,7 +161,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
             maxLength={256}
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder={t('name_placeholder')}
+            placeholder={t("e.g., Work Email, Personal")}
             disabled={isSubmitting}
             aria-describedby={errors.name ? 'name-error' : undefined}
             aria-invalid={errors.name ? true : undefined}
@@ -176,7 +176,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
         {/* Email */}
         <Field data-invalid={errors.email ? true : undefined}>
           <FieldLabel htmlFor="identity-email">
-            {t('email_label')} <span className="text-destructive">*</span>
+            {t("Email Address")} <span className="text-destructive">*</span>
           </FieldLabel>
           <Input
             id="identity-email"
@@ -184,13 +184,13 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
             maxLength={254}
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            placeholder={t('email_placeholder')}
+            placeholder={t("your.email@example.com")}
             disabled={isSubmitting || isEditing}
             aria-describedby={errors.email ? 'email-error' : undefined}
             aria-invalid={errors.email ? true : undefined}
           />
           {isEditing && (
-            <FieldDescription>{t('email_immutable')}</FieldDescription>
+            <FieldDescription>{t("Email address cannot be changed after creation")}</FieldDescription>
           )}
           {errors.email && (
             <FieldError id="email-error" aria-live="polite" aria-atomic="true">
@@ -202,7 +202,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
         {/* Reply-To */}
         <Field data-invalid={errors.replyTo ? true : undefined}>
           <FieldLabel htmlFor="identity-reply-to">
-            {t('reply_to_label')}
+            {t("Reply-To (optional)")}
           </FieldLabel>
           <Input
             id="identity-reply-to"
@@ -210,7 +210,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
             maxLength={512}
             value={replyToInput}
             onChange={(e) => setReplyToInput(e.target.value)}
-            placeholder={t('reply_to_placeholder')}
+            placeholder={t("different@example.com")}
             disabled={isSubmitting}
             aria-describedby={errors.replyTo ? 'reply-to-error' : undefined}
             aria-invalid={errors.replyTo ? true : undefined}
@@ -224,14 +224,14 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
 
         {/* BCC */}
         <Field data-invalid={errors.bcc ? true : undefined}>
-          <FieldLabel htmlFor="identity-bcc">{t('bcc_label')}</FieldLabel>
+          <FieldLabel htmlFor="identity-bcc">{t("Auto BCC (optional)")}</FieldLabel>
           <Input
             id="identity-bcc"
             type="text"
             maxLength={512}
             value={bccInput}
             onChange={(e) => setBccInput(e.target.value)}
-            placeholder={t('bcc_placeholder')}
+            placeholder={t("archive@example.com")}
             disabled={isSubmitting}
             aria-describedby={errors.bcc ? 'bcc-error' : undefined}
             aria-invalid={errors.bcc ? true : undefined}
@@ -246,7 +246,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
         {/* Text Signature */}
         <Field>
           <FieldLabel htmlFor="identity-text-sig">
-            {t('text_signature_label')}
+            {t("Text Signature")}
           </FieldLabel>
           <Textarea
             id="identity-text-sig"
@@ -262,7 +262,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
         {/* HTML Signature */}
         <Field>
           <FieldLabel htmlFor="identity-html-sig">
-            {t('html_signature_label')}
+            {t("HTML Signature")}
           </FieldLabel>
           <Textarea
             id="identity-html-sig"
@@ -276,7 +276,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
           <SignatureByteCounter id="identity-html-sig-counter" value={formData.htmlSignature || ''} />
           {formData.htmlSignature && (
             <div className="mt-2 p-2 border rounded bg-muted">
-              <div className="text-xs text-muted-foreground mb-1">{tDisplay('preview')}</div>
+              <div className="text-xs text-muted-foreground mb-1">{tDisplay("Preview:")}</div>
               <div
                 dangerouslySetInnerHTML={{
                   __html: sanitizeSignatureHtml(formData.htmlSignature)
@@ -295,14 +295,14 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          {t('cancel')}
+          {t("Cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
             ? isEditing
-              ? t('updating')
-              : t('creating')
-            : t('save')}
+              ? t("Updating...")
+              : t("Creating...")
+            : t("Save Identity")}
         </Button>
       </div>
     </form>
@@ -310,7 +310,7 @@ export function IdentityForm({ identity, onSave, onCancel }: IdentityFormProps) 
 }
 
 function SignatureByteCounter({ id, value }: { id: string; value: string }) {
-  const t = useTranslations('identities.form');
+  const t = useTranslations();
   const bytes = utf8ByteLength(value);
   const atLimit = bytes >= SIGNATURE_MAX_BYTES;
   const nearLimit = !atLimit && bytes >= Math.floor(SIGNATURE_MAX_BYTES * 0.9);
@@ -326,8 +326,8 @@ function SignatureByteCounter({ id, value }: { id: string; value: string }) {
       role="status"
       aria-live="polite"
     >
-      {t('signature_byte_counter', { bytes, max: SIGNATURE_MAX_BYTES })}
-      {atLimit && <span className="ms-1">{t('signature_byte_limit_reached')}</span>}
+      {t("{bytes} / {max} bytes", { bytes, max: SIGNATURE_MAX_BYTES })}
+      {atLimit && <span className="ms-1">{t("Server limit reached")}</span>}
     </p>
   );
 }

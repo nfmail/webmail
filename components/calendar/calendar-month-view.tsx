@@ -44,7 +44,7 @@ export function CalendarMonthView({
   isMobile,
   pendingPreview,
 }: CalendarMonthViewProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const {
     weekStartsOn,
     dayHeaderKeys,
@@ -135,7 +135,7 @@ export function CalendarMonthView({
       const hasParticipants = event?.participants && Object.keys(event.participants).length > 0;
       await useCalendarStore.getState().updateEvent(client, data.eventId, { start: newStartISO }, hasParticipants || undefined);
     } catch {
-      toast.error(t("notifications.event_move_error"));
+      toast.error(t("Failed to move event"));
     }
   }, [t]);
 
@@ -147,7 +147,7 @@ export function CalendarMonthView({
             "text-center text-xs font-medium text-muted-foreground py-2 border-e border-border last:border-e-0",
             isMobile && "py-1.5 text-[11px]"
           )}>
-            {isMobile ? t(`days.${d}`).slice(0, 2) : t(`days.${d}`)}
+            {isMobile ? t(`calendar.days.${d}`).slice(0, 2) : t(`calendar.days.${d}`)}
           </div>
         ))}
       </div>

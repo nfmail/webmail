@@ -33,11 +33,11 @@ function isReadonlyRule(r: FilterRule): boolean {
 }
 
 function RuleSummary({ rule }: { rule: FilterRule }) {
-  const t = useTranslations("settings.filters");
+  const t = useTranslations();
 
   const conditions = rule.conditions.slice(0, 2).map((c) => {
-    const field = t(`condition_fields.${c.field}`);
-    const comparator = t(`comparators.${c.comparator}`);
+    const field = t(`settings.filters.condition_fields.${c.field}`);
+    const comparator = t(`settings.filters.comparators.${c.comparator}`);
     // has_any is a no-value test ("attachment is present"); appending
     // `""` would look broken in the summary line.
     if (c.field === "attachment" && c.comparator === "has_any") {
@@ -58,7 +58,7 @@ function RuleSummary({ rule }: { rule: FilterRule }) {
     : "";
 
   const actions = rule.actions.slice(0, 2).map((a) => {
-    const action = t(`action_types.${a.type}`);
+    const action = t(`settings.filters.action_types.${a.type}`);
     return a.value ? `${action} "${a.value}"` : action;
   });
 
@@ -87,20 +87,20 @@ function RuleSummary({ rule }: { rule: FilterRule }) {
 }
 
 function VisualRuleSummary({ rule }: { rule: FilterRule }) {
-  const t = useTranslations("settings.filters");
+  const t = useTranslations();
 
   const joiner = rule.matchType === "all" ? t("and") : t("or");
-  const matchLabel = rule.matchType === "all" ? t("match_all_conditions") : t("match_any_condition");
+  const matchLabel = rule.matchType === "all" ? t("all match") : t("any matches");
 
   return (
     <div className="mt-1.5 flex flex-col gap-1 text-xs">
       <div className="flex items-baseline gap-1.5 flex-wrap">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
-          {t("if")}
+          {t("If")}
         </span>
         {rule.conditions.map((c, i) => {
-          const field = t(`condition_fields.${c.field}`);
-          const comparator = t(`comparators.${c.comparator}`);
+          const field = t(`settings.filters.condition_fields.${c.field}`);
+          const comparator = t(`settings.filters.comparators.${c.comparator}`);
           return (
             <span key={i} className="contents">
               {i > 0 && (
@@ -134,10 +134,10 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
 
       <div className="flex items-baseline gap-1.5 flex-wrap">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-success">
-          {t("then")}
+          {t("Then")}
         </span>
         {rule.actions.map((a, i) => {
-          const action = t(`action_types.${a.type}`);
+          const action = t(`settings.filters.action_types.${a.type}`);
           return (
             <span key={i} className="contents">
               {i > 0 && (
@@ -156,8 +156,8 @@ function VisualRuleSummary({ rule }: { rule: FilterRule }) {
 }
 
 export function FilterSettings() {
-  const t = useTranslations("settings.filters");
-  const tNotifications = useTranslations("notifications");
+  const t = useTranslations();
+  const tNotifications = useTranslations();
   const { client } = useAuthStore();
   const storeMailboxes = useEmailStore((s) => s.mailboxes);
   const fetchMailboxes = useEmailStore((s) => s.fetchMailboxes);
@@ -262,7 +262,7 @@ export function FilterSettings() {
           await saveFilters(client);
         } catch {
           toggleRule(ruleId);
-          toast.error(tNotifications("filters_save_failed"));
+          toast.error(tNotifications("Failed to save filters"));
         }
       }
     },
@@ -277,10 +277,10 @@ export function FilterSettings() {
       if (client) {
         try {
           await saveFilters(client);
-          toast.success(tNotifications("filters_deleted"));
+          toast.success(tNotifications("Filter rule deleted"));
         } catch {
           if (deletedRule) addRule(deletedRule);
-          toast.error(tNotifications("filters_save_failed"));
+          toast.error(tNotifications("Failed to save filters"));
         }
       }
     },
@@ -303,7 +303,7 @@ export function FilterSettings() {
           await saveFilters(client);
         } catch {
           useFilterStore.setState({ rules: previousRules });
-          toast.error(tNotifications("filters_save_failed"));
+          toast.error(tNotifications("Failed to save filters"));
         }
       }
     },
@@ -317,10 +317,10 @@ export function FilterSettings() {
       if (client) {
         try {
           await saveFilters(client);
-          toast.success(tNotifications("filters_saved"));
+          toast.success(tNotifications("Filters saved successfully"));
           setShowSieveEditor(false);
         } catch {
-          toast.error(tNotifications("filters_save_failed"));
+          toast.error(tNotifications("Failed to save filters"));
         }
       }
     },
@@ -337,9 +337,9 @@ export function FilterSettings() {
     if (client) {
       try {
         await saveFilters(client);
-        toast.success(tNotifications("filters_saved"));
+        toast.success(tNotifications("Filters saved successfully"));
       } catch {
-        toast.error(tNotifications("filters_save_failed"));
+        toast.error(tNotifications("Failed to save filters"));
       }
     }
   }, [showResetConfirm, resetToVisualBuilder, client, saveFilters, tNotifications]);
@@ -388,7 +388,7 @@ export function FilterSettings() {
           await saveFilters(client);
         } catch {
           reorderRules(previousOrder);
-          toast.error(tNotifications("filters_save_failed"));
+          toast.error(tNotifications("Failed to save filters"));
         }
       }
     },
@@ -402,9 +402,9 @@ export function FilterSettings() {
 
   if (!isSupported) {
     return (
-      <SettingsSection title={t("title")} description={t("description")}>
+      <SettingsSection title={t("Email Filters")} description={t("Create rules to automatically sort, label, and manage incoming emails")}>
         <div className="text-sm text-muted-foreground py-4">
-          {t("not_supported")}
+          {t("Your mail server does not support email filters.")}
         </div>
       </SettingsSection>
     );
@@ -412,10 +412,10 @@ export function FilterSettings() {
 
   if (isLoading) {
     return (
-      <SettingsSection title={t("title")} description={t("description")}>
+      <SettingsSection title={t("Email Filters")} description={t("Create rules to automatically sort, label, and manage incoming emails")}>
         <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" />
-          {t("loading")}
+          {t("Loading filters...")}
         </div>
       </SettingsSection>
     );
@@ -423,9 +423,9 @@ export function FilterSettings() {
 
   if (error) {
     return (
-      <SettingsSection title={t("title")} description={t("description")}>
+      <SettingsSection title={t("Email Filters")} description={t("Create rules to automatically sort, label, and manage incoming emails")}>
         <div className="text-sm text-destructive py-4">
-          {t("fetch_error")}
+          {t("Failed to load filters")}
         </div>
       </SettingsSection>
     );
@@ -433,36 +433,36 @@ export function FilterSettings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <SettingsSection title={t("title")} description={t("description")}>
+      <SettingsSection title={t("Email Filters")} description={t("Create rules to automatically sort, label, and manage incoming emails")}>
         {isOpaque && (
           <div className="flex items-start gap-2 p-3 rounded-md bg-warning/10 border border-warning/20 text-sm text-warning">
             <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <p>{t("opaque_warning")}</p>
+              <p>{t("This script was edited outside the visual builder. Only raw Sieve editing is available.")}</p>
               <div className="flex gap-3 mt-2">
                 <button
                   type="button"
                   onClick={() => setShowSieveEditor(true)}
                   className="text-primary hover:underline font-medium"
                 >
-                  {t("open_sieve_editor")}
+                  {t("Open raw Sieve editor")}
                 </button>
                 {showResetConfirm ? (
                   <span className="flex items-center gap-2">
-                    <span className="text-destructive">{t("reset_warning")}</span>
+                    <span className="text-destructive">{t("This will discard the current script and start fresh.")}</span>
                     <button
                       type="button"
                       onClick={handleResetToVisual}
                       className="text-destructive hover:underline font-medium"
                     >
-                      {t("confirm_reset")}
+                      {t("Reset")}
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowResetConfirm(false)}
                       className="text-muted-foreground hover:underline"
                     >
-                      {t("cancel")}
+                      {t("Cancel")}
                     </button>
                   </span>
                 ) : (
@@ -472,7 +472,7 @@ export function FilterSettings() {
                     className="text-destructive hover:underline font-medium flex items-center gap-1"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    {t("reset_to_visual")}
+                    {t("Reset to visual builder")}
                   </button>
                 )}
               </div>
@@ -494,14 +494,14 @@ export function FilterSettings() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-success">
-                {t("vacation_active")}
+                {t("Vacation Responder is active")}
               </p>
               <p className="text-xs text-success/70">
-                {t("vacation_active_description")}
+                {t("Auto-reply is enabled for incoming messages")}
               </p>
             </div>
             <span className="text-xs text-success font-medium">
-              {t("vacation_configure")} &rarr;
+              {t("Configure")} &rarr;
             </span>
           </button>
         )}
@@ -509,18 +509,18 @@ export function FilterSettings() {
         {!isOpaque && rules.length === 0 && !vacationEnabled && (
           <div className="flex flex-col items-center py-8 text-muted-foreground">
             <Filter className="w-10 h-10 mb-3 opacity-40" />
-            <p className="text-sm">{t("no_rules")}</p>
+            <p className="text-sm">{t("No filter rules")}</p>
           </div>
         )}
 
         {!isOpaque && rules.length > 0 && (
-          <div className="flex flex-col gap-1" role="list" aria-label={t("rule_list")}>
+          <div className="flex flex-col gap-1" role="list" aria-label={t("Filter rules")}>
             {rules.map((rule, index) => {
               const readonly = isReadonlyRule(rule);
 
               if (readonly) {
-                const label = rule.originLabel || t("origin_external");
-                const tooltip = t("managed_by_tooltip", { source: label });
+                const label = rule.originLabel || t("External");
+                const tooltip = t("Managed by {source}. Edit it in that app, or use the raw Sieve editor.", { source: label });
                 const hasStructuredSummary =
                   rule.origin === "external" &&
                   rule.conditions.length > 0 &&
@@ -578,7 +578,7 @@ export function FilterSettings() {
                 >
                   <div
                     className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground pt-0.5"
-                    aria-label={t("drag_to_reorder")}
+                    aria-label={t("Drag to reorder")}
                   >
                     <GripVertical className="w-4 h-4" />
                   </div>
@@ -623,14 +623,14 @@ export function FilterSettings() {
                         size="sm"
                         onClick={() => handleDelete(rule.id)}
                       >
-                        {t("confirm_delete")}
+                        {t("Delete")}
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setDeleteConfirmId(null)}
                       >
-                        {t("cancel")}
+                        {t("Cancel")}
                       </Button>
                     </div>
                   ) : (
@@ -638,7 +638,7 @@ export function FilterSettings() {
                       type="button"
                       onClick={() => setDeleteConfirmId(rule.id)}
                       className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-destructive transition-colors"
-                      aria-label={t("delete_rule")}
+                      aria-label={t("Delete Rule")}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -662,7 +662,7 @@ export function FilterSettings() {
               }}
             >
               <Plus className="w-4 h-4 me-1" />
-              {t("add_rule")}
+              {t("Add Rule")}
             </Button>
           )}
           <Button
@@ -671,7 +671,7 @@ export function FilterSettings() {
             onClick={() => setShowSieveEditor(true)}
           >
             <Code className="w-4 h-4 me-1" />
-            {t("raw_editor")}
+            {t("Raw Sieve Editor")}
           </Button>
         </div>
 
@@ -679,13 +679,13 @@ export function FilterSettings() {
           {isSaving && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
-              {t("saving")}
+              {t("Saving...")}
             </div>
           )}
           {!isOpaque && rules.length > 0 && (
             <div className="flex items-center gap-2">
               <label htmlFor="expanded-filter-view-toggle" className="text-xs text-muted-foreground">
-                {t("expanded_view")}
+                {t("Expanded view")}
               </label>
               <ToggleSwitch
                 id="expanded-filter-view-toggle"

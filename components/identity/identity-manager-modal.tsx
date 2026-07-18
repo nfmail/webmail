@@ -45,8 +45,8 @@ interface IdentityManagerModalProps {
 }
 
 export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalProps) {
-  const t = useTranslations('identities');
-  const tNotif = useTranslations('notifications');
+  const t = useTranslations();
+  const tNotif = useTranslations();
 
   const client = useAuthStore((state) => state.client);
   const identities = useIdentityStore((state) => state.identities);
@@ -146,10 +146,10 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
 
       await refreshIdentities();
       setIsCreating(false);
-      toast.success(tNotif('identity_created'));
+      toast.success(tNotif("Identity created successfully"));
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('validation_errors.unknown_error');
-      toast.error(tNotif('identity_create_failed', { error: message }));
+      const message = error instanceof Error ? error.message : t("Unknown error");
+      toast.error(tNotif("Failed to create identity: {error}", { error: message }));
       throw error;
     }
   }, [client, refreshIdentities, t, tNotif]);
@@ -168,10 +168,10 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
 
       await refreshIdentities();
       setEditingId(null);
-      toast.success(tNotif('identity_updated'));
+      toast.success(tNotif("Identity updated successfully"));
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('validation_errors.unknown_error');
-      toast.error(tNotif('identity_update_failed', { error: message }));
+      const message = error instanceof Error ? error.message : t("Unknown error");
+      toast.error(tNotif("Failed to update identity: {error}", { error: message }));
       throw error;
     }
   }, [client, refreshIdentities, t, tNotif]);
@@ -179,14 +179,14 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
   const handleDelete = useCallback(async (identity: Identity) => {
     if (!client) return;
     if (!identity.mayDelete) {
-      toast.error(t('cannot_delete'));
+      toast.error(t("This identity cannot be deleted"));
       return;
     }
 
     const confirmed = await confirmDialog({
-      title: t('delete_confirm_title'),
-      message: t('delete_confirm'),
-      confirmText: t('delete_button'),
+      title: t("Delete Identity"),
+      message: t("Delete this identity? This cannot be undone."),
+      confirmText: t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
@@ -196,10 +196,10 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
     try {
       await client.deleteIdentity(identity.id);
       await refreshIdentities();
-      toast.success(tNotif('identity_deleted'));
+      toast.success(tNotif("Identity deleted"));
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('validation_errors.unknown_error');
-      toast.error(tNotif('identity_delete_failed', { error: message }));
+      const message = error instanceof Error ? error.message : t("Unknown error");
+      toast.error(tNotif("Failed to delete identity: {error}", { error: message }));
     } finally {
       setDeletingId(null);
     }
@@ -222,7 +222,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
     const reordered = [identity, ...identities.filter((id) => id.id !== identity.id)];
     useIdentityStore.getState().setIdentities(reordered);
     syncIdentities();
-    toast.success(tNotif('identity_set_primary'));
+    toast.success(tNotif("Primary identity updated"));
   }, [identities, setPreferredPrimary, syncIdentities, tNotif]);
 
   if (!isOpen) return null;
@@ -245,7 +245,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
           <div className="flex items-center gap-3">
             <Mail className="w-5 h-5 text-muted-foreground" />
             <h2 id="identity-modal-title" className="text-lg font-semibold text-foreground">
-              {t('modal_title')}
+              {t("Manage Sending Identities")}
             </h2>
           </div>
           <button
@@ -261,7 +261,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
           {/* Create New Form */}
           {isCreating && (
             <div className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
-              <h3 className="text-sm font-semibold mb-4">{t('create_new')}</h3>
+              <h3 className="text-sm font-semibold mb-4">{t("Create New Identity")}</h3>
               <IdentityForm
                 onSave={handleCreate}
                 onCancel={() => setIsCreating(false)}
@@ -276,7 +276,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
               className="mb-6 w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 me-2" />
-              {t('create_new')}
+              {t("Create New Identity")}
             </Button>
           )}
 
@@ -290,7 +290,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                 {editingId === identity.id ? (
                   <div className="p-4 bg-muted/30">
                     <h3 className="text-sm font-semibold mb-4">
-                      {t('edit_identity')}
+                      {t("Edit Identity")}
                     </h3>
                     <IdentityForm
                       identity={identity}
@@ -308,7 +308,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                           </h3>
                           {identities[0]?.id === identity.id && (
                             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                              {t('primary_identity')}
+                              {t("Primary")}
                             </span>
                           )}
                         </div>
@@ -320,17 +320,17 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                         <div className="mt-2 flex flex-col gap-1 text-xs text-muted-foreground">
                           {identity.replyTo && identity.replyTo.length > 0 && (
                             <p>
-                              {t('display.reply_to')} {identity.replyTo.map((a) => a.email).join(', ')}
+                              {t("Reply-To:")} {identity.replyTo.map((a) => a.email).join(', ')}
                             </p>
                           )}
                           {identity.bcc && identity.bcc.length > 0 && (
                             <p>
-                              {t('display.bcc')} {identity.bcc.map((a) => a.email).join(', ')}
+                              {t("BCC:")} {identity.bcc.map((a) => a.email).join(', ')}
                             </p>
                           )}
                           {identity.textSignature && (
                             <p className="line-clamp-2">
-                              {t('display.signature')} {identity.textSignature}
+                              {t("Signature:")} {identity.textSignature}
                             </p>
                           )}
                         </div>
@@ -344,7 +344,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                             size="sm"
                             onClick={() => handleSetPrimary(identity)}
                             disabled={!!editingId || isCreating}
-                            title={t('set_as_primary')}
+                            title={t("Set as primary")}
                           >
                             <Star className="w-4 h-4" />
                           </Button>
@@ -381,7 +381,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
                     {!identity.mayDelete && (
                       <p className="text-xs text-warning mt-2 flex items-center gap-1">
                         <AlertTriangle className="w-3 h-3" />
-                        {t('cannot_delete')}
+                        {t("This identity cannot be deleted")}
                       </p>
                     )}
                   </div>
@@ -392,7 +392,7 @@ export function IdentityManagerModal({ isOpen, onClose }: IdentityManagerModalPr
             {identities.length === 0 && !isCreating && (
               <div className="text-center py-12 text-muted-foreground">
                 <Mail className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">{t('no_identities')}</p>
+                <p className="text-sm">{t("No identities found")}</p>
               </div>
             )}
           </div>

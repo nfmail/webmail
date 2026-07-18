@@ -171,7 +171,7 @@ function FilesSettingsPreview({ settings }: { settings: FilesSettings }) {
 }
 
 export function FilesSettingsComponent() {
-  const t = useTranslations("settings.files");
+  const t = useTranslations();
   const [settings, setSettings] = useState<FilesSettings>(loadFilesSettings);
 
   // Listen for external changes (e.g. if file-browser updates settings)
@@ -196,68 +196,68 @@ export function FilesSettingsComponent() {
   return (
     <div>
       <div className="sticky top-0 z-10 bg-background pb-4 -mx-4 px-4 -mt-4 pt-4 lg:-mx-6 lg:px-6 lg:-mt-6 lg:pt-6 border-b border-border mb-6">
-        <p className="text-sm font-medium text-foreground mb-1">{t("preview.label")}</p>
+        <p className="text-sm font-medium text-foreground mb-1">{t("Preview")}</p>
         <FilesSettingsPreview settings={settings} />
       </div>
 
       <div className="flex flex-col gap-8">
-        <SettingsSection title={t("display.title")} description={t("display.description")}>
-        <SettingItem label={t("folder_layout.label")} description={t("folder_layout.description")}>
+        <SettingsSection title={t("Display")} description={t("Configure how files and folders are displayed")}>
+        <SettingItem label={t("Folder Navigation")} description={t("Choose how folders are displayed: inline with files or in a sidebar tree")}>
           <RadioGroup
             value={settings.folderLayout}
             onChange={(v) => update({ folderLayout: v as FolderLayout })}
-            aria-label={t("folder_layout.label")}
+            aria-label={t("Folder Navigation")}
             options={[
-              { value: "inline", label: t("folder_layout.inline") },
-              { value: "sidebar", label: t("folder_layout.sidebar") },
+              { value: "inline", label: t("Inline") },
+              { value: "sidebar", label: t("Sidebar") },
             ]}
           />
         </SettingItem>
-        <SettingItem label={t("default_view.label")} description={t("default_view.description")}>
+        <SettingItem label={t("Default View")} description={t("Choose between grid and list layout")}>
           <RadioGroup
             value={settings.defaultViewMode}
             onChange={(v) => update({ defaultViewMode: v as "list" | "grid" })}
-            aria-label={t("default_view.label")}
+            aria-label={t("Default View")}
             options={[
-              { value: "list", label: t("default_view.list") },
-              { value: "grid", label: t("default_view.grid") },
+              { value: "list", label: t("List") },
+              { value: "grid", label: t("Grid") },
             ]}
           />
         </SettingItem>
-        <SettingItem label={t("default_sort.label")} description={t("default_sort.description")}>
+        <SettingItem label={t("Default Sort")} description={t("Choose the default sorting for files")}>
           <RadioGroup
             value={settings.defaultSortKey}
             onChange={(v) => update({ defaultSortKey: v as "name" | "size" | "modified" })}
-            aria-label={t("default_sort.label")}
+            aria-label={t("Default Sort")}
             options={[
-              { value: "name", label: t("default_sort.name") },
-              { value: "size", label: t("default_sort.size") },
-              { value: "modified", label: t("default_sort.modified") },
+              { value: "name", label: t("Name") },
+              { value: "size", label: t("Size") },
+              { value: "modified", label: t("Modified") },
             ]}
           />
         </SettingItem>
-        <SettingItem label={t("sort_direction.label")} description={t("sort_direction.description")}>
+        <SettingItem label={t("Sort Direction")} description={t("Choose ascending or descending order")}>
           <RadioGroup
             value={settings.defaultSortDir}
             onChange={(v) => update({ defaultSortDir: v as "asc" | "desc" })}
-            aria-label={t("sort_direction.label")}
+            aria-label={t("Sort Direction")}
             options={[
-              { value: "asc", label: t("sort_direction.ascending") },
-              { value: "desc", label: t("sort_direction.descending") },
+              { value: "asc", label: t("Ascending") },
+              { value: "desc", label: t("Descending") },
             ]}
           />
         </SettingItem>
       </SettingsSection>
 
-      <SettingsSection title={t("icons.title")} description={t("icons.description")}>
-        <SettingItem label={t("show_icons.label")} description={t("show_icons.description")} htmlFor="files-show-icons">
+      <SettingsSection title={t("Icons")} description={t("Configure file icon appearance")}>
+        <SettingItem label={t("Show File Icons")} description={t("Display icons next to files and folders")} htmlFor="files-show-icons">
           <ToggleSwitch
             id="files-show-icons"
             checked={settings.showIcons}
             onChange={(v) => update({ showIcons: v })}
           />
         </SettingItem>
-        <SettingItem label={t("colored_icons.label")} description={t("colored_icons.description")} htmlFor="files-colored-icons">
+        <SettingItem label={t("Colored Icons")} description={t("Use colorful icons instead of monochrome")} htmlFor="files-colored-icons">
           <ToggleSwitch
             id="files-colored-icons"
             checked={settings.coloredIcons}
@@ -265,7 +265,7 @@ export function FilesSettingsComponent() {
             disabled={!settings.showIcons}
           />
         </SettingItem>
-        <SettingItem label={t("show_thumbnails.label")} description={t("show_thumbnails.description")} htmlFor="files-show-thumbnails">
+        <SettingItem label={t("Show Thumbnails")} description={t("Display image previews instead of icons for image files")} htmlFor="files-show-thumbnails">
           <ToggleSwitch
             id="files-show-thumbnails"
             checked={settings.showThumbnails}
@@ -274,8 +274,8 @@ export function FilesSettingsComponent() {
         </SettingItem>
       </SettingsSection>
 
-      <SettingsSection title={t("behavior.title")} description={t("behavior.description")}>
-        <SettingItem label={t("show_hidden.label")} description={t("show_hidden.description")} htmlFor="files-show-hidden">
+      <SettingsSection title={t("Behavior")} description={t("Configure file browser behavior")}>
+        <SettingItem label={t("Show Hidden Files")} description={t("Display files and folders that start with a dot")} htmlFor="files-show-hidden">
           <ToggleSwitch
             id="files-show-hidden"
             checked={settings.showHiddenFiles}

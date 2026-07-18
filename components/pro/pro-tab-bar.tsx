@@ -41,7 +41,7 @@ export function ProTabBar({
   onDragStateChange,
   className,
 }: ProTabBarProps) {
-  const tSidebar = useTranslations("sidebar");
+  const tSidebar = useTranslations();
   const reorderTab = useProTabStore((s) => s.reorderTab);
   const focusedPaneId = useProTabStore((s) => s.focusedPaneId);
 
@@ -247,7 +247,7 @@ export function ProTabBar({
                   "text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground",
                   !isActive && "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
                 )}
-                aria-label={tSidebar("close")}
+                aria-label={tSidebar("Close")}
                 tabIndex={isActive ? 0 : -1}
               >
                 <X className="w-3 h-3" />

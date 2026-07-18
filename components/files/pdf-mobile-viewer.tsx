@@ -32,7 +32,7 @@ export function PdfMobileViewer({ url }: { url: string }) {
   const pagesRef = useRef<HTMLDivElement>(null);
   const zoom = useRef({ step: 0, scale: 1 });
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  const t = useTranslations("files");
+  const t = useTranslations();
 
   // Render the PDF pages to canvases.
   useEffect(() => {
@@ -213,7 +213,7 @@ export function PdfMobileViewer({ url }: { url: string }) {
             onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
           >
             <ExternalLink className="w-4 h-4 me-2" />
-            {t("open_in_new_tab")}
+            {t("Open in new tab")}
           </Button>
         </div>
       )}

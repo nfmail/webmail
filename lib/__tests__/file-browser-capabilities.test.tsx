@@ -86,7 +86,7 @@ describe("FileBrowser provider capabilities", () => {
   it("keeps read-only empty states free of unsupported mutation actions", () => {
     renderBrowser([]);
 
-    expect(screen.getByText("empty_state_title")).toBeInTheDocument();
+    expect(screen.getByText("No files yet")).toBeInTheDocument();
     expect(screen.queryByTitle("upload")).not.toBeInTheDocument();
     expect(screen.queryByTitle("new_folder")).not.toBeInTheDocument();
     expect(screen.queryByText("empty_state_description")).not.toBeInTheDocument();
@@ -98,8 +98,8 @@ describe("FileBrowser provider capabilities", () => {
     fireEvent.contextMenu(screen.getByText("report.txt"));
 
     const menu = screen.getByRole("menu");
-    expect(within(menu).getByRole("button", { name: "download" })).toBeInTheDocument();
-    expect(within(menu).getByRole("button", { name: "details" })).toBeInTheDocument();
+    expect(within(menu).getByRole("button", { name: "Download" })).toBeInTheDocument();
+    expect(within(menu).getByRole("button", { name: "Details" })).toBeInTheDocument();
     expect(within(menu).queryByRole("button", { name: "rename" })).not.toBeInTheDocument();
     expect(within(menu).queryByRole("button", { name: "delete" })).not.toBeInTheDocument();
     expect(within(menu).queryByRole("button", { name: "copy" })).not.toBeInTheDocument();

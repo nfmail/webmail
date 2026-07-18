@@ -116,7 +116,7 @@ export function ProComposeTabBody({ tabId, data }: ProComposeTabBodyProps) {
       closeTab(tabIdRef.current);
     } catch (error) {
       console.error('Failed to send email:', error);
-      toast.error(t('notifications.error_sending'));
+      toast.error(t("Failed to send email"));
     }
   }, [client, sendEmail, closeTab, data.sourceEmailId, data.mode, t, handleScheduledSendCreated, refreshCurrentMailbox]);
 
@@ -150,7 +150,7 @@ export function ProComposeTabBody({ tabId, data }: ProComposeTabBodyProps) {
   const handleSaveState = useCallback((state: ComposerDraftData) => {
     updateComposeDraft(tabIdRef.current, state);
     // Keep the tab title in sync with the working subject.
-    const subject = state.subject?.trim() || t('email_composer.new_message');
+    const subject = state.subject?.trim() || t("New Message");
     updateTabTitle(tabIdRef.current, subject);
   }, [updateComposeDraft, updateTabTitle, t]);
 
@@ -160,7 +160,7 @@ export function ProComposeTabBody({ tabId, data }: ProComposeTabBodyProps) {
     const initialSubject = data.initialData?.subject?.trim()
       ?? data.replyTo?.subject
       ?? '';
-    const title = initialSubject || t('email_composer.new_message');
+    const title = initialSubject || t("New Message");
     updateTabTitle(tabIdRef.current, title);
     // Run once on mount only.
     // eslint-disable-next-line react-hooks/exhaustive-deps

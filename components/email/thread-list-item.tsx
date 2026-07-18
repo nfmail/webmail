@@ -74,8 +74,8 @@ interface SingleEmailItemProps {
 
 const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
   function SingleEmailItem({ email, selected, onClick, onDoubleClick, onContextMenu, showPreview, colorTag, onToggleStar, onMarkAsRead, onDelete, onArchive, onSetColorTag, onMarkAsSpam, onUndoSpam }, ref) {
-    const t = useTranslations('email_viewer');
-    const tBatch = useTranslations('email_list.batch_actions');
+    const t = useTranslations();
+    const tBatch = useTranslations();
     const isUnread = !email.keywords?.$seen;
     const isStarred = email.keywords?.$flagged;
     const isPinned = email.keywords?.['$pinned'] === true;
@@ -232,7 +232,7 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
               disableImages={hideJunkAvatarImages}
               checked={isChecked}
               onToggle={() => toggleEmailSelection(email.id)}
-              selectLabel={tBatch('select')}
+              selectLabel={tBatch("Select emails")}
             />
           )}
 
@@ -390,7 +390,7 @@ const SingleEmailItem = React.forwardRef<HTMLDivElement, SingleEmailItemProps>(
                       ? "text-muted-foreground"
                       : "text-muted-foreground"
                   )}>
-                    {trimmedPreview || t('no_preview_available')}
+                    {trimmedPreview || t("No preview available")}
                   </p>
                 )}
               </>
@@ -440,9 +440,9 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
     onMarkAsSpam,
     onUndoSpam,
   }, ref) {
-    const t = useTranslations('threads');
-    const tEmailViewer = useTranslations('email_viewer');
-    const tBatch = useTranslations('email_list.batch_actions');
+    const t = useTranslations();
+    const tEmailViewer = useTranslations();
+    const tBatch = useTranslations();
     const showPreview = useSettingsStore((state) => state.showPreview);
     const density = useSettingsStore((state) => state.density);
     const mailLayout = useSettingsStore((state) => state.mailLayout);
@@ -658,7 +658,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                   disableImages={hideJunkAvatarImages}
                   checked={isChecked}
                   onToggle={toggleThreadSelection}
-                  selectLabel={tBatch('select')}
+                  selectLabel={tBatch("Select emails")}
                 />
                 {!isMobile && !isFocusedMailLayout && (
                   <button
@@ -676,7 +676,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                       "bg-background border border-border"
                     )}
                     aria-expanded={isExpanded}
-                    aria-label={t('toggle_thread')}
+                    aria-label={t("Toggle thread")}
                   >
                     {isLoading ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -712,7 +712,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                         'inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-medium',
                         hasUnread ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                       )}
-                      title={t('messages_tooltip', { count: emailCount })}
+                      title={t("{count, plural, one {# message in this conversation} other {# messages in this conversation}}", { count: emailCount })}
                     >
                       <MessageSquare className="w-3 h-3" />
                       {emailCount}
@@ -789,7 +789,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted text-muted-foreground"
                         )}
-                        title={t('messages_tooltip', { count: emailCount })}
+                        title={t("{count, plural, one {# message in this conversation} other {# messages in this conversation}}", { count: emailCount })}
                       >
                         <MessageSquare className="w-3 h-3" />
                         {emailCount}
@@ -866,7 +866,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
                         ? "text-muted-foreground"
                         : "text-muted-foreground"
                     )}>
-                      {trimmedPreview || tEmailViewer('no_preview_available')}
+                      {trimmedPreview || tEmailViewer("No preview available")}
                     </p>
                   )}
                 </>
@@ -897,7 +897,7 @@ export const ThreadListItem = React.forwardRef<HTMLDivElement, ThreadListItemPro
             {isLoading ? (
               <div className="py-4 flex items-center justify-center text-sm text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin me-2" />
-                {t('loading')}
+                {t("Loading conversation...")}
               </div>
             ) : (
               emailsToShow.map((email, index) => (

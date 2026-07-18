@@ -124,7 +124,7 @@ function VersionBadge() {
 
 export default function LoginPage() {
   const router = useRouter();
-  const t = useTranslations("login");
+  const t = useTranslations();
   const params = useParams();
   const searchParams = useSearchParams();
   const isAddAccountMode = searchParams.get("mode") === "add-account";
@@ -452,7 +452,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
         <div className="w-full max-w-sm mx-auto px-4 text-center" role="status">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
-          <span className="sr-only">{t("loading")}</span>
+          <span className="sr-only">{t("Loading...")}</span>
         </div>
       </div>
     );
@@ -466,9 +466,9 @@ export default function LoginPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-5">
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
-            <h1 className="text-xl font-semibold text-foreground mb-2">{t("config_error.title")}</h1>
+            <h1 className="text-xl font-semibold text-foreground mb-2">{t("Configuration Error")}</h1>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              {t("config_error.fetch_failed")}
+              {t("Unable to load application configuration. Please try again later.")}
             </p>
           </div>
         </div>
@@ -484,9 +484,9 @@ export default function LoginPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-5">
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
-            <h1 className="text-xl font-semibold text-foreground mb-2">{t("config_error.title")}</h1>
+            <h1 className="text-xl font-semibold text-foreground mb-2">{t("Configuration Error")}</h1>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              {t("config_error.server_not_configured")}
+              {t("The mail server has not been configured. Please contact your administrator.")}
             </p>
           </div>
         </div>
@@ -758,7 +758,7 @@ export default function LoginPage() {
                 {appName}
               </h1>
               <p className="text-base text-muted-foreground mt-2 max-w-xs mx-auto leading-relaxed">
-                {t("demo_tagline")}
+                {t("Experience a full-featured email client. No account required.")}
               </p>
             </div>
 
@@ -774,7 +774,7 @@ export default function LoginPage() {
                   </div>
                   <div className="flex-1 min-w-0 self-center">
                     <p className="text-sm text-destructive leading-relaxed">
-                      {t(`error.${error}`) || t("error.generic")}
+                      {t(`login.error.${error}`) || t("An unexpected error occurred. If this persists, contact your administrator.")}
                     </p>
                   </div>
                 </div>
@@ -789,18 +789,18 @@ export default function LoginPage() {
                 {demoLoading ? (
                   <div className="flex items-center gap-3">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    {t("demo_launching")}
+                    {t("Launching demo...")}
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
                     <Play className="w-5 h-5" />
-                    {t("demo_login_button")}
+                    {t("Launch Demo")}
                   </div>
                 )}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground mt-4 leading-relaxed">
-                {t("demo_no_signup")}
+                {t("No signup needed - explore freely with sample data")}
               </p>
             </div>
           </div>
@@ -816,17 +816,17 @@ export default function LoginPage() {
               <div className="flex items-center gap-3 flex-wrap justify-center">
                 {loginWebsiteUrl && (
                   <a href={loginWebsiteUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors">
-                    {t("website")}
+                    {t("Website")}
                   </a>
                 )}
                 {loginImprintUrl && (
                   <a href={loginImprintUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors">
-                    {t("imprint")}
+                    {t("Imprint")}
                   </a>
                 )}
                 {loginPrivacyPolicyUrl && (
                   <a href={loginPrivacyPolicyUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors">
-                    {t("privacy_policy")}
+                    {t("Privacy Policy")}
                   </a>
                 )}
               </div>
@@ -907,12 +907,12 @@ export default function LoginPage() {
             </div>
             {loginShowHeading && (
               <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                {isAddAccountMode ? t("add_account_title") : appName}
+                {isAddAccountMode ? t("Add Account") : appName}
               </h1>
             )}
             {loginShowSubtitle && (
               <p className="text-sm text-muted-foreground mt-1.5">
-                {isAddAccountMode ? t("add_account_subtitle") : (t("title") !== appName ? t("title") : "Sign in to your account")}
+                {isAddAccountMode ? t("Sign in with another account") : (t("Webmail") !== appName ? t("Webmail") : "Sign in to your account")}
               </p>
             )}
           </div>
@@ -931,13 +931,13 @@ export default function LoginPage() {
                 </div>
                 <div className="flex-1 min-w-0 self-center flex items-center gap-2">
                   <p className="text-sm text-info flex-1 leading-relaxed">
-                    {t("session_expired")}
+                    {t("Your session has expired. Please sign in again.")}
                   </p>
                   <button
                     type="button"
                     onClick={() => setSessionExpired(false)}
                     className="p-1 rounded-md text-info hover:bg-info/10 transition-colors flex-shrink-0"
-                    aria-label={t("dismiss")}
+                    aria-label={t("Dismiss")}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -957,8 +957,8 @@ export default function LoginPage() {
                 <div className="flex-1 min-w-0 self-center">
                   <p className="text-sm text-destructive leading-relaxed">
                     {error === 'invalid_credentials' && showTotpField && totpCode
-                      ? t('error.totp_invalid')
-                      : t(`error.${error}`) || t("error.generic")}
+                      ? t("Invalid authentication code. Please check your authenticator app and try again.")
+                      : t(`login.error.${error}`) || t("An unexpected error occurred. If this persists, contact your administrator.")}
                   </p>
                 </div>
               </div>
@@ -976,12 +976,12 @@ export default function LoginPage() {
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {t("signing_in")}
+                      {t("Signing in...")}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <LogIn className="w-4 h-4" />
-                      {t("sign_in")}
+                      {t("Sign in")}
                     </div>
                   )}
                 </Button>
@@ -1002,12 +1002,12 @@ export default function LoginPage() {
                     {oauthLoading ? (
                       <div className="flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        {t("signing_in")}
+                        {t("Signing in...")}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
                         <LogIn className="w-4 h-4" />
-                        {t("sign_in_sso")}
+                        {t("Sign in with SSO")}
                       </div>
                     )}
                   </Button>
@@ -1018,7 +1018,7 @@ export default function LoginPage() {
                     </div>
                     <div className="flex-1 min-w-0 self-center">
                       <p className="text-sm text-warning leading-relaxed">
-                        {t("error.oauth_discovery_failed")}
+                        {t("SSO is enabled but the identity provider could not be reached. Check your OAuth configuration.")}
                       </p>
                     </div>
                   </div>
@@ -1036,7 +1036,7 @@ export default function LoginPage() {
                   {hasServerList && jmapServers.length > 1 && (
                     <div className="space-y-1.5">
                       <label htmlFor="jmap-server-select" className="block text-sm font-medium text-foreground">
-                        {t("jmap_server_label")}
+                        {t("Server")}
                       </label>
                       <select
                         id="jmap-server-select"
@@ -1051,7 +1051,7 @@ export default function LoginPage() {
                       </select>
                       {domainAutoLocked && (
                         <p className="text-[11px] text-muted-foreground leading-snug">
-                          {t("jmap_server_auto_picked")}
+                          {t("Server selected from your email domain.")}
                         </p>
                       )}
                     </div>
@@ -1060,7 +1060,7 @@ export default function LoginPage() {
                   {!hasServerList && allowCustomJmapEndpoint && (
                     <div className="space-y-1.5">
                       <label htmlFor="jmap-endpoint" className="block text-sm font-medium text-foreground">
-                        {t("jmap_endpoint_label")}
+                        {t("JMAP Server")}
                       </label>
                       <Input
                         id="jmap-endpoint"
@@ -1068,11 +1068,11 @@ export default function LoginPage() {
                         value={jmapEndpoint}
                         onChange={(e) => setJmapEndpoint(e.target.value)}
                         className="h-11 px-3.5 bg-muted/40 border-border/60 rounded-xl focus:bg-background focus:border-primary/50 transition-all duration-200"
-                        placeholder={t("jmap_endpoint_placeholder")}
+                        placeholder={t("https://mail.example.com")}
                         required
                       />
                       <p className="text-[11px] text-muted-foreground leading-snug">
-                        {t("jmap_endpoint_cors_hint")}
+                        {t("The server must allow CORS requests from this domain.")}
                       </p>
                     </div>
                   )}
@@ -1080,7 +1080,7 @@ export default function LoginPage() {
                   {/* Username field */}
                   <div className="space-y-1.5">
                     <label htmlFor="username" className="block text-sm font-medium text-foreground">
-                      {t("username_label")}
+                      {t("Email")}
                     </label>
                     <div className="relative">
                       <Input
@@ -1092,7 +1092,7 @@ export default function LoginPage() {
                         onFocus={handleUsernameFocus}
                         onKeyDown={handleKeyDown}
                         className="h-11 px-3.5 bg-muted/40 border-border/60 rounded-xl focus:bg-background focus:border-primary/50 transition-all duration-200"
-                        placeholder={t("username_placeholder")}
+                        placeholder={t("user@example.com")}
                         required
                         autoComplete="off"
                         data-form-type="other"
@@ -1120,7 +1120,7 @@ export default function LoginPage() {
                                 type="button"
                                 onClick={(e) => removeUsername(username, e)}
                                 className="p-1 hover:bg-secondary rounded-md transition-colors"
-                                title={t("remove_from_history")}
+                                title={t("Remove from history")}
                               >
                                 <X className="w-3 h-3 text-muted-foreground" />
                               </button>
@@ -1134,7 +1134,7 @@ export default function LoginPage() {
                   {/* Password field */}
                   <div className="space-y-1.5">
                     <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                      {t("password_label")}
+                      {t("Password")}
                     </label>
                     <div className="relative">
                       <Input
@@ -1143,7 +1143,7 @@ export default function LoginPage() {
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         className="h-11 px-3.5 pe-11 bg-muted/40 border-border/60 rounded-xl focus:bg-background focus:border-primary/50 transition-all duration-200"
-                        placeholder={t("password_placeholder")}
+                        placeholder={t("Enter your password")}
                         required
                         autoComplete="current-password"
                       />
@@ -1151,7 +1151,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-foreground transition-colors"
-                        aria-label={showPassword ? t("hide_password") : t("show_password")}
+                        aria-label={showPassword ? t("Hide password") : t("Show password")}
                         tabIndex={-1}
                       >
                         {showPassword ? (
@@ -1174,12 +1174,12 @@ export default function LoginPage() {
                       className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Shield className="w-3.5 h-3.5" />
-                      {t("totp_toggle")}
+                      {t("I have a 2FA code")}
                     </button>
                   ) : (
                     <div className="space-y-1.5">
                       <label htmlFor="totp" className="block text-sm font-medium text-foreground">
-                        {t("totp_label")}
+                        {t("Authentication code")}
                       </label>
                       <Input
                         ref={totpInputRef}
@@ -1193,9 +1193,9 @@ export default function LoginPage() {
                           "h-11 px-3.5 bg-muted/40 border-border/60 rounded-xl focus:bg-background focus:border-primary/50 transition-all duration-200 text-center font-mono tracking-widest",
                           error === 'totp_required' && "border-primary ring-2 ring-primary/30"
                         )}
-                        placeholder={t("totp_placeholder")}
+                        placeholder={t("000000")}
                         autoComplete="one-time-code"
-                        aria-label={t("totp_label")}
+                        aria-label={t("Authentication code")}
                       />
                     </div>
                   )}
@@ -1219,7 +1219,7 @@ export default function LoginPage() {
                         </span>
                       </span>
                       <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                        {t("remember_me")}
+                        {t("Remember me")}
                       </span>
                     </label>
                   )}
@@ -1233,12 +1233,12 @@ export default function LoginPage() {
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {t("signing_in")}
+                      {t("Signing in...")}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <LogIn className="w-4 h-4" />
-                      {t("sign_in")}
+                      {t("Sign in")}
                     </div>
                   )}
                 </Button>
@@ -1266,7 +1266,7 @@ export default function LoginPage() {
                       ) : (
                         <LogIn className="w-4 h-4 me-2" />
                       )}
-                      {t("sign_in_sso")}
+                      {t("Sign in with SSO")}
                     </Button>
                   </>
                 )}
@@ -1278,7 +1278,7 @@ export default function LoginPage() {
                     </div>
                     <div className="flex-1 min-w-0 self-center">
                       <p className="text-sm text-warning leading-relaxed">
-                        {t("error.oauth_discovery_failed")}
+                        {t("SSO is enabled but the identity provider could not be reached. Check your OAuth configuration.")}
                       </p>
                     </div>
                   </div>
@@ -1294,7 +1294,7 @@ export default function LoginPage() {
                   className="w-full h-10 text-sm text-muted-foreground hover:text-foreground"
                   onClick={() => router.push('/')}
                 >
-                  {t("cancel")}
+                  {t("Cancel")}
                 </Button>
               </div>
             )}
@@ -1312,17 +1312,17 @@ export default function LoginPage() {
                   {demoLoading ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {t("demo_launching")}
+                      {t("Launching demo...")}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <Play className="w-4 h-4" />
-                      {t("try_demo")}
+                      {t("Try Demo")}
                     </div>
                   )}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground mt-2">
-                  {t("demo_description")}
+                  {t("Explore with sample data - no account needed")}
                 </p>
               </div>
             )}
@@ -1345,7 +1345,7 @@ export default function LoginPage() {
                   rel="noopener noreferrer"
                   className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
                 >
-                  {t("website")}
+                  {t("Website")}
                 </a>
               )}
               {loginImprintUrl && (
@@ -1355,7 +1355,7 @@ export default function LoginPage() {
                   rel="noopener noreferrer"
                   className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
                 >
-                  {t("imprint")}
+                  {t("Imprint")}
                 </a>
               )}
               {loginPrivacyPolicyUrl && (
@@ -1365,7 +1365,7 @@ export default function LoginPage() {
                   rel="noopener noreferrer"
                   className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
                 >
-                  {t("privacy_policy")}
+                  {t("Privacy Policy")}
                 </a>
               )}
             </div>

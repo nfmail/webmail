@@ -22,7 +22,7 @@ interface TemplatePickerProps {
 }
 
 export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProps) {
-  const t = useTranslations('templates');
+  const t = useTranslations();
   const locale = useLocale();
 
   const { templates, getFavorites, getRecent, getTemplatesByCategory, searchTemplates, recordUsage } =
@@ -139,7 +139,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
           )}
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <h2 id="template-picker-title" className="text-sm font-semibold text-foreground">{t('picker_title')}</h2>
+            <h2 id="template-picker-title" className="text-sm font-semibold text-foreground">{t("Choose a Template")}</h2>
             <button
               onClick={onClose}
               className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
@@ -154,7 +154,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('search_placeholder')}
+                placeholder={t("Search templates...")}
                 className="ps-9 h-9"
                 autoFocus
               />
@@ -165,7 +165,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
             {templates.length === 0 && (
               <div className="flex flex-col items-center py-8 text-muted-foreground">
                 <FileText className="w-8 h-8 mb-2 opacity-40" />
-                <p className="text-sm">{t('no_templates')}</p>
+                <p className="text-sm">{t("No templates yet")}</p>
               </div>
             )}
 
@@ -176,20 +176,20 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
                 </div>
               ) : (
                 <div className="py-6 text-center text-sm text-muted-foreground">
-                  {t('no_results')}
+                  {t("No templates found")}
                 </div>
               )
             ) : (
               <>
-                {renderSection(t('section_favorites'), favorites)}
-                {renderSection(t('section_recent'), recentFiltered)}
+                {renderSection(t("Favorites"), favorites)}
+                {renderSection(t("Recent"), recentFiltered)}
                 {categorizedEntries.map(([cat, items]) =>
                   renderSection(
                     cat,
                     items.filter((i) => !shownIds.has(i.id))
                   )
                 )}
-                {renderSection(t('section_uncategorized'), uncategorizedFiltered)}
+                {renderSection(t("Other"), uncategorizedFiltered)}
               </>
             )}
           </div>

@@ -33,7 +33,7 @@ export function AdvancedSearchPanel({
   onSearch,
   onClose,
 }: AdvancedSearchPanelProps) {
-  const t = useTranslations("advanced_search");
+  const t = useTranslations();
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const debouncedSearch = useCallback(() => {
@@ -83,11 +83,11 @@ export function AdvancedSearchPanel({
       <div className="px-4 py-3">
         <FieldGroup className="gap-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-foreground">{t("title")}</span>
+          <span className="text-sm font-medium text-foreground">{t("Advanced Search")}</span>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="sm" onClick={handleClear} className="h-7 px-2 text-xs">
               <RotateCcw className="w-3 h-3 me-1" />
-              {t("clear")}
+              {t("Clear")}
             </Button>
             <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7">
               <X className="w-4 h-4" />
@@ -97,41 +97,41 @@ export function AdvancedSearchPanel({
 
         <div className="grid grid-cols-2 gap-2">
           <Field className="gap-1.5">
-            <FieldLabel htmlFor="adv-search-from" className="text-xs font-normal text-muted-foreground">{t("from")}</FieldLabel>
+            <FieldLabel htmlFor="adv-search-from" className="text-xs font-normal text-muted-foreground">{t("From")}</FieldLabel>
             <Input
               id="adv-search-from"
               value={filters.from}
               onChange={(e) => handleTextChange("from", e.target.value)}
-              placeholder={t("from_placeholder")}
+              placeholder={t("Sender email or name")}
               className="h-8 text-sm"
             />
           </Field>
           <Field className="gap-1.5">
-            <FieldLabel htmlFor="adv-search-to" className="text-xs font-normal text-muted-foreground">{t("to")}</FieldLabel>
+            <FieldLabel htmlFor="adv-search-to" className="text-xs font-normal text-muted-foreground">{t("To")}</FieldLabel>
             <Input
               id="adv-search-to"
               value={filters.to}
               onChange={(e) => handleTextChange("to", e.target.value)}
-              placeholder={t("to_placeholder")}
+              placeholder={t("Recipient email or name")}
               className="h-8 text-sm"
             />
           </Field>
         </div>
 
         <Field className="gap-1.5">
-          <FieldLabel htmlFor="adv-search-subject" className="text-xs font-normal text-muted-foreground">{t("subject")}</FieldLabel>
+          <FieldLabel htmlFor="adv-search-subject" className="text-xs font-normal text-muted-foreground">{t("Subject")}</FieldLabel>
           <Input
             id="adv-search-subject"
             value={filters.subject}
             onChange={(e) => handleTextChange("subject", e.target.value)}
-            placeholder={t("subject_placeholder")}
+            placeholder={t("Subject contains...")}
             className="h-8 text-sm"
           />
         </Field>
 
         <div className="grid grid-cols-2 gap-2">
           <Field className="gap-1.5">
-            <FieldLabel htmlFor="adv-search-date-after" className="text-xs font-normal text-muted-foreground">{t("date_after")}</FieldLabel>
+            <FieldLabel htmlFor="adv-search-date-after" className="text-xs font-normal text-muted-foreground">{t("After")}</FieldLabel>
             <Input
               id="adv-search-date-after"
               type="date"
@@ -141,7 +141,7 @@ export function AdvancedSearchPanel({
             />
           </Field>
           <Field className="gap-1.5">
-            <FieldLabel htmlFor="adv-search-date-before" className="text-xs font-normal text-muted-foreground">{t("date_before")}</FieldLabel>
+            <FieldLabel htmlFor="adv-search-date-before" className="text-xs font-normal text-muted-foreground">{t("Before")}</FieldLabel>
             <Input
               id="adv-search-date-before"
               type="date"
@@ -155,19 +155,19 @@ export function AdvancedSearchPanel({
         <div className="flex items-center gap-2 flex-wrap">
           <ToggleFilterButton
             icon={<Paperclip className="w-3.5 h-3.5" />}
-            label={t("has_attachment")}
+            label={t("Attachments")}
             value={filters.hasAttachment}
             onClick={() => handleToggle("hasAttachment", filters.hasAttachment)}
           />
           <ToggleFilterButton
             icon={<Star className="w-3.5 h-3.5" />}
-            label={t("starred")}
+            label={t("Starred")}
             value={filters.isStarred}
             onClick={() => handleToggle("isStarred", filters.isStarred)}
           />
           <ToggleFilterButton
             icon={filters.isUnread === false ? <MailOpen className="w-3.5 h-3.5" /> : <Mail className="w-3.5 h-3.5" />}
-            label={filters.isUnread === false ? t("read") : t("unread")}
+            label={filters.isUnread === false ? t("Read") : t("Unread")}
             value={filters.isUnread}
             onClick={() => handleToggle("isUnread", filters.isUnread)}
           />

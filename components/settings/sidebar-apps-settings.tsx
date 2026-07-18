@@ -32,7 +32,7 @@ function AppForm({
   onSave: (data: SidebarAppFormData) => void;
   onCancel: () => void;
 }) {
-  const t = useTranslations("sidebar_apps");
+  const t = useTranslations();
   const isEditing = !!app;
 
   const [formData, setFormData] = useState<SidebarAppFormData>({
@@ -47,22 +47,22 @@ function AppForm({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) {
-      newErrors.name = t("name_required");
+      newErrors.name = t("Name is required");
     }
     if (!formData.url.trim()) {
-      newErrors.url = t("url_required");
+      newErrors.url = t("URL is required");
     } else {
       try {
         const parsed = new URL(formData.url);
         if (!["http:", "https:"].includes(parsed.protocol)) {
-          newErrors.url = t("url_invalid");
+          newErrors.url = t("Enter a valid http or https URL");
         }
       } catch {
-        newErrors.url = t("url_invalid");
+        newErrors.url = t("Enter a valid http or https URL");
       }
     }
     if (!formData.icon) {
-      newErrors.icon = t("icon_required");
+      newErrors.icon = t("Icon is required");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -82,12 +82,12 @@ function AppForm({
     <form onSubmit={handleSubmit} className="p-4 border border-border rounded-lg bg-secondary/30">
       <FieldGroup>
         <Field data-invalid={errors.name ? true : undefined}>
-          <FieldLabel htmlFor="sidebar-app-name">{t("name_label")}</FieldLabel>
+          <FieldLabel htmlFor="sidebar-app-name">{t("Name")}</FieldLabel>
           <Input
             id="sidebar-app-name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder={t("name_placeholder")}
+            placeholder={t("My App")}
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? "sidebar-app-name-error" : undefined}
           />
@@ -99,7 +99,7 @@ function AppForm({
         </Field>
 
         <Field data-invalid={errors.url ? true : undefined}>
-          <FieldLabel htmlFor="sidebar-app-url">{t("url_label")}</FieldLabel>
+          <FieldLabel htmlFor="sidebar-app-url">{t("URL")}</FieldLabel>
           <Input
             id="sidebar-app-url"
             value={formData.url}
@@ -116,7 +116,7 @@ function AppForm({
         </Field>
 
         <Field data-invalid={errors.icon ? true : undefined}>
-          <FieldLabel>{t("icon_label")}</FieldLabel>
+          <FieldLabel>{t("Icon")}</FieldLabel>
           <div className="flex items-center gap-2">
             {SelectedIcon && (
               <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
@@ -130,7 +130,7 @@ function AppForm({
         </Field>
 
         <Field>
-          <FieldLabel>{t("open_mode_label")}</FieldLabel>
+          <FieldLabel>{t("Open Mode")}</FieldLabel>
           <ToggleGroup
             type="single"
             variant="outline"
@@ -141,17 +141,17 @@ function AppForm({
           >
             <ToggleGroupItem value="tab" className="gap-2">
               <ExternalLink className="w-4 h-4" />
-              {t("open_new_tab")}
+              {t("New Tab")}
             </ToggleGroupItem>
             <ToggleGroupItem value="inline" className="gap-2">
               <PanelRight className="w-4 h-4" />
-              {t("open_inline")}
+              {t("Inline")}
             </ToggleGroupItem>
           </ToggleGroup>
         </Field>
 
         <Field orientation="horizontal">
-          <FieldLabel htmlFor="sidebar-app-show-on-mobile">{t("show_on_mobile")}</FieldLabel>
+          <FieldLabel htmlFor="sidebar-app-show-on-mobile">{t("Show on Mobile")}</FieldLabel>
           <ToggleSwitch
             id="sidebar-app-show-on-mobile"
             checked={formData.showOnMobile}
@@ -162,10 +162,10 @@ function AppForm({
 
       <div className="flex gap-2 justify-end pt-4">
         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-          {t("cancel")}
+          {t("Cancel")}
         </Button>
         <Button type="submit" size="sm">
-          {isEditing ? t("update") : t("add")}
+          {isEditing ? t("Update") : t("Add")}
         </Button>
       </div>
     </form>
@@ -173,8 +173,8 @@ function AppForm({
 }
 
 export function SidebarAppsSettings() {
-  const t = useTranslations("settings.sidebar_apps");
-  const tApps = useTranslations("sidebar_apps");
+  const t = useTranslations();
+  const tApps = useTranslations();
   const { sidebarApps, keepAppsLoaded, addSidebarApp, updateSidebarApp, removeSidebarApp, reorderSidebarApps, updateSetting } = useSettingsStore();
   const [editingApp, setEditingApp] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -195,9 +195,9 @@ export function SidebarAppsSettings() {
 
   const handleDelete = useCallback(async (app: SidebarApp) => {
     const confirmed = await confirmDialog({
-      title: tApps("delete_confirm_title"),
-      message: tApps("delete_confirm", { name: app.name }),
-      confirmText: tApps("delete"),
+      title: tApps("Delete App"),
+      message: tApps("Are you sure you want to delete \"{name}\"?", { name: app.name }),
+      confirmText: tApps("Delete"),
       variant: 'destructive',
     });
     if (!confirmed) return;
@@ -234,8 +234,8 @@ export function SidebarAppsSettings() {
 
   return (
     <>
-      <SettingsSection title={t("title")} description={t("description")}>
-        <SettingItem label={t("keep_loaded")} description={t("keep_loaded_description")} htmlFor="sidebar-apps-keep-loaded">
+      <SettingsSection title={t("Sidebar Apps")} description={t("Manage custom apps and links in your sidebar")}>
+        <SettingItem label={t("Keep Apps Loaded")} description={t("Keep inline apps running in the background when switching between them to avoid reloading")} htmlFor="sidebar-apps-keep-loaded">
           <ToggleSwitch
             id="sidebar-apps-keep-loaded"
             checked={keepAppsLoaded}
@@ -244,10 +244,10 @@ export function SidebarAppsSettings() {
         </SettingItem>
       </SettingsSection>
 
-      <SettingsSection title={t("manage_title")} description={t("manage_description")}>
+      <SettingsSection title={t("Custom Apps")} description={t("Add, edit, or remove custom apps from your sidebar")}>
         <div className="flex flex-col gap-3">
           {sidebarApps.length === 0 && !showAddForm && (
-            <p className="text-sm text-muted-foreground py-4 text-center">{tApps("no_apps_hint")}</p>
+            <p className="text-sm text-muted-foreground py-4 text-center">{tApps("Add custom apps and links to your sidebar")}</p>
           )}
 
           {sidebarApps.map((app, index) => {
@@ -294,7 +294,7 @@ export function SidebarAppsSettings() {
                     ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground"
                 )}>
-                  {app.openMode === "inline" ? tApps("inline_badge") : tApps("tab_badge")}
+                  {app.openMode === "inline" ? tApps("Inline") : tApps("Tab")}
                 </span>
                 <button
                   onClick={() => setEditingApp(app.id)}
@@ -327,7 +327,7 @@ export function SidebarAppsSettings() {
               className="w-full"
             >
               <Plus className="w-4 h-4 me-2" />
-              {tApps("add_new")}
+              {tApps("Add App")}
             </Button>
           )}
         </div>

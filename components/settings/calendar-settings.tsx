@@ -7,8 +7,8 @@ import { usePolicyStore } from '@/stores/policy-store';
 import { SettingsSection, SettingItem, Select, ToggleSwitch } from './settings-section';
 
 export function CalendarSettings() {
-  const t = useTranslations('calendar.settings');
-  const tViews = useTranslations('calendar.views');
+  const t = useTranslations();
+  const tViews = useTranslations();
 
   const { viewMode, setViewMode } = useCalendarStore();
   const {
@@ -23,24 +23,24 @@ export function CalendarSettings() {
   const { isFeatureEnabled } = usePolicyStore();
 
   return (
-    <SettingsSection title={t('title')}>
-      <SettingItem label={t('default_view')} htmlFor="calendar-default-view-select">
+    <SettingsSection title={t("Calendar settings")}>
+      <SettingItem label={t("Default view")} htmlFor="calendar-default-view-select">
         <Select
           id="calendar-default-view-select"
           value={viewMode}
           onChange={(value) => setViewMode(value as CalendarViewMode)}
           options={[
-            { value: 'month', label: tViews('month') },
-            { value: 'week', label: tViews('week') },
-            { value: 'day', label: tViews('day') },
-            { value: 'agenda', label: tViews('agenda') },
+            { value: 'month', label: tViews("Month") },
+            { value: 'week', label: tViews("Week") },
+            { value: 'day', label: tViews("Day") },
+            { value: 'agenda', label: tViews("Agenda") },
           ]}
         />
       </SettingItem>
 
       <SettingItem
-        label={t('show_time_in_month_view')}
-        description={t('show_time_in_month_view_desc')}
+        label={t("Show time in month view")}
+        description={t("Display event times in the month calendar view")}
         htmlFor="calendar-show-time-in-month-view-toggle"
       >
         <ToggleSwitch
@@ -51,8 +51,8 @@ export function CalendarSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('show_week_numbers')}
-        description={t('show_week_numbers_desc')}
+        label={t("Show week numbers")}
+        description={t("Display week numbers in the mini-calendar")}
         htmlFor="calendar-show-week-numbers-toggle"
       >
         <ToggleSwitch
@@ -63,8 +63,8 @@ export function CalendarSettings() {
       </SettingItem>
 
       <SettingItem
-        label={t('hover_preview')}
-        description={t('hover_preview_desc')}
+        label={t("Event hover preview")}
+        description={t("Show a detail popover when hovering over calendar events")}
         htmlFor="calendar-hover-preview-select"
       >
         <Select
@@ -72,18 +72,18 @@ export function CalendarSettings() {
           value={calendarHoverPreview}
           onChange={(value) => updateSetting('calendarHoverPreview', value as 'off' | 'instant' | 'delay-500ms' | 'delay-1s' | 'delay-2s')}
           options={[
-            { value: 'instant', label: t('hover_preview_instant') },
-            { value: 'delay-500ms', label: t('hover_preview_delay_500ms') },
-            { value: 'delay-1s', label: t('hover_preview_delay_1s') },
-            { value: 'delay-2s', label: t('hover_preview_delay_2s') },
-            { value: 'off', label: t('hover_preview_off') },
+            { value: 'instant', label: t("Instant") },
+            { value: 'delay-500ms', label: t("0.5-second delay") },
+            { value: 'delay-1s', label: t("1-second delay") },
+            { value: 'delay-2s', label: t("2-second delay") },
+            { value: 'off', label: t("Disabled") },
           ]}
         />
       </SettingItem>
 
       <SettingItem
-        label={t('show_birthday_calendar')}
-        description={t('show_birthday_calendar_desc')}
+        label={t("Contact birthday calendar")}
+        description={t("Show a virtual calendar with birthdays from your contacts")}
         htmlFor="calendar-show-birthday-calendar-toggle"
       >
         <ToggleSwitch
@@ -96,8 +96,8 @@ export function CalendarSettings() {
       {isFeatureEnabled('calendarTasksEnabled') && (
       <>
       <SettingItem
-        label={t('enable_tasks')}
-        description={t('enable_tasks_desc')}
+        label={t("Enable tasks")}
+        description={t("Show a tasks view in the calendar for managing to-dos")}
         htmlFor="calendar-enable-tasks-toggle"
       >
         <ToggleSwitch
@@ -109,8 +109,8 @@ export function CalendarSettings() {
 
       {enableCalendarTasks && (
         <SettingItem
-          label={t('show_tasks_on_calendar')}
-          description={t('show_tasks_on_calendar_desc')}
+          label={t("Show tasks on calendar")}
+          description={t("Display task chips on the day and week calendar views")}
           htmlFor="calendar-show-tasks-on-calendar-toggle"
         >
           <ToggleSwitch

@@ -67,7 +67,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: process.env.APP_NAME || process.env.NEXT_PUBLIC_APP_NAME || PRODUCT.name,
-    description: t("meta_description"),
+    description: t("Minimalist webmail client using JMAP protocol"),
     // A private webmail should not be indexed by search engines. This is opt-in
     // via Settings -> General; the default (false) emits noindex/nofollow.
     robots: configManager.get<boolean>("searchEngineIndexing", false)

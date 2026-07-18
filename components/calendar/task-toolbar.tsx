@@ -23,7 +23,7 @@ export function TaskToolbar({
   onShowCompletedChange,
   onCreateTask,
 }: TaskToolbarProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
 
   return (
     <div className="flex items-center gap-2 px-4 py-2 border-b border-border flex-wrap">
@@ -39,7 +39,7 @@ export function TaskToolbar({
                 : "hover:bg-muted text-muted-foreground"
             )}
           >
-            {t(`tasks.filter_${f}`)}
+            {t(`calendar.tasks.filter_${f}`)}
           </button>
         ))}
       </div>
@@ -51,14 +51,14 @@ export function TaskToolbar({
           onChange={(e) => onShowCompletedChange(e.target.checked)}
           className="rounded border-border"
         />
-        {t("tasks.show_completed")}
+        {t("Show completed")}
       </label>
 
       <div className="flex-1" />
 
       <Button size="sm" onClick={onCreateTask}>
         <Plus className="w-4 h-4 me-1" />
-        {t("tasks.create")}
+        {t("New Task")}
       </Button>
     </div>
   );

@@ -22,8 +22,8 @@ interface CreateCalendarModalProps {
 }
 
 export function CreateCalendarModal({ client, onClose }: CreateCalendarModalProps) {
-  const t = useTranslations("calendar.management");
-  const tCommon = useTranslations("common");
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const createCalendar = useCalendarStore((s) => s.createCalendar);
 
   const [name, setName] = useState("");
@@ -39,13 +39,13 @@ export function CreateCalendarModal({ client, onClose }: CreateCalendarModalProp
     try {
       const created = await createCalendar(client, { name: trimmed, color });
       if (created) {
-        toast.success(t("calendar_created"));
+        toast.success(t("Calendar created"));
         onClose();
       } else {
-        toast.error(t("error_create"));
+        toast.error(t("Failed to create calendar"));
       }
     } catch {
-      toast.error(t("error_create"));
+      toast.error(t("Failed to create calendar"));
     } finally {
       setIsSubmitting(false);
     }
@@ -56,23 +56,23 @@ export function CreateCalendarModal({ client, onClose }: CreateCalendarModalProp
       <DialogContent
         showCloseButton={!isSubmitting}
         className="max-w-md gap-0 p-0"
-        aria-label={t("add_calendar")}
+        aria-label={t("Add calendar")}
       >
         <DialogHeader className="flex-row items-center gap-2 px-6 py-4 border-b border-border">
           <CalendarIcon className="w-5 h-5 text-primary" />
-          <DialogTitle className="text-lg font-semibold">{t("add_calendar")}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">{t("Add calendar")}</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 px-6 py-4">
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
-              {t("name")}
+              {t("Name")}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={t("name_placeholder")}
+              placeholder={t("Calendar name")}
               autoFocus
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={isSubmitting}
@@ -82,7 +82,7 @@ export function CreateCalendarModal({ client, onClose }: CreateCalendarModalProp
 
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
-              {t("color")}
+              {t("Color")}
             </label>
             <CalendarColorPicker value={color} onChange={setColor} allowCustom />
           </div>
@@ -90,16 +90,16 @@ export function CreateCalendarModal({ client, onClose }: CreateCalendarModalProp
 
         <DialogFooter className="px-6 py-4 border-t border-border">
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
-            {tCommon("cancel")}
+            {tCommon("Cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={!isValid || isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin me-2" />
-                {tCommon("loading")}
+                {tCommon("Loading...")}
               </>
             ) : (
-              t("create")
+              t("Create")
             )}
           </Button>
         </DialogFooter>

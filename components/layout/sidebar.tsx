@@ -268,7 +268,7 @@ function SidebarRow({
   isInvalidDropTarget,
   onContextMenu,
 }: SidebarRowProps) {
-  const t = useTranslations('sidebar');
+  const t = useTranslations();
   const leftPad = isCollapsed ? 0 : ROW_PX_BASE + depth * INDENT_STEP;
 
   return (
@@ -303,7 +303,7 @@ function SidebarRow({
                   }}
                   className="flex items-center justify-center rounded hover:bg-muted active:bg-accent transition-colors"
                   style={{ width: CHEVRON_SLOT, height: CHEVRON_SLOT }}
-                  aria-label={isExpanded ? t('collapse_tooltip') : t('expand_tooltip')}
+                  aria-label={isExpanded ? t("Collapse") : t("Expand")}
                 >
                   {isExpanded ? (
                     <ChevronDown className="w-3 h-3 text-muted-foreground" />
@@ -313,7 +313,7 @@ function SidebarRow({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">
-                {isExpanded ? t('collapse_tooltip') : t('expand_tooltip')}
+                {isExpanded ? t("Collapse") : t("Expand")}
               </TooltipContent>
             </Tooltip>
           ) : (
@@ -451,15 +451,15 @@ function MailboxTreeItem({
   colorful: boolean;
   onContextMenu?: (e: React.MouseEvent, node: MailboxNode) => void;
 }) {
-  const tNotifications = useTranslations('notifications');
-  const tSidebar = useTranslations('sidebar');
+  const tNotifications = useTranslations();
+  const tSidebar = useTranslations();
   const hasChildren = node.children.length > 0;
   const isExpanded = expandedFolders.has(node.id);
   const Icon = getIconForMailbox(node.role, node.name, hasChildren, isExpanded, node.isShared, node.id);
   const isVirtualNode = node.id.startsWith('shared-');
   const isSelected = selectedMailbox === node.id;
   const roleKey = resolveRoleKey(node.role, node.name);
-  const label = localizeMailboxName(node.role, node.name, (k) => tSidebar(`mailboxes.${k}`));
+  const label = localizeMailboxName(node.role, node.name, (k) => tSidebar(`sidebar.mailboxes.${k}`));
 
   const { isDragging: globalDragging } = useDragDropContext();
   const { dropHandlers, isValidDropTarget, isInvalidDropTarget } = useMailboxDrop({
@@ -467,18 +467,18 @@ function MailboxTreeItem({
     onSuccess: (count, mailboxName) => {
       if (count === 1) {
         toast.success(
-          tNotifications('email_moved'),
-          tNotifications('moved_to_mailbox', { mailbox: mailboxName })
+          tNotifications("Email moved"),
+          tNotifications("Moved to {mailbox}", { mailbox: mailboxName })
         );
       } else {
         toast.success(
-          tNotifications('emails_moved', { count }),
-          tNotifications('moved_to_mailbox', { mailbox: mailboxName })
+          tNotifications("{count} emails moved", { count }),
+          tNotifications("Moved to {mailbox}", { mailbox: mailboxName })
         );
       }
     },
     onError: () => {
-      toast.error(tNotifications('move_failed'), tNotifications('move_error'));
+      toast.error(tNotifications("Move failed"), tNotifications("Could not move emails to the selected folder"));
     },
   });
 
@@ -555,20 +555,20 @@ function TagItem({
   unreadCount: number;
   colorful: boolean;
 }) {
-  const t = useTranslations('notifications');
+  const t = useTranslations();
   const palette = KEYWORD_PALETTE[kw.color];
   const { isDragging: globalDragging } = useDragDropContext();
   const { dropHandlers, isValidDropTarget } = useTagDrop({
     tagId: kw.id,
     onSuccess: (count, _tagLabel) => {
       if (count === 1) {
-        toast.success(t('email_tagged'), kw.label);
+        toast.success(t("Email tagged"), kw.label);
       } else {
-        toast.success(t('emails_tagged', { count }), kw.label);
+        toast.success(t("{count} emails tagged", { count }), kw.label);
       }
     },
     onError: () => {
-      toast.error(t('tag_failed'), kw.label);
+      toast.error(t("Tagging failed"), kw.label);
     },
   });
 
@@ -598,7 +598,7 @@ function TagItem({
 }
 
 function DemoBanner() {
-  const t = useTranslations('sidebar');
+  const t = useTranslations();
   const { isDemoMode, loginDemo } = useAuthStore();
   const { startTour, resetTourCompletion } = useTour();
   const router = useRouter();
@@ -629,7 +629,7 @@ function DemoBanner() {
     >
       <div className="flex items-center gap-2">
         <FlaskConical className="w-3.5 h-3.5 flex-shrink-0" />
-        <span className="truncate font-medium">{t("demo_banner")}</span>
+        <span className="truncate font-medium">{t("Demo Mode")}</span>
       </div>
       <div className="flex items-center gap-1.5">
         <button
@@ -637,7 +637,7 @@ function DemoBanner() {
           className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/10 hover:bg-primary/20 transition-colors"
         >
           <PlayCircle className="w-3 h-3" />
-          {t("demo_tour")}
+          {t("Tour")}
         </button>
         <button
           onClick={handleReset}
@@ -649,7 +649,7 @@ function DemoBanner() {
           ) : (
             <RotateCcw className="w-3 h-3" />
           )}
-          {t("demo_reset")}
+          {t("Reset")}
         </button>
       </div>
     </div>
@@ -657,7 +657,7 @@ function DemoBanner() {
 }
 
 function VacationBanner() {
-  const t = useTranslations('sidebar');
+  const t = useTranslations();
   const router = useRouter();
   const { isEnabled, isSupported } = useVacationStore();
 
@@ -673,7 +673,7 @@ function VacationBanner() {
       )}
     >
       <Palmtree className="w-3.5 h-3.5 flex-shrink-0" />
-      <span className="truncate font-medium">{t("vacation_active")}</span>
+      <span className="truncate font-medium">{t("Vacation responder is active")}</span>
       <Settings className="w-3 h-3 ms-auto flex-shrink-0 opacity-60" />
     </button>
   );
@@ -778,7 +778,7 @@ export function Sidebar({
     (multiAccountMode || enableUnifiedMailbox) &&
     (connectedAccounts.length > 1 || (includeGroupInUnified && hasGroupInboxes));
   const { unifiedCounts } = useEmailStore();
-  const t = useTranslations('sidebar');
+  const t = useTranslations();
 
   useEffect(() => {
     const stored = localStorage.getItem('expandedMailboxes');
@@ -999,7 +999,7 @@ export function Sidebar({
               size="icon"
               onClick={onSidebarClose}
               className="lg:hidden h-9 w-9 flex-shrink-0"
-              aria-label={t("close")}
+              aria-label={t("Close")}
             >
               <X className="w-5 h-5" />
             </Button>
@@ -1011,13 +1011,13 @@ export function Sidebar({
                   size="icon"
                   onClick={toggleSidebarCollapsed}
                   className="hidden lg:flex h-8 w-8 flex-shrink-0"
-                  aria-label={isCollapsed ? t("expand_tooltip") : t("collapse_tooltip")}
+                  aria-label={isCollapsed ? t("Expand") : t("Collapse")}
                 >
                   {isCollapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
-                {isCollapsed ? t("expand_tooltip") : t("collapse_tooltip")}
+                {isCollapsed ? t("Expand") : t("Collapse")}
               </TooltipContent>
             </Tooltip>
 
@@ -1036,7 +1036,7 @@ export function Sidebar({
         {showAllMailMailbox && (
           <SidebarRow
             icon={<Mails className={cn("w-4 h-4 flex-shrink-0", selectedMailbox === '__all_mail__' ? "text-foreground" : "text-muted-foreground")} />}
-            label={t('mailboxes.all_mail')}
+            label={t("All Mail")}
             depth={0}
             isSelected={!selectedKeyword && selectedMailbox === '__all_mail__'}
             onClick={() => onMailboxSelect?.('__all_mail__')}
@@ -1046,7 +1046,7 @@ export function Sidebar({
         {(showUnified || showCrossUnread || showCrossStarred || showCrossAll) && (
           <div>
             <SidebarSectionHeader
-              label={t("all_accounts")}
+              label={t("All Accounts")}
               expanded={unifiedExpanded}
               onToggle={toggleUnified}
               isCollapsed={isCollapsed}
@@ -1062,7 +1062,7 @@ export function Sidebar({
                     <SidebarRow
                       key={unifiedId}
                       icon={<Icon className={getIconClass(isSelected, false, colorfulSidebarIcons, count.role)} />}
-                      label={t(`unified_${count.role}`)}
+                      label={t(`sidebar.unified_${count.role}`)}
                       depth={0}
                       isSelected={isSelected}
                       unread={count.unreadEmails}
@@ -1073,9 +1073,9 @@ export function Sidebar({
                   );
                 })}
                 {[
-                  { show: showCrossUnread, id: CROSS_VIEW_IDS.unread, Icon: MailOpen, label: t('unified_all_unread'), unread: crossUnreadCount },
-                  { show: showCrossStarred, id: CROSS_VIEW_IDS.starred, Icon: Star, label: t('unified_all_starred'), unread: undefined as number | undefined },
-                  { show: showCrossAll, id: CROSS_VIEW_IDS.all, Icon: Mails, label: t('unified_all_mail'), unread: crossUnreadCount },
+                  { show: showCrossUnread, id: CROSS_VIEW_IDS.unread, Icon: MailOpen, label: t("All unread"), unread: crossUnreadCount },
+                  { show: showCrossStarred, id: CROSS_VIEW_IDS.starred, Icon: Star, label: t("All starred"), unread: undefined as number | undefined },
+                  { show: showCrossAll, id: CROSS_VIEW_IDS.all, Icon: Mails, label: t("All mail"), unread: crossUnreadCount },
                 ].map(({ show, id, Icon, label, unread }) => {
                   if (!show) return null;
                   const isSelected = !selectedKeyword && selectedMailbox === id;
@@ -1108,7 +1108,7 @@ export function Sidebar({
                   expanded={expanded}
                   onToggle={() => toggleAccountGroup(account.id)}
                   onSettings={isActive ? openFolderSettings : undefined}
-                  settingsTitle={isActive ? t('settings') : undefined}
+                  settingsTitle={isActive ? t("Settings") : undefined}
                   isCollapsed={isCollapsed}
                   first={!showUnified && account.id === connectedAccounts[0]?.id}
                   icon={<User className="w-3.5 h-3.5 text-muted-foreground" />}
@@ -1117,7 +1117,7 @@ export function Sidebar({
                   <>
                     {tree.length === 0 ? (
                       <div className="px-4 py-2 text-sm text-muted-foreground">
-                        {!isCollapsed && t("loading_mailboxes")}
+                        {!isCollapsed && t("Loading mailboxes...")}
                       </div>
                     ) : (
                       <>
@@ -1140,7 +1140,7 @@ export function Sidebar({
                         {isActive && showScheduledMailbox && (
                           <SidebarRow
                             icon={<CalendarClock className={cn("w-4 h-4 flex-shrink-0", selectedMailbox === '__scheduled__' ? "text-foreground" : "text-muted-foreground")} />}
-                            label={t('scheduled')}
+                            label={t("Scheduled")}
                             depth={0}
                             isSelected={!selectedKeyword && selectedMailbox === '__scheduled__'}
                             total={scheduledTotal}
@@ -1158,11 +1158,11 @@ export function Sidebar({
         ) : (
           <div onContextMenu={handleFoldersHeaderContextMenu}>
             <SidebarSectionHeader
-              label={t("folders")}
+              label={t("Folders")}
               expanded={foldersExpanded}
               onToggle={toggleFolders}
               onSettings={openFolderSettings}
-              settingsTitle={t('settings')}
+              settingsTitle={t("Settings")}
               isCollapsed={isCollapsed}
               first={!showUnified}
             />
@@ -1170,7 +1170,7 @@ export function Sidebar({
               <>
                 {mailboxes.length === 0 ? (
                   <div className="px-4 py-2 text-sm text-muted-foreground">
-                    {!isCollapsed && t("loading_mailboxes")}
+                    {!isCollapsed && t("Loading mailboxes...")}
                   </div>
                 ) : (
                   <>
@@ -1191,7 +1191,7 @@ export function Sidebar({
                     {showScheduledMailbox && (
                       <SidebarRow
                         icon={<CalendarClock className={cn("w-4 h-4 flex-shrink-0", selectedMailbox === '__scheduled__' ? "text-foreground" : "text-muted-foreground")} />}
-                        label={t('scheduled')}
+                        label={t("Scheduled")}
                         depth={0}
                         isSelected={!selectedKeyword && selectedMailbox === '__scheduled__'}
                         total={scheduledTotal}
@@ -1209,7 +1209,7 @@ export function Sidebar({
         {!useMultiAccount && sharedAccounts.length > 0 && (
           <div>
             <SidebarSectionHeader
-              label={t("shared")}
+              label={t("Shared")}
               expanded={sharedExpanded}
               onToggle={toggleShared}
               isCollapsed={isCollapsed}
@@ -1253,11 +1253,11 @@ export function Sidebar({
         {emailKeywords.length > 0 && (
           <div data-tour="keyword-tags">
             <SidebarSectionHeader
-              label={t("tags")}
+              label={t("Tags")}
               expanded={tagsExpanded}
               onToggle={toggleTags}
               onSettings={openKeywordSettings}
-              settingsTitle={t('settings')}
+              settingsTitle={t("Settings")}
               isCollapsed={isCollapsed}
             />
             {((tagsExpanded && !isCollapsed) || isCollapsed) && (

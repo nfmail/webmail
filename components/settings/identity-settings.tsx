@@ -8,39 +8,39 @@ import { IdentityManagerModal } from '@/components/identity/identity-manager-mod
 import { useIdentityStore } from '@/stores/identity-store';
 
 export function IdentitySettings() {
-  const t = useTranslations('settings.identities');
+  const t = useTranslations();
   const { identities } = useIdentityStore();
   const [showModal, setShowModal] = useState(false);
 
   return (
     <>
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Sending Identities")} description={t("Manage email addresses you can send from")}>
         {/* Identity Count */}
         <SettingItem
-          label={t('identities_count.label')}
-          description={t('identities_count.description')}
+          label={t("Your Identities")}
+          description={t("Email addresses configured for sending")}
         >
           <div className="flex items-center gap-2">
             <span className="text-sm text-foreground">
               {identities.length === 0
-                ? t('identities_count.count_zero')
+                ? t("No identities")
                 : identities.length === 1
-                ? t('identities_count.count_one')
-                : t('identities_count.count_other', { count: identities.length })}
+                ? t("1 identity")
+                : t("{count} identities", { count: identities.length })}
             </span>
             <Button onClick={() => setShowModal(true)} size="sm">
-              {t('manage')}
+              {t("Manage Identities")}
             </Button>
           </div>
         </SettingItem>
 
         {/* Sub-Addressing Info */}
         <SettingItem
-          label={t('sub_addressing.label')}
-          description={t('sub_addressing.description')}
+          label={t("Sub-Addressing")}
+          description={t("Use tags like user+tag@domain.com to organize incoming mail")}
         >
           <Button variant="outline" size="sm" onClick={() => setShowModal(true)}>
-            {t('sub_addressing.learn_more')}
+            {t("Learn More")}
           </Button>
         </SettingItem>
       </SettingsSection>

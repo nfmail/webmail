@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { sanitizeI18nHtml } from '@/lib/email-sanitization';
 
 function PasswordChangeSection() {
-  const t = useTranslations('settings.security');
+  const t = useTranslations();
   const { changePassword, isSaving } = useAccountSecurityStore();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -40,11 +40,11 @@ function PasswordChangeSection() {
     setError(null);
 
     if (newPassword.length < 8) {
-      setError(t('password.error_min_length'));
+      setError(t("Password must be at least 8 characters"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError(t('password.error_mismatch'));
+      setError(t("New passwords do not match"));
       return;
     }
 
@@ -53,11 +53,11 @@ function PasswordChangeSection() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      toast.success(t('password.success'));
+      toast.success(t("Password changed successfully"));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : t('password.error_generic');
+      const msg = err instanceof Error ? err.message : t("Failed to change password");
       setError(msg);
-      toast.error(t('password.error_title'), msg);
+      toast.error(t("Password change failed"), msg);
     }
   };
 
@@ -65,13 +65,13 @@ function PasswordChangeSection() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2 mb-2">
         <Key className="w-4 h-4 text-muted-foreground" />
-        <h4 className="text-sm font-medium text-foreground">{t('password.title')}</h4>
+        <h4 className="text-sm font-medium text-foreground">{t("Change Password")}</h4>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4">
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="security-current-password">{t('password.current')}</FieldLabel>
+              <FieldLabel htmlFor="security-current-password">{t("Current Password")}</FieldLabel>
               <div className="relative">
                 <Input
                   id="security-current-password"
@@ -92,7 +92,7 @@ function PasswordChangeSection() {
               </div>
             </Field>
             <Field>
-              <FieldLabel htmlFor="security-new-password">{t('password.new')}</FieldLabel>
+              <FieldLabel htmlFor="security-new-password">{t("New Password")}</FieldLabel>
               <div className="relative">
                 <Input
                   id="security-new-password"
@@ -114,7 +114,7 @@ function PasswordChangeSection() {
               </div>
             </Field>
             <Field data-invalid={error ? true : undefined}>
-              <FieldLabel htmlFor="security-confirm-password">{t('password.confirm')}</FieldLabel>
+              <FieldLabel htmlFor="security-confirm-password">{t("Confirm New Password")}</FieldLabel>
               <Input
                 id="security-confirm-password"
                 type="password"
@@ -140,7 +140,7 @@ function PasswordChangeSection() {
             disabled={isSaving || !currentPassword || !newPassword || !confirmPassword}
           >
             {isSaving ? <Loader2 className="w-4 h-4 me-2 animate-spin" /> : null}
-            {t('password.submit')}
+            {t("Change Password")}
           </Button>
         </div>
       </form>
@@ -149,7 +149,7 @@ function PasswordChangeSection() {
 }
 
 function DisplayNameSection() {
-  const t = useTranslations('settings.security');
+  const t = useTranslations();
   const { displayName, updateDisplayName, isSaving, isLoadingPrincipal } = useAccountSecurityStore();
   const [name, setName] = useState(displayName);
   const [saved, setSaved] = useState(false);
@@ -163,28 +163,28 @@ function DisplayNameSection() {
       await updateDisplayName(name);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-      toast.success(t('display_name.success'));
+      toast.success(t("Display name updated"));
     } catch (err) {
-      toast.error(t('display_name.error'), err instanceof Error ? err.message : undefined);
+      toast.error(t("Failed to update display name"), err instanceof Error ? err.message : undefined);
     }
   };
 
   if (isLoadingPrincipal) {
     return (
-      <SettingItem label={t('display_name.label')} description={t('display_name.description')}>
+      <SettingItem label={t("Display Name")} description={t("Your name as it appears on the server")}>
         <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
       </SettingItem>
     );
   }
 
   return (
-    <SettingItem label={t('display_name.label')} description={t('display_name.description')} htmlFor="security-display-name">
+    <SettingItem label={t("Display Name")} description={t("Your name as it appears on the server")} htmlFor="security-display-name">
       <div className="flex items-center gap-2">
         <Input
           id="security-display-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder={displayName || t('display_name.placeholder')}
+          placeholder={displayName || t("Enter your display name")}
           className="w-48"
         />
         <Button
@@ -192,7 +192,7 @@ function DisplayNameSection() {
           onClick={handleSave}
           disabled={isSaving || name === displayName}
         >
-          {saved ? <Check className="w-4 h-4" /> : isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : t('display_name.save')}
+          {saved ? <Check className="w-4 h-4" /> : isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : t("Save")}
         </Button>
       </div>
     </SettingItem>
@@ -212,7 +212,7 @@ function generateTotp(accountLabel: string): { totp: OTPAuth.TOTP; url: string }
 }
 
 function TotpSection() {
-  const t = useTranslations('settings.security');
+  const t = useTranslations();
   const { otpEnabled, enableTotp, disableTotp, isSaving, isLoadingAuth } = useAccountSecurityStore();
   const { client } = useAuthStore();
 
@@ -252,32 +252,32 @@ function TotpSection() {
 
   const confirmSetup = async () => {
     if (!setupTotp || !setupUrl) return;
-    if (!password) { setSetupError(t('totp.password_required')); return; }
-    if (!otpCode.trim()) { setSetupError(t('totp.code_required')); return; }
+    if (!password) { setSetupError(t("Password is required")); return; }
+    if (!otpCode.trim()) { setSetupError(t("Verification code is required")); return; }
     if (setupTotp.validate({ token: otpCode.trim(), window: 1 }) === null) {
-      setSetupError(t('totp.code_invalid'));
+      setSetupError(t("Invalid verification code. Check your authenticator app and try again."));
       return;
     }
 
     try {
       await enableTotp(password, setupUrl, otpCode.trim());
       cancelSetup();
-      toast.success(t('totp.enabled'));
+      toast.success(t("Two-factor authentication enabled"));
     } catch (err) {
-      setSetupError(err instanceof Error ? err.message : t('totp.enable_error'));
+      setSetupError(err instanceof Error ? err.message : t("Failed to enable 2FA"));
     }
   };
 
   const handleDisable = async () => {
-    if (!password) { setSetupError(t('totp.password_required')); return; }
+    if (!password) { setSetupError(t("Password is required")); return; }
     try {
       await disableTotp(password);
       setDisableOpen(false);
       setPassword('');
       setSetupError(null);
-      toast.success(t('totp.disabled'));
+      toast.success(t("Two-factor authentication disabled"));
     } catch (err) {
-      setSetupError(err instanceof Error ? err.message : t('totp.disable_error'));
+      setSetupError(err instanceof Error ? err.message : t("Failed to disable 2FA"));
     }
   };
 
@@ -293,7 +293,7 @@ function TotpSection() {
 
   if (isLoadingAuth) {
     return (
-      <SettingItem label={t('totp.label')} description={t('totp.description')}>
+      <SettingItem label={t("TOTP Authentication")} description={t("Add an extra layer of security with a time-based one-time password")}>
         <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
       </SettingItem>
     );
@@ -301,7 +301,7 @@ function TotpSection() {
 
   return (
     <div className="flex flex-col gap-3">
-      <SettingItem label={t('totp.label')} description={t('totp.description')} htmlFor="totp-toggle">
+      <SettingItem label={t("TOTP Authentication")} description={t("Add an extra layer of security with a time-based one-time password")} htmlFor="totp-toggle">
         <div className="flex items-center gap-2">
           <ToggleSwitch
             id="totp-toggle"
@@ -310,14 +310,14 @@ function TotpSection() {
             disabled={isSaving}
           />
           <span className={cn('text-xs font-medium', otpEnabled ? 'text-success' : 'text-muted-foreground')}>
-            {otpEnabled ? t('totp.active') : t('totp.inactive')}
+            {otpEnabled ? t("Enabled") : t("Disabled")}
           </span>
         </div>
       </SettingItem>
 
       {setupUrl && (
         <div className="ms-4 flex flex-col gap-3 p-3 bg-muted rounded-md">
-          <p className="text-xs text-muted-foreground">{t('totp.setup_instructions')}</p>
+          <p className="text-xs text-muted-foreground">{t("Copy this URL into your authenticator app (Google Authenticator, Authy, etc.):")}</p>
           {qrDataUrl && (
             <div className="flex justify-center">
               {/* QR codes need a fixed light backdrop for scanner contrast, regardless of theme. */}
@@ -329,7 +329,7 @@ function TotpSection() {
           </div>
           <FieldGroup>
             <Field data-invalid={setupError ? true : undefined}>
-              <FieldLabel htmlFor="totp-setup-password">{t('password.current')}</FieldLabel>
+              <FieldLabel htmlFor="totp-setup-password">{t("Current Password")}</FieldLabel>
               <Input
                 id="totp-setup-password"
                 type="password"
@@ -340,7 +340,7 @@ function TotpSection() {
               />
             </Field>
             <Field data-invalid={setupError ? true : undefined}>
-              <FieldLabel htmlFor="totp-setup-code">{t('totp.verification_code')}</FieldLabel>
+              <FieldLabel htmlFor="totp-setup-code">{t("Verification code")}</FieldLabel>
               <Input
                 id="totp-setup-code"
                 value={otpCode}
@@ -360,23 +360,23 @@ function TotpSection() {
           <div className="flex gap-2">
             <Button size="sm" onClick={confirmSetup} disabled={isSaving || !password || !otpCode}>
               {isSaving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : null}
-              {t('totp.confirm')}
+              {t("Confirm")}
             </Button>
-            <Button size="sm" variant="ghost" onClick={cancelSetup}>{t('app_passwords.cancel')}</Button>
+            <Button size="sm" variant="ghost" onClick={cancelSetup}>{t("Cancel")}</Button>
           </div>
         </div>
       )}
 
       {disableOpen && (
         <div className="ms-4 flex flex-col gap-2 p-3 bg-muted rounded-md">
-          <p className="text-xs text-muted-foreground">{t('totp.disable_confirm_prompt')}</p>
+          <p className="text-xs text-muted-foreground">{t("Enter your password to disable two-factor authentication.")}</p>
           <Field data-invalid={setupError ? true : undefined}>
             <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={t('password.current')}
-              aria-label={t('password.current')}
+              placeholder={t("Current Password")}
+              aria-label={t("Current Password")}
               autoComplete="current-password"
               aria-invalid={setupError ? true : undefined}
               aria-describedby={setupError ? 'totp-disable-error' : undefined}
@@ -390,10 +390,10 @@ function TotpSection() {
           <div className="flex gap-2">
             <Button size="sm" variant="destructive" onClick={handleDisable} disabled={isSaving || !password}>
               {isSaving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : null}
-              {t('totp.disable')}
+              {t("Disable")}
             </Button>
             <Button size="sm" variant="ghost" onClick={() => { setDisableOpen(false); setPassword(''); setSetupError(null); }}>
-              {t('app_passwords.cancel')}
+              {t("Cancel")}
             </Button>
           </div>
         </div>
@@ -455,8 +455,8 @@ interface CredentialSectionProps {
 }
 
 function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRemove }: CredentialSectionProps) {
-  const t = useTranslations('settings.security');
-  const tk = (key: string) => t(`${i18nNamespace}.${key}`);
+  const t = useTranslations();
+  const tk = (key: string) => t(`settings.security.${i18nNamespace}.${key}`);
   const { isSaving, isLoadingAuth } = useAccountSecurityStore();
   const [showAdd, setShowAdd] = useState(false);
   const [newDescription, setNewDescription] = useState('');
@@ -524,7 +524,7 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
         </div>
         <Button variant="outline" size="sm" onClick={() => setShowAdd(!showAdd)}>
           <Plus className="w-3 h-3 me-1" />
-          {t('app_passwords.add')}
+          {t("Add")}
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">{tk('description')}</p>
@@ -541,7 +541,7 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
             </Button>
           </div>
           <Button variant="ghost" size="sm" onClick={() => setCreatedSecret(null)}>
-            {t('app_passwords.done')}
+            {t("Done")}
           </Button>
         </div>
       )}
@@ -561,7 +561,7 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor={`${i18nNamespace}-new-expires`}>{t('app_passwords.expires_label')}</FieldLabel>
+                <FieldLabel htmlFor={`${i18nNamespace}-new-expires`}>{t("Expires (optional)")}</FieldLabel>
                 <Input
                   id={`${i18nNamespace}-new-expires`}
                   type="date"
@@ -570,28 +570,28 @@ function CredentialSection({ icon: Icon, i18nNamespace, entries, onCreate, onRem
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor={`${i18nNamespace}-new-ips`}>{t('app_passwords.allowed_ips_label')}</FieldLabel>
+                <FieldLabel htmlFor={`${i18nNamespace}-new-ips`}>{t("Allowed IPs (optional)")}</FieldLabel>
                 <Textarea
                   id={`${i18nNamespace}-new-ips`}
                   value={allowedIpsRaw}
                   onChange={(e) => setAllowedIpsRaw(e.target.value)}
-                  placeholder={t('app_passwords.allowed_ips_placeholder')}
+                  placeholder={t("10.0.0.5, 192.168.1.0/24")}
                   rows={2}
                   className="font-mono text-xs"
                   aria-describedby={`${i18nNamespace}-new-ips-hint`}
                 />
                 <FieldDescription id={`${i18nNamespace}-new-ips-hint`}>
-                  {t('app_passwords.allowed_ips_hint')}
+                  {t("Comma- or space-separated. Leave empty to allow any IP.")}
                 </FieldDescription>
               </Field>
             </FieldGroup>
             <div className="flex gap-2">
               <Button type="submit" size="sm" disabled={isSaving || !newDescription.trim()}>
                 {isSaving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : null}
-                {t('app_passwords.create')}
+                {t("Create")}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={() => setShowAdd(false)}>
-                {t('app_passwords.cancel')}
+                {t("Cancel")}
               </Button>
             </div>
           </div>
@@ -638,12 +638,12 @@ function ApiKeysSection() {
 }
 
 function EncryptionSection() {
-  const t = useTranslations('settings.security');
+  const t = useTranslations();
   const { encryptionType, isLoadingCrypto } = useAccountSecurityStore();
 
   if (isLoadingCrypto) {
     return (
-      <SettingItem label={t('encryption.label')} description={t('encryption.description')}>
+      <SettingItem label={t("Email Encryption")} description={t("Encrypt stored emails on the server for additional privacy")}>
         <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
       </SettingItem>
     );
@@ -651,16 +651,16 @@ function EncryptionSection() {
 
   const isEnabled = encryptionType !== 'Disabled';
   return (
-    <SettingItem label={t('encryption.label')} description={t('encryption.description')}>
+    <SettingItem label={t("Email Encryption")} description={t("Encrypt stored emails on the server for additional privacy")}>
       <span className={cn('text-xs font-medium', isEnabled ? 'text-success' : 'text-muted-foreground')}>
-        {isEnabled ? t('encryption.active', { type: encryptionType }) : t('encryption.inactive')}
+        {isEnabled ? t("{type} encryption enabled", { type: encryptionType }) : t("Disabled")}
       </span>
     </SettingItem>
   );
 }
 
 function EmailClientSection() {
-  const t = useTranslations('settings.security');
+  const t = useTranslations();
   const { client } = useAuthStore();
   const [copied, setCopied] = useState(false);
 
@@ -677,13 +677,13 @@ function EmailClientSection() {
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <Monitor className="w-4 h-4 text-muted-foreground" />
-        <h4 className="text-sm font-medium text-foreground">{t('email_client.title')}</h4>
+        <h4 className="text-sm font-medium text-foreground">{t("Email Client Setup")}</h4>
       </div>
-      <p className="text-xs text-muted-foreground">{t('email_client.description')}</p>
+      <p className="text-xs text-muted-foreground">{t("Use these credentials to configure your desktop or mobile email client (Thunderbird, Apple Mail, Outlook, etc.)")}</p>
       <div className="flex flex-col gap-2 p-3 bg-muted/70 dark:bg-muted/40 rounded-md">
         <Field>
           <FieldLabel htmlFor="security-jmap-username">
-            {t('email_client.jmap_username_label')}
+            {t("JMAP Username")}
           </FieldLabel>
           <div className="flex rounded-lg">
             <Input
@@ -699,11 +699,11 @@ function EmailClientSection() {
               className="h-9 px-3 shrink-0 inline-flex items-center gap-1.5 rounded-e-lg border border-border bg-muted text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-              {copied ? t('email_client.copied') : t('email_client.copy')}
+              {copied ? t("Copied") : t("Copy")}
             </button>
           </div>
         </Field>
-        <p className="text-xs text-muted-foreground pt-1">{t('email_client.password_instructions')}</p>
+        <p className="text-xs text-muted-foreground pt-1">{t("Use your JMAP username above along with an app password to sign in to your email client. Create an app password in the section above if you haven't already.")}</p>
       </div>
     </div>
   );
@@ -714,7 +714,7 @@ function EmailClientSection() {
 // app scans to sign in without re-typing credentials. The QR payload carries
 // only the server URL and the one-time code — never tokens.
 function LinkDeviceSection() {
-  const t = useTranslations('settings.security');
+  const t = useTranslations();
   const params = useParams();
   const locale = params.locale as string;
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
@@ -750,7 +750,7 @@ function LinkDeviceSection() {
       body: JSON.stringify({ redirect_uri: redirectUri, locale, purpose: 'reauth' }),
     });
     if (!res.ok) {
-      setError(t('link_device.error'));
+      setError(t("Couldn't create a pairing code. Please try again."));
       return;
     }
     const { authorize_url } = await res.json();
@@ -779,7 +779,7 @@ function LinkDeviceSection() {
           await startReauth();
           return;
         }
-        setError(t('link_device.error'));
+        setError(t("Couldn't create a pairing code. Please try again."));
         return;
       }
       const data = await res.json();
@@ -796,7 +796,7 @@ function LinkDeviceSection() {
       setRemaining(expiresIn);
       setHasGenerated(true);
     } catch {
-      setError(t('link_device.error'));
+      setError(t("Couldn't create a pairing code. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -816,9 +816,9 @@ function LinkDeviceSection() {
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <QrCode className="w-4 h-4 text-muted-foreground" />
-        <h4 className="text-sm font-medium text-foreground">{t('link_device.title')}</h4>
+        <h4 className="text-sm font-medium text-foreground">{t("Link Mobile App")}</h4>
       </div>
-      <p className="text-xs text-muted-foreground">{t('link_device.description')}</p>
+      <p className="text-xs text-muted-foreground">{t("Sign in to the Bulwark Mail mobile app without typing anything. Generate a QR code here and scan it from the app's login screen.")}</p>
 
       {qrDataUrl && remaining > 0 && (
         <div className="flex flex-col gap-2 p-3 bg-muted/70 dark:bg-muted/40 rounded-md">
@@ -826,9 +826,9 @@ function LinkDeviceSection() {
             {/* QR codes need a fixed light backdrop for scanner contrast, regardless of theme. */}
             <img src={qrDataUrl} alt="Pairing QR code" className="rounded bg-white p-2" />
           </div>
-          <p className="text-xs text-muted-foreground text-center">{t('link_device.instructions')}</p>
+          <p className="text-xs text-muted-foreground text-center">{t("Open the Bulwark Mail app, tap \"Scan QR code\" on the login screen, and point your camera here.")}</p>
           <p className="text-[11px] text-muted-foreground text-center">
-            {t('link_device.expires_in', { seconds: remaining })}
+            {t("This code expires in {seconds} seconds. It can only be used once.", { seconds: remaining })}
           </p>
         </div>
       )}
@@ -841,14 +841,14 @@ function LinkDeviceSection() {
         ) : (
           <QrCode className="w-3 h-3 me-1" />
         )}
-        {hasGenerated ? t('link_device.regenerate') : t('link_device.generate')}
+        {hasGenerated ? t("Show a new code") : t("Show QR code")}
       </Button>
     </div>
   );
 }
 
 export function AccountSecuritySettings() {
-  const t = useTranslations('settings.security');
+  const t = useTranslations();
   const { isStalwart, isProbing, probe, fetchAll, fetchAuthInfo } = useAccountSecurityStore();
   const { isAuthenticated, authMode, client } = useAuthStore();
   const isOAuth = authMode === 'oauth';
@@ -874,10 +874,10 @@ export function AccountSecuritySettings() {
 
   if (isProbing) {
     return (
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Account Security")} description={t("Manage your password, two-factor authentication, and security settings")}>
         <div className="flex items-center gap-2 py-4">
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">{t('detecting')}</span>
+          <span className="text-sm text-muted-foreground">{t("Detecting server capabilities...")}</span>
         </div>
       </SettingsSection>
     );
@@ -893,22 +893,22 @@ export function AccountSecuritySettings() {
     // through t() makes next-intl try to parse the <a> tag and throw
     // INVALID_TAG.
     return (
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Account Security")} description={t("Manage your password, two-factor authentication, and security settings")}>
         {isOAuth ? (
           <div className="flex flex-col gap-6">
             <LinkDeviceSection />
             <div className="border-t border-border" />
-            <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: sanitizeI18nHtml(t.raw('not_available')) }} />
+            <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: sanitizeI18nHtml(t.raw("Account security management is not available for this mail server. Required permissions may be disabled. See the <a href=\"/docs/guides/account-security\" class=\"underline hover:opacity-80\" target=\"_blank\">documentation</a> for details.")) }} />
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground py-4" dangerouslySetInnerHTML={{ __html: sanitizeI18nHtml(t.raw('not_available')) }} />
+          <div className="text-sm text-muted-foreground py-4" dangerouslySetInnerHTML={{ __html: sanitizeI18nHtml(t.raw("Account security management is not available for this mail server. Required permissions may be disabled. See the <a href=\"/docs/guides/account-security\" class=\"underline hover:opacity-80\" target=\"_blank\">documentation</a> for details.")) }} />
         )}
       </SettingsSection>
     );
   }
 
   return (
-    <SettingsSection title={t('title')} description={t('description')}>
+    <SettingsSection title={t("Account Security")} description={t("Manage your password, two-factor authentication, and security settings")}>
       <div className="flex flex-col gap-6">
         {!isOAuth && (
           <>
@@ -919,7 +919,7 @@ export function AccountSecuritySettings() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Shield className="w-4 h-4 text-muted-foreground" />
-                <h4 className="text-sm font-medium text-foreground">{t('totp.section_title')}</h4>
+                <h4 className="text-sm font-medium text-foreground">{t("Two-Factor Authentication")}</h4>
               </div>
               <TotpSection />
             </div>
@@ -947,7 +947,7 @@ export function AccountSecuritySettings() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Lock className="w-4 h-4 text-muted-foreground" />
-                <h4 className="text-sm font-medium text-foreground">{t('encryption.section_title')}</h4>
+                <h4 className="text-sm font-medium text-foreground">{t("Encryption at Rest")}</h4>
               </div>
               <EncryptionSection />
             </div>

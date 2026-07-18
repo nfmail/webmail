@@ -36,7 +36,7 @@ export function EmptySpaceContextMenu({
   onGoToToday,
   showAllDayOption = true,
 }: EmptySpaceContextMenuProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
 
   const handle = (fn: () => void) => () => {
     fn();
@@ -45,23 +45,23 @@ export function EmptySpaceContextMenu({
 
   return (
     <ContextMenu ref={menuRef} isOpen={isOpen} position={position} onClose={onClose}>
-      <ContextMenuItem icon={Plus} label={t("events.new_event")} onClick={handle(onNewEvent)} />
+      <ContextMenuItem icon={Plus} label={t("New event")} onClick={handle(onNewEvent)} />
       {showAllDayOption && (
         <ContextMenuItem
           icon={CalendarDays}
-          label={t("events.new_all_day_event")}
+          label={t("New all-day event")}
           onClick={handle(onNewAllDayEvent)}
         />
       )}
       {onNewTask && (
         <ContextMenuItem
           icon={CheckSquare}
-          label={t("events.new_task")}
+          label={t("New task")}
           onClick={handle(onNewTask)}
         />
       )}
       <ContextMenuSeparator />
-      <ContextMenuItem icon={Clock} label={t("events.go_to_today")} onClick={handle(onGoToToday)} />
+      <ContextMenuItem icon={Clock} label={t("Go to today")} onClick={handle(onGoToToday)} />
     </ContextMenu>
   );
 }

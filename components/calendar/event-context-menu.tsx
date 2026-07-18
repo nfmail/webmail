@@ -48,7 +48,7 @@ export function EventContextMenu({
   onCopyMeetingLink,
   onDelete,
 }: EventContextMenuProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
 
   const handle = (fn: () => void) => () => {
     fn();
@@ -61,30 +61,30 @@ export function EventContextMenu({
 
   return (
     <ContextMenu ref={menuRef} isOpen={isOpen} position={position} onClose={onClose}>
-      <ContextMenuItem icon={Pencil} label={t("events.edit")} onClick={handle(onEdit)} />
-      <ContextMenuItem icon={Copy} label={t("events.duplicate")} onClick={handle(onDuplicate)} />
+      <ContextMenuItem icon={Pencil} label={t("Edit event")} onClick={handle(onEdit)} />
+      <ContextMenuItem icon={Copy} label={t("Duplicate")} onClick={handle(onDuplicate)} />
       <ContextMenuSeparator />
       <ContextMenuItem
         icon={Download}
-        label={t("events.export_ics")}
+        label={t("Export as .ics")}
         onClick={handle(onExportICS)}
       />
       <ContextMenuItem
         icon={ClipboardCopy}
-        label={t("events.copy_title")}
+        label={t("Copy title")}
         onClick={handle(onCopyTitle)}
       />
       {hasMeetingLink && onCopyMeetingLink && (
         <ContextMenuItem
           icon={LinkIcon}
-          label={t("events.copy_link")}
+          label={t("Copy meeting link")}
           onClick={handle(onCopyMeetingLink)}
         />
       )}
       <ContextMenuSeparator />
       <ContextMenuItem
         icon={Trash2}
-        label={t("events.delete")}
+        label={t("Delete event")}
         onClick={handle(onDelete)}
         destructive
       />

@@ -46,7 +46,7 @@ function buildReplyContext(email: Email): ProReplyContext {
  */
 export function ProEmailTabBody({ tabId, data }: ProEmailTabBodyProps) {
   const t = useTranslations();
-  const tNotifications = useTranslations('notifications');
+  const tNotifications = useTranslations();
 
   const client = useAuthStore((s) => s.client);
   const fetchEmailContent = useEmailStore((s) => s.fetchEmailContent);
@@ -107,7 +107,7 @@ export function ProEmailTabBody({ tabId, data }: ProEmailTabBodyProps) {
       replyTo: buildReplyContext(email),
       sourceEmailId: email.id,
       initialDraftText: draftText,
-      title: buildReplySubject(email.subject || t('email_composer.new_message'), t('email_composer.prefix.reply')),
+      title: buildReplySubject(email.subject || t("New Message"), t("Re:")),
     });
   }, [email, openComposeTab, t]);
 
@@ -119,7 +119,7 @@ export function ProEmailTabBody({ tabId, data }: ProEmailTabBodyProps) {
       mode: 'replyAll',
       replyTo: buildReplyContext(email),
       sourceEmailId: email.id,
-      title: buildReplySubject(email.subject || t('email_composer.new_message'), t('email_composer.prefix.reply')),
+      title: buildReplySubject(email.subject || t("New Message"), t("Re:")),
     });
   }, [email, openComposeTab, t]);
 
@@ -131,7 +131,7 @@ export function ProEmailTabBody({ tabId, data }: ProEmailTabBodyProps) {
       mode: 'forward',
       replyTo: buildReplyContext(email),
       sourceEmailId: email.id,
-      title: buildForwardSubject(email.subject || t('email_composer.new_message'), t('email_composer.prefix.forward')),
+      title: buildForwardSubject(email.subject || t("New Message"), t("Fwd:")),
     });
   }, [email, openComposeTab, t]);
 
@@ -142,7 +142,7 @@ export function ProEmailTabBody({ tabId, data }: ProEmailTabBodyProps) {
       closeTab(tabId);
     } catch (err) {
       console.error('Delete failed:', err);
-      toast.error(tNotifications('error_deleting'));
+      toast.error(tNotifications("Failed to delete email"));
     }
   }, [client, email, deleteEmail, closeTab, tabId, tNotifications]);
 
@@ -152,7 +152,7 @@ export function ProEmailTabBody({ tabId, data }: ProEmailTabBodyProps) {
     if (!archiveMb) return;
     try {
       await moveToMailbox(client, email.id, archiveMb.id);
-      toast.success(tNotifications('email_archived'));
+      toast.success(tNotifications("Email archived"));
       closeTab(tabId);
     } catch (err) {
       console.error('Archive failed:', err);
@@ -249,7 +249,7 @@ export function ProEmailTabBody({ tabId, data }: ProEmailTabBodyProps) {
     openComposeTab({
       sessionId: composerSessionIdRef.current,
       mode: 'compose',
-      title: email.subject || t('email_composer.new_message'),
+      title: email.subject || t("New Message"),
       initialData: {
         to: email.to?.map((a) => a.email).filter(Boolean).join(', ') || '',
         cc: email.cc?.map((a) => a.email).filter(Boolean).join(', ') || '',

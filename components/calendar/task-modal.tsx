@@ -52,7 +52,7 @@ export function TaskModal({
   onClose,
   isMobile: _isMobile,
 }: TaskModalProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const isEdit = !!task;
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -162,7 +162,7 @@ export function TaskModal({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <h2 className="text-sm font-semibold">
-          {isEdit ? t("tasks.edit") : t("tasks.create")}
+          {isEdit ? t("Edit Task") : t("New Task")}
         </h2>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
           <X className="h-4 w-4" />
@@ -176,7 +176,7 @@ export function TaskModal({
           ref={titleRef}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder={t("tasks.title_placeholder")}
+          placeholder={t("Task title")}
           className="text-base font-medium"
         />
 
@@ -184,7 +184,7 @@ export function TaskModal({
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder={t("tasks.description_placeholder")}
+          placeholder={t("Add a description...")}
           rows={3}
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
         />
@@ -193,7 +193,7 @@ export function TaskModal({
         <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
             <CalendarDays className="h-3.5 w-3.5" />
-            {t("tasks.due_date")}
+            {t("Due date")}
           </label>
           <div className="flex items-center gap-2">
             <input
@@ -210,7 +210,7 @@ export function TaskModal({
                   onChange={(e) => setShowTime(e.target.checked)}
                   className="rounded"
                 />
-                {t("tasks.include_time")}
+                {t("Include time")}
               </label>
             )}
             {showTime && (
@@ -228,17 +228,17 @@ export function TaskModal({
         <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
             <Flag className="h-3.5 w-3.5" />
-            {t("tasks.priority")}
+            {t("Priority")}
           </label>
           <Select value={priority} onValueChange={(v) => setPriority(v as PriorityLevel)}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">{t("tasks.priority_none")}</SelectItem>
-              <SelectItem value="high">{t("tasks.priority_high")}</SelectItem>
-              <SelectItem value="medium">{t("tasks.priority_medium")}</SelectItem>
-              <SelectItem value="low">{t("tasks.priority_low")}</SelectItem>
+              <SelectItem value="none">{t("None")}</SelectItem>
+              <SelectItem value="high">{t("High")}</SelectItem>
+              <SelectItem value="medium">{t("Medium")}</SelectItem>
+              <SelectItem value="low">{t("Low")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -246,17 +246,17 @@ export function TaskModal({
         {/* Progress */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground">
-            {t("tasks.progress")}
+            {t("Status")}
           </label>
           <Select value={progress} onValueChange={(v) => setProgress(v as CalendarTask["progress"])}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="needs-action">{t("tasks.progress_needs_action")}</SelectItem>
-              <SelectItem value="in-process">{t("tasks.progress_in_process")}</SelectItem>
-              <SelectItem value="completed">{t("tasks.progress_completed")}</SelectItem>
-              <SelectItem value="cancelled">{t("tasks.progress_cancelled")}</SelectItem>
+              <SelectItem value="needs-action">{t("Needs action")}</SelectItem>
+              <SelectItem value="in-process">{t("In process")}</SelectItem>
+              <SelectItem value="completed">{t("Completed")}</SelectItem>
+              <SelectItem value="cancelled">{t("Cancelled")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -265,7 +265,7 @@ export function TaskModal({
         {writableCalendars.length > 1 && (
           <div className="flex flex-col gap-2">
             <label className="text-xs font-medium text-muted-foreground">
-              {t("tasks.calendar")}
+              {t("Calendar")}
             </label>
             <Select value={calendarId} onValueChange={setCalendarId}>
               <SelectTrigger className="w-full">
@@ -284,20 +284,20 @@ export function TaskModal({
         <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
             <Bell className="h-3.5 w-3.5" />
-            {t("tasks.alert")}
+            {t("Reminder")}
           </label>
           <Select value={alertOption} onValueChange={(v) => setAlertOption(v as AlertOption)}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">{t("tasks.alert_none")}</SelectItem>
-              <SelectItem value="at_time">{t("tasks.alert_at_time")}</SelectItem>
-              <SelectItem value="5">{t("tasks.alert_5min")}</SelectItem>
-              <SelectItem value="15">{t("tasks.alert_15min")}</SelectItem>
-              <SelectItem value="30">{t("tasks.alert_30min")}</SelectItem>
-              <SelectItem value="60">{t("tasks.alert_1hr")}</SelectItem>
-              <SelectItem value="1440">{t("tasks.alert_1day")}</SelectItem>
+              <SelectItem value="none">{t("None")}</SelectItem>
+              <SelectItem value="at_time">{t("At time of due date")}</SelectItem>
+              <SelectItem value="5">{t("5 minutes before")}</SelectItem>
+              <SelectItem value="15">{t("15 minutes before")}</SelectItem>
+              <SelectItem value="30">{t("30 minutes before")}</SelectItem>
+              <SelectItem value="60">{t("1 hour before")}</SelectItem>
+              <SelectItem value="1440">{t("1 day before")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -314,16 +314,16 @@ export function TaskModal({
               onClick={() => onDelete(task.id)}
             >
               <Trash2 className="h-4 w-4 me-1" />
-              {t("tasks.delete")}
+              {t("Delete")}
             </Button>
           )}
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={onClose}>
-            {t("tasks.cancel")}
+            {t("Cancel")}
           </Button>
           <Button size="sm" onClick={handleSave} disabled={!title.trim() || saving}>
-            {t("tasks.save")}
+            {t("Save")}
           </Button>
         </div>
       </div>

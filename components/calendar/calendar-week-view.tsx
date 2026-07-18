@@ -54,7 +54,7 @@ export function CalendarWeekView({
   tasks,
   onToggleTaskComplete,
 }: CalendarWeekViewProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const intlFormatter = useFormatter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -180,10 +180,10 @@ export function CalendarWeekView({
     calendars,
     onCreateRange: onCreateAtTime,
     errorMessages: {
-      resize: t("notifications.event_resize_error"),
-      move: t("notifications.event_move_error"),
-      created: t("notifications.event_created"),
-      error: t("notifications.event_error"),
+      resize: t("Failed to resize event"),
+      move: t("Failed to move event"),
+      created: t("Event created"),
+      error: t("Failed to save event"),
     },
     isMobile,
   });
@@ -206,7 +206,7 @@ export function CalendarWeekView({
         isMobile ? "overflow-x-auto overflow-y-hidden" : "overflow-hidden"
       )}
       role="group"
-      aria-label={t("views.week")}
+      aria-label={t("Week")}
     >
       <div className={cn("flex min-h-0 flex-col flex-1", isMobile && "min-w-[880px]")}>      {hasAllDay && (
         <div className="flex border-b border-border">
@@ -214,7 +214,7 @@ export function CalendarWeekView({
             className={cn("flex-shrink-0 text-[10px] text-muted-foreground p-1 text-end", isMobile ? "w-10 sticky left-0 z-10 bg-background" : "w-14")}
             style={{ minHeight: Math.max(28, (allDayRowCount + taskRowCount) * 24 + 4) }}
           >
-            {t("events.all_day")}
+            {t("All day")}
           </div>
           <div
             className="flex-1 relative grid gap-px bg-border grid-cols-7"
@@ -417,7 +417,7 @@ export function CalendarWeekView({
                         <div
                           data-resize-handle
                           className="absolute top-0 left-1 right-1 h-3 cursor-n-resize z-20 flex items-start justify-center opacity-0 group-hover/event:opacity-100 transition-opacity"
-                          aria-label={t("events.resize")}
+                          aria-label={t("Resize event")}
                           onPointerDown={(e) => handleResizePointerDown(ev.id, "top", startMinutes, durMin, e)}
                           onPointerMove={handleResizePointerMove}
                           onPointerUp={handleResizePointerUp}
@@ -427,7 +427,7 @@ export function CalendarWeekView({
                         <div
                           data-resize-handle
                           className="absolute bottom-0 left-1 right-1 h-3 cursor-s-resize z-20 flex items-end justify-center opacity-0 group-hover/event:opacity-100 transition-opacity"
-                          aria-label={t("events.resize")}
+                          aria-label={t("Resize event")}
                           onPointerDown={(e) => handleResizePointerDown(ev.id, "bottom", startMinutes, durMin, e)}
                           onPointerMove={handleResizePointerMove}
                           onPointerUp={handleResizePointerUp}

@@ -36,17 +36,17 @@ export function ProtocolAccountPicker({
   onCancel,
   operation,
 }: ProtocolAccountPickerProps) {
-  const t = useTranslations("protocol_handlers");
-  const tCommon = useTranslations("common");
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const details = operation
     ? kind === "mailto"
       ? [
-          { label: t("detail_to"), value: operation.to.join(", ") || "-" },
-          { label: t("detail_subject"), value: operation.subject || t("detail_no_subject") },
+          { label: t("To"), value: operation.to.join(", ") || "-" },
+          { label: t("Subject"), value: operation.subject || t("No subject") },
         ]
       : [
-          { label: t("detail_calendar"), value: operation.suggestedName },
-          { label: t("detail_source"), value: getHost(operation.subscriptionUrl) },
+          { label: t("Calendar"), value: operation.suggestedName },
+          { label: t("Source"), value: getHost(operation.subscriptionUrl) },
         ]
     : [];
 
@@ -56,21 +56,21 @@ export function ProtocolAccountPicker({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={t("select_account_title")}
+        aria-label={t("Choose account")}
         className="relative w-full max-w-md rounded-lg border border-border bg-background shadow-xl animate-in zoom-in-95 duration-200"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">{t("select_account_title")}</h2>
+            <h2 className="text-lg font-semibold text-foreground">{t("Choose account")}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {kind === "mailto" ? t("select_mailto_account") : t("select_webcal_account")}
+              {kind === "mailto" ? t("Choose which account should open this email link.") : t("Choose which account should open this calendar link.")}
             </p>
           </div>
           <button
             type="button"
             onClick={onCancel}
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            aria-label={tCommon("close")}
+            aria-label={tCommon("Close")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -127,7 +127,7 @@ export function ProtocolAccountPicker({
                     </span>
                     {isActive && (
                       <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                        {t("active_account")}
+                        {t("Active")}
                       </span>
                     )}
                   </div>
@@ -143,10 +143,10 @@ export function ProtocolAccountPicker({
           {isSwitching ? (
             <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              {t("switching_account")}
+              {t("Switching account...")}
             </span>
           ) : (
-            <span className="text-xs text-muted-foreground">{t("select_account_note")}</span>
+            <span className="text-xs text-muted-foreground">{t("This only applies to this protocol link.")}</span>
           )}
           <button
             type="button"
@@ -154,7 +154,7 @@ export function ProtocolAccountPicker({
             disabled={isSwitching}
             className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
           >
-            {tCommon("cancel")}
+            {tCommon("Cancel")}
           </button>
         </div>
       </div>

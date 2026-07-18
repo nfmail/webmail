@@ -34,9 +34,9 @@ describe('ContactSidebarPanel', () => {
         onEditContact={vi.fn()}
       />,
     );
-    // useTranslations mock returns the key, so we look for the common.edit key
-    expect(screen.getByTitle('contact_sidebar.action_edit_title')).toBeInTheDocument();
-    expect(screen.getByText('edit')).toBeInTheDocument();
+    // useTranslations mock echoes the English text passed to t()
+    expect(screen.getByTitle('Edit contact')).toBeInTheDocument();
+    expect(screen.getByText('Edit')).toBeInTheDocument();
   });
 
   it('calls onEditContact when Edit button is clicked', () => {
@@ -49,7 +49,7 @@ describe('ContactSidebarPanel', () => {
         onEditContact={onEditContact}
       />,
     );
-    fireEvent.click(screen.getByTitle('contact_sidebar.action_edit_title'));
+    fireEvent.click(screen.getByTitle('Edit contact'));
     expect(onEditContact).toHaveBeenCalledOnce();
   });
 
@@ -62,7 +62,7 @@ describe('ContactSidebarPanel', () => {
         onEditContact={vi.fn()}
       />,
     );
-    expect(screen.queryByTitle('contact_sidebar.action_edit_title')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Edit contact')).not.toBeInTheDocument();
   });
 
   it('does not show Edit button when onEditContact is not provided', () => {
@@ -73,7 +73,7 @@ describe('ContactSidebarPanel', () => {
         onClose={vi.fn()}
       />,
     );
-    expect(screen.queryByTitle('contact_sidebar.action_edit_title')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Edit contact')).not.toBeInTheDocument();
   });
 
   it('shows "not in contacts" message and Add button for unknown email', () => {
@@ -86,8 +86,8 @@ describe('ContactSidebarPanel', () => {
         onAddToContacts={onAddToContacts}
       />,
     );
-    expect(screen.getByText('contact_sidebar.not_in_contacts')).toBeInTheDocument();
-    fireEvent.click(screen.getByText('contact_sidebar.add_to_contacts'));
+    expect(screen.getByText('Not in your contacts')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Add to contacts'));
     expect(onAddToContacts).toHaveBeenCalledWith(unknownEmail, undefined);
   });
 
@@ -100,7 +100,7 @@ describe('ContactSidebarPanel', () => {
         onClose={onClose}
       />,
     );
-    fireEvent.click(screen.getByLabelText('contact_sidebar.close'));
+    fireEvent.click(screen.getByLabelText('Close sidebar'));
     expect(onClose).toHaveBeenCalledOnce();
   });
 });

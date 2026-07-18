@@ -17,8 +17,8 @@ import {
 const MAX_IMPORT_FILE_SIZE = 1 * 1024 * 1024;
 
 export function TemplateSettings() {
-  const t = useTranslations('settings.templates');
-  const tNotif = useTranslations('notifications');
+  const t = useTranslations();
+  const tNotif = useTranslations();
 
   const { templates, exportAllTemplates, importTemplates: storeImport } = useTemplateStore();
 
@@ -34,7 +34,7 @@ export function TemplateSettings() {
     a.download = 'email-templates.json';
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast.success(tNotif('templates_exported'));
+    toast.success(tNotif("Templates exported successfully"));
   };
 
   const resetFileInput = () => {
@@ -48,7 +48,7 @@ export function TemplateSettings() {
     if (!file) return;
 
     if (file.size > MAX_IMPORT_FILE_SIZE) {
-      toast.error(tNotif('templates_import_errors'));
+      toast.error(tNotif("Some templates could not be imported"));
       resetFileInput();
       return;
     }
@@ -59,18 +59,18 @@ export function TemplateSettings() {
       const result = storeImport(content);
 
       if (result.errors.length > 0) {
-        toast.error(tNotif('templates_import_errors'));
+        toast.error(tNotif("Some templates could not be imported"));
       } else if (result.count > 0) {
-        toast.success(tNotif('templates_imported', { count: result.count }));
+        toast.success(tNotif("{count, plural, one {# template} other {# templates}} imported", { count: result.count }));
       } else {
-        toast.error(tNotif('templates_import_empty'));
+        toast.error(tNotif("No templates found in the file"));
       }
 
       resetFileInput();
     };
     reader.onerror = () => {
       debug.error('FileReader error during template import:', reader.error);
-      toast.error(tNotif('templates_import_errors'));
+      toast.error(tNotif("Some templates could not be imported"));
       resetFileInput();
     };
     reader.readAsText(file);
@@ -78,12 +78,12 @@ export function TemplateSettings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Email Templates")} description={t("Create reusable email templates with placeholder variables")}>
         <div className="flex items-center justify-between py-3">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <FileText className="w-4 h-4" />
             <span>
-              {t('count', { count: templates.length })}
+              {t("{count, plural, one {# template} other {# templates}}", { count: templates.length })}
             </span>
           </div>
           <Button
@@ -91,12 +91,12 @@ export function TemplateSettings() {
             size="sm"
             onClick={() => setShowManager(true)}
           >
-            {t('manage')}
+            {t("Manage Templates")}
           </Button>
         </div>
       </SettingsSection>
 
-      <SettingsSection title={t('export_import')} description={t('export_import_description')}>
+      <SettingsSection title={t("Export & Import")} description={t("Back up your templates or transfer them to another device")}>
         <div className="flex items-center gap-3 py-3">
           <Button
             variant="outline"
@@ -105,7 +105,7 @@ export function TemplateSettings() {
             disabled={templates.length === 0}
           >
             <Download className="w-4 h-4 me-1" />
-            {t('export')}
+            {t("Export")}
           </Button>
           <div>
             <input
@@ -121,7 +121,7 @@ export function TemplateSettings() {
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload className="w-4 h-4 me-1" />
-              {t('import')}
+              {t("Import")}
             </Button>
           </div>
         </div>

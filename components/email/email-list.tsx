@@ -85,7 +85,7 @@ export function EmailList({
   onCancelScheduledForEdit,
   onRescheduleScheduled,
 }: EmailListProps) {
-  const t = useTranslations('email_list');
+  const t = useTranslations();
   const { client } = useAuthStore();
   const {
     selectedEmailIds,
@@ -205,14 +205,14 @@ export function EmailList({
 
     const confirmed = await confirmDialog({
       title: isInTrash
-        ? t('permanent_delete_confirm_title')
-        : t('batch_actions.delete_confirm_title'),
+        ? t("Permanently delete")
+        : t("Delete emails"),
       message: isInTrash
-        ? t('permanent_delete_confirm_batch_message', { count: selectedEmailIds.size })
-        : t('batch_actions.delete_confirm_message', { count: selectedEmailIds.size }),
+        ? t("These {count, plural, one {1 email} other {# emails}} will be permanently deleted. This action cannot be undone.", { count: selectedEmailIds.size })
+        : t("Are you sure you want to delete {count, plural, one {1 email} other {# emails}}?", { count: selectedEmailIds.size }),
       confirmText: isInTrash
-        ? t('permanent_delete')
-        : t('batch_actions.delete'),
+        ? t("Delete permanently")
+        : t("Delete"),
       variant: "destructive",
     });
     if (!confirmed) return;
@@ -240,9 +240,9 @@ export function EmailList({
     if (!client || isProcessing || !currentMailbox) return;
 
     const confirmed = await confirmDialog({
-      title: t('empty_folder.confirm_title'),
-      message: t('empty_folder.confirm_message'),
-      confirmText: t('empty_folder.confirm_button'),
+      title: t("Empty folder"),
+      message: t("All emails in this folder will be permanently deleted. This action cannot be undone."),
+      confirmText: t("Empty folder"),
       variant: "destructive",
     });
     if (!confirmed) return;
@@ -331,7 +331,7 @@ export function EmailList({
         <div className="px-4 py-2 border-b bg-accent/30 border-border flex items-center justify-between">
           <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-3 duration-300">
             <span className="text-sm font-medium text-foreground">
-              {t('batch_actions.selected_messages', { count: selectedEmailIds.size })}
+              {t("{count, plural, one {1 email} other {# emails}} selected", { count: selectedEmailIds.size })}
             </span>
           </div>
           <TooltipProvider delayDuration={300}>
@@ -342,7 +342,7 @@ export function EmailList({
                   variant="ghost"
                   size="sm"
                   onClick={() => handleBatchMarkAsRead(true)}
-                  aria-label={t('batch_actions.mark_read')}
+                  aria-label={t("Mark as read")}
                   disabled={isProcessing}
                   className="hover:bg-accent transition-colors disabled:opacity-50"
                 >
@@ -353,7 +353,7 @@ export function EmailList({
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('batch_actions.mark_read')}</TooltipContent>
+              <TooltipContent>{t("Mark as read")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -361,7 +361,7 @@ export function EmailList({
                   variant="ghost"
                   size="sm"
                   onClick={() => handleBatchMarkAsRead(false)}
-                  aria-label={t('batch_actions.mark_unread')}
+                  aria-label={t("Mark as unread")}
                   disabled={isProcessing}
                   className="hover:bg-accent transition-colors disabled:opacity-50"
                 >
@@ -372,7 +372,7 @@ export function EmailList({
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('batch_actions.mark_unread')}</TooltipContent>
+              <TooltipContent>{t("Mark as unread")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -380,7 +380,7 @@ export function EmailList({
                   variant="ghost"
                   size="sm"
                   onClick={handleBatchDelete}
-                  aria-label={t('batch_actions.delete')}
+                  aria-label={t("Delete")}
                   disabled={isProcessing}
                   className="text-red-600 dark:text-red-400 hover:bg-red-100/50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
                 >
@@ -391,7 +391,7 @@ export function EmailList({
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('batch_actions.delete')}</TooltipContent>
+              <TooltipContent>{t("Delete")}</TooltipContent>
             </Tooltip>
             <div className="w-px h-6 bg-border mx-1" />
             {/* Visible-text button: accessible name comes from its label, no tooltip needed. */}
@@ -402,7 +402,7 @@ export function EmailList({
               disabled={isProcessing}
               className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
             >
-              {t('batch_actions.clear_selection')}
+              {t("Clear selection")}
             </Button>
           </div>
           </TooltipProvider>
@@ -430,7 +430,7 @@ export function EmailList({
         <div className="px-4 py-2 border-b border-border bg-muted/30 flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <AlertTriangle className="w-4 h-4" />
-            <span>{currentMailbox?.role === 'junk' ? t('empty_folder.junk_hint') : t('empty_folder.trash_hint')}</span>
+            <span>{currentMailbox?.role === 'junk' ? t("You can empty the Junk folder to permanently remove all messages.") : t("You can empty the Trash folder to permanently remove all messages.")}</span>
           </div>
           <Button
             variant="outline"
@@ -444,7 +444,7 @@ export function EmailList({
             ) : (
               <Trash2 className="w-3 h-3 me-1" />
             )}
-            {t('empty_folder.button')}
+            {t("Empty folder")}
           </Button>
         </div>
       )}
@@ -456,7 +456,7 @@ export function EmailList({
           <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center animate-in fade-in duration-150">
             <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background/90 px-4 py-2 rounded-full shadow-sm border border-border">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>{t('loading')}</span>
+              <span>{t("Loading emails...")}</span>
             </div>
           </div>
         )}
@@ -475,10 +475,10 @@ export function EmailList({
               )}
             </div>
             <p className="text-base font-medium text-foreground">
-              {isScheduledView ? t('no_scheduled_emails') : searchQuery || !isFilterEmpty(searchFilters) ? t('no_search_results') : t('no_emails')}
+              {isScheduledView ? t("No scheduled emails") : searchQuery || !isFilterEmpty(searchFilters) ? t("No results found") : t("No messages found")}
             </p>
             <p className="text-sm mt-1 text-muted-foreground">
-              {isScheduledView ? t('no_scheduled_emails_description') : searchQuery || !isFilterEmpty(searchFilters) ? t('no_search_results_description') : t('no_emails_description')}
+              {isScheduledView ? t("Messages scheduled for later will appear here.") : searchQuery || !isFilterEmpty(searchFilters) ? t("Try adjusting your search or filters") : t("This mailbox is empty")}
             </p>
           </div>
         ) : (
@@ -545,12 +545,12 @@ export function EmailList({
               {footerIsLoadingMore && footerHasMore && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{t('loading_more')}</span>
+                  <span>{t("Loading more emails...")}</span>
                 </div>
               )}
               {!footerHasMore && emails.length > 0 && (
                 <div className="text-sm text-muted-foreground border-t border-border pt-6">
-                  {t('no_more_emails')}
+                  {t("No more emails to load")}
                 </div>
               )}
             </div>

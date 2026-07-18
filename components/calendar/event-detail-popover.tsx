@@ -92,13 +92,13 @@ function getAlertLabel(event: CalendarEvent, t: ReturnType<typeof useTranslation
   const first = Object.values(event.alerts)[0];
   if (!first || !first.trigger || first.trigger["@type"] !== "OffsetTrigger") return null;
   const offset = first.trigger.offset;
-  if (offset === "PT0S") return t("alerts.at_time");
+  if (offset === "PT0S") return t("At time of event");
   const minMatch = offset.match(/-?PT?(\d+)M$/);
-  if (minMatch) return t("alerts.minutes_before", { count: parseInt(minMatch[1]) });
+  if (minMatch) return t("{count, plural, one {# minute before} other {# minutes before}}", { count: parseInt(minMatch[1]) });
   const hourMatch = offset.match(/-?PT?(\d+)H$/);
-  if (hourMatch) return t("alerts.hours_before", { count: parseInt(hourMatch[1]) });
+  if (hourMatch) return t("{count, plural, one {# hour before} other {# hours before}}", { count: parseInt(hourMatch[1]) });
   const dayMatch = offset.match(/-?P(\d+)D/);
-  if (dayMatch) return t("alerts.days_before", { count: parseInt(dayMatch[1]) });
+  if (dayMatch) return t("{count, plural, one {# day before} other {# days before}}", { count: parseInt(dayMatch[1]) });
   return null;
 }
 
@@ -123,7 +123,7 @@ export function EventDetailPopover({
   timeFormat = "24h",
   isMobile,
 }: EventDetailPopoverProps) {
-  const t = useTranslations("calendar");
+  const t = useTranslations();
   const locale = useLocale();
   const popoverRef = useRef<HTMLDivElement>(null);
   const noteInputRef = useRef<HTMLTextAreaElement>(null);
@@ -257,7 +257,7 @@ export function EventDetailPopover({
     <div
       ref={popoverRef}
       role="dialog"
-      aria-label={event.title || t("events.no_title")}
+      aria-label={event.title || t("(No title)")}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={cn(
@@ -294,7 +294,7 @@ export function EventDetailPopover({
               "text-base font-semibold truncate text-foreground",
               event.status === "cancelled" && "line-through text-muted-foreground"
             )}>
-              {event.title || t("events.no_title")}
+              {event.title || t("(No title)")}
             </h3>
           </div>
           {calendar && (
@@ -302,12 +302,12 @@ export function EventDetailPopover({
               {calendar.name}
               {event.status === "tentative" && (
                 <span className="ms-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning/15 text-warning">
-                  {t("detail.tentative")}
+                  {t("Tentative")}
                 </span>
               )}
               {event.status === "cancelled" && (
                 <span className="ms-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 line-through">
-                  {t("detail.cancelled")}
+                  {t("Cancelled")}
                 </span>
               )}
             </p>
@@ -316,7 +316,7 @@ export function EventDetailPopover({
         <button
           onClick={onClose}
           className="p-1.5 rounded-md hover:bg-muted transition-colors duration-150 flex-shrink-0 mt-0.5 text-muted-foreground hover:text-foreground"
-          aria-label={t("form.cancel")}
+          aria-label={t("Cancel")}
         >
           <X className="w-4 h-4" />
         </button>
@@ -340,7 +340,7 @@ export function EventDetailPopover({
                   <div className="font-medium text-foreground">
                     {formatEventDate(displayEndDate)}
                   </div>
-                  <div className="text-muted-foreground">{t("events.all_day")}</div>
+                  <div className="text-muted-foreground">{t("All day")}</div>
                 </>
               ) : (
                 <>
@@ -367,7 +367,7 @@ export function EventDetailPopover({
                   {formatEventDate(startDate)}
                 </span>
                 {event.showWithoutTime ? (
-                  <span className="text-muted-foreground ms-1.5">{t("events.all_day")}</span>
+                  <span className="text-muted-foreground ms-1.5">{t("All day")}</span>
                 ) : (
                   <div className="text-muted-foreground">
                     {formatTime(startDate)} – {formatTime(endDate)}
@@ -429,7 +429,7 @@ export function EventDetailPopover({
             <Users className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
             <div className="text-sm min-w-0">
               <span className="text-muted-foreground">
-                {t("participants.count", { count: participants.length })}
+                {t("{count, plural, one {# participant} other {# participants}}", { count: participants.length })}
               </span>
               <div className="mt-1 space-y-0.5">
                 {participants.slice(0, 5).map((p) => (
@@ -438,7 +438,7 @@ export function EventDetailPopover({
                       {p.name || p.email}
                       {p.isOrganizer && (
                         <span className="text-muted-foreground ms-1">
-                          ({t("participants.organizer").toLowerCase()})
+                          ({t("Organizer").toLowerCase()})
                         </span>
                       )}
                     </span>
@@ -492,7 +492,7 @@ export function EventDetailPopover({
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
                 onKeyDown={handleNoteKeyDown}
-                placeholder={t("detail.add_note")}
+                placeholder={t("Add a note...")}
                 rows={2}
                 autoFocus
                 className="w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
@@ -507,7 +507,7 @@ export function EventDetailPopover({
                   }}
                   className="h-7 text-xs"
                 >
-                  {t("form.cancel")}
+                  {t("Cancel")}
                 </Button>
                 <Button
                   size="sm"
@@ -516,7 +516,7 @@ export function EventDetailPopover({
                   className="h-7 text-xs"
                 >
                   <Send className="w-3 h-3 me-1" />
-                  {t("detail.save_note")}
+                  {t("Save")}
                 </Button>
               </div>
             </div>
@@ -526,7 +526,7 @@ export function EventDetailPopover({
               className="flex items-center gap-2 w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
             >
               <AlignLeft className="w-4 h-4" />
-              {t("detail.add_note")}
+              {t("Add a note...")}
             </button>
           )}
         </div>
@@ -536,7 +536,7 @@ export function EventDetailPopover({
       {isAttendeeMode && onRsvp && userParticipantId && (
         <div className="px-4 py-3 border-t border-border">
           <p className="text-xs font-medium text-muted-foreground mb-2">
-            {t("participants.rsvp_label")}
+            {t("Your response")}
           </p>
           <div className="flex gap-2">
             <Button
@@ -550,7 +550,7 @@ export function EventDetailPopover({
               }
             >
               {userCurrentStatus === "accepted" && <Check className="w-3.5 h-3.5 me-1" />}
-              {t("participants.accepted")}
+              {t("Accepted")}
             </Button>
             <Button
               size="sm"
@@ -563,7 +563,7 @@ export function EventDetailPopover({
               }
             >
               {userCurrentStatus === "tentative" && <Check className="w-3.5 h-3.5 me-1" />}
-              {t("participants.tentative")}
+              {t("Tentative")}
             </Button>
             <Button
               size="sm"
@@ -576,7 +576,7 @@ export function EventDetailPopover({
               }
             >
               {userCurrentStatus === "declined" && <Check className="w-3.5 h-3.5 me-1" />}
-              {t("participants.declined")}
+              {t("Declined")}
             </Button>
           </div>
         </div>
@@ -587,7 +587,7 @@ export function EventDetailPopover({
         {showDeleteConfirm ? (
           <div className="flex items-center gap-2 w-full">
             <span className="text-sm text-destructive flex-1">
-              {t("form.delete_confirm")}
+              {t("Are you sure you want to delete this event?")}
             </span>
             <Button
               variant="outline"
@@ -595,7 +595,7 @@ export function EventDetailPopover({
               onClick={onDelete}
               className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 h-7 text-xs"
             >
-              {t("events.delete")}
+              {t("Delete event")}
             </Button>
             <Button
               variant="ghost"
@@ -603,24 +603,24 @@ export function EventDetailPopover({
               onClick={() => setShowDeleteConfirm(false)}
               className="h-7 text-xs"
             >
-              {t("form.cancel")}
+              {t("Cancel")}
             </Button>
           </div>
         ) : (
           <>
             <Button variant="default" size="sm" onClick={onEdit} className="h-7 text-xs">
               <Pencil className="w-3.5 h-3.5 me-1" />
-              {t("events.edit")}
+              {t("Edit event")}
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={onDuplicate}
               className="h-7 text-xs"
-              title={t("events.duplicate")}
+              title={t("Duplicate")}
             >
               <Copy className="w-3.5 h-3.5 me-1" />
-              {t("events.duplicate")}
+              {t("Duplicate")}
             </Button>
             <div className="flex-1" />
             <Button
@@ -628,7 +628,7 @@ export function EventDetailPopover({
               size="sm"
               onClick={() => setShowDeleteConfirm(true)}
               className="h-7 text-xs text-red-600 dark:text-red-400"
-              title={t("events.delete")}
+              title={t("Delete event")}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </Button>

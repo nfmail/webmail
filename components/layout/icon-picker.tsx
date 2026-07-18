@@ -61,7 +61,7 @@ interface IconPickerProps {
 }
 
 export function IconPicker({ value, onChange, className }: IconPickerProps) {
-  const t = useTranslations('sidebar_apps');
+  const t = useTranslations();
   const [search, setSearch] = useState('');
   const [showAll, setShowAll] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -94,7 +94,7 @@ export function IconPicker({ value, onChange, className }: IconPickerProps) {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('search_icons')}
+            placeholder={t("Search icons...")}
             className="ps-8 h-8 text-xs"
           />
           {search && (
@@ -115,7 +115,7 @@ export function IconPicker({ value, onChange, className }: IconPickerProps) {
               : 'bg-muted text-muted-foreground border-border hover:text-foreground'
           )}
         >
-          {showAll ? t('show_popular') : t('show_all')}
+          {showAll ? t("Popular") : t("All")}
         </button>
       </div>
       <div
@@ -140,7 +140,7 @@ export function IconPicker({ value, onChange, className }: IconPickerProps) {
         ))}
         {filteredIcons.length === 0 && (
           <p className="col-span-8 py-4 text-center text-xs text-muted-foreground">
-            {t('no_icons_found')}
+            {t("No icons found")}
           </p>
         )}
       </div>

@@ -30,7 +30,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
         <div className="flex items-center gap-3 border-b border-border px-6 py-4">
           <Keyboard className="w-5 h-5 text-muted-foreground" />
           <DialogTitle className="text-lg font-semibold text-foreground">
-            {t("shortcuts.title")}
+            {t("Keyboard Shortcuts")}
           </DialogTitle>
         </div>
 
@@ -40,7 +40,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
             {/* Navigation Section */}
             <section>
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
-                {t("shortcuts.sections.navigation")}
+                {t("Navigation")}
               </h3>
               <div className="flex flex-col gap-2">
                 {KEYBOARD_SHORTCUTS.navigation.map((shortcut) => (
@@ -56,7 +56,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
             {/* Actions Section */}
             <section>
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
-                {t("shortcuts.sections.actions")}
+                {t("Email Actions")}
               </h3>
               <div className="flex flex-col gap-2">
                 {KEYBOARD_SHORTCUTS.actions.map((shortcut) => (
@@ -72,7 +72,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
             {/* Global Section */}
             <section className="md:col-span-2">
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
-                {t("shortcuts.sections.global")}
+                {t("Global")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {KEYBOARD_SHORTCUTS.global.map((shortcut) => (
@@ -88,7 +88,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
             {/* Threads Section */}
             <section className="md:col-span-2">
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
-                {t("shortcuts.sections.threads")}
+                {t("Threads")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {KEYBOARD_SHORTCUTS.threads.map((shortcut) => (
@@ -104,7 +104,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
             {/* Composer Section */}
             <section className="md:col-span-2">
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
-                {t("shortcuts.sections.composer")}
+                {t("Composer")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {KEYBOARD_SHORTCUTS.composer.map((shortcut) => (
@@ -121,14 +121,14 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
           {/* Footer tip */}
           <div className="mt-6 pt-4 border-t border-border">
             <p className="text-sm text-muted-foreground text-center">
-              {t("shortcuts.tip")}
+              {t("Press ? anytime to show this help")}
             </p>
             <p className="text-sm text-center mt-2">
               <button
                 onClick={() => { onClose(); startTour(); }}
                 className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
               >
-                {t("tour.take_a_tour")}
+                {t("Take a tour of the interface")}
               </button>
             </p>
           </div>

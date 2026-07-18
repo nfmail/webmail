@@ -41,9 +41,9 @@ type ImportStep = "select" | "preview" | "importing";
 type ImportMode = "file" | "url";
 
 export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICalImportModalProps) {
-  const t = useTranslations("calendar.import");
-  const tCal = useTranslations("calendar");
-  const tForm = useTranslations("calendar.form");
+  const t = useTranslations();
+  const tCal = useTranslations();
+  const tForm = useTranslations();
   const importEvents = useCalendarStore((s) => s.importEvents);
   const timeFormat = useSettingsStore((s) => s.timeFormat);
 
@@ -63,9 +63,9 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = useCallback((file: File): string | null => {
-    if (file.size > MAX_FILE_SIZE) return t("file_too_large");
+    if (file.size > MAX_FILE_SIZE) return t("File exceeds 10MB limit");
     const ext = file.name.toLowerCase().slice(file.name.lastIndexOf("."));
-    if (!ACCEPTED_EXTENSIONS.includes(ext)) return t("invalid_format");
+    if (!ACCEPTED_EXTENSIONS.includes(ext)) return t("Invalid calendar file format");
     return null;
   }, [t]);
 
@@ -87,7 +87,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
       const events = await client.parseCalendarEvents(accountId, uploaded.blobId);
 
       if (events.length === 0) {
-        setError(t("no_events"));
+        setError(t("No events found in file"));
         setIsParsing(false);
         return;
       }
@@ -96,7 +96,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
       setSelectedIndices(new Set(events.map((_, i) => i)));
       setStep("preview");
     } catch {
-      setError(t("invalid_format"));
+      setError(t("Invalid calendar file format"));
     } finally {
       setIsParsing(false);
     }
@@ -131,7 +131,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
     try {
       new URL(trimmed);
     } catch {
-      setError(t("invalid_url"));
+      setError(t("Please enter a valid URL"));
       return;
     }
 
@@ -148,7 +148,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || t("url_fetch_failed"));
+        throw new Error(data.error || t("Failed to fetch calendar from URL"));
       }
 
       const blob = await response.blob();
@@ -158,7 +158,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
       const events = await client.parseCalendarEvents(accountId, uploaded.blobId);
 
       if (events.length === 0) {
-        setError(t("no_events"));
+        setError(t("No events found in file"));
         setIsFetchingUrl(false);
         setIsParsing(false);
         return;
@@ -168,7 +168,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
       setSelectedIndices(new Set(events.map((_, i) => i)));
       setStep("preview");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("url_fetch_failed"));
+      setError(err instanceof Error ? err.message : t("Failed to fetch calendar from URL"));
     } finally {
       setIsFetchingUrl(false);
       setIsParsing(false);
@@ -199,10 +199,10 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
     setStep("importing");
     try {
       const count = await importEvents(client, eventsToImport, calendarId);
-      toast.success(t("success", { count }));
+      toast.success(t("{count} events imported successfully", { count }));
       onClose();
     } catch {
-      toast.error(t("error"));
+      toast.error(t("Failed to import calendar"));
       setStep("preview");
     }
   }, [parsedEvents, selectedIndices, importEvents, client, calendarId, t, onClose]);
@@ -224,10 +224,10 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent
         className="flex max-h-[90vh] max-w-lg flex-col gap-0 overflow-hidden p-0"
-        aria-label={t("title")}
+        aria-label={t("Import Calendar")}
       >
         <DialogHeader className="px-6 py-4 border-b border-border">
-          <DialogTitle className="text-lg font-semibold">{t("title")}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">{t("Import Calendar")}</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 overflow-y-auto px-6 py-4">
@@ -243,7 +243,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                   }`}
                 >
                   <Upload className="w-4 h-4" />
-                  {t("tab_file")}
+                  {t("File")}
                 </button>
                 <button
                   onClick={() => { setImportMode("url"); setError(null); }}
@@ -254,7 +254,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                   }`}
                 >
                   <Globe className="w-4 h-4" />
-                  {t("tab_url")}
+                  {t("URL")}
                 </button>
               </div>
 
@@ -271,9 +271,9 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                   }`}
                 >
                   <Upload className="w-8 h-8 text-muted-foreground mb-3" />
-                  <p className="text-sm font-medium">{t("select_file")}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{t("drop_file")}</p>
-                  <p className="text-xs text-muted-foreground mt-2">{t("supported_formats")}</p>
+                  <p className="text-sm font-medium">{t("Select .ics file")}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("or drop file here")}</p>
+                  <p className="text-xs text-muted-foreground mt-2">{t("Supports iCalendar (.ics) files")}</p>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -286,13 +286,13 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
 
               {importMode === "url" && (
                 <div className="flex flex-col gap-3">
-                  <p className="text-sm text-muted-foreground">{t("url_description")}</p>
+                  <p className="text-sm text-muted-foreground">{t("Enter the URL of an external iCalendar (.ics) feed to import events.")}</p>
                   <div className="flex gap-2">
                     <input
                       type="url"
                       value={urlInput}
                       onChange={(e) => setUrlInput(e.target.value)}
-                      placeholder={t("url_placeholder")}
+                      placeholder={t("https://example.com/calendar.ics")}
                       className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                       onKeyDown={(e) => { if (e.key === "Enter") handleUrlFetch(); }}
                     />
@@ -303,11 +303,11 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                       {isFetchingUrl ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        t("fetch")
+                        t("Fetch")
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">{t("url_hint")}</p>
+                  <p className="text-xs text-muted-foreground">{t("Supports CalDAV and iCalendar (.ics) URLs")}</p>
                 </div>
               )}
             </>
@@ -316,7 +316,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
           {isParsing && (
             <div className="flex flex-col items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-primary mb-3" />
-              <p className="text-sm text-muted-foreground">{t("parsing")}</p>
+              <p className="text-sm text-muted-foreground">{t("Parsing calendar file...")}</p>
             </div>
           )}
 
@@ -330,15 +330,15 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
             <>
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  {t("parsed_events", { count: parsedEvents.length })}
+                  {t("{count} events found", { count: parsedEvents.length })}
                 </p>
                 <button
                   onClick={toggleAll}
                   className="text-xs text-primary hover:underline"
                 >
                   {selectedIndices.size === parsedEvents.length
-                    ? t("deselect_all")
-                    : t("select_all")}
+                    ? t("Deselect all")
+                    : t("Select all")}
                 </button>
               </div>
 
@@ -356,7 +356,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {event.title || tCal("events.no_title")}
+                        {event.title || tCal("(No title)")}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-xs text-muted-foreground">
@@ -377,7 +377,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
               {calendars.length > 1 && (
                 <div>
                   <label className="text-sm font-medium mb-1 block">
-                    {t("target_calendar")}
+                    {t("Import to calendar")}
                   </label>
                   <Select value={calendarId} onValueChange={setCalendarId}>
                     <SelectTrigger className="w-full">
@@ -399,7 +399,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
           {step === "importing" && (
             <div className="flex flex-col items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-primary mb-3" />
-              <p className="text-sm text-muted-foreground">{t("importing")}</p>
+              <p className="text-sm text-muted-foreground">{t("Importing events...")}</p>
             </div>
           )}
         </div>
@@ -407,7 +407,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
         {step !== "importing" && (
           <DialogFooter className="px-6 py-4 border-t border-border">
             <Button variant="outline" onClick={onClose}>
-              {tForm("cancel")}
+              {tForm("Cancel")}
             </Button>
             {step === "preview" && (
               <Button
@@ -415,7 +415,7 @@ export function ICalImportModal({ calendars, client, onClose, initialUrl }: ICal
                 disabled={selectedIndices.size === 0}
               >
                 <Check className="w-4 h-4 me-1" />
-                {t("import_button")} ({selectedIndices.size})
+                {t("Import selected")} ({selectedIndices.size})
               </Button>
             )}
           </DialogFooter>

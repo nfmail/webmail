@@ -27,8 +27,8 @@ function AddressBookEditRow({
   onCancel: () => void;
   isLoading: boolean;
 }) {
-  const t = useTranslations("contacts.address_books");
-  const tCal = useTranslations("calendar.management");
+  const t = useTranslations();
+  const tCal = useTranslations();
   const [name, setName] = useState(initial);
   const isValid = name.trim().length > 0;
 
@@ -37,7 +37,7 @@ function AddressBookEditRow({
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="address-book-edit-name" className="text-xs">
-            {t("name_label")}
+            {t("Address book name")}
           </FieldLabel>
           <Input
             id="address-book-edit-name"
@@ -59,10 +59,10 @@ function AddressBookEditRow({
           onClick={() => isValid && onSave(name.trim())}
           disabled={isLoading || !isValid}
         >
-          {tCal("save")}
+          {tCal("Save")}
         </Button>
         <Button size="sm" variant="secondary" onClick={onCancel} disabled={isLoading}>
-          {tCal("cancel")}
+          {tCal("Cancel")}
         </Button>
       </div>
     </div>
@@ -70,9 +70,9 @@ function AddressBookEditRow({
 }
 
 export function AddressBookManagementSettings() {
-  const t = useTranslations("contacts.address_books");
-  const tContacts = useTranslations("contacts");
-  const tSettings = useTranslations("settings.contacts");
+  const t = useTranslations();
+  const tContacts = useTranslations();
+  const tSettings = useTranslations();
   const { client } = useAuthStore();
   const managedAccountId = useManagedAccountStore((s) => s.managedAccountId);
   const { addressBooks, contacts, supportsSync, fetchAddressBooks, createAddressBook, renameAddressBook, shareAddressBook, renameKeyword } = useContactStore();
@@ -95,9 +95,9 @@ export function AddressBookManagementSettings() {
       await createAddressBook(client, name);
       await fetchAddressBooks(client);
       setCreating(false);
-      toast.success(t("created"));
+      toast.success(t("Address book created"));
     } catch {
-      toast.error(t("create_failed"));
+      toast.error(t("Failed to create address book"));
     } finally {
       setIsLoading(false);
     }
@@ -109,9 +109,9 @@ export function AddressBookManagementSettings() {
     try {
       await renameAddressBook(client, book, newName);
       setEditingId(null);
-      toast.success(t("renamed"));
+      toast.success(t("Address book renamed"));
     } catch {
-      toast.error(t("rename_failed"));
+      toast.error(t("Failed to rename address book"));
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +156,7 @@ export function AddressBookManagementSettings() {
         </div>
         {book.isDefault && (
           <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-            {t("default")}
+            {t("Default")}
           </span>
         )}
         {(() => {
@@ -165,7 +165,7 @@ export function AddressBookManagementSettings() {
           return (
             <span
               className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
-              title={t("share")}
+              title={t("Share address book")}
             >
               <Users className="w-3 h-3" />
               {shareCount}
@@ -178,7 +178,7 @@ export function AddressBookManagementSettings() {
               type="button"
               onClick={() => setEditingId(book.id)}
               className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-              title={t("rename")}
+              title={t("Rename address book")}
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
@@ -188,7 +188,7 @@ export function AddressBookManagementSettings() {
               type="button"
               onClick={() => setSharingId(book.id)}
               className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-              title={t("share")}
+              title={t("Share address book")}
             >
               <Users className="w-3.5 h-3.5" />
             </button>
@@ -213,9 +213,9 @@ export function AddressBookManagementSettings() {
     try {
       await renameKeyword(supportsSync && client ? client : null, oldKw, newKw);
       setEditingKeyword(null);
-      toast.success(tContacts("category_renamed"));
+      toast.success(tContacts("Category renamed"));
     } catch {
-      toast.error(tContacts("category_rename_failed"));
+      toast.error(tContacts("Failed to rename category"));
     } finally {
       setIsLoading(false);
     }
@@ -223,7 +223,7 @@ export function AddressBookManagementSettings() {
 
   return (
     <>
-    <SettingsSection title={tSettings("manage_title")} description={tSettings("manage_description")}>
+    <SettingsSection title={tSettings("Address Books")} description={tSettings("Rename your address books")}>
       <div className="flex flex-col gap-2">
         {/* In scoped mode (managing a shared account) hide the user's own
             address books and show only the managed account's group. */}
@@ -235,14 +235,14 @@ export function AddressBookManagementSettings() {
           <div key={accountId} className="mt-4 flex flex-col gap-2">
             <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <Share2 className="w-3 h-3" />
-              {t("shared_prefix", { name: group.accountName })}
+              {t("Shared: {name}", { name: group.accountName })}
             </h4>
             {group.books.map(renderBook)}
           </div>
         ))}
 
         {addressBooks.length === 0 && (
-          <p className="text-sm text-muted-foreground py-2">{tSettings("no_address_books")}</p>
+          <p className="text-sm text-muted-foreground py-2">{tSettings("No address books found")}</p>
         )}
 
         {/* Creating targets the user's own account, so hide it while scoped to a
@@ -254,7 +254,7 @@ export function AddressBookManagementSettings() {
             className="flex items-center gap-2 py-2.5 px-3 w-full rounded-md border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <BookPlus className="w-4 h-4 flex-shrink-0" />
-            {t("create")}
+            {t("New address book")}
           </button>
         )}
       </div>
@@ -264,7 +264,7 @@ export function AddressBookManagementSettings() {
         shared account, so hide them while scoped to a shared account. */}
     {!managedAccountId && (
     <div className="mt-8">
-      <SettingsSection title={tSettings("categories_title")} description={tSettings("categories_description")}>
+      <SettingsSection title={tSettings("Categories")} description={tSettings("Rename contact categories")}>
         <div className="flex flex-col gap-2">
           {sortedKeywords.map(([keyword, count]) => {
             if (editingKeyword === keyword) {
@@ -293,7 +293,7 @@ export function AddressBookManagementSettings() {
                     type="button"
                     onClick={() => setEditingKeyword(keyword)}
                     className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                    title={tContacts("rename_category")}
+                    title={tContacts("Rename category")}
                   >
                     <Pencil className="w-3.5 h-3.5" />
                   </button>
@@ -302,7 +302,7 @@ export function AddressBookManagementSettings() {
             );
           })}
           {sortedKeywords.length === 0 && (
-            <p className="text-sm text-muted-foreground py-2">{tSettings("no_categories")}</p>
+            <p className="text-sm text-muted-foreground py-2">{tSettings("No categories found")}</p>
           )}
         </div>
       </SettingsSection>
@@ -312,8 +312,8 @@ export function AddressBookManagementSettings() {
     {creating && (
       <RenameDialog
         currentName=""
-        title={t("create")}
-        label={t("name_label")}
+        title={t("New address book")}
+        label={t("Address book name")}
         onCancel={() => setCreating(false)}
         onConfirm={handleCreate}
       />

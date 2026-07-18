@@ -62,8 +62,8 @@ export function JmapFilePickerDialog({
   onClose,
   onAttach,
 }: JmapFilePickerDialogProps) {
-  const t = useTranslations("email_composer.jmap_files");
-  const tCommon = useTranslations("common");
+  const t = useTranslations();
+  const tCommon = useTranslations();
   const [path, setPath] = useState<PathEntry[]>([
     { id: null, name: "JMAP Files" },
   ]);
@@ -73,7 +73,7 @@ export function JmapFilePickerDialog({
   const [isAttaching, setIsAttaching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const currentParentId = path[path.length - 1]?.id ?? null;
-  const loadErrorMessage = t("load_error");
+  const loadErrorMessage = t("JMAP Files could not be loaded.");
 
   useEffect(() => {
     if (!isOpen) return;
@@ -130,7 +130,7 @@ export function JmapFilePickerDialog({
       onClose();
     } catch (attachError) {
       setError(
-        attachError instanceof Error ? attachError.message : t("attach_error"),
+        attachError instanceof Error ? attachError.message : t("The selected files could not be attached."),
       );
     } finally {
       setIsAttaching(false);
@@ -141,8 +141,8 @@ export function JmapFilePickerDialog({
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="flex max-h-[80vh] w-full max-w-2xl flex-col gap-0 p-0">
         <DialogHeader className="border-b border-border p-5 text-start">
-          <DialogTitle className="text-lg">{t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogTitle className="text-lg">{t("Attach from JMAP Files")}</DialogTitle>
+          <DialogDescription>{t("Choose files already stored on the server. They will be attached without uploading them again.")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex items-center gap-2 border-b border-border px-5 py-3">
@@ -154,7 +154,7 @@ export function JmapFilePickerDialog({
             onClick={() => setPath((current) => current.slice(0, -1))}
           >
             <ChevronLeft className="me-2 size-4" />
-            {t("back")}
+            {t("Back")}
           </Button>
           <span className="truncate text-sm text-muted-foreground">
             {path.map((entry) => entry.name).join(" / ")}
@@ -165,7 +165,7 @@ export function JmapFilePickerDialog({
           {isLoading ? (
             <div className="flex min-h-56 items-center justify-center" role="status">
               <Loader2 className="size-5 animate-spin text-muted-foreground" />
-              <span className="sr-only">{tCommon("loading")}</span>
+              <span className="sr-only">{tCommon("Loading...")}</span>
             </div>
           ) : error ? (
             <div className="flex min-h-56 items-center justify-center px-6 text-center">
@@ -173,7 +173,7 @@ export function JmapFilePickerDialog({
             </div>
           ) : sortedItems.length === 0 ? (
             <div className="flex min-h-56 items-center justify-center px-6 text-center">
-              <p className="text-sm text-muted-foreground">{t("empty")}</p>
+              <p className="text-sm text-muted-foreground">{t("This folder contains no files.")}</p>
             </div>
           ) : (
             <ul className="flex flex-col gap-1">
@@ -195,7 +195,7 @@ export function JmapFilePickerDialog({
                         {item.name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {t("open_folder")}
+                        {t("Open folder")}
                       </span>
                     </button>
                   ) : (
@@ -223,11 +223,11 @@ export function JmapFilePickerDialog({
 
         <DialogFooter className="flex-row items-center justify-between gap-4 border-t border-border px-5 py-4 sm:justify-between">
           <span className="text-sm text-muted-foreground">
-            {t("selected", { count: selectedIds.size })}
+            {t("{count, plural, =0 {No files selected} one {# file selected} other {# files selected}}", { count: selectedIds.size })}
           </span>
           <div className="flex items-center gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              {tCommon("cancel")}
+              {tCommon("Cancel")}
             </Button>
             <Button
               type="button"
@@ -235,7 +235,7 @@ export function JmapFilePickerDialog({
               onClick={attachSelected}
             >
               {isAttaching && <Loader2 className="me-2 size-4 animate-spin" />}
-              {t("attach", { count: selectedIds.size })}
+              {t("{count, plural, one {Attach # file} other {Attach # files}}", { count: selectedIds.size })}
             </Button>
           </div>
         </DialogFooter>

@@ -30,7 +30,7 @@ function firstScopedTab(caps: SharedAccount['capabilities']): string | null {
 }
 
 export function AccountSettings() {
-  const t = useTranslations('settings.account');
+  const t = useTranslations();
   const router = useRouter();
   const { username, serverUrl, isDemoMode, primaryIdentity, authMode, client } = useAuthStore();
   const activeAccountId = useAuthStore((s) => s.activeAccountId);
@@ -114,33 +114,33 @@ export function AccountSettings() {
 
   return (
     <div className="flex flex-col gap-8">
-      <SettingsSection title={t('title')} description={t('description')}>
+      <SettingsSection title={t("Account")} description={t("View your account information")}>
         {/* Display Name */}
-        <SettingItem label={t('name_label')}>
+        <SettingItem label={t("Display Name")}>
           <span className="text-sm text-foreground">{displayName || t('../../common.unknown')}</span>
         </SettingItem>
 
         {/* Email Address */}
-        <SettingItem label={t('email.label')}>
+        <SettingItem label={t("Email Address")}>
           <span className="text-sm text-foreground">{email || t('../../common.unknown')}</span>
         </SettingItem>
 
         {/* Username / Login (show when it differs from email) */}
         {username && username !== email && (
-          <SettingItem label={t('username_label')}>
+          <SettingItem label={t("Username")}>
             <span className="text-sm text-foreground">{username}</span>
           </SettingItem>
         )}
 
         {/* Authentication Method */}
-        <SettingItem label={t('auth_method_label')}>
+        <SettingItem label={t("Authentication")}>
           <span className="text-sm text-foreground">
-            {authMode === 'oauth' ? t('auth_method_oauth') : t('auth_method_basic')}
+            {authMode === 'oauth' ? t("Single Sign-On (OAuth/OIDC)") : t("Password")}
           </span>
         </SettingItem>
 
         {/* Server */}
-        <SettingItem label={t('server.label')}>
+        <SettingItem label={t("JMAP Server")}>
           <span className="text-sm text-foreground truncate max-w-xs">
             {serverUrl || t('../../common.unknown')}
           </span>
@@ -149,15 +149,15 @@ export function AccountSettings() {
         {/* Storage */}
         {quota && quota.total > 0 && (
           <SettingItem
-            label={t('storage.label')}
-            description={t('storage.used', {
+            label={t("Storage Usage")}
+            description={t("{used} of {total} used", {
               used: formatFileSize(quota.used),
               total: formatFileSize(quota.total),
             })}
           >
             <div className="flex flex-col items-end gap-1">
               <span className="text-sm text-foreground">
-                {t('storage.percentage', { percent: quotaPercentage })}
+                {t("{percent}% used", { percent: quotaPercentage })}
               </span>
               <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
                 <div
@@ -171,10 +171,10 @@ export function AccountSettings() {
 
         {/* Demo mode indicator */}
         {isDemoMode && (
-          <SettingItem label={t('account_type_label')}>
+          <SettingItem label={t("Account Type")}>
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-warning">
               <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
-              {t('demo_account')}
+              {t("Demo Account")}
             </span>
           </SettingItem>
         )}
@@ -182,7 +182,7 @@ export function AccountSettings() {
 
       {/* Logged-in accounts list */}
       {accounts.length > 0 && (
-        <SettingsSection title={t('accounts.title')} description={t('accounts.description')}>
+        <SettingsSection title={t("Logged-in accounts")} description={t("Drag to reorder how accounts appear in the account dropdown")}>
           <div className="flex flex-col gap-2">
             {accounts.map((a, index) => (
               <AccountRow
@@ -202,13 +202,13 @@ export function AccountSettings() {
                 onSwitch={() => handleSwitch(a.id)}
                 onSetDefault={() => setDefaultAccount(a.id)}
                 labels={{
-                  active: t('accounts.active'),
-                  default: t('accounts.default_badge'),
-                  setDefault: t('accounts.set_default'),
-                  switchTo: t('accounts.switch_to'),
-                  moveUp: t('accounts.move_up'),
-                  moveDown: t('accounts.move_down'),
-                  dragHandle: t('accounts.drag_handle'),
+                  active: t("Currently active account"),
+                  default: t("Default account"),
+                  setDefault: t("Set as default"),
+                  switchTo: t("Switch to this account"),
+                  moveUp: t("Move up"),
+                  moveDown: t("Move down"),
+                  dragHandle: t("Drag to reorder"),
                 }}
               />
             ))}
@@ -221,7 +221,7 @@ export function AccountSettings() {
                 className="w-full"
               >
                 <Plus className="w-4 h-4 me-2" />
-                {t('accounts.add')}
+                {t("Add account")}
               </Button>
             )}
           </div>
@@ -231,7 +231,7 @@ export function AccountSettings() {
       {/* Shared / group accounts delegated to this session. Clicking one drills
           into a scoped settings view (filters, vacation, calendars, contacts). */}
       {sharedAccounts.length > 0 && (
-        <SettingsSection title={t('shared_accounts.title')} description={t('shared_accounts.description')}>
+        <SettingsSection title={t("Shared with me")} description={t("Group and shared accounts you can manage. Select one to edit its filters, vacation responder, calendars, and contacts.")}>
           <div className="flex flex-col gap-2">
             {sharedAccounts.map((acc) => {
               const editable = firstScopedTab(acc.capabilities) !== null;
@@ -255,7 +255,7 @@ export function AccountSettings() {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium truncate">{acc.name}</p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {t('shared_accounts.shared_label')}
+                      {t("Shared account")}
                     </p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />

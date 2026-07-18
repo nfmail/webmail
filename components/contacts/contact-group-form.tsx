@@ -25,7 +25,7 @@ export function ContactGroupForm({
   onSave,
   onCancel,
 }: ContactGroupFormProps) {
-  const t = useTranslations("contacts");
+  const t = useTranslations();
   const isEditing = !!group;
 
   const [name, setName] = useState(
@@ -63,7 +63,7 @@ export function ContactGroupForm({
     setError(null);
 
     if (!name.trim()) {
-      setError(t("groups.name_required"));
+      setError(t("Group name is required"));
       return;
     }
 
@@ -71,7 +71,7 @@ export function ContactGroupForm({
     try {
       await onSave(name.trim(), Array.from(selectedIds));
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("groups.save_failed"));
+      setError(err instanceof Error ? err.message : t("Failed to save group"));
     } finally {
       setIsSaving(false);
     }
@@ -81,7 +81,7 @@ export function ContactGroupForm({
     <form onSubmit={handleSubmit} className="flex flex-col h-full">
       <div className="px-6 py-4 border-b border-border">
         <h2 className="text-lg font-semibold">
-          {isEditing ? t("groups.edit") : t("groups.create")}
+          {isEditing ? t("Edit Group") : t("New Group")}
         </h2>
       </div>
 
@@ -94,24 +94,24 @@ export function ContactGroupForm({
 
         <div>
           <label className="text-sm text-muted-foreground mb-1 block">
-            {t("groups.name_label")}
+            {t("Group Name")}
           </label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={t("groups.name_placeholder")}
+            placeholder={t("e.g., Team, Family")}
             autoFocus
           />
         </div>
 
         <div>
           <label className="text-sm text-muted-foreground mb-2 block">
-            {t("groups.members_label")} ({selectedIds.size})
+            {t("Members")} ({selectedIds.size})
           </label>
           <div className="relative mb-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={t("groups.search_members")}
+              placeholder={t("Search contacts to add...")}
               value={memberSearch}
               onChange={(e) => setMemberSearch(e.target.value)}
               className="ps-9"
@@ -121,7 +121,7 @@ export function ContactGroupForm({
           <div className="border rounded-md max-h-64 overflow-y-auto divide-y divide-border">
             {filteredIndividuals.length === 0 ? (
               <div className="px-4 py-6 text-sm text-muted-foreground text-center">
-                {t("empty_search")}
+                {t("No contacts match your search")}
               </div>
             ) : (
               filteredIndividuals.map((contact) => {
@@ -190,10 +190,10 @@ export function ContactGroupForm({
 
       <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-          {t("form.cancel")}
+          {t("Cancel")}
         </Button>
         <Button type="submit" disabled={isSaving}>
-          {isSaving ? (isEditing ? t("form.updating") : t("form.creating")) : t("form.save")}
+          {isSaving ? (isEditing ? t("Updating...") : t("Creating...")) : t("Save")}
         </Button>
       </div>
     </form>

@@ -24,8 +24,8 @@ export function useCalendarAlerts() {
   const { calendarNotificationsEnabled, calendarNotificationSound, enableCalendarTasks, notificationSoundChoice } = useSettingsStore();
   const { tasks: storeTasks } = useTaskStore();
   const { acknowledgedAlerts, acknowledgeAlert, cleanupStaleAlerts } = useCalendarNotificationStore();
-  const t = useTranslations('calendar.notifications');
-  const tNotif = useTranslations('notifications');
+  const t = useTranslations();
+  const tNotif = useTranslations();
   const locale = useLocale();
 
   const goToCalendar = useCallback(() => {
@@ -60,18 +60,18 @@ export function useCalendarAlerts() {
         const diffMin = Math.round(diffMs / 60000);
 
         const timeLabel = diffMin <= 0
-          ? t('alert_now')
-          : t('alert_in_minutes', { count: diffMin });
+          ? t("Starting now")
+          : t("In {count} min", { count: diffMin });
 
         const message = alert.calendarName
           ? `${timeLabel} · ${alert.calendarName}`
           : timeLabel;
 
-        toast.info(alert.event.title || t('alert_title'), {
+        toast.info(alert.event.title || t("Upcoming event"), {
           message,
           duration: 15000,
           action: {
-            label: tNotif('click_to_view'),
+            label: tNotif("Click to view"),
             onClick: goToCalendar,
           },
         });
@@ -92,14 +92,14 @@ export function useCalendarAlerts() {
           }
 
           const taskMsg = taskAlert.calendarName
-            ? `${t('task_due')} · ${taskAlert.calendarName}`
-            : t('task_due');
+            ? `${t("Task due")} · ${taskAlert.calendarName}`
+            : t("Task due");
 
-          toast.info(taskAlert.task.title || t('alert_title'), {
+          toast.info(taskAlert.task.title || t("Upcoming event"), {
             message: taskMsg,
             duration: 15000,
             action: {
-              label: tNotif('click_to_view'),
+              label: tNotif("Click to view"),
               onClick: goToCalendar,
             },
           });

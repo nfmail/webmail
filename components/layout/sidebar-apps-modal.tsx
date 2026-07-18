@@ -30,7 +30,7 @@ function SidebarAppForm({
   onSave: (data: SidebarAppFormData) => void;
   onCancel: () => void;
 }) {
-  const t = useTranslations('sidebar_apps');
+  const t = useTranslations();
   const isEditing = !!app;
 
   const [formData, setFormData] = useState<SidebarAppFormData>({
@@ -45,22 +45,22 @@ function SidebarAppForm({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) {
-      newErrors.name = t('name_required');
+      newErrors.name = t("Name is required");
     }
     if (!formData.url.trim()) {
-      newErrors.url = t('url_required');
+      newErrors.url = t("URL is required");
     } else {
       try {
         const parsed = new URL(formData.url);
         if (!['http:', 'https:'].includes(parsed.protocol)) {
-          newErrors.url = t('url_invalid');
+          newErrors.url = t("Enter a valid http or https URL");
         }
       } catch {
-        newErrors.url = t('url_invalid');
+        newErrors.url = t("Enter a valid http or https URL");
       }
     }
     if (!formData.icon) {
-      newErrors.icon = t('icon_required');
+      newErrors.icon = t("Icon is required");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -81,7 +81,7 @@ function SidebarAppForm({
       {/* Name */}
       <div>
         <label htmlFor="app-name" className="block text-sm font-medium mb-1">
-          {t('name_label')} <span className="text-destructive">*</span>
+          {t("Name")} <span className="text-destructive">*</span>
         </label>
         <Input
           id="app-name"
@@ -89,7 +89,7 @@ function SidebarAppForm({
           maxLength={50}
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder={t('name_placeholder')}
+          placeholder={t("My App")}
           className={errors.name ? 'border-destructive' : ''}
         />
         {errors.name && (
@@ -100,7 +100,7 @@ function SidebarAppForm({
       {/* URL */}
       <div>
         <label htmlFor="app-url" className="block text-sm font-medium mb-1">
-          {t('url_label')} <span className="text-destructive">*</span>
+          {t("URL")} <span className="text-destructive">*</span>
         </label>
         <Input
           id="app-url"
@@ -118,7 +118,7 @@ function SidebarAppForm({
 
       {/* Open Mode */}
       <div>
-        <label className="block text-sm font-medium mb-2">{t('open_mode_label')}</label>
+        <label className="block text-sm font-medium mb-2">{t("Open Mode")}</label>
         <div className="flex gap-2">
           <button
             type="button"
@@ -131,7 +131,7 @@ function SidebarAppForm({
             )}
           >
             <ExternalLink className="w-4 h-4" />
-            {t('open_new_tab')}
+            {t("New Tab")}
           </button>
           <button
             type="button"
@@ -144,7 +144,7 @@ function SidebarAppForm({
             )}
           >
             <PanelRight className="w-4 h-4" />
-            {t('open_inline')}
+            {t("Inline")}
           </button>
         </div>
       </div>
@@ -152,7 +152,7 @@ function SidebarAppForm({
       {/* Icon Picker */}
       <div>
         <label className="block text-sm font-medium mb-2">
-          {t('icon_label')} <span className="text-destructive">*</span>
+          {t("Icon")} <span className="text-destructive">*</span>
           {SelectedIcon && (
             <span className="inline-flex items-center gap-1.5 ms-2 text-muted-foreground font-normal">
               - <SelectedIcon className="w-4 h-4" /> {formData.icon}
@@ -171,10 +171,10 @@ function SidebarAppForm({
       {/* Actions */}
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel}>
-          {t('cancel')}
+          {t("Cancel")}
         </Button>
         <Button type="submit">
-          {isEditing ? t('update') : t('add')}
+          {isEditing ? t("Update") : t("Add")}
         </Button>
       </div>
     </form>
@@ -187,7 +187,7 @@ interface SidebarAppsModalProps {
 }
 
 export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
-  const t = useTranslations('sidebar_apps');
+  const t = useTranslations();
   const { sidebarApps, addSidebarApp, updateSidebarApp, removeSidebarApp } = useSettingsStore();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -219,9 +219,9 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
 
   const handleDelete = useCallback(async (app: SidebarApp) => {
     const confirmed = await confirmDialog({
-      title: t('delete_confirm_title'),
-      message: t('delete_confirm', { name: app.name }),
-      confirmText: t('delete'),
+      title: t("Delete App"),
+      message: t("Are you sure you want to delete \"{name}\"?", { name: app.name }),
+      confirmText: t("Delete"),
       variant: 'destructive',
     });
     if (!confirmed) return;
@@ -246,7 +246,7 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 id="sidebar-apps-modal-title" className="text-lg font-semibold text-foreground">
-            {t('modal_title')}
+            {t("Sidebar Apps")}
           </h2>
           <button
             onClick={onClose}
@@ -261,7 +261,7 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
           {/* Create form */}
           {isCreating && (
             <div className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
-              <h3 className="text-sm font-semibold mb-4">{t('add_new')}</h3>
+              <h3 className="text-sm font-semibold mb-4">{t("Add App")}</h3>
               <SidebarAppForm
                 onSave={handleCreate}
                 onCancel={() => setIsCreating(false)}
@@ -276,7 +276,7 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
               className="mb-6 w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 me-2" />
-              {t('add_new')}
+              {t("Add App")}
             </Button>
           )}
 
@@ -288,7 +288,7 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
               if (editingId === app.id) {
                 return (
                   <div key={app.id} className="p-4 border border-border rounded-lg bg-muted/30">
-                    <h3 className="text-sm font-semibold mb-4">{t('edit_app')}</h3>
+                    <h3 className="text-sm font-semibold mb-4">{t("Edit App")}</h3>
                     <SidebarAppForm
                       app={app}
                       onSave={(data) => handleUpdate(app.id, data)}
@@ -316,7 +316,7 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
                       ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400'
                       : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
                   )}>
-                    {app.openMode === 'inline' ? t('inline_badge') : t('tab_badge')}
+                    {app.openMode === 'inline' ? t("Inline") : t("Tab")}
                   </span>
                   <div className="flex items-center gap-1">
                     <Button
@@ -343,8 +343,8 @@ export function SidebarAppsModal({ isOpen, onClose }: SidebarAppsModalProps) {
             {sidebarApps.length === 0 && !isCreating && (
               <div className="text-center py-12 text-muted-foreground">
                 <Plus className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">{t('no_apps')}</p>
-                <p className="text-xs mt-1">{t('no_apps_hint')}</p>
+                <p className="text-sm">{t("No apps added yet")}</p>
+                <p className="text-xs mt-1">{t("Add custom apps and links to your sidebar")}</p>
               </div>
             )}
           </div>

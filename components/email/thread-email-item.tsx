@@ -30,7 +30,7 @@ export function ThreadEmailItem({
   onDoubleClick,
   onContextMenu,
 }: ThreadEmailItemProps) {
-  const t = useTranslations('email_viewer');
+  const t = useTranslations();
   const isUnread = !email.keywords?.$seen;
   const isStarred = email.keywords?.$flagged;
   const isAnswered = email.keywords?.$answered;
@@ -187,7 +187,7 @@ export function ThreadEmailItem({
                 ? "text-muted-foreground"
                 : "text-muted-foreground"
             )}>
-              {email.preview || t('no_preview_available')}
+              {email.preview || t("No preview available")}
             </span>
 
             {/* Date */}

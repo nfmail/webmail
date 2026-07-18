@@ -33,8 +33,8 @@ interface EmailListItemProps {
 }
 
 export function EmailListItem({ email, selected, onClick, onDoubleClick, onContextMenu, onToggleStar, onMarkAsRead, onDelete, onArchive, onSetColorTag, onMarkAsSpam, onUndoSpam }: EmailListItemProps) {
-  const t = useTranslations('email_viewer');
-  const tBatch = useTranslations('email_list.batch_actions');
+  const t = useTranslations();
+  const tBatch = useTranslations();
   const { selectedEmailIds, toggleEmailSelection, selectRangeEmails, selectedMailbox, mailboxes, clearSelection, isUnifiedView, unifiedRole } = useEmailStore();
   const showPreview = useSettingsStore((state) => state.showPreview);
   const density = useSettingsStore((state) => state.density);
@@ -191,7 +191,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
             disableImages={hideJunkAvatarImages}
             checked={isChecked}
             onToggle={() => toggleEmailSelection(email.id)}
-            selectLabel={tBatch('select')}
+            selectLabel={tBatch("Select emails")}
           />
         )}
 
@@ -211,7 +211,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                     'min-w-0 truncate',
                     isUnread ? 'font-semibold text-foreground' : 'text-foreground'
                   )}>
-                    {email.subject || t('no_subject')}
+                    {email.subject || t("(No Subject)")}
                   </span>
                   {inlinePreview && (
                     <span className="min-w-0 shrink-[9999] truncate text-muted-foreground">{inlinePreview}</span>
@@ -313,7 +313,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                   ? "font-semibold text-foreground"
                   : "font-normal text-foreground"
               )}>
-                {email.subject || t('no_subject')}
+                {email.subject || t("(No Subject)")}
               </div>
 
               {/* Third Line: Preview (controlled by showPreview setting) */}
@@ -324,7 +324,7 @@ export function EmailListItem({ email, selected, onClick, onDoubleClick, onConte
                     ? "text-muted-foreground"
                     : "text-muted-foreground"
                 )}>
-                  {trimmedPreview || t('no_preview_available')}
+                  {trimmedPreview || t("No preview available")}
                 </p>
               )}
             </>

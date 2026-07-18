@@ -21,7 +21,7 @@ export function EmailIdentityBadge({
   compact = false,
   className,
 }: EmailIdentityBadgeProps) {
-  const t = useTranslations('identities.badge');
+  const t = useTranslations();
   const subAddressDelimiter = useSettingsStore((state) => state.subAddressDelimiter);
 
   const fromAddress = email.from?.[0]?.email;
@@ -77,7 +77,7 @@ export function EmailIdentityBadge({
             'bg-primary/10 text-primary',
             className
           )}
-          title={t('sub_address_tag', { tag: displayTag })}
+          title={t("Sent using sub-address: {tag}", { tag: displayTag })}
         >
           <Tag className="w-3 h-3" />
           <span className="font-mono">{subAddressDelimiter}{displayTag}</span>
@@ -98,7 +98,7 @@ export function EmailIdentityBadge({
             'bg-secondary text-muted-foreground',
             className
           )}
-          title={t('identity_name', { name: matchingIdentity.name })}
+          title={t("Sent using identity: {name}", { name: matchingIdentity.name })}
         >
           <Mail className="w-3 h-3" />
           <span className="truncate max-w-[100px]">{matchingIdentity.name}</span>
@@ -120,8 +120,8 @@ export function EmailIdentityBadge({
             'bg-primary/10 text-primary border border-primary/20',
             'text-xs font-semibold'
           )}
-          title={t('sub_address_tag', { tag: displayTag })}
-          aria-label={t('sub_address_tag', { tag: displayTag })}
+          title={t("Sent using sub-address: {tag}", { tag: displayTag })}
+          aria-label={t("Sent using sub-address: {tag}", { tag: displayTag })}
         >
           <Tag className="w-3 h-3" />
           <span className="font-mono">{subAddressDelimiter}{displayTag}</span>
@@ -140,11 +140,11 @@ export function EmailIdentityBadge({
               'bg-secondary text-muted-foreground border border-border',
               'text-xs font-medium'
             )}
-            title={t('identity_name', { name: matchingIdentity.name })}
-            aria-label={t('identity_name', { name: matchingIdentity.name })}
+            title={t("Sent using identity: {name}", { name: matchingIdentity.name })}
+            aria-label={t("Sent using identity: {name}", { name: matchingIdentity.name })}
           >
             <Mail className="w-3 h-3" />
-            <span>{t('identity_short', { name: matchingIdentity.name })}</span>
+            <span>{t("via {name}", { name: matchingIdentity.name })}</span>
           </div>
         )}
     </div>

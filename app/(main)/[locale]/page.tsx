@@ -89,8 +89,8 @@ const SCHEDULED_MAILBOX_ID = '__scheduled__';
 
 export default function Home() {
   const t = useTranslations();
-  const tCommon = useTranslations('common');
-  const tQuote = useTranslations('quote_header');
+  const tCommon = useTranslations();
+  const tQuote = useTranslations();
   const { appName } = useConfig();
   const mailLayout = useSettingsStore((state) => state.mailLayout);
   const [showComposer, setShowComposer] = useState(false);
@@ -130,24 +130,24 @@ export default function Home() {
   const { loadTrustedSendersBook, trustedSendersLoaded, loadRecentRecipients } = useContactStore();
 
   const promptForRescheduleDelayedUntil = useCallback((): string | null => {
-    const value = window.prompt(t('email_viewer.reschedule_prompt'));
+    const value = window.prompt(t("Enter a new date/time, e.g. 2026-05-04T15:30"));
     if (!value) return null;
     const time = new Date(value).getTime();
     if (!Number.isFinite(time)) {
-      toast.error(t('email_composer.schedule_send_invalid'));
+      toast.error(t("Enter a valid date and time."));
       return null;
     }
     if (time <= Date.now()) {
-      toast.error(t('email_composer.schedule_send_future'));
+      toast.error(t("Choose a future date and time."));
       return null;
     }
     if (!client?.hasDelayedSend()) {
-      toast.error(t('email_composer.schedule_send_unsupported'));
+      toast.error(t("Scheduled send is not supported for this account."));
       return null;
     }
     const maxDelayedSend = client.getMaxDelayedSend();
     if (maxDelayedSend > 0 && time > Date.now() + maxDelayedSend * 1000) {
-      toast.error(t('email_composer.schedule_send_too_late'));
+      toast.error(t("This time is later than the server allows."));
       return null;
     }
     return new Date(time).toISOString();
@@ -586,14 +586,14 @@ export default function Home() {
         const permanent = isInTrash || (isInJunk && permanentlyDeleteJunk);
         const confirmed = await confirmDialog({
           title: permanent
-            ? t('email_list.permanent_delete_confirm_title')
-            : t('email_list.batch_actions.delete_confirm_title'),
+            ? t("Permanently delete")
+            : t("Delete emails"),
           message: permanent
-            ? t('email_list.permanent_delete_confirm_batch_message', { count: selectedEmailIds.size })
-            : t('email_list.batch_actions.delete_confirm_message', { count: selectedEmailIds.size }),
+            ? t("These {count, plural, one {1 email} other {# emails}} will be permanently deleted. This action cannot be undone.", { count: selectedEmailIds.size })
+            : t("Are you sure you want to delete {count, plural, one {1 email} other {# emails}}?", { count: selectedEmailIds.size }),
           confirmText: permanent
-            ? t('email_list.permanent_delete')
-            : t('email_list.batch_actions.delete'),
+            ? t("Delete permanently")
+            : t("Delete"),
           variant: "destructive",
         });
         if (!confirmed) return;
@@ -740,15 +740,15 @@ export default function Home() {
     if (showComposer) {
       // Composing email
       const modeText = {
-        compose: t('email_composer.new_message'),
-        reply: t('email_composer.reply'),
-        replyAll: t('email_composer.reply_all'),
-        forward: t('email_composer.forward'),
-      }[composerMode] || t('email_composer.new_message');
+        compose: t("New Message"),
+        reply: t("Reply"),
+        replyAll: t("Reply All"),
+        forward: t("Forward"),
+      }[composerMode] || t("New Message");
       title = `${modeText} - ${appName}`;
     } else if (selectedEmail) {
       // Reading email
-      const subject = selectedEmail.subject || t('email_viewer.no_subject');
+      const subject = selectedEmail.subject || t("(No Subject)");
       title = `${subject} - ${appName}`;
     } else if (selectedMailbox && mailboxes.length > 0) {
       // Mailbox view
@@ -792,12 +792,12 @@ export default function Home() {
 
     const effectiveMode = pendingDraft?.mode ?? composerMode;
     const baseSubject = (pendingDraft?.subject?.trim() || selectedEmail?.subject?.trim()) ?? '';
-    let title = t('email_composer.new_message');
+    let title = t("New Message");
     if (baseSubject) {
       if (effectiveMode === 'reply' || effectiveMode === 'replyAll') {
-        title = buildReplySubject(baseSubject, t('email_composer.prefix.reply'));
+        title = buildReplySubject(baseSubject, t("Re:"));
       } else if (effectiveMode === 'forward') {
-        title = buildForwardSubject(baseSubject, t('email_composer.prefix.forward'));
+        title = buildForwardSubject(baseSubject, t("Fwd:"));
       } else {
         title = baseSubject;
       }
@@ -1288,13 +1288,13 @@ export default function Home() {
         newCc,
         locale: getEffectiveLocale(),
         timeFormat: useSettingsStore.getState().timeFormat,
-        unknownLabel: tCommon('unknown'),
+        unknownLabel: tCommon("Unknown"),
         labels: {
-          formatReplyLine: (vars) => tQuote('reply_line', vars),
-          forwardedSeparator: tQuote('forwarded_separator'),
-          fromLabel: tQuote('from_label'),
-          dateLabel: tQuote('date_label'),
-          subjectLabel: tQuote('subject_label'),
+          formatReplyLine: (vars) => tQuote("On {date}, {from} wrote:", vars),
+          forwardedSeparator: tQuote("---------- Forwarded message ----------"),
+          fromLabel: tQuote("From"),
+          dateLabel: tQuote("Date"),
+          subjectLabel: tQuote("Subject"),
         },
       });
       setComposerQuoteHeader(header);
@@ -1394,10 +1394,10 @@ export default function Home() {
     const pending = pendingUndoSend;
     const undoDurationMs = Math.max(sendDelaySeconds, 8) * 1000;
 
-    toast.success(t('email_viewer.scheduled_send_created'), {
+    toast.success(t("Email scheduled for sending"), {
       duration: undoDurationMs,
       action: {
-        label: t('email_viewer.undo_send'),
+        label: t("Undo send"),
         onClick: () => {
           void (async () => {
             try {
@@ -1485,9 +1485,9 @@ export default function Home() {
     if (isInTrash || (isInJunk && permanentlyDeleteJunk)) {
       // In trash or junk with permanent delete enabled: confirm before permanently deleting
       const confirmed = await confirmDialog({
-        title: t('email_list.permanent_delete_confirm_title'),
-        message: t('email_list.permanent_delete_confirm_message'),
-        confirmText: t('email_list.permanent_delete'),
+        title: t("Permanently delete"),
+        message: t("This email will be permanently deleted. This action cannot be undone."),
+        confirmText: t("Delete permanently"),
         variant: "destructive",
       });
       if (!confirmed) return;
@@ -1623,16 +1623,16 @@ export default function Home() {
       await markAsSpam(client, emailId);
 
       const toastInstance = (await import('sonner')).toast;
-      toastInstance.success(t('email_viewer.spam.toast_success'), {
+      toastInstance.success(t("Moved to Junk"), {
         action: {
-          label: t('email_viewer.spam.toast_undo'),
+          label: t("Undo"),
           onClick: async () => {
             try {
               await undoSpam(client, emailId);
-              toastInstance.success(t('notifications.email_moved'));
+              toastInstance.success(t("Email moved"));
             } catch (_error) {
               console.error("Failed to undo spam:", _error);
-              toastInstance.error(t('email_viewer.spam.error'));
+              toastInstance.error(t("Failed to report spam"));
             }
           },
         },
@@ -1641,7 +1641,7 @@ export default function Home() {
     } catch (_error) {
       console.error("Failed to mark as spam:", _error);
       const toastInstance = (await import('sonner')).toast;
-      toastInstance.error(t('email_viewer.spam.error'));
+      toastInstance.error(t("Failed to report spam"));
     }
   };
 
@@ -1652,11 +1652,11 @@ export default function Home() {
       await undoSpam(client, emailToRestore.id);
 
       const toastInstance = (await import('sonner')).toast;
-      toastInstance.success(t('email_viewer.spam.toast_not_spam_success'));
+      toastInstance.success(t("Moved to Inbox"));
     } catch (_error) {
       console.error("Failed to restore email:", _error);
       const toastInstance = (await import('sonner')).toast;
-      toastInstance.error(t('email_viewer.spam.error_not_spam'));
+      toastInstance.error(t("Failed to restore email"));
     }
   };
 
@@ -2145,7 +2145,7 @@ export default function Home() {
       try {
         emails = await expandImportableEmails(files);
       } catch {
-        toast.error(t('notifications.import_email_error'));
+        toast.error(t("Failed to import email"));
         return;
       }
 
@@ -2161,11 +2161,11 @@ export default function Home() {
       }
 
       if (imported > 0) {
-        toast.success(t('notifications.import_email_success'));
+        toast.success(t("Email imported successfully"));
         if (selectedMailbox) await fetchEmails(client, selectedMailbox);
       }
       if (failed > 0 || (imported === 0 && emails.length === 0)) {
-        toast.error(t('notifications.import_email_error'));
+        toast.error(t("Failed to import email"));
       }
     };
     input.click();
@@ -2322,7 +2322,7 @@ export default function Home() {
     let delayedUntil: string | undefined;
     if (sendDelaySeconds > 0) {
       if (!client.hasDelayedSend()) {
-        const confirmed = window.confirm(t('email_composer.send_delay_unsupported_confirm'));
+        const confirmed = window.confirm(t("This account does not support send delay. Send immediately instead?"));
         if (!confirmed) return;
       } else {
         delayedUntil = new Date(Date.now() + sendDelaySeconds * 1000).toISOString();
@@ -2339,7 +2339,7 @@ export default function Home() {
     const result = await sendEmail(
       client,
       [sender.email],
-      buildReplySubject(selectedEmail.subject || "(no subject)", t('email_composer.prefix.reply')),
+      buildReplySubject(selectedEmail.subject || "(no subject)", t("Re:")),
       finalBody,
       undefined,
       undefined,
@@ -2410,7 +2410,7 @@ export default function Home() {
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground mx-auto"></div>
-          <p className="mt-4 text-sm text-muted-foreground">{t("common.loading")}</p>
+          <p className="mt-4 text-sm text-muted-foreground">{t("Loading...")}</p>
         </div>
       </div>
     );
@@ -2418,9 +2418,9 @@ export default function Home() {
 
   // Get current mailbox name for mobile header
   const currentMailboxName = isScheduledView
-    ? t('sidebar.scheduled')
+    ? t("Scheduled")
     : selectedMailbox === ALL_MAIL_MAILBOX_ID
-      ? t('sidebar.mailboxes.all_mail')
+      ? t("All Mail")
       : (() => {
           const mb = mailboxes.find(m => m.id === selectedMailbox);
           return mb
@@ -2636,14 +2636,14 @@ export default function Home() {
         {isRateLimited && rateLimitSecondsLeft !== null && (
           <div className="flex items-center justify-center gap-2 bg-amber-500/10 border-b border-amber-500/30 text-amber-700 dark:text-amber-300 text-sm py-1.5 px-4 flex-shrink-0">
             <AlertTriangle className="h-3.5 w-3.5" />
-            <span>{tCommon('rate_limited_title')}</span>
-            <span className="text-amber-700/80 dark:text-amber-300/80">{tCommon('rate_limited_detail', { seconds: rateLimitSecondsLeft })}</span>
+            <span>{tCommon("Server authentication is temporarily rate limited.")}</span>
+            <span className="text-amber-700/80 dark:text-amber-300/80">{tCommon("Bulwark has paused background requests to avoid lockout. Retrying in {seconds}s.", { seconds: rateLimitSecondsLeft })}</span>
           </div>
         )}
         {connectionLost && (
           <div className="flex items-center justify-center gap-2 bg-destructive/10 border-b border-destructive/30 text-destructive text-sm py-1.5 px-4 flex-shrink-0">
             <RotateCcw className="h-3.5 w-3.5 animate-spin" />
-            <span>{tCommon('reconnecting')}</span>
+            <span>{tCommon("Connection lost. Attempting to reconnect…")}</span>
           </div>
         )}
         <div className="flex flex-1 overflow-hidden">
@@ -2805,12 +2805,12 @@ export default function Home() {
                   {/* Select / Select All toggle */}
                   {(() => {
                     const selectLabel = isScheduledView
-                      ? t('email_viewer.scheduled_actions_only')
+                      ? t("Scheduled view supports scheduled actions only")
                       : selectedEmailIds.size > 0
                         ? (selectedEmailIds.size === activeEmails.length
-                            ? t('email_list.batch_actions.clear_selection')
-                            : t('email_list.batch_actions.select_all'))
-                        : t('email_list.batch_actions.select');
+                            ? t("Clear selection")
+                            : t("Select all"))
+                        : t("Select emails");
                     return (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -2855,21 +2855,21 @@ export default function Home() {
                     <Search className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       type="text"
-                      placeholder={t("sidebar.search_placeholder_hint")}
+                      placeholder={t("Search mail... (press /)")}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className={cn("ps-9 h-9", searchQuery && "pe-8")}
                       data-search-input
                       data-tour="search-input"
                       disabled={isUnifiedView || isScheduledView}
-                      title={isUnifiedView ? t("unified_mailbox.search_unavailable") : isScheduledView ? t('email_viewer.scheduled_actions_only') : undefined}
+                      title={isUnifiedView ? t("Search is not available in the unified view") : isScheduledView ? t("Scheduled view supports scheduled actions only") : undefined}
                     />
                     {searchQuery && (
                       <button
                         type="button"
                         onClick={handleClearSearch}
                         className="absolute end-2 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                        aria-label={t("sidebar.clear_search")}
+                        aria-label={t("Clear search")}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -2877,10 +2877,10 @@ export default function Home() {
                   </form>
                   {(() => {
                     const filterLabel = isUnifiedView
-                      ? t("unified_mailbox.search_unavailable")
+                      ? t("Search is not available in the unified view")
                       : isScheduledView
-                        ? t('email_viewer.scheduled_actions_only')
-                        : t("advanced_search.toggle_filters");
+                        ? t("Scheduled view supports scheduled actions only")
+                        : t("More");
                     return (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -2921,19 +2921,19 @@ export default function Home() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <ToggleChip
                         icon={<Paperclip className="w-3.5 h-3.5" />}
-                        label={t("advanced_search.has_attachment")}
+                        label={t("Attachments")}
                         value={searchFilters.hasAttachment}
                         onClick={() => { const next = searchFilters.hasAttachment === null ? true : searchFilters.hasAttachment ? false : null; setSearchFilters({ hasAttachment: next }); handleAdvancedSearch(); }}
                       />
                       <ToggleChip
                         icon={<Star className="w-3.5 h-3.5" />}
-                        label={t("advanced_search.starred")}
+                        label={t("Starred")}
                         value={searchFilters.isStarred}
                         onClick={() => { const next = searchFilters.isStarred === null ? true : searchFilters.isStarred ? false : null; setSearchFilters({ isStarred: next }); handleAdvancedSearch(); }}
                       />
                       <ToggleChip
                         icon={searchFilters.isUnread === false ? <MailOpen className="w-3.5 h-3.5" /> : <Mail className="w-3.5 h-3.5" />}
-                        label={searchFilters.isUnread === false ? t("advanced_search.read") : t("advanced_search.unread")}
+                        label={searchFilters.isUnread === false ? t("Read") : t("Unread")}
                         value={searchFilters.isUnread}
                         onClick={() => { const next = searchFilters.isUnread === null ? true : searchFilters.isUnread ? false : null; setSearchFilters({ isUnread: next }); handleAdvancedSearch(); }}
                       />
@@ -2941,7 +2941,7 @@ export default function Home() {
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="sm" onClick={() => { clearSearchFilters(); setShowAdvancedFields(false); if (client) advancedSearch(client); }} className="h-7 px-2 text-xs text-muted-foreground">
                         <RotateCcw className="w-3 h-3 me-1" />
-                        {t("advanced_search.clear")}
+                        {t("Clear")}
                       </Button>
                     </div>
                   </div>
@@ -2953,7 +2953,7 @@ export default function Home() {
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", showAdvancedFields && "rotate-180")} />
-                    <span>{t("advanced_search.title")}</span>
+                    <span>{t("Advanced Search")}</span>
                   </button>
 
                   {/* Advanced fields */}
@@ -2961,54 +2961,54 @@ export default function Home() {
                     <div className="space-y-2.5 animate-in slide-in-from-top-1 fade-in duration-150">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">{t("advanced_search.from")}</label>
+                          <label className="text-xs text-muted-foreground mb-1 block">{t("From")}</label>
                           <Input
                             value={searchFilters.from}
                             onChange={(e) => { setSearchFilters({ from: e.target.value }); handleAdvancedSearchDebounced(); }}
-                            placeholder={t("advanced_search.from_placeholder")}
+                            placeholder={t("Sender email or name")}
                             className="h-8 text-sm"
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">{t("advanced_search.to")}</label>
+                          <label className="text-xs text-muted-foreground mb-1 block">{t("To")}</label>
                           <Input
                             value={searchFilters.to}
                             onChange={(e) => { setSearchFilters({ to: e.target.value }); handleAdvancedSearchDebounced(); }}
-                            placeholder={t("advanced_search.to_placeholder")}
+                            placeholder={t("Recipient email or name")}
                             className="h-8 text-sm"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">{t("advanced_search.subject")}</label>
+                        <label className="text-xs text-muted-foreground mb-1 block">{t("Subject")}</label>
                         <Input
                           value={searchFilters.subject}
                           onChange={(e) => { setSearchFilters({ subject: e.target.value }); handleAdvancedSearchDebounced(); }}
-                          placeholder={t("advanced_search.subject_placeholder")}
+                          placeholder={t("Subject contains...")}
                           className="h-8 text-sm"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">{t("advanced_search.body")}</label>
+                        <label className="text-xs text-muted-foreground mb-1 block">{t("Body")}</label>
                         <Input
                           value={searchFilters.body}
                           onChange={(e) => { setSearchFilters({ body: e.target.value }); handleAdvancedSearchDebounced(); }}
-                          placeholder={t("advanced_search.body_placeholder")}
+                          placeholder={t("Body contains...")}
                           className="h-8 text-sm"
                         />
                       </div>
 
                       {/* Folder selector */}
                       <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">{t("advanced_search.folder")}</label>
+                        <label className="text-xs text-muted-foreground mb-1 block">{t("Folder")}</label>
                         <select
                           value={selectedMailbox || ""}
                           onChange={(e) => { handleMailboxSelect(e.target.value); }}
                           className="w-full h-8 text-sm rounded-md border border-input bg-background px-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
                         >
-                          <option value="">{t("advanced_search.all_folders")}</option>
+                          <option value="">{t("All folders")}</option>
                           {mailboxes.map((mb) => (
                             <option key={mb.id} value={mb.id}>
                               {mb.name}
@@ -3019,7 +3019,7 @@ export default function Home() {
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">{t("advanced_search.date_after")}</label>
+                          <label className="text-xs text-muted-foreground mb-1 block">{t("After")}</label>
                           <Input
                             type="date"
                             value={searchFilters.dateAfter}
@@ -3028,7 +3028,7 @@ export default function Home() {
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">{t("advanced_search.date_before")}</label>
+                          <label className="text-xs text-muted-foreground mb-1 block">{t("Before")}</label>
                           <Input
                             type="date"
                             value={searchFilters.dateBefore}
@@ -3046,14 +3046,14 @@ export default function Home() {
             {(searchQuery || !isFilterEmpty(searchFilters)) && !activeIsLoading && !isScheduledView && (
               <div className="px-4 py-1.5 text-xs text-muted-foreground border-b border-border bg-muted/20">
                 {activeHasMore
-                  ? t("advanced_search.results_found_more", { count: activeEmails.length })
-                  : t("advanced_search.results_found", { count: activeEmails.length })}
+                  ? t("{count}+ results found", { count: activeEmails.length })
+                  : t("{count, plural, =0 {No results found} one {# result found} other {# results found}}", { count: activeEmails.length })}
               </div>
             )}
 
             {isScheduledView && !activeIsLoading && (
               <div className="px-4 py-1.5 text-xs text-muted-foreground border-b border-border bg-muted/20">
-                {t('email_list.scheduled_count', { count: scheduledTotal })}
+                {t("{count, plural, one {1 scheduled email} other {# scheduled emails}}", { count: scheduledTotal })}
               </div>
             )}
 
@@ -3097,7 +3097,7 @@ export default function Home() {
                     accountId: email.accountId ?? '',
                     emailId: email.id,
                     mailboxId: selectedMailbox,
-                    title: email.subject?.trim() || t('email_composer.new_message'),
+                    title: email.subject?.trim() || t("New Message"),
                   });
                 }) : undefined}
                 onOpenConversation={handleOpenConversation}
@@ -3170,13 +3170,13 @@ export default function Home() {
                       "absolute z-40 rounded-full shadow-lg",
                       isMobile ? "bottom-4 end-4 h-14 w-14" : "bottom-4 end-4 h-12 w-12"
                     )}
-                    aria-label={t('sidebar.compose')}
+                    aria-label={t("Compose")}
                     data-tour="compose-button"
                   >
                     <PenSquare className={isMobile ? "h-6 w-6" : "h-5 w-5"} />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>{t('sidebar.compose_hint')}</TooltipContent>
+                <TooltipContent>{t("Compose (c)")}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -3303,7 +3303,7 @@ export default function Home() {
               >
                 <PenLine className="w-4 h-4 text-primary shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-primary">{t('email_composer.continue_draft')}</span>
+                  <span className="text-sm font-medium text-primary">{t("Continue draft")}</span>
                   {pendingDraft.subject && (
                     <span className="text-xs text-muted-foreground ms-2 truncate">{pendingDraft.subject}</span>
                   )}
@@ -3313,9 +3313,9 @@ export default function Home() {
                   onClick={async (e) => {
                     e.stopPropagation();
                     const confirmed = await confirmDialog({
-                      title: t('email_composer.discard_draft_title'),
-                      message: t('email_composer.discard_draft_confirm'),
-                      confirmText: t('email_composer.discard'),
+                      title: t("Discard draft?"),
+                      message: t("You have unsaved changes. Do you want to discard this draft?"),
+                      confirmText: t("Discard"),
                       variant: "destructive",
                     });
                     if (confirmed) {

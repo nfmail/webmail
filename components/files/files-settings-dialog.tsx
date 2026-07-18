@@ -56,7 +56,7 @@ interface FilesSettingsDialogProps {
 }
 
 export function FilesSettingsDialog({ isOpen, onClose, settings, onSettingsChange }: FilesSettingsDialogProps) {
-  const t = useTranslations("files");
+  const t = useTranslations();
 
   const update = (patch: Partial<FilesSettings>) => {
     const next = { ...settings, ...patch };
@@ -68,69 +68,69 @@ export function FilesSettingsDialog({ isOpen, onClose, settings, onSettingsChang
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="sm:max-w-md max-h-[80vh] gap-0 overflow-hidden p-0">
         <DialogHeader className="border-b border-border p-4 text-start">
-          <DialogTitle>{t("settings_title")}</DialogTitle>
+          <DialogTitle>{t("File Settings")}</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-6 overflow-y-auto p-4">
-          <SettingsSection title={t("settings_display")}>
-            <SettingItem label={t("settings_folder_layout")} description={t("settings_folder_layout_desc")}>
+          <SettingsSection title={t("Display")}>
+            <SettingItem label={t("Folder Navigation")} description={t("Choose how folders are displayed: inline with files or in a sidebar tree")}>
               <RadioGroup
                 value={settings.folderLayout}
                 onChange={(v) => update({ folderLayout: v as FolderLayout })}
                 options={[
-                  { value: "inline", label: t("settings_folder_layout_inline") },
-                  { value: "sidebar", label: t("settings_folder_layout_sidebar") },
+                  { value: "inline", label: t("Inline") },
+                  { value: "sidebar", label: t("Sidebar") },
                 ]}
               />
             </SettingItem>
-            <SettingItem label={t("settings_default_view")} description={t("settings_default_view_desc")}>
+            <SettingItem label={t("Default View")} description={t("Choose between grid and list layout")}>
               <RadioGroup
                 value={settings.defaultViewMode}
                 onChange={(v) => update({ defaultViewMode: v as "list" | "grid" })}
                 options={[
-                  { value: "list", label: t("list_view") },
-                  { value: "grid", label: t("grid_view") },
+                  { value: "list", label: t("List view") },
+                  { value: "grid", label: t("Grid view") },
                 ]}
               />
             </SettingItem>
-            <SettingItem label={t("settings_default_sort")} description={t("settings_default_sort_desc")}>
+            <SettingItem label={t("Default Sort")} description={t("Choose the default sorting for files")}>
               <RadioGroup
                 value={settings.defaultSortKey}
                 onChange={(v) => update({ defaultSortKey: v as "name" | "size" | "modified" })}
                 options={[
-                  { value: "name", label: t("name") },
-                  { value: "size", label: t("size") },
-                  { value: "modified", label: t("modified") },
+                  { value: "name", label: t("Name") },
+                  { value: "size", label: t("Size") },
+                  { value: "modified", label: t("Modified") },
                 ]}
               />
             </SettingItem>
-            <SettingItem label={t("settings_sort_direction")} description={t("settings_sort_direction_desc")}>
+            <SettingItem label={t("Sort Direction")} description={t("Choose ascending or descending order")}>
               <RadioGroup
                 value={settings.defaultSortDir}
                 onChange={(v) => update({ defaultSortDir: v as "asc" | "desc" })}
                 options={[
-                  { value: "asc", label: t("settings_ascending") },
-                  { value: "desc", label: t("settings_descending") },
+                  { value: "asc", label: t("Ascending") },
+                  { value: "desc", label: t("Descending") },
                 ]}
               />
             </SettingItem>
           </SettingsSection>
 
-          <SettingsSection title={t("settings_icons")}>
-            <SettingItem label={t("settings_show_icons")} description={t("settings_show_icons_desc")}>
+          <SettingsSection title={t("Icons")}>
+            <SettingItem label={t("Show File Icons")} description={t("Display icons next to files and folders")}>
               <ToggleSwitch
                 checked={settings.showIcons}
                 onChange={(v) => update({ showIcons: v })}
               />
             </SettingItem>
-            <SettingItem label={t("settings_colored_icons")} description={t("settings_colored_icons_desc")}>
+            <SettingItem label={t("Colored Icons")} description={t("Use colorful icons instead of monochrome")}>
               <ToggleSwitch
                 checked={settings.coloredIcons}
                 onChange={(v) => update({ coloredIcons: v })}
                 disabled={!settings.showIcons}
               />
             </SettingItem>
-            <SettingItem label={t("settings_show_thumbnails")} description={t("settings_show_thumbnails_desc")}>
+            <SettingItem label={t("Show Thumbnails")} description={t("Display image previews instead of icons for image files")}>
               <ToggleSwitch
                 checked={settings.showThumbnails}
                 onChange={(v) => update({ showThumbnails: v })}
@@ -138,8 +138,8 @@ export function FilesSettingsDialog({ isOpen, onClose, settings, onSettingsChang
             </SettingItem>
           </SettingsSection>
 
-          <SettingsSection title={t("settings_behavior")}>
-            <SettingItem label={t("settings_show_hidden")} description={t("settings_show_hidden_desc")}>
+          <SettingsSection title={t("Behavior")}>
+            <SettingItem label={t("Show Hidden Files")} description={t("Display files and folders that start with a dot")}>
               <ToggleSwitch
                 checked={settings.showHiddenFiles}
                 onChange={(v) => update({ showHiddenFiles: v })}

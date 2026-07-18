@@ -354,7 +354,7 @@ export function TourOverlay() {
         <div className="bg-background border border-border rounded-xl shadow-2xl p-4">
           {/* Step counter */}
           <p className="text-xs text-muted-foreground mb-1" aria-live="polite">
-            {t("tour.step_counter", { current: currentStep + 1, total: totalSteps })}
+            {t("Step {current} of {total}", { current: currentStep + 1, total: totalSteps })}
           </p>
 
           {/* Title */}
@@ -369,7 +369,7 @@ export function TourOverlay() {
               onClick={stopTour}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-muted"
             >
-              {t("tour.skip")}
+              {t("Skip tour")}
             </button>
             <div className="flex gap-2">
               <button
@@ -382,13 +382,13 @@ export function TourOverlay() {
                     : "hover:bg-muted"
                 )}
               >
-                {t("tour.back")}
+                {t("Back")}
               </button>
               <button
                 onClick={nextStep}
                 className="text-xs px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
-                {isLast ? t("tour.finish") : t("tour.next")}
+                {isLast ? t("Finish") : t("Next")}
               </button>
             </div>
           </div>

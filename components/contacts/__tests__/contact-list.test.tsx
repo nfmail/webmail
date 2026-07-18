@@ -64,18 +64,18 @@ describe('ContactList', () => {
 
   it('shows empty state when no contacts match', () => {
     render(<ContactList {...defaultProps} contacts={[]} />);
-    expect(screen.getByText('empty_state_title')).toBeInTheDocument();
+    expect(screen.getByText('No contacts yet')).toBeInTheDocument();
   });
 
   it('shows search empty state when search has no results', () => {
     render(<ContactList {...defaultProps} searchQuery="zzz" />);
-    expect(screen.getByText('empty_search')).toBeInTheDocument();
+    expect(screen.getByText('No contacts match your search')).toBeInTheDocument();
   });
 
   it('shows bulk action bar when contacts are selected', () => {
     render(<ContactList {...defaultProps} selectedContactIds={new Set(['1'])} />);
-    expect(screen.getByText('bulk.delete')).toBeInTheDocument();
-    expect(screen.getByText('bulk.export')).toBeInTheDocument();
+    expect(screen.getByText('Delete')).toBeInTheDocument();
+    expect(screen.getByText('Export')).toBeInTheDocument();
   });
 
 });

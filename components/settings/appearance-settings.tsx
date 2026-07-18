@@ -63,54 +63,54 @@ function DensityPreview({ density }: { density: Density }) {
 }
 
 export function AppearanceSettings() {
-  const t = useTranslations('settings.appearance');
-  const tAdvanced = useTranslations('settings.advanced');
-  const tTour = useTranslations('tour');
+  const t = useTranslations();
+  const tAdvanced = useTranslations();
+  const tTour = useTranslations();
   const { theme, setTheme } = useThemeStore();
   const { fontSize, density, animationsEnabled, senderFavicons, showAvatarsInJunk, showOnboardingOnNewDevices, updateSetting } = useSettingsStore();
   const { startTour, resetTourCompletion } = useTour();
   const { isSettingLocked, isSettingHidden } = usePolicyStore();
 
   return (
-    <SettingsSection title={t('title')} description={t('description')}>
-      <SettingItem label={t('theme.label')} description={t('theme.description')}>
+    <SettingsSection title={t("Appearance")} description={t("Customize the look and feel of your webmail")}>
+      <SettingItem label={t("Theme")} description={t("Choose your preferred color scheme")}>
         <RadioGroup
           value={theme}
           onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
           options={[
-            { value: 'light', label: t('theme.light') },
-            { value: 'dark', label: t('theme.dark') },
-            { value: 'system', label: t('theme.system') },
+            { value: 'light', label: t("Light") },
+            { value: 'dark', label: t("Dark") },
+            { value: 'system', label: t("System") },
           ]}
         />
       </SettingItem>
 
       {!isSettingHidden('fontSize') && (
-      <SettingItem label={t('font_size.label')} description={t('font_size.description')} locked={isSettingLocked('fontSize')}>
+      <SettingItem label={t("Font Size")} description={t("Adjust text size for better readability")} locked={isSettingLocked('fontSize')}>
         <RadioGroup
           value={fontSize}
           onChange={(value) => updateSetting('fontSize', value as 'small' | 'medium' | 'large')}
           options={[
-            { value: 'small', label: t('font_size.small') },
-            { value: 'medium', label: t('font_size.medium') },
-            { value: 'large', label: t('font_size.large') },
+            { value: 'small', label: t("Small") },
+            { value: 'medium', label: t("Medium") },
+            { value: 'large', label: t("Large") },
           ]}
         />
       </SettingItem>
       )}
 
       {!isSettingHidden('density') && (
-      <SettingItem label={t('list_density.label')} description={t('list_density.description')} locked={isSettingLocked('density')}>
+      <SettingItem label={t("Density")} description={t("Control spacing and padding across the UI")} locked={isSettingLocked('density')}>
         <RadioGroup
           value={density}
           onChange={(value) =>
             updateSetting('density', value as Density)
           }
           options={[
-            { value: 'extra-compact', label: t('list_density.extra_compact') },
-            { value: 'compact', label: t('list_density.compact') },
-            { value: 'regular', label: t('list_density.regular') },
-            { value: 'comfortable', label: t('list_density.comfortable') },
+            { value: 'extra-compact', label: t("Extra Compact") },
+            { value: 'compact', label: t("Compact") },
+            { value: 'regular', label: t("Regular") },
+            { value: 'comfortable', label: t("Comfortable") },
           ]}
         />
         <DensityPreview density={density} />
@@ -118,7 +118,7 @@ export function AppearanceSettings() {
       )}
 
       {!isSettingHidden('animationsEnabled') && (
-      <SettingItem label={t('animations.label')} description={t('animations.description')} locked={isSettingLocked('animationsEnabled')} htmlFor="animations-enabled-toggle">
+      <SettingItem label={t("Enable Animations")} description={t("Show smooth transitions and effects")} locked={isSettingLocked('animationsEnabled')} htmlFor="animations-enabled-toggle">
         <ToggleSwitch
           id="animations-enabled-toggle"
           checked={animationsEnabled}
@@ -127,15 +127,15 @@ export function AppearanceSettings() {
       </SettingItem>
       )}
 
-      <SettingItem label={tAdvanced('sender_favicons.label')} description={tAdvanced('sender_favicons.description')} htmlFor="sender-favicons-toggle">
+      <SettingItem label={tAdvanced("Sender Favicons")} description={tAdvanced("Show website icons as profile pictures for business senders")} htmlFor="sender-favicons-toggle">
         <ToggleSwitch id="sender-favicons-toggle" checked={senderFavicons} onChange={(checked) => updateSetting('senderFavicons', checked)} />
       </SettingItem>
 
-      <SettingItem label={tAdvanced('show_avatars_in_junk.label')} description={tAdvanced('show_avatars_in_junk.description')} htmlFor="show-avatars-in-junk-toggle">
+      <SettingItem label={tAdvanced("Show Avatars in Junk Folder")} description={tAdvanced("Show profile images and favicons for senders in the junk folder. Disabled by default to avoid lending visual legitimacy to phishing attempts.")} htmlFor="show-avatars-in-junk-toggle">
         <ToggleSwitch id="show-avatars-in-junk-toggle" checked={showAvatarsInJunk} onChange={(checked) => updateSetting('showAvatarsInJunk', checked)} />
       </SettingItem>
 
-      <SettingItem label={tTour('restart_title')} description={tTour('restart_desc')}>
+      <SettingItem label={tTour("Introductory tour")} description={tTour("Replay the guided walkthrough of the interface")}>
         <Button
           variant="outline"
           size="sm"
@@ -143,11 +143,11 @@ export function AppearanceSettings() {
           className="text-xs h-7"
         >
           <PlayCircle className="w-3.5 h-3.5 me-1" />
-          {tTour('restart_button')}
+          {tTour("Restart tour")}
         </Button>
       </SettingItem>
 
-      <SettingItem label={tTour('show_on_new_devices_title')} description={tTour('show_on_new_devices_desc')} htmlFor="show-onboarding-new-devices-toggle">
+      <SettingItem label={tTour("Show on new devices")} description={tTour("Replay the welcome banner and tour the first time you sign in on a new device, even if you've already completed them elsewhere")} htmlFor="show-onboarding-new-devices-toggle">
         <ToggleSwitch
           id="show-onboarding-new-devices-toggle"
           checked={showOnboardingOnNewDevices}

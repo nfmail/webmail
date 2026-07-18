@@ -13,8 +13,8 @@ import { useSettingsStore } from "@/stores/settings-store";
 import { toast } from "@/stores/toast-store";
 
 export function ContactsSettings() {
-  const t = useTranslations("contacts");
-  const tSettings = useTranslations("settings.contacts");
+  const t = useTranslations();
+  const tSettings = useTranslations();
   const { client } = useAuthStore();
   const {
     contacts,
@@ -37,7 +37,7 @@ export function ContactsSettings() {
   const handleExport = () => {
     if (individuals.length > 0) {
       exportContacts(individuals);
-      toast.success(t("export.success", { count: individuals.length }));
+      toast.success(t("{count, plural, one {1 contact exported} other {# contacts exported}}", { count: individuals.length }));
     }
   };
 
@@ -55,12 +55,12 @@ export function ContactsSettings() {
 
   return (
     <SettingsSection
-      title={tSettings("title")}
-      description={tSettings("description")}
+      title={tSettings("Contacts")}
+      description={tSettings("Import and export your contacts")}
     >
       <SettingItem
-        label={tSettings("group_by_letter_label")}
-        description={tSettings("group_by_letter_description")}
+        label={tSettings("Group by first letter")}
+        description={tSettings("Show alphabetical section headers in the contact list")}
         htmlFor="contacts-group-by-letter-toggle"
       >
         <ToggleSwitch
@@ -71,18 +71,18 @@ export function ContactsSettings() {
       </SettingItem>
 
       <SettingItem
-        label={tSettings("import_label")}
-        description={tSettings("import_description")}
+        label={tSettings("Import Contacts")}
+        description={tSettings("Import contacts from a vCard (.vcf) file")}
       >
         <Button variant="outline" size="sm" onClick={() => setShowImport(true)}>
           <Upload className="w-4 h-4 me-2" />
-          {t("import.title")}
+          {t("Import Contacts")}
         </Button>
       </SettingItem>
 
       <SettingItem
-        label={tSettings("export_label")}
-        description={tSettings("export_description")}
+        label={tSettings("Export Contacts")}
+        description={tSettings("Export all contacts as a vCard (.vcf) file")}
       >
         <Button
           variant="outline"
@@ -91,7 +91,7 @@ export function ContactsSettings() {
           disabled={individuals.length === 0}
         >
           <Download className="w-4 h-4 me-2" />
-          {t("export.title")}
+          {t("Export Contacts")}
         </Button>
       </SettingItem>
     </SettingsSection>

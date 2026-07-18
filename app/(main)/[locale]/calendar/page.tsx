@@ -84,8 +84,8 @@ function isRecurringEvent(event: CalendarEvent): boolean {
 
 export default function CalendarPage() {
   const router = useRouter();
-  const t = useTranslations("calendar");
-  const tWebcalAction = useTranslations("calendar.webcal_action");
+  const t = useTranslations();
+  const tWebcalAction = useTranslations();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
   const isEmbedded = useIsEmbedded();
@@ -134,7 +134,7 @@ export default function CalendarPage() {
   const [defaultCalendarIdForCreate, setDefaultCalendarIdForCreate] = useState<string | undefined>(undefined);
   const [showCreateCalendar, setShowCreateCalendar] = useState(false);
   const { dialogProps: confirmDialogProps, confirm: confirmAction } = useConfirmDialog();
-  const tMgmt = useTranslations("calendar.management");
+  const tMgmt = useTranslations();
   const [editEvent, setEditEvent] = useState<CalendarEvent | null>(null);
   const [defaultModalDate, setDefaultModalDate] = useState<Date | undefined>();
   const [defaultModalEndDate, setDefaultModalEndDate] = useState<Date | undefined>();
@@ -644,7 +644,7 @@ export default function CalendarPage() {
   }, [setSelectedDate]);
 
   const handleSaveEvent = useCallback(async (data: Partial<CalendarEvent>, sendSchedulingMessages?: boolean) => {
-    if (!client) { toast.error(t("notifications.event_error")); return; }
+    if (!client) { toast.error(t("Failed to save event")); return; }
     try {
       if (editEvent) {
         if (isRecurringEvent(editEvent)) {
@@ -662,48 +662,48 @@ export default function CalendarPage() {
         if (data.start) {
           focusCalendarOnEvent({ start: data.start });
         }
-        toast.success(t("notifications.event_updated"));
+        toast.success(t("Event updated"));
       } else {
         const created = await createEvent(client, data, sendSchedulingMessages);
         if (!created) {
-          toast.error(t("notifications.event_error"));
+          toast.error(t("Failed to save event"));
           return;
         }
         focusCalendarOnEvent(created);
         if (sendSchedulingMessages) {
-          toast.success(t("notifications.invitation_sent"));
+          toast.success(t("Invitations sent"));
         } else {
-          toast.success(t("notifications.event_created"));
+          toast.success(t("Event created"));
         }
       }
       setShowEventModal(false);
       setEditEvent(null);
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [client, editEvent, createEvent, updateEvent, focusCalendarOnEvent, t]);
 
   const handleDuplicateEvent = useCallback(async (data: Partial<CalendarEvent>) => {
-    if (!client) { toast.error(t("notifications.event_error")); return; }
+    if (!client) { toast.error(t("Failed to save event")); return; }
     try {
       const created = await createEvent(client, data);
       if (!created) {
-        toast.error(t("notifications.event_error"));
+        toast.error(t("Failed to save event"));
         return;
       }
       focusCalendarOnEvent(created);
-      toast.success(t("notifications.event_duplicated"));
+      toast.success(t("Event duplicated"));
       setEditEvent(created);
       setDefaultModalDate(undefined);
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
       setShowEventModal(false);
       setEditEvent(null);
     }
   }, [client, createEvent, focusCalendarOnEvent, t]);
 
   const handleDeleteEvent = useCallback(async (id: string, sendSchedulingMessages?: boolean) => {
-    if (!client) { toast.error(t("notifications.event_error")); return; }
+    if (!client) { toast.error(t("Failed to save event")); return; }
     const eventToDelete = events.find(e => e.id === id) || editEvent;
     if (eventToDelete && isRecurringEvent(eventToDelete)) {
       setPendingScopeAction({
@@ -717,9 +717,9 @@ export default function CalendarPage() {
     }
     try {
       await deleteEvent(client, id, sendSchedulingMessages);
-      toast.success(t("notifications.event_deleted"));
+      toast.success(t("Event deleted"));
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [client, deleteEvent, events, editEvent, t]);
 
@@ -746,7 +746,7 @@ export default function CalendarPage() {
   }, [client, findMasterEvent, updateEvent]);
 
   const handleScopeSelect = useCallback(async (scope: RecurrenceEditScope) => {
-    if (!client || !pendingScopeAction) { toast.error(t("notifications.event_error")); return; }
+    if (!client || !pendingScopeAction) { toast.error(t("Failed to save event")); return; }
     const { type, event, sendScheduling } = pendingScopeAction;
     const updates = type === "edit" ? pendingScopeAction.updates : undefined;
     setPendingScopeAction(null);
@@ -773,7 +773,7 @@ export default function CalendarPage() {
           case "this_and_future": {
             const result = await truncateRecurrenceAtEvent(event);
             if (!result) {
-              toast.error(t("notifications.event_error"));
+              toast.error(t("Failed to save event"));
               return;
             }
             const { master, originalRules } = result;
@@ -811,7 +811,7 @@ export default function CalendarPage() {
           case "all": {
             const master = await findMasterEvent(event);
             if (!master) {
-              toast.error(t("notifications.event_error"));
+              toast.error(t("Failed to save event"));
               return;
             }
             const allUpdates = { ...updates };
@@ -824,7 +824,7 @@ export default function CalendarPage() {
             throw new Error(`Unhandled scope: ${_exhaustive}`);
           }
         }
-        toast.success(t("notifications.event_updated"));
+        toast.success(t("Event updated"));
       } else {
         switch (scope) {
           case "this": {
@@ -844,7 +844,7 @@ export default function CalendarPage() {
           case "this_and_future": {
             const result = await truncateRecurrenceAtEvent(event);
             if (!result) {
-              toast.error(t("notifications.event_error"));
+              toast.error(t("Failed to save event"));
               return;
             }
             break;
@@ -852,7 +852,7 @@ export default function CalendarPage() {
           case "all": {
             const master = await findMasterEvent(event);
             if (!master) {
-              toast.error(t("notifications.event_error"));
+              toast.error(t("Failed to save event"));
               return;
             }
             await deleteEvent(client, master.id, sendScheduling);
@@ -863,7 +863,7 @@ export default function CalendarPage() {
             throw new Error(`Unhandled scope: ${_exhaustive}`);
           }
         }
-        toast.success(t("notifications.event_deleted"));
+        toast.success(t("Event deleted"));
       }
       try {
         await refetchCurrentRange();
@@ -871,7 +871,7 @@ export default function CalendarPage() {
         debug.error("Failed to refresh calendar after scope operation");
       }
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [client, pendingScopeAction, updateEvent, deleteEvent, createEvent, findMasterEvent, truncateRecurrenceAtEvent, refetchCurrentRange, t]);
 
@@ -879,9 +879,9 @@ export default function CalendarPage() {
     if (!client) return;
     try {
       await rsvpEvent(client, eventId, participantId, status);
-      toast.success(t("notifications.rsvp_updated"));
+      toast.success(t("Response updated"));
     } catch {
-      toast.error(t("notifications.rsvp_error"));
+      toast.error(t("Failed to update response"));
     }
   }, [client, rsvpEvent, t]);
 
@@ -916,11 +916,11 @@ export default function CalendarPage() {
     try {
       const created = await createEvent(client, data);
       if (created) {
-        toast.success(t("notifications.event_duplicated"));
+        toast.success(t("Event duplicated"));
         openEditModal(created);
       }
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [detailEvent, client, createEvent, closeDetail, openEditModal, t]);
 
@@ -934,14 +934,14 @@ export default function CalendarPage() {
     try {
       await updateEvent(client, detailEvent.id, { description: newDescription });
       setDetailEvent({ ...detailEvent, description: newDescription });
-      toast.success(t("detail.note_saved"));
+      toast.success(t("Note added"));
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [detailEvent, client, updateEvent, t]);
 
   const handleDuplicateContextMenu = useCallback(async (event: CalendarEvent) => {
-    if (!client) { toast.error(t("notifications.event_error")); return; }
+    if (!client) { toast.error(t("Failed to save event")); return; }
     const start = parseISO(event.start);
     const newStart = addDays(start, 1);
     const data = sanitizeOutgoingCalendarEventData<Partial<CalendarEvent>>({
@@ -963,29 +963,29 @@ export default function CalendarPage() {
     try {
       const created = await createEvent(client, data);
       if (created) {
-        toast.success(t("notifications.event_duplicated"));
+        toast.success(t("Event duplicated"));
         openEditModal(created);
       }
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [client, createEvent, openEditModal, t]);
 
   const handleExportICS = useCallback((event: CalendarEvent) => {
     try {
       downloadEventICS(event);
-      toast.success(t("notifications.event_exported"));
+      toast.success(t("Event exported"));
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [t]);
 
   const handleCopyTitle = useCallback(async (event: CalendarEvent) => {
     try {
       await navigator.clipboard.writeText(event.title || "");
-      toast.success(t("notifications.title_copied"));
+      toast.success(t("Title copied"));
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [t]);
 
@@ -996,9 +996,9 @@ export default function CalendarPage() {
     if (!uri) return;
     try {
       await navigator.clipboard.writeText(uri);
-      toast.success(t("notifications.link_copied"));
+      toast.success(t("Link copied"));
     } catch {
-      toast.error(t("notifications.event_error"));
+      toast.error(t("Failed to save event"));
     }
   }, [t]);
 
@@ -1044,7 +1044,7 @@ export default function CalendarPage() {
   }, [showBirthdayCalendar, contacts, dateRange]);
 
   const birthdayCalendarName = (() => {
-    try { return t('birthday_calendar'); } catch { return 'Birthdays'; }
+    try { return t("Birthdays"); } catch { return 'Birthdays'; }
   })();
 
   // Apply each shared calendar's local color override (per-viewer recolor,
@@ -1151,29 +1151,29 @@ export default function CalendarPage() {
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{tWebcalAction("title")}</DialogTitle>
+          <DialogTitle>{tWebcalAction("Open calendar link")}</DialogTitle>
           {pendingSubscription && (
             <DialogDescription>
-              {tWebcalAction("description", { name: pendingSubscription.name })}
+              {tWebcalAction("How would you like to use \"{name}\"?", { name: pendingSubscription.name })}
             </DialogDescription>
           )}
         </DialogHeader>
         <div className="space-y-3">
           <Button variant="outline" className="w-full justify-start h-auto py-3" onClick={handleImportWebcal}>
             <span className="text-start">
-              <span className="block font-medium">{tWebcalAction("import_title")}</span>
-              <span className="block text-xs text-muted-foreground mt-0.5">{tWebcalAction("import_description")}</span>
+              <span className="block font-medium">{tWebcalAction("Import once")}</span>
+              <span className="block text-xs text-muted-foreground mt-0.5">{tWebcalAction("Fetch the events now and copy them into one of your calendars.")}</span>
             </span>
           </Button>
           <Button variant="outline" className="w-full justify-start h-auto py-3" onClick={handleSubscribeWebcal}>
             <span className="text-start">
-              <span className="block font-medium">{tWebcalAction("subscribe_title")}</span>
-              <span className="block text-xs text-muted-foreground mt-0.5">{tWebcalAction("subscribe_description")}</span>
+              <span className="block font-medium">{tWebcalAction("Subscribe")}</span>
+              <span className="block text-xs text-muted-foreground mt-0.5">{tWebcalAction("Keep this calendar synced automatically as a separate calendar.")}</span>
             </span>
           </Button>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={closeWebcalActionChoice}>{tWebcalAction("cancel")}</Button>
+          <Button variant="ghost" onClick={closeWebcalActionChoice}>{tWebcalAction("Cancel")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -1187,7 +1187,7 @@ export default function CalendarPage() {
     if (isLoading && calendars.length === 0) {
       return (
         <div className="flex items-center justify-center flex-1 text-muted-foreground">
-          <p className="text-sm">{t("status.loading_calendars")}</p>
+          <p className="text-sm">{t("Loading calendars...")}</p>
         </div>
       );
     }
@@ -1310,7 +1310,7 @@ export default function CalendarPage() {
   return (
     <div className={cn("flex flex-col bg-background overflow-hidden pt-[env(safe-area-inset-top)]", isEmbedded ? "h-full" : "h-dvh")}>
       {/* Page-level heading for assistive tech (axe page-has-heading-one). */}
-      <h1 className="sr-only">{t("title")}</h1>
+      <h1 className="sr-only">{t("Calendar")}</h1>
       <AppTopBannerSlot />
       <div className={cn("relative flex flex-1 min-h-0 overflow-hidden", isMobile && "flex-col")}>
       {/* Left Navigation Rail (hidden when embedded in Pro shell) */}
@@ -1399,32 +1399,32 @@ export default function CalendarPage() {
               }}
               onClearCalendar={client ? async (cal: Calendar) => {
                 const ok = await confirmAction({
-                  title: tMgmt("clear_events"),
-                  message: tMgmt("confirm_clear", { name: cal.name }),
+                  title: tMgmt("Clear events"),
+                  message: tMgmt("Clear all events from \"{name}\"? This cannot be undone.", { name: cal.name }),
                   variant: "destructive",
-                  confirmText: tMgmt("clear_events"),
+                  confirmText: tMgmt("Clear events"),
                 });
                 if (!ok) return;
                 try {
                   const count = await clearCalendarEvents(client, cal.id);
-                  toast.success(tMgmt("events_cleared", { count }));
+                  toast.success(tMgmt("{count} events cleared", { count }));
                 } catch {
-                  toast.error(tMgmt("error_clear"));
+                  toast.error(tMgmt("Failed to clear calendar events"));
                 }
               } : undefined}
               onDeleteCalendar={client ? async (cal: Calendar) => {
                 const ok = await confirmAction({
-                  title: tMgmt("delete"),
-                  message: tMgmt("confirm_delete", { name: cal.name }),
+                  title: tMgmt("Delete"),
+                  message: tMgmt("Delete \"{name}\"? All events in this calendar will be removed.", { name: cal.name }),
                   variant: "destructive",
-                  confirmText: tMgmt("delete"),
+                  confirmText: tMgmt("Delete"),
                 });
                 if (!ok) return;
                 try {
                   await removeCalendar(client, cal.id);
-                  toast.success(tMgmt("calendar_deleted"));
+                  toast.success(tMgmt("Calendar deleted"));
                 } catch {
-                  toast.error(tMgmt("error_delete"));
+                  toast.error(tMgmt("Failed to delete calendar"));
                 }
               } : undefined}
               onCreateCalendar={client ? () => setShowCreateCalendar(true) : undefined}
@@ -1529,7 +1529,7 @@ export default function CalendarPage() {
             <Button
               onClick={() => openCreateModal()}
               className="absolute bottom-4 right-4 z-40 h-14 w-14 rounded-full shadow-lg"
-              aria-label={t("events.create")}
+              aria-label={t("Create event")}
             >
               <Plus className="h-6 w-6" />
             </Button>

@@ -84,9 +84,9 @@ export function CalendarSidebarPanel({
   client,
   multiAccountMode,
 }: CalendarSidebarPanelProps) {
-  const t = useTranslations("calendar");
-  const tSub = useTranslations("calendar.subscription");
-  const tMgmt = useTranslations("calendar.management");
+  const t = useTranslations();
+  const tSub = useTranslations();
+  const tMgmt = useTranslations();
   const isSubscriptionCalendar = useCalendarStore((s) => s.isSubscriptionCalendar);
   const allSubs = useCalendarStore((s) => s.icalSubscriptions);
   const currentAccountId = client?.getAccountId();
@@ -186,7 +186,7 @@ export function CalendarSidebarPanel({
     // Any leftover buckets (deleted accounts, untagged calendars).
     for (const [key, list] of byAccount.entries()) {
       const fallbackLabel = key === '__other__'
-        ? t('my_calendars')
+        ? t("Calendars")
         : list[0]?.accountName || key;
       ordered.push({ key, label: fallbackLabel, split: splitAccountCalendars(list) });
     }
@@ -202,9 +202,9 @@ export function CalendarSidebarPanel({
     setRefreshingSubId(subId);
     try {
       await refreshICalSubscription(client, subId);
-      toast.success(tSub('refresh_success'));
+      toast.success(tSub("Subscription refreshed"));
     } catch {
-      toast.error(tSub('refresh_error'));
+      toast.error(tSub("Failed to refresh subscription"));
     } finally {
       setRefreshingSubId(null);
     }
@@ -214,9 +214,9 @@ export function CalendarSidebarPanel({
     if (!client) return;
     try {
       await removeICalSubscription(client, subId);
-      toast.success(tSub('deleted'));
+      toast.success(tSub("Subscription removed"));
     } catch {
-      toast.error(tSub('delete_error'));
+      toast.error(tSub("Failed to remove subscription"));
     }
   };
 
@@ -224,9 +224,9 @@ export function CalendarSidebarPanel({
     if (!client) return;
     try {
       await setDefaultCalendar(client, calendarId);
-      toast.success(tMgmt('default_updated'));
+      toast.success(tMgmt("Default calendar updated"));
     } catch {
-      toast.error(tMgmt('error_default'));
+      toast.error(tMgmt("Failed to set default calendar"));
     }
   };
 
@@ -271,7 +271,7 @@ export function CalendarSidebarPanel({
           {!cal.isShared && Object.keys(cal.shareWith || {}).length > 0 && (
             <Users
               className="w-3 h-3 text-muted-foreground flex-shrink-0"
-              aria-label={tMgmt('share')}
+              aria-label={tMgmt("Share calendar")}
             />
           )}
         </button>
@@ -290,24 +290,24 @@ export function CalendarSidebarPanel({
         <ContextMenu ref={menuRef} isOpen={contextMenu.isOpen} position={contextMenu.position} onClose={closeContextMenu}>
           <ContextMenuItem
             icon={Pencil}
-            label={tSub('edit')}
+            label={tSub("Edit")}
             onClick={() => { closeContextMenu(); onEditSubscription?.(sub.id); }}
           />
           <ContextMenuItem
             icon={RefreshCw}
-            label={tSub('refresh')}
+            label={tSub("Refresh now")}
             onClick={() => { closeContextMenu(); handleRefreshSubscription(sub.id); }}
           />
           <ContextMenuSeparator />
           <ContextMenuItem
             icon={Trash2}
-            label={tSub('unsubscribe')}
+            label={tSub("Unsubscribe")}
             onClick={() => { closeContextMenu(); handleUnsubscribe(sub.id); }}
             destructive
           />
           {sub.lastRefreshed && (
             <div className="px-3 py-1.5 text-xs text-muted-foreground border-t border-border mt-1 pt-1">
-              {tSub('last_refreshed', { time: formatDateTime(sub.lastRefreshed, timeFormat, { month: 'short', day: 'numeric', year: 'numeric' }) })}
+              {tSub("Last updated: {time}", { time: formatDateTime(sub.lastRefreshed, timeFormat, { month: 'short', day: 'numeric', year: 'numeric' }) })}
             </div>
           )}
         </ContextMenu>
@@ -331,26 +331,26 @@ export function CalendarSidebarPanel({
         {canCreate && (
           <ContextMenuItem
             icon={Plus}
-            label={tMgmt('new_event_in_calendar')}
+            label={tMgmt("New event in this calendar")}
             onClick={() => { closeContextMenu(); onCreateEvent(cal); }}
           />
         )}
         {canShare && (
           <ContextMenuItem
             icon={Users}
-            label={tMgmt('share')}
+            label={tMgmt("Share calendar")}
             onClick={() => { closeContextMenu(); onShareCalendar(cal); }}
           />
         )}
         {canSetDefault && (
           <ContextMenuItem
             icon={Star}
-            label={tMgmt('set_default')}
+            label={tMgmt("Set as default")}
             onClick={() => { closeContextMenu(); handleSetDefault(cal.id); }}
           />
         )}
         {canChangeColor && (
-          <ContextMenuSubMenu icon={Palette} label={tMgmt('change_color')}>
+          <ContextMenuSubMenu icon={Palette} label={tMgmt("Change color")}>
             <div className="px-2 py-1.5 w-[200px]">
               <CalendarColorPicker
                 value={color}
@@ -363,7 +363,7 @@ export function CalendarSidebarPanel({
         {canResetColor && (
           <ContextMenuItem
             icon={Shuffle}
-            label={tMgmt('random_color')}
+            label={tMgmt("New random color")}
             onClick={() => { closeContextMenu(); onResetColor!(cal); }}
           />
         )}
@@ -371,14 +371,14 @@ export function CalendarSidebarPanel({
         {canClear && (
           <ContextMenuItem
             icon={Eraser}
-            label={tMgmt('clear_events')}
+            label={tMgmt("Clear events")}
             onClick={() => { closeContextMenu(); onClearCalendar(cal); }}
           />
         )}
         {canDelete && (
           <ContextMenuItem
             icon={Trash2}
-            label={tMgmt('delete')}
+            label={tMgmt("Delete")}
             onClick={() => { closeContextMenu(); onDeleteCalendar(cal); }}
             destructive
           />
@@ -395,12 +395,12 @@ export function CalendarSidebarPanel({
           className="flex items-center gap-2 w-full px-1.5 py-1.5 mb-3 rounded-md text-sm hover:bg-muted transition-colors"
         >
           <ListTodo className="w-4 h-4 text-muted-foreground" />
-          <span>{t('tasks.label')}</span>
+          <span>{t("Tasks")}</span>
           {pendingTaskCount > 0 && (
             <span className="ms-auto text-xs text-muted-foreground">{pendingTaskCount}</span>
           )}
           {overdueTaskCount > 0 && (
-            <span className="text-xs text-destructive font-medium">{overdueTaskCount} {t('tasks.filter_overdue').toLowerCase()}</span>
+            <span className="text-xs text-destructive font-medium">{overdueTaskCount} {t("Overdue").toLowerCase()}</span>
           )}
         </button>
       )}
@@ -438,7 +438,7 @@ export function CalendarSidebarPanel({
                         }
                       }}
                       className="ms-auto p-0.5 rounded text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-                      title={tMgmt('add_calendar')}
+                      title={tMgmt("Add calendar")}
                     >
                       <Plus className="w-3 h-3" />
                     </span>
@@ -449,7 +449,7 @@ export function CalendarSidebarPanel({
                     {owned.length > 0 && (
                       <div>
                         <div className="px-1 mb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                          {t('my_calendars')}
+                          {t("Calendars")}
                         </div>
                         <div className="space-y-0.5">
                           {owned.map(renderCalendarItem)}
@@ -480,14 +480,14 @@ export function CalendarSidebarPanel({
               <button
                 onClick={onCreateCalendar}
                 className="text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors flex items-center gap-1.5"
-                title={tMgmt('add_calendar')}
+                title={tMgmt("Add calendar")}
               >
-                {t('my_calendars')}
+                {t("Calendars")}
                 <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             ) : (
               <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                {t('my_calendars')}
+                {t("Calendars")}
               </h3>
             )}
           </div>

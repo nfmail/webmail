@@ -1,5 +1,8 @@
+'use client';
+
 import { ReactNode } from 'react';
 import { Lock } from 'lucide-react';
+import { useTranslations } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -48,6 +51,7 @@ interface SettingItemProps {
 }
 
 export function SettingItem({ label, description, children, locked, htmlFor }: SettingItemProps) {
+  const t = useTranslations();
   return (
     <div
       data-search-label={label}
@@ -56,7 +60,7 @@ export function SettingItem({ label, description, children, locked, htmlFor }: S
       <div className="flex-1 min-w-0 sm:pe-4">
         <div className="flex items-center gap-1.5">
           <label htmlFor={htmlFor} className="text-sm font-medium text-foreground">{label}</label>
-          {locked && <Lock className="w-3 h-3 text-muted-foreground" aria-label="Managed by administrator" />}
+          {locked && <Lock className="w-3 h-3 text-muted-foreground" aria-label={t("Managed by administrator")} />}
         </div>
         {description && (
           <p className="text-xs text-muted-foreground mt-1">{description}</p>

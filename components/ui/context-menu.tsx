@@ -4,6 +4,7 @@ import * as React from "react";
 import { ChevronRight } from "lucide-react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 
+import { useTranslations } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 
 interface Position {
@@ -39,6 +40,7 @@ interface ContextMenuProps {
  */
 export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
   ({ isOpen, position, onClose, children }, ref) => {
+    const t = useTranslations();
     const handleOpenChange = (open: boolean) => {
       if (!open) onClose();
     };
@@ -85,7 +87,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                 the scroll container reachable by keyboard. */}
             <div
               role="group"
-              aria-label="Menu options"
+              aria-label={t("Menu options")}
               tabIndex={0}
               className="max-h-[min(calc(100vh-20px),320px)] overflow-y-auto focus:outline-none"
             >
@@ -170,6 +172,7 @@ export function ContextMenuSubMenu({
   label,
   children,
 }: ContextMenuSubMenuProps) {
+  const t = useTranslations();
   return (
     <DropdownMenuPrimitive.Sub>
       <DropdownMenuPrimitive.SubTrigger
@@ -194,7 +197,7 @@ export function ContextMenuSubMenu({
               content above for why the [role=menu] element can't carry it. */}
           <div
             role="group"
-            aria-label="Submenu options"
+            aria-label={t("Submenu options")}
             tabIndex={0}
             className="max-h-[min(300px,calc(100vh-40px))] overflow-y-auto focus:outline-none"
           >

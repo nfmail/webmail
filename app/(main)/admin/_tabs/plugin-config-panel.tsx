@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Puzzle, ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 import { apiFetch } from '@/lib/browser-navigation';
+import { useTranslations } from '@/i18n/client';
 import { usePluginSlotOffers } from '@/hooks/use-plugin-slot-offers';
 import { PluginIframeSlot } from '@/components/plugins/plugin-iframe-slot';
 
@@ -38,6 +39,7 @@ interface Props {
 }
 
 export function PluginConfigPanel({ pluginId, onBack }: Props) {
+  const t = useTranslations();
   const [plugin, setPlugin] = useState<PluginInfo | null>(null);
   const [config, setConfig] = useState<PluginConfig>({});
   const [formValues, setFormValues] = useState<Record<string, string>>({});
@@ -186,7 +188,7 @@ export function PluginConfigPanel({ pluginId, onBack }: Props) {
           type="button"
           onClick={onBack}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-          aria-label="Back to Plugins"
+          aria-label={t("Back to Plugins")}
         >
           <ArrowLeft className="w-4 h-4" />
         </button>

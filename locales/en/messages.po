@@ -8232,3 +8232,184 @@ msgstr "Unable to load settings. Your preferences may not be saved."
 msgid "Reload settings"
 msgstr "Reload settings"
 
+
+#. js-lingui-explicit-id
+msgid "About"
+msgstr "About"
+
+#. js-lingui-explicit-id
+msgid "Admin navigation"
+msgstr "Admin navigation"
+
+#. js-lingui-explicit-id
+msgid "Admin sections"
+msgstr "Admin sections"
+
+#. js-lingui-explicit-id
+msgid "Align Center"
+msgstr "Align Center"
+
+#. js-lingui-explicit-id
+msgid "Align Left"
+msgstr "Align Left"
+
+#. js-lingui-explicit-id
+msgid "Align Right"
+msgstr "Align Right"
+
+#. js-lingui-explicit-id
+msgid "Back to Plugins"
+msgstr "Back to Plugins"
+
+#. js-lingui-explicit-id
+msgid "Bold"
+msgstr "Bold"
+
+#. js-lingui-explicit-id
+msgid "Bullet List"
+msgstr "Bullet List"
+
+#. js-lingui-explicit-id
+msgid "Clear Formatting"
+msgstr "Clear Formatting"
+
+#. js-lingui-explicit-id
+msgid "Close navigation"
+msgstr "Close navigation"
+
+#. js-lingui-explicit-id
+msgid "Code Block"
+msgstr "Code Block"
+
+#. js-lingui-explicit-id
+msgid "Collapse panel"
+msgstr "Collapse panel"
+
+#. js-lingui-explicit-id
+msgid "Copy version info"
+msgstr "Copy version info"
+
+#. js-lingui-explicit-id
+msgid "Create new"
+msgstr "Create new"
+
+#. js-lingui-explicit-id
+msgid "Expand panel"
+msgstr "Expand panel"
+
+#. js-lingui-explicit-id
+msgid "Heading 1"
+msgstr "Heading 1"
+
+#. js-lingui-explicit-id
+msgid "Heading 2"
+msgstr "Heading 2"
+
+#. js-lingui-explicit-id
+msgid "Italic"
+msgstr "Italic"
+
+#. js-lingui-explicit-id
+msgid "Link"
+msgstr "Link"
+
+#. js-lingui-explicit-id
+msgid "Loading"
+msgstr "Loading"
+
+#. js-lingui-explicit-id
+msgid "Main navigation"
+msgstr "Main navigation"
+
+#. js-lingui-explicit-id
+msgid "Managed by administrator"
+msgstr "Managed by administrator"
+
+#. js-lingui-explicit-id
+msgid "Menu options"
+msgstr "Menu options"
+
+#. js-lingui-explicit-id
+msgid "Open navigation"
+msgstr "Open navigation"
+
+#. js-lingui-explicit-id
+msgid "Ordered List"
+msgstr "Ordered List"
+
+#. js-lingui-explicit-id
+msgid "Quote"
+msgstr "Quote"
+
+#. js-lingui-explicit-id
+msgid "Redo"
+msgstr "Redo"
+
+#. js-lingui-explicit-id
+msgid "Remove address"
+msgstr "Remove address"
+
+#. js-lingui-explicit-id
+msgid "Remove date"
+msgstr "Remove date"
+
+#. js-lingui-explicit-id
+msgid "Remove email"
+msgstr "Remove email"
+
+#. js-lingui-explicit-id
+msgid "Remove entry"
+msgstr "Remove entry"
+
+#. js-lingui-explicit-id
+msgid "Remove member"
+msgstr "Remove member"
+
+#. js-lingui-explicit-id
+msgid "Remove online service"
+msgstr "Remove online service"
+
+#. js-lingui-explicit-id
+msgid "Remove phone"
+msgstr "Remove phone"
+
+#. js-lingui-explicit-id
+msgid "Remove {name}"
+msgstr "Remove {name}"
+
+#. js-lingui-explicit-id
+msgid "Resize"
+msgstr "Resize"
+
+#. js-lingui-explicit-id
+msgid "Select contact"
+msgstr "Select contact"
+
+#. js-lingui-explicit-id
+msgid "Select {name}"
+msgstr "Select {name}"
+
+#. js-lingui-explicit-id
+msgid "Strikethrough"
+msgstr "Strikethrough"
+
+#. js-lingui-explicit-id
+msgid "Submenu options"
+msgstr "Submenu options"
+
+#. js-lingui-explicit-id
+msgid "Table"
+msgstr "Table"
+
+#. js-lingui-explicit-id
+msgid "Text direction (RTL/LTR)"
+msgstr "Text direction (RTL/LTR)"
+
+#. js-lingui-explicit-id
+msgid "Theme selection"
+msgstr "Theme selection"
+
+#. js-lingui-explicit-id
+msgid "Underline"
+msgstr "Underline"
+

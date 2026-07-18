@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Shield, Mail, X, AlertTriangle, MailCheck, RotateCcw } from "lucide-react";
+import { useTranslations } from "@/i18n/client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,6 +33,7 @@ interface Enemy {
 type GameState = "idle" | "playing" | "over";
 
 export function SpamSiegeGame({ onClose }: { onClose: () => void }) {
+  const t = useTranslations();
   const [gameState, setGameState] = useState<GameState>("idle");
   const [enemies, setEnemies] = useState<Enemy[]>([]);
   const [score, setScore] = useState(0);
@@ -188,7 +190,7 @@ export function SpamSiegeGame({ onClose }: { onClose: () => void }) {
           <button
             onClick={onClose}
             className="p-1 rounded hover:bg-muted transition-colors"
-            aria-label="Close"
+            aria-label={t("Close")}
           >
             <X className="w-4 h-4 text-muted-foreground" />
           </button>

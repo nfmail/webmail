@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { useTranslations } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 
 interface ResizeHandleProps {
@@ -17,6 +18,7 @@ interface ResizeHandleProps {
 const KEYBOARD_STEP = 10;
 
 export function ResizeHandle({ onResizeStart, onResize, onResizeEnd, onDoubleClick, orientation = "vertical", className, value = 50 }: ResizeHandleProps) {
+  const t = useTranslations();
   const isDragging = useRef(false);
   const startPos = useRef(0);
   const isHorizontal = orientation === "horizontal";
@@ -73,7 +75,7 @@ export function ResizeHandle({ onResizeStart, onResize, onResizeEnd, onDoubleCli
     <div
       role="separator"
       aria-orientation={isHorizontal ? "horizontal" : "vertical"}
-      aria-label="Resize"
+      aria-label={t("Resize")}
       aria-valuenow={Math.round(Math.min(100, Math.max(0, value)))}
       aria-valuemin={0}
       aria-valuemax={100}

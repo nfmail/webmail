@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSettingsStore } from "@/stores/settings-store";
+import { useTranslations } from "@/i18n/client";
 import {
   Bold,
   Italic,
@@ -200,6 +201,7 @@ export function RichTextEditor({
   hasError,
   onEditorReady,
 }: RichTextEditorProps) {
+  const t = useTranslations();
   const rtlEditingSupport = useSettingsStore((st) => st.rtlEditingSupport);
   const onImageUploadRef = React.useRef(onImageUpload);
   onImageUploadRef.current = onImageUpload;
@@ -376,28 +378,28 @@ export function RichTextEditor({
         <ToolbarButton
           active={editor.isActive("bold")}
           onClick={() => editor.chain().focus().toggleBold().run()}
-          title="Bold"
+          title={t("Bold")}
         >
           <Bold className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive("italic")}
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          title="Italic"
+          title={t("Italic")}
         >
           <Italic className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive("underline")}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          title="Underline"
+          title={t("Underline")}
         >
           <UnderlineIcon className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive("strike")}
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          title="Strikethrough"
+          title={t("Strikethrough")}
         >
           <Strikethrough className="w-4 h-4" />
         </ToolbarButton>
@@ -407,14 +409,14 @@ export function RichTextEditor({
         <ToolbarButton
           active={editor.isActive("heading", { level: 1 })}
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          title="Heading 1"
+          title={t("Heading 1")}
         >
           <Heading1 className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive("heading", { level: 2 })}
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          title="Heading 2"
+          title={t("Heading 2")}
         >
           <Heading2 className="w-4 h-4" />
         </ToolbarButton>
@@ -424,28 +426,28 @@ export function RichTextEditor({
         <ToolbarButton
           active={editor.isActive("bulletList")}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          title="Bullet List"
+          title={t("Bullet List")}
         >
           <List className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive("orderedList")}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          title="Ordered List"
+          title={t("Ordered List")}
         >
           <ListOrdered className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive("blockquote")}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          title="Quote"
+          title={t("Quote")}
         >
           <Quote className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive("codeBlock")}
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          title="Code Block"
+          title={t("Code Block")}
         >
           <Code className="w-4 h-4" />
         </ToolbarButton>
@@ -455,21 +457,21 @@ export function RichTextEditor({
         <ToolbarButton
           active={editor.isActive({ textAlign: "left" })}
           onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          title="Align Left"
+          title={t("Align Left")}
         >
           <AlignLeft className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive({ textAlign: "center" })}
           onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          title="Align Center"
+          title={t("Align Center")}
         >
           <AlignCenter className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive({ textAlign: "right" })}
           onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          title="Align Right"
+          title={t("Align Right")}
         >
           <AlignRight className="w-4 h-4" />
         </ToolbarButton>
@@ -484,7 +486,7 @@ export function RichTextEditor({
                 editor.getAttributes("paragraph").dir || editor.getAttributes("heading").dir;
               editor.chain().focus().setTextDirection(cur === "rtl" ? "ltr" : "rtl").run();
             }}
-            title="Text direction (RTL/LTR)"
+            title={t("Text direction (RTL/LTR)")}
           >
             <ArrowLeftRight className="w-4 h-4" />
           </ToolbarButton>
@@ -495,7 +497,7 @@ export function RichTextEditor({
         <ToolbarButton
           active={editor.isActive("link")}
           onClick={addLink}
-          title="Link"
+          title={t("Link")}
         >
           <LinkIcon className="w-4 h-4" />
         </ToolbarButton>
@@ -504,7 +506,7 @@ export function RichTextEditor({
           <ToolbarButton
             active={editor.isActive("table")}
             onClick={() => setTableMenuOpen((v) => !v)}
-            title="Table"
+            title={t("Table")}
           >
             <TableIcon className="w-4 h-4" />
           </ToolbarButton>
@@ -587,7 +589,7 @@ export function RichTextEditor({
 
         <ToolbarButton
           onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
-          title="Clear Formatting"
+          title={t("Clear Formatting")}
         >
           <RemoveFormatting className="w-4 h-4" />
         </ToolbarButton>
@@ -597,14 +599,14 @@ export function RichTextEditor({
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
-          title="Undo"
+          title={t("Undo")}
         >
           <Undo className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().redo()}
-          title="Redo"
+          title={t("Redo")}
         >
           <Redo className="w-4 h-4" />
         </ToolbarButton>

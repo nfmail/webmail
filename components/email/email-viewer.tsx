@@ -482,7 +482,7 @@ export function ContactSidebarPanel({
                         <button
                           onClick={() => handleCopy(e.address)}
                           className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-                          aria-label="Copy"
+                          aria-label={t("Copy")}
                         >
                           <Copy className="w-3 h-3 text-muted-foreground" />
                         </button>
@@ -507,7 +507,7 @@ export function ContactSidebarPanel({
                         <button
                           onClick={() => handleCopy(p.number)}
                           className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-                          aria-label="Copy"
+                          aria-label={t("Copy")}
                         >
                           <Copy className="w-3 h-3 text-muted-foreground" />
                         </button>
@@ -5217,7 +5217,7 @@ export function EmailViewer({
               size="icon"
               onClick={() => setDetailSidebarCollapsed(false)}
               className="h-8 w-8 m-1"
-              aria-label="Expand panel"
+              aria-label={t("Expand panel")}
             >
               <PanelRightOpen className="w-4 h-4" />
             </Button>
@@ -5244,7 +5244,7 @@ export function EmailViewer({
                   size="icon"
                   onClick={() => setDetailSidebarCollapsed(true)}
                   className="h-7 w-7"
-                  aria-label="Collapse panel"
+                  aria-label={t("Collapse panel")}
                 >
                   <PanelRightClose className="w-4 h-4" />
                 </Button>

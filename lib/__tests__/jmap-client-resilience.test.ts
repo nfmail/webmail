@@ -278,6 +278,12 @@ describe('JMAPClient resilience', () => {
           // reconnect → connect() → session URL succeeds
           return mockFetchResponse(200, session);
         }
+        if (!url.includes('/jmap/api')) {
+          // Anything that is not the JMAP API endpoint (event source, blob
+          // URLs, stray background requests) must never consume the failure
+          // budget — that made the ping succeed early on CI runners.
+          return mockFetchResponse(200, {});
+        }
         if (apiFailuresRemaining > 0) {
           apiFailuresRemaining -= 1;
           throw new TypeError('Failed to fetch');

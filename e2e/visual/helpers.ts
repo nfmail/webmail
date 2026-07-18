@@ -112,7 +112,14 @@ export async function navigate(
   // right after an overlay closes), so verify the URL actually changed and
   // retry; without this the suite silently screenshots the wrong surface.
   for (let attempt = 0; attempt < 3; attempt++) {
-    await page.locator(`a[href="/${section}"]:visible`).first().click();
+    // Retries force the click past hit-target interception (a tablet rail
+    // anchor wrapped in a tooltip trigger can fail Playwright's stability
+    // check indefinitely); the URL guard below still proves navigation.
+    await page
+      .locator(`a[href="/${section}"]:visible`)
+      .first()
+      .click({ force: attempt > 0, timeout: 10_000 })
+      .catch(() => {});
     try {
       // Generous per-attempt budget: a cold dev-server route compile can take
       // >15s on CI before the client transition commits the URL.

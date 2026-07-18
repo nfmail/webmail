@@ -134,6 +134,9 @@ test.describe.serial('visual: authenticated', () => {
       'Files nav is hidden: the mock backend advertises no WebDAV capability. ' +
         'Run against a backend where supportsFiles is true to baseline this surface.',
     );
+    // Navigate from the mailbox: on tablet the contacts surface overlays the
+    // nav rail and renders no bottom bar, leaving no reachable files anchor.
+    await returnToMail(page);
     await navigate(page, 'files');
     // Wait for a stable listing row so the shot never captures a half-loaded
     // tree (see e2e/visual/README.md).
